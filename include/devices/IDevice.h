@@ -1,0 +1,108 @@
+/*******************************************************************************
+ * Copyright 2009-2013 Jörg Müller
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+#pragma once
+
+#include "Audaspace.h"
+#include "ISound.h"
+#include "IReader.h"
+#include "IHandle.h"
+#include "ILockable.h"
+
+#include <memory>
+
+AUD_NAMESPACE_BEGIN
+
+/**
+ * This class represents an output device for sound sources.
+ * Output devices may be several backends such as plattform independand like
+ * SDL or OpenAL or plattform specific like DirectSound, but they may also be
+ * files, RAM buffers or other types of streams.
+ * \warning Thread safety must be insured so that no reader is beeing called
+ *          twice at the same time.
+ */
+class IDevice : public ILockable
+{
+public:
+	/**
+	 * Destroys the device.
+	 */
+	virtual ~IDevice() {}
+
+	/**
+	 * Returns the specification of the device.
+	 */
+	virtual DeviceSpecs getSpecs() const=0;
+
+	/**
+	 * Plays a sound source.
+	 * \param reader The reader to play.
+	 * \param keep When keep is true the sound source will not be deleted but
+	 *             set to paused when its end has been reached.
+	 * \return Returns a handle with which the playback can be controlled.
+	 *         This is NULL if the sound couldn't be played back.
+	 * \exception Exception Thrown if there's an unexpected (from the
+	 *            device side) error during creation of the reader.
+	 */
+	virtual std::shared_ptr<IHandle> play(std::shared_ptr<IReader> reader, bool keep = false)=0;
+
+	/**
+	 * Plays a sound source.
+	 * \param factory The factory to create the reader for the sound source.
+	 * \param keep When keep is true the sound source will not be deleted but
+	 *             set to paused when its end has been reached.
+	 * \return Returns a handle with which the playback can be controlled.
+	 *         This is NULL if the sound couldn't be played back.
+	 * \exception Exception Thrown if there's an unexpected (from the
+	 *            device side) error during creation of the reader.
+	 */
+	virtual std::shared_ptr<IHandle> play(std::shared_ptr<ISound> factory, bool keep = false)=0;
+
+	/**
+	 * Stops all playing sounds.
+	 */
+	virtual void stopAll()=0;
+
+	/**
+	 * Locks the device.
+	 * Used to make sure that between lock and unlock, no buffers are read, so
+	 * that it is possible to start, resume, pause, stop or seek several
+	 * playback handles simultaneously.
+	 * \warning Make sure the locking time is as small as possible to avoid
+	 *          playback delays that result in unexpected noise and cracks.
+	 */
+	virtual void lock()=0;
+
+	/**
+	 * Unlocks the previously locked device.
+	 */
+	virtual void unlock()=0;
+
+	/**
+	 * Retrieves the overall device volume.
+	 * \return The overall device volume.
+	 */
+	virtual float getVolume() const=0;
+
+	/**
+	 * Sets the overall device volume.
+	 * \param handle The sound handle.
+	 * \param volume The overall device volume.
+	 */
+	virtual void setVolume(float volume)=0;
+};
+
+AUD_NAMESPACE_END
