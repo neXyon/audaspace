@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Delay.h"
-#include "DelayReader.h"
+#include "fx/Delay.h"
+#include "fx/DelayReader.h"
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

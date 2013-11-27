@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SndFileWriter.h"
+#include "file/SndFileWriter.h"
 
 #include <cstring>
 

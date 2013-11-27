@@ -14,13 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SoftwareDevice.h"
+#include "devices/SoftwareDevice.h"
 #include "IReader.h"
-#include "Mixer.h"
+#include "respec/Mixer.h"
 #include "ISound.h"
-#include "JOSResampleReader.h"
-#include "LinearResampleReader.h"
-#include "MutexLock.h"
+#include "respec/JOSResampleReader.h"
+#include "respec/LinearResampleReader.h"
+#include "util/MutexLock.h"
 
 #include <cstring>
 #include <cmath>

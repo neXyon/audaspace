@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "ILockable.h"
+#include "util/ILockable.h"
 
 AUD_NAMESPACE_BEGIN
 

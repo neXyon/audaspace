@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "EffectReader.h"
-#include "ConverterFunctions.h"
-#include "Buffer.h"
+#include "fx/EffectReader.h"
+#include "respec/ConverterFunctions.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -24,7 +24,7 @@
 #define M_PI_2 1.57079632679489661923
 #endif
 
-#include "ChannelMapperReader.h"
+#include "respec/ChannelMapperReader.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "FFMPEGReader.h"
-#include "SndFileReader.h"
+#include "file/FFMPEGReader.h"
+#include "file/SndFileReader.h"
 
-#include "File.h"
+#include "file/File.h"
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN

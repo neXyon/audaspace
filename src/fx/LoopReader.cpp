@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "LoopReader.h"
-#include "Buffer.h"
+#include "fx/LoopReader.h"
+#include "util/Buffer.h"
 
 #include <cstring>
 

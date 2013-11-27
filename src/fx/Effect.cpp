@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Effect.h"
+#include "fx/Effect.h"
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

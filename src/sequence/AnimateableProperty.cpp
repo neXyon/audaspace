@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "AnimateableProperty.h"
-#include "MutexLock.h"
+#include "sequence/AnimateableProperty.h"
+#include "util/MutexLock.h"
 
 #include <cstring>
 #include <cmath>

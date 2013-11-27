@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "Buffer.h"
-#include "ILockable.h"
+#include "util/Buffer.h"
+#include "util/ILockable.h"
 
 #include <pthread.h>
 #include <list>

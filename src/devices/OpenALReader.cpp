@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "OpenALReader.h"
-#include "ConverterFunctions.h"
+#include "devices/OpenALReader.h"
+#include "respec/ConverterFunctions.h"
 
 AUD_NAMESPACE_BEGIN
 

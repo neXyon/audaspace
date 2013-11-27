@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Rectify.h"
-#include "CallbackIIRFilterReader.h"
+#include "fx/Rectify.h"
+#include "fx/CallbackIIRFilterReader.h"
 
 #include <cmath>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SpecsChanger.h"
+#include "respec/SpecsChanger.h"
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

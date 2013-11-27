@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Loop.h"
-#include "LoopReader.h"
+#include "fx/Loop.h"
+#include "fx/LoopReader.h"
 
 AUD_NAMESPACE_BEGIN
 

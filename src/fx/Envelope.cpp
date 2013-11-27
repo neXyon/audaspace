@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Envelope.h"
-#include "CallbackIIRFilterReader.h"
+#include "fx/Envelope.h"
+#include "fx/CallbackIIRFilterReader.h"
 
 #include <cmath>
 

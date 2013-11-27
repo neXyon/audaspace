@@ -17,7 +17,7 @@
 #pragma once
 
 #include "ISound.h"
-#include "Buffer.h"
+#include "util/Buffer.h"
 
 #include <memory>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SuperposeReader.h"
+#include "fx/SuperposeReader.h"
 
 #include <cstring>
 

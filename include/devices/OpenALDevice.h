@@ -16,11 +16,11 @@
 
 #pragma once
 
-#include "IDevice.h"
-#include "IHandle.h"
-#include "I3DDevice.h"
-#include "I3DHandle.h"
-#include "Buffer.h"
+#include "devices/IDevice.h"
+#include "devices/IHandle.h"
+#include "devices/I3DDevice.h"
+#include "devices/I3DHandle.h"
+#include "util/Buffer.h"
 //struct OpenALBuffered;
 
 #include <AL/al.h>

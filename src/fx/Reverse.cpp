@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Reverse.h"
-#include "ReverseReader.h"
+#include "fx/Reverse.h"
+#include "fx/ReverseReader.h"
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

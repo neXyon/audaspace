@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Converter.h"
-#include "ConverterReader.h"
+#include "respec/Converter.h"
+#include "respec/ConverterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

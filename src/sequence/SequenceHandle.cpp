@@ -15,8 +15,8 @@
  ******************************************************************************/
 
 #include "SequenceHandle.h"
-#include "ReadDevice.h"
-#include "MutexLock.h"
+#include "devices/ReadDevice.h"
+#include "util/MutexLock.h"
 
 AUD_NAMESPACE_BEGIN
 

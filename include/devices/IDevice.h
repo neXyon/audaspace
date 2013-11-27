@@ -19,8 +19,8 @@
 #include "Audaspace.h"
 #include "ISound.h"
 #include "IReader.h"
-#include "IHandle.h"
-#include "ILockable.h"
+#include "devices/IHandle.h"
+#include "util/ILockable.h"
 
 #include <memory>
 

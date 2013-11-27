@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Butterworth.h"
-#include "IIRFilterReader.h"
-#include "ButterworthCalculator.h"
+#include "fx/Butterworth.h"
+#include "fx/IIRFilterReader.h"
+#include "fx/ButterworthCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 

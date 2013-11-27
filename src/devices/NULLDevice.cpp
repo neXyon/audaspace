@@ -16,7 +16,7 @@
 
 #include <limits>
 
-#include "NULLDevice.h"
+#include "devices/NULLDevice.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "FFMPEGWriter.h"
-#include "SndFileWriter.h"
-#include "FileWriter.h"
-#include "Buffer.h"
+#include "file/FFMPEGWriter.h"
+#include "file/SndFileWriter.h"
+#include "file/FileWriter.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

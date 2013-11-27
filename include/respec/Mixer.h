@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "ConverterFunctions.h"
-#include "Buffer.h"
+#include "respec/ConverterFunctions.h"
+#include "util/Buffer.h"
 
 #include <memory>
 

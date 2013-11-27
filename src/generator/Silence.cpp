@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Silence.h"
-#include "SilenceReader.h"
+#include "generator/Silence.h"
+#include "generator/SilenceReader.h"
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

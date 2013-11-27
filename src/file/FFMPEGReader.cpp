@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "FFMPEGReader.h"
+#include "file/FFMPEGReader.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>

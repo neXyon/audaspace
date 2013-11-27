@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SinusReader.h"
+#include "generator/SinusReader.h"
 
 #include <cmath>
 

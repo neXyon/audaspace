@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "LinearResampleReader.h"
+#include "respec/LinearResampleReader.h"
 
 #include <cmath>
 #include <cstring>

@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "JOSResample.h"
-#include "JOSResampleReader.h"
+#include "respec/JOSResample.h"
+#include "respec/JOSResampleReader.h"
 
 AUD_NAMESPACE_BEGIN
 

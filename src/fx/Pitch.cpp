@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Pitch.h"
-#include "PitchReader.h"
+#include "fx/Pitch.h"
+#include "fx/PitchReader.h"
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SequenceEntry.h"
-#include "SequenceReader.h"
-#include "MutexLock.h"
+#include "sequence/SequenceEntry.h"
+#include "sequence/SequenceReader.h"
+#include "util/MutexLock.h"
 
 #include <cmath>
 #include <limits>

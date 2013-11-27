@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SndFileReader.h"
+#include "file/SndFileReader.h"
 
 #include <cstring>
 

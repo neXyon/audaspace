@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Square.h"
-#include "CallbackIIRFilterReader.h"
+#include "fx/Square.h"
+#include "fx/CallbackIIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

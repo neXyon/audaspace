@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "LinearResample.h"
-#include "LinearResampleReader.h"
+#include "respec/LinearResample.h"
+#include "respec/LinearResampleReader.h"
 
 AUD_NAMESPACE_BEGIN
 

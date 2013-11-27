@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "ResampleReader.h"
-#include "Buffer.h"
+#include "respec/ResampleReader.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

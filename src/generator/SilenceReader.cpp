@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SilenceReader.h"
+#include "generator/SilenceReader.h"
 
 #include <cstring>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "FFMPEGWriter.h"
+#include "file/FFMPEGWriter.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>

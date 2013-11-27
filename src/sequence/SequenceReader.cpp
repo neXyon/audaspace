@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SequenceReader.h"
+#include "sequence/SequenceReader.h"
 #include "SequenceHandle.h"
-#include "MutexLock.h"
+#include "util/MutexLock.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Sinus.h"
-#include "SinusReader.h"
+#include "generator/Sinus.h"
+#include "generator/SinusReader.h"
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include "SoftwareDevice.h"
-#include "Buffer.h"
+#include "devices/SoftwareDevice.h"
+#include "util/Buffer.h"
 
 #include <string>
 
-#include "JackLibrary.h"
+#include "devices/JackLibrary.h"
 
 AUD_NAMESPACE_BEGIN
 

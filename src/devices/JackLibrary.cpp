@@ -16,7 +16,7 @@
 
 #define aud_JACK_LIBRARY_IMPL
 
-#include "JackLibrary.h"
+#include "devices/JackLibrary.h"
 
 #ifdef WITH_JACK_DYNLOAD
 # include <dlfcn.h>

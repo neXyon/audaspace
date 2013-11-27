@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "ResampleReader.h"
+#include "respec/ResampleReader.h"
 
 AUD_NAMESPACE_BEGIN
 

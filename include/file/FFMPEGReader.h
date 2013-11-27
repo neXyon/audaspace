@@ -21,9 +21,9 @@
 #define __STDC_CONSTANT_MACROS
 #endif
 
-#include "ConverterFunctions.h"
+#include "respec/ConverterFunctions.h"
 #include "IReader.h"
-#include "Buffer.h"
+#include "util/Buffer.h"
 
 #include <string>
 #include <memory>

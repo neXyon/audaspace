@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "ConverterFunctions.h"
-#include "Buffer.h"
+#include "respec/ConverterFunctions.h"
+#include "util/Buffer.h"
 
 #define U8_0		0x80
 #define S16_MAX		((int16_t)0x7FFF)

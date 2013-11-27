@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "ConverterFunctions.h"
-#include "Buffer.h"
-#include "IWriter.h"
+#include "respec/ConverterFunctions.h"
+#include "util/Buffer.h"
+#include "file/IWriter.h"
 
 #include <string>
 

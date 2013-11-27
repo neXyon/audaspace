@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "SequenceEntry.h"
-#include "IHandle.h"
-#include "I3DHandle.h"
+#include "sequence/SequenceEntry.h"
+#include "devices/IHandle.h"
+#include "devices/I3DHandle.h"
 
 AUD_NAMESPACE_BEGIN
 

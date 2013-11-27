@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "SoftwareDevice.h"
+#include "devices/SoftwareDevice.h"
 
 #include <SDL.h>
 

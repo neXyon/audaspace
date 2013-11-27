@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "ADSRReader.h"
+#include "fx/ADSRReader.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "SDLDevice.h"
+#include "devices/SDLDevice.h"
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

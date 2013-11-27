@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "ChannelMapper.h"
-#include "ChannelMapperReader.h"
+#include "respec/ChannelMapper.h"
+#include "respec/ChannelMapperReader.h"
 
 #include <cstring>
 

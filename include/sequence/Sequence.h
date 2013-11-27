@@ -17,9 +17,9 @@
 #pragma once
 
 #include "ISound.h"
-#include "AnimateableProperty.h"
+#include "sequence/AnimateableProperty.h"
 //#include "ILockable.h"
-#include "SequenceData.h"
+#include "sequence/SequenceData.h"
 
 #include <list>
 #include <pthread.h>

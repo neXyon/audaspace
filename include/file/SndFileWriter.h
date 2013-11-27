@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "IWriter.h"
+#include "file/IWriter.h"
 
 #include <string>
 #include <sndfile.h>

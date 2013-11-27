@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "IIRFilterReader.h"
-#include "IDynamicIIRFilterCalculator.h"
+#include "fx/IIRFilterReader.h"
+#include "fx/IDynamicIIRFilterCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 

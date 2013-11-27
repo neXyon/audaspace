@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Double.h"
-#include "DoubleReader.h"
+#include "fx/Double.h"
+#include "fx/DoubleReader.h"
 
 AUD_NAMESPACE_BEGIN
 

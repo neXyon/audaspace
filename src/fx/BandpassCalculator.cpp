@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "BandpassCalculator.h"
+#include "fx/BandpassCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "DynamicIIRFilter.h"
-#include "DynamicIIRFilterReader.h"
+#include "fx/DynamicIIRFilter.h"
+#include "fx/DynamicIIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

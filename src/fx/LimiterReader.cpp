@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "LimiterReader.h"
-#include "Buffer.h"
+#include "fx/LimiterReader.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -16,15 +16,15 @@
 
 #pragma once
 
-#include "IDevice.h"
-#include "IHandle.h"
-#include "I3DDevice.h"
-#include "I3DHandle.h"
-#include "Mixer.h"
-#include "Buffer.h"
-#include "PitchReader.h"
-#include "ResampleReader.h"
-#include "ChannelMapperReader.h"
+#include "devices/IDevice.h"
+#include "devices/IHandle.h"
+#include "devices/I3DDevice.h"
+#include "devices/I3DHandle.h"
+#include "respec/Mixer.h"
+#include "util/Buffer.h"
+#include "fx/PitchReader.h"
+#include "respec/ResampleReader.h"
+#include "respec/ChannelMapperReader.h"
 
 #include <list>
 #include <pthread.h>

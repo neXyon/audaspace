@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "ReadDevice.h"
+#include "devices/ReadDevice.h"
 #include "IReader.h"
 
 #include <cstring>

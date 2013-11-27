@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "HighpassCalculator.h"
+#include "fx/HighpassCalculator.h"
 
 #include <cmath>
 

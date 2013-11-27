@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Volume.h"
-#include "IIRFilterReader.h"
+#include "fx/Volume.h"
+#include "fx/IIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

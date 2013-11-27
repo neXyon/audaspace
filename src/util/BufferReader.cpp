@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "BufferReader.h"
-#include "Buffer.h"
+#include "util/BufferReader.h"
+#include "util/Buffer.h"
 #include "Audaspace.h"
 
 #include <cstring>

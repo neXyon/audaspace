@@ -17,7 +17,7 @@
 #pragma once
 
 #include "IReader.h"
-#include "Buffer.h"
+#include "util/Buffer.h"
 
 #include <memory>
 

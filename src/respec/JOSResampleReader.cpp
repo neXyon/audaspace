@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "JOSResampleReader.h"
+#include "respec/JOSResampleReader.h"
 
 //#include "JOSResampleReaderCoeff.cpp"
 

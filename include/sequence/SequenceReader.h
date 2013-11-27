@@ -17,8 +17,8 @@
 #pragma once
 
 #include "IReader.h"
-#include "ReadDevice.h"
-#include "SequenceData.h"
+#include "devices/ReadDevice.h"
+#include "sequence/SequenceData.h"
 
 AUD_NAMESPACE_BEGIN
 

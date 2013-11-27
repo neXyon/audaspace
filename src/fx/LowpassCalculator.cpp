@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "LowpassCalculator.h"
+#include "fx/LowpassCalculator.h"
 
 #include <cmath>
 

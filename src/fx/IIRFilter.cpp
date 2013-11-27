@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "IIRFilter.h"
-#include "IIRFilterReader.h"
+#include "fx/IIRFilter.h"
+#include "fx/IIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

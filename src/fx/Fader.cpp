@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Fader.h"
-#include "FaderReader.h"
+#include "fx/Fader.h"
+#include "fx/FaderReader.h"
 
 AUD_NAMESPACE_BEGIN
 

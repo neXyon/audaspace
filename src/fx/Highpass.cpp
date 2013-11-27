@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Highpass.h"
-#include "IIRFilterReader.h"
-#include "HighpassCalculator.h"
+#include "fx/Highpass.h"
+#include "fx/IIRFilterReader.h"
+#include "fx/HighpassCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 

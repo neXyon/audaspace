@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "EffectReader.h"
+#include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN
 

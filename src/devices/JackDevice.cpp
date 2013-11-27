@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "JackDevice.h"
+#include "devices/JackDevice.h"
 #include "IReader.h"
 
 #include <stdio.h>

@@ -14,10 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Sequence.h"
-#include "SequenceReader.h"
-#include "Math3D.h"
-#include "MutexLock.h"
+#include "sequence/Sequence.h"
+#include "sequence/SequenceReader.h"
+#include "util/Math3D.h"
+#include "util/MutexLock.h"
 
 AUD_NAMESPACE_BEGIN
 

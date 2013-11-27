@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "IDynamicIIRFilterCalculator.h"
+#include "fx/IDynamicIIRFilterCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 

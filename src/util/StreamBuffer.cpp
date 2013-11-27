@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "StreamBuffer.h"
-#include "BufferReader.h"
-#include "Buffer.h"
+#include "util/StreamBuffer.h"
+#include "util/BufferReader.h"
+#include "util/Buffer.h"
 
 #include <cstring>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "FaderReader.h"
+#include "fx/FaderReader.h"
 
 #include <cstring>
 

@@ -17,7 +17,7 @@
 #pragma once
 
 #include "Audaspace.h"
-#include "Math3D.h"
+#include "util/Math3D.h"
 
 AUD_NAMESPACE_BEGIN
 

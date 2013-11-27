@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Accumulator.h"
-#include "CallbackIIRFilterReader.h"
+#include "fx/Accumulator.h"
+#include "fx/CallbackIIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "BaseIIRFilterReader.h"
-#include "Buffer.h"
+#include "fx/BaseIIRFilterReader.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

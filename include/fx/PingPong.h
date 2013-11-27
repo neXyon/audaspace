@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "Effect.h"
+#include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Limiter.h"
-#include "LimiterReader.h"
+#include "fx/Limiter.h"
+#include "fx/LimiterReader.h"
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

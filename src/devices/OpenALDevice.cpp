@@ -14,11 +14,11 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "OpenALDevice.h"
+#include "devices/OpenALDevice.h"
 #include "ISound.h"
 #include "IReader.h"
-#include "ConverterReader.h"
-#include "MutexLock.h"
+#include "respec/ConverterReader.h"
+#include "util/MutexLock.h"
 
 #include <cstring>
 #include <limits>

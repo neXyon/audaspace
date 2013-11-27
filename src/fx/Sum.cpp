@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Sum.h"
-#include "IIRFilterReader.h"
+#include "fx/Sum.h"
+#include "fx/IIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 

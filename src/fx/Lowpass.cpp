@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "Lowpass.h"
-#include "IIRFilterReader.h"
-#include "LowpassCalculator.h"
+#include "fx/Lowpass.h"
+#include "fx/IIRFilterReader.h"
+#include "fx/LowpassCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 
