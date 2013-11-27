@@ -20,7 +20,6 @@ AUD_NAMESPACE_BEGIN
 
 /**
  * This class provides an interface for lockable objects.
- * The main reason for this interface is to be used with MutexLock.
  */
 class ILockable
 {

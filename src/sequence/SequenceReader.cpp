@@ -16,7 +16,8 @@
 
 #include "sequence/SequenceReader.h"
 #include "SequenceHandle.h"
-#include "util/MutexLock.h"
+
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -65,7 +66,7 @@ Specs SequenceReader::getSpecs() const
 
 void SequenceReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	MutexLock lock(*m_sequence);
+	std::lock_guard<ILockable> lock(*m_sequence);
 
 	if(m_sequence->m_status != m_status)
 	{

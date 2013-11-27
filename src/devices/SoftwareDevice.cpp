@@ -20,11 +20,11 @@
 #include "ISound.h"
 #include "respec/JOSResampleReader.h"
 #include "respec/LinearResampleReader.h"
-#include "util/MutexLock.h"
 
 #include <cstring>
 #include <cmath>
 #include <limits>
+#include <mutex>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -50,7 +50,7 @@ bool SoftwareDevice::SoftwareHandle::pause(bool keep)
 {
 	if(m_status)
 	{
-		MutexLock lock(*m_device);
+		std::lock_guard<ILockable> lock(*m_device);
 
 		if(m_status == STATUS_PLAYING)
 		{
@@ -252,7 +252,7 @@ bool SoftwareDevice::SoftwareHandle::resume()
 {
 	if(m_status)
 	{
-		MutexLock lock(*m_device);
+		std::lock_guard<ILockable> lock(*m_device);
 
 		if(m_status == STATUS_PAUSED)
 		{
@@ -285,7 +285,7 @@ bool SoftwareDevice::SoftwareHandle::stop()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -332,7 +332,7 @@ bool SoftwareDevice::SoftwareHandle::setKeep(bool keep)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -347,7 +347,7 @@ bool SoftwareDevice::SoftwareHandle::seek(float position)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -365,7 +365,7 @@ float SoftwareDevice::SoftwareHandle::getPosition()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return 0.0f;
@@ -440,7 +440,7 @@ bool SoftwareDevice::SoftwareHandle::setStopCallback(stopCallback callback, void
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -725,7 +725,7 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 {
 	m_buffer.assureSize(length * AUD_SAMPLE_SIZE(m_specs));
 
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	{
 		std::shared_ptr<SoftwareDevice::SoftwareHandle> sound;
@@ -860,7 +860,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 	// play sound
 	std::shared_ptr<SoftwareDevice::SoftwareHandle> sound = std::shared_ptr<SoftwareDevice::SoftwareHandle>(new SoftwareDevice::SoftwareHandle(this, reader, pitch, resampler, mapper, keep));
 
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_playingSounds.push_back(sound);
 
@@ -877,7 +877,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<ISound> factory, b
 
 void SoftwareDevice::stopAll()
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	while(!m_playingSounds.empty())
 		m_playingSounds.front()->stop();

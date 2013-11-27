@@ -16,10 +16,10 @@
 
 #include "sequence/SequenceEntry.h"
 #include "sequence/SequenceReader.h"
-#include "util/MutexLock.h"
 
 #include <cmath>
 #include <limits>
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -77,7 +77,7 @@ void SequenceEntry::unlock()
 
 void SequenceEntry::setSound(std::shared_ptr<ISound> sound)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	if(m_sound.get() != sound.get())
 	{
@@ -88,7 +88,7 @@ void SequenceEntry::setSound(std::shared_ptr<ISound> sound)
 
 void SequenceEntry::move(float begin, float end, float skip)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	if(m_begin != begin || m_skip != skip || m_end != end)
 	{
@@ -101,7 +101,7 @@ void SequenceEntry::move(float begin, float end, float skip)
 
 void SequenceEntry::mute(bool mute)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_muted = mute;
 }
@@ -134,7 +134,7 @@ void SequenceEntry::updateAll(float volume_max, float volume_min, float distance
 								   float distance_reference, float attenuation, float cone_angle_outer,
 								   float cone_angle_inner, float cone_volume_outer)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	if(volume_max != m_volume_max)
 	{
@@ -192,7 +192,7 @@ bool SequenceEntry::isRelative()
 
 void SequenceEntry::setRelative(bool relative)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	if(m_relative != relative)
 	{
@@ -208,7 +208,7 @@ float SequenceEntry::getVolumeMaximum()
 
 void SequenceEntry::setVolumeMaximum(float volume)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_volume_max = volume;
 	m_status++;
@@ -221,7 +221,7 @@ float SequenceEntry::getVolumeMinimum()
 
 void SequenceEntry::setVolumeMinimum(float volume)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_volume_min = volume;
 	m_status++;
@@ -234,7 +234,7 @@ float SequenceEntry::getDistanceMaximum()
 
 void SequenceEntry::setDistanceMaximum(float distance)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_distance_max = distance;
 	m_status++;
@@ -247,7 +247,7 @@ float SequenceEntry::getDistanceReference()
 
 void SequenceEntry::setDistanceReference(float distance)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_distance_reference = distance;
 	m_status++;
@@ -260,7 +260,7 @@ float SequenceEntry::getAttenuation()
 
 void SequenceEntry::setAttenuation(float factor)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_attenuation = factor;
 	m_status++;
@@ -273,7 +273,7 @@ float SequenceEntry::getConeAngleOuter()
 
 void SequenceEntry::setConeAngleOuter(float angle)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_cone_angle_outer = angle;
 	m_status++;
@@ -286,7 +286,7 @@ float SequenceEntry::getConeAngleInner()
 
 void SequenceEntry::setConeAngleInner(float angle)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_cone_angle_inner = angle;
 	m_status++;
@@ -299,7 +299,7 @@ float SequenceEntry::getConeVolumeOuter()
 
 void SequenceEntry::setConeVolumeOuter(float volume)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_cone_volume_outer = volume;
 	m_status++;

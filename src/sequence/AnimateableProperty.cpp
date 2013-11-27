@@ -15,10 +15,10 @@
  ******************************************************************************/
 
 #include "sequence/AnimateableProperty.h"
-#include "util/MutexLock.h"
 
 #include <cstring>
 #include <cmath>
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -62,7 +62,7 @@ void AnimateableProperty::unlock()
 
 void AnimateableProperty::write(const float* data)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_isAnimated = false;
 	m_unknown.clear();
@@ -71,7 +71,7 @@ void AnimateableProperty::write(const float* data)
 
 void AnimateableProperty::write(const float* data, int position, int count)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	int pos = getSize() / (sizeof(float) * m_count);
 
@@ -159,7 +159,7 @@ void AnimateableProperty::write(const float* data, int position, int count)
 
 void AnimateableProperty::read(float position, float* out)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	if(!m_isAnimated)
 	{

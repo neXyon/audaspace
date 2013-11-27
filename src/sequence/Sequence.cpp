@@ -17,7 +17,6 @@
 #include "sequence/Sequence.h"
 #include "sequence/SequenceReader.h"
 #include "util/Math3D.h"
-#include "util/MutexLock.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -17,8 +17,9 @@
 #include "sequence/SequenceData.h"
 #include "sequence/SequenceReader.h"
 #include "util/Math3D.h"
-#include "util/MutexLock.h"
 #include "sequence/SequenceEntry.h"
+
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -66,7 +67,7 @@ void SequenceData::unlock()
 
 void SequenceData::setSpecs(Specs specs)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_specs = specs;
 	m_status++;
@@ -74,14 +75,14 @@ void SequenceData::setSpecs(Specs specs)
 
 void SequenceData::setFPS(float fps)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_fps = fps;
 }
 
 void SequenceData::mute(bool muted)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_muted = muted;
 }
@@ -98,7 +99,7 @@ float SequenceData::getSpeedOfSound() const
 
 void SequenceData::setSpeedOfSound(float speed)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_speed_of_sound = speed;
 	m_status++;
@@ -111,7 +112,7 @@ float SequenceData::getDopplerFactor() const
 
 void SequenceData::setDopplerFactor(float factor)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_doppler_factor = factor;
 	m_status++;
@@ -124,7 +125,7 @@ DistanceModel SequenceData::getDistanceModel() const
 
 void SequenceData::setDistanceModel(DistanceModel model)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_distance_model = model;
 	m_status++;
@@ -147,7 +148,7 @@ AnimateableProperty* SequenceData::getAnimProperty(AnimateablePropertyType type)
 
 std::shared_ptr<SequenceEntry> SequenceData::add(std::shared_ptr<ISound> sound, float begin, float end, float skip)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	std::shared_ptr<SequenceEntry> entry = std::shared_ptr<SequenceEntry>(new SequenceEntry(sound, begin, end, skip, m_id++));
 
@@ -159,7 +160,7 @@ std::shared_ptr<SequenceEntry> SequenceData::add(std::shared_ptr<ISound> sound, 
 
 void SequenceData::remove(std::shared_ptr<SequenceEntry> entry)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	m_entries.remove(entry);
 	m_entry_status++;

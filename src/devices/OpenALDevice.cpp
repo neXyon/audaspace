@@ -18,10 +18,10 @@
 #include "ISound.h"
 #include "IReader.h"
 #include "respec/ConverterReader.h"
-#include "util/MutexLock.h"
 
 #include <cstring>
 #include <limits>
+#include <mutex>
 
 #ifdef WIN32
 #include <windows.h>
@@ -58,7 +58,7 @@ bool OpenALDevice::OpenALHandle::pause(bool keep)
 {
 	if(m_status)
 	{
-		MutexLock lock(*m_device);
+		std::lock_guard<ILockable> lock(*m_device);
 
 		if(m_status == STATUS_PLAYING)
 		{
@@ -154,7 +154,7 @@ bool OpenALDevice::OpenALHandle::resume()
 {
 	if(m_status)
 	{
-		MutexLock lock(*m_device);
+		std::lock_guard<ILockable> lock(*m_device);
 
 		if(m_status == STATUS_PAUSED)
 		{
@@ -184,7 +184,7 @@ bool OpenALDevice::OpenALHandle::stop()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -232,7 +232,7 @@ bool OpenALDevice::OpenALHandle::setKeep(bool keep)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -247,7 +247,7 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -319,7 +319,7 @@ float OpenALDevice::OpenALHandle::getPosition()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return 0.0f;
@@ -350,7 +350,7 @@ float OpenALDevice::OpenALHandle::getVolume()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -365,7 +365,7 @@ bool OpenALDevice::OpenALHandle::setVolume(float volume)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -382,7 +382,7 @@ float OpenALDevice::OpenALHandle::getPitch()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -397,7 +397,7 @@ bool OpenALDevice::OpenALHandle::setPitch(float pitch)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -432,7 +432,7 @@ bool OpenALDevice::OpenALHandle::setStopCallback(stopCallback callback, void* da
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -454,7 +454,7 @@ Vector3 OpenALDevice::OpenALHandle::getSourceLocation()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -472,7 +472,7 @@ bool OpenALDevice::OpenALHandle::setSourceLocation(const Vector3& location)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -489,7 +489,7 @@ Vector3 OpenALDevice::OpenALHandle::getSourceVelocity()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -507,7 +507,7 @@ bool OpenALDevice::OpenALHandle::setSourceVelocity(const Vector3& velocity)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -535,7 +535,7 @@ bool OpenALDevice::OpenALHandle::setSourceOrientation(const Quaternion& orientat
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -554,7 +554,7 @@ bool OpenALDevice::OpenALHandle::isRelative()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -569,7 +569,7 @@ bool OpenALDevice::OpenALHandle::setRelative(bool relative)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -586,7 +586,7 @@ float OpenALDevice::OpenALHandle::getVolumeMaximum()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -601,7 +601,7 @@ bool OpenALDevice::OpenALHandle::setVolumeMaximum(float volume)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -618,7 +618,7 @@ float OpenALDevice::OpenALHandle::getVolumeMinimum()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -633,7 +633,7 @@ bool OpenALDevice::OpenALHandle::setVolumeMinimum(float volume)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -650,7 +650,7 @@ float OpenALDevice::OpenALHandle::getDistanceMaximum()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -665,7 +665,7 @@ bool OpenALDevice::OpenALHandle::setDistanceMaximum(float distance)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -682,7 +682,7 @@ float OpenALDevice::OpenALHandle::getDistanceReference()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -697,7 +697,7 @@ bool OpenALDevice::OpenALHandle::setDistanceReference(float distance)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -714,7 +714,7 @@ float OpenALDevice::OpenALHandle::getAttenuation()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -729,7 +729,7 @@ bool OpenALDevice::OpenALHandle::setAttenuation(float factor)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -746,7 +746,7 @@ float OpenALDevice::OpenALHandle::getConeAngleOuter()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -761,7 +761,7 @@ bool OpenALDevice::OpenALHandle::setConeAngleOuter(float angle)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -778,7 +778,7 @@ float OpenALDevice::OpenALHandle::getConeAngleInner()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -793,7 +793,7 @@ bool OpenALDevice::OpenALHandle::setConeAngleInner(float angle)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -810,7 +810,7 @@ float OpenALDevice::OpenALHandle::getConeVolumeOuter()
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return result;
@@ -825,7 +825,7 @@ bool OpenALDevice::OpenALHandle::setConeVolumeOuter(float volume)
 	if(!m_status)
 		return false;
 
-	MutexLock lock(*m_device);
+	std::lock_guard<ILockable> lock(*m_device);
 
 	if(!m_status)
 		return false;
@@ -848,7 +848,7 @@ static void *openalRunThread(void *device)
 
 void OpenALDevice::start(bool join)
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	if(!m_playing)
 	{
@@ -1250,7 +1250,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<IReader> reader, boo
 	if(!getFormat(format, specs))
 		return std::shared_ptr<IHandle>();
 
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	alcSuspendContext(m_context);
 
@@ -1356,7 +1356,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> factory, boo
 
 void OpenALDevice::stopAll()
 {
-	MutexLock lock(*this);
+	std::lock_guard<ILockable> lock(*this);
 
 	alcSuspendContext(m_context);
 
