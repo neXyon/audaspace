@@ -15,13 +15,19 @@
  ******************************************************************************/
 
 #include <iostream>
-#include <thread>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 
 #include "devices/OpenALDevice.h"
 #include "file/File.h"
 
 using namespace aud;
+
+void quitMain(std::condition_variable* condition)
+{
+	condition->notify_all();
+}
 
 int main(int argc, char* argv[])
 {
@@ -46,21 +52,24 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
+	std::condition_variable condition;
+	std::mutex mutex;
+	std::unique_lock<std::mutex> lock(mutex);
+
 	specs.specs = reader->getSpecs();
 
 	OpenALDevice device(specs);
+
+	device.lock();
+
 	auto handle = device.play(reader);
-
+	handle->setStopCallback(stopCallback(quitMain), &condition);
 	auto duration = std::chrono::seconds(reader->getLength()) / specs.rate;
+	std::cout << "Estimated duration: " << duration.count() << " seconds" << std::endl;
 
-	std::cout << "Duration: " << duration.count() << " seconds" << std::endl;
+	device.unlock();
 
-	std::this_thread::sleep_for(duration);
-
-	while(handle->getStatus() == STATUS_PLAYING)
-	{
-		std::this_thread::yield();
-	}
+	condition.wait(lock);
 
 	return 0;
 }
