@@ -41,13 +41,6 @@ include_directories(
 	${FFMPEG_INCLUDE_DIRS}
 	${PYTHON_INCLUDE_DIRS}
 	include
-	include/fx
-	include/util
-	include/respec
-	include/devices
-	include/generator
-	include/file
-	include/sequence
 )
 
 link_directories(
@@ -67,7 +60,7 @@ ADD_DEFINITIONS(-std=c++11)
 
 # library
 
-add_library(audaspace ${SRC} ${HDR})
+add_library(audaspace SHARED ${SRC} ${HDR})
 
 target_link_libraries(audaspace
 	${SDL_LIBRARY}
@@ -75,7 +68,6 @@ target_link_libraries(audaspace
 	${LIBSNDFILE_LIBRARIES}
 	${JACK_LIBRARIES}
 	${FFMPEG_LIBRARIES}
-	${PYTHON_LIBRARIES}
 )
 
 # demos
@@ -84,7 +76,11 @@ add_executable(audaplay demos/audaplay.cpp)
 
 target_link_libraries(audaplay
 	audaspace
-#	${OPENAL_LIBRARY}
-#	${LIBSNDFILE_LIBRARIES}
-#	${FFMPEG_LIBRARIES}
+)
+
+add_executable(python bindings/python/PyAPI.cpp bindings/python/PyAPI.h bindings/python/PyInit.h)
+
+target_link_libraries(python
+	audaspace
+	${PYTHON_LIBRARIES}
 )

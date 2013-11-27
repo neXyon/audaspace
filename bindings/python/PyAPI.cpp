@@ -17,38 +17,29 @@
 #include "PyAPI.h"
 #include <structmember.h>
 
-#include "I3DDevice.h"
-#include "I3DHandle.h"
-#include "NULLDevice.h"
-#include "Delay.h"
-#include "Double.h"
-#include "Fader.h"
-#include "Highpass.h"
-#include "Limiter.h"
-#include "Loop.h"
-#include "Lowpass.h"
-#include "PingPong.h"
-#include "Pitch.h"
-#include "Reverse.h"
-#include "Sinus.h"
-#include "File.h"
-#include "Square.h"
-#include "StreamBuffer.h"
-#include "Superpose.h"
-#include "Volume.h"
-#include "IIRFilter.h"
-
-#ifdef WITH_SDL
-#include "SDLDevice.h"
-#endif
-
-#ifdef WITH_OPENAL
-#include "OpenALDevice.h"
-#endif
-
-#ifdef WITH_JACK
-#include "JackDevice.h"
-#endif
+#include "devices/I3DDevice.h"
+#include "devices/I3DHandle.h"
+#include "devices/NULLDevice.h"
+#include "fx/Delay.h"
+#include "fx/Double.h"
+#include "fx/Fader.h"
+#include "fx/Highpass.h"
+#include "fx/Limiter.h"
+#include "fx/Loop.h"
+#include "fx/Lowpass.h"
+#include "fx/PingPong.h"
+#include "fx/Pitch.h"
+#include "fx/Reverse.h"
+#include "generator/Sinus.h"
+#include "file/File.h"
+#include "fx/Square.h"
+#include "util/StreamBuffer.h"
+#include "fx/Superpose.h"
+#include "fx/Volume.h"
+#include "fx/IIRFilter.h"
+#include "devices/SDLDevice.h"
+#include "devices/OpenALDevice.h"
+#include "devices/JackDevice.h"
 
 using namespace aud;
 
@@ -2139,19 +2130,13 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 				self->device = new std::shared_ptr<IDevice>(new NULLDevice());
 				break;
 			case DEVICE_OPENAL:
-#ifdef WITH_OPENAL
 				self->device = new std::shared_ptr<IDevice>(new OpenALDevice(specs, buffersize));
-#endif
 				break;
 			case DEVICE_SDL:
-#ifdef WITH_SDL
 				self->device = new std::shared_ptr<IDevice>(new SDLDevice(specs, buffersize));
-#endif
 				break;
 			case DEVICE_JACK:
-#ifdef WITH_JACK
 				self->device = new std::shared_ptr<IDevice>(new JackDevice(name, specs, buffersize));
-#endif
 				break;
 			case DEVICE_READ:
 				break;
@@ -2908,4 +2893,9 @@ PyInit_aud(void)
 	PY_MODULE_ADD_CONSTANT(m, DISTANCE_MODEL_INVALID);
 
 	return m;
+}
+
+int main()
+{
+	return 0;
 }
