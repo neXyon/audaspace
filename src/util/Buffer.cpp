@@ -15,19 +15,19 @@
  ******************************************************************************/
 
 #include "util/Buffer.h"
-#include "Audaspace.h"
 
 #include <cstring>
 #include <cstdlib>
 
-#define ALIGN(a) (a + 16 - ((long)a & 15))
+#define ALIGNMENT 32
+#define ALIGN(a) (a + ALIGNMENT - ((long long)a & (ALIGNMENT-1)))
 
 AUD_NAMESPACE_BEGIN
 
 Buffer::Buffer(int size)
 {
 	m_size = size;
-	m_buffer = (data_t*) malloc(size+16);
+	m_buffer = (data_t*) malloc(size + ALIGNMENT);
 }
 
 Buffer::~Buffer()
@@ -49,7 +49,7 @@ void Buffer::resize(int size, bool keep)
 {
 	if(keep)
 	{
-		data_t* buffer = (data_t*) malloc(size + 16);
+		data_t* buffer = (data_t*) malloc(size + ALIGNMENT);
 
 		memcpy(ALIGN(buffer), ALIGN(m_buffer), AUD_MIN(size, m_size));
 
@@ -57,7 +57,7 @@ void Buffer::resize(int size, bool keep)
 		m_buffer = buffer;
 	}
 	else
-		m_buffer = (data_t*) realloc(m_buffer, size + 16);
+		m_buffer = (data_t*) realloc(m_buffer, size + ALIGNMENT);
 
 	m_size = size;
 }

@@ -17,11 +17,12 @@
 #pragma once
 
 #include "ISound.h"
-#include "util/Buffer.h"
 
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
+
+class Buffer;
 
 /**
  * This factory creates a buffer out of a reader. This way normally streamed
@@ -40,9 +41,9 @@ private:
 	 */
 	Specs m_specs;
 
-	// hide copy constructor and operator=
-	StreamBuffer(const StreamBuffer&);
-	StreamBuffer& operator=(const StreamBuffer&);
+	// delete constructor and operator=
+	StreamBuffer(const StreamBuffer&) = delete;
+	StreamBuffer& operator=(const StreamBuffer&) = delete;
 
 public:
 	/**

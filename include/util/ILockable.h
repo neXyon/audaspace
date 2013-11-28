@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "Audaspace.h"
+
 AUD_NAMESPACE_BEGIN
 
 /**

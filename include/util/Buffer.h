@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This class is a simple buffer in RAM which is 16 Byte aligned and provides
+ * This class is a simple buffer in RAM which is 32 Byte aligned and provides
  * resize functionality.
  */
 class Buffer
@@ -33,9 +33,9 @@ private:
 	/// The pointer to the buffer memory.
 	data_t* m_buffer;
 
-	// hide copy constructor and operator=
-	Buffer(const Buffer&);
-	Buffer& operator=(const Buffer&);
+	// delete copy constructor and operator=
+	Buffer(const Buffer&) = delete;
+	Buffer& operator=(const Buffer&) = delete;
 
 public:
 	/**

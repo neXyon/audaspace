@@ -24,11 +24,6 @@
 
 using namespace aud;
 
-void quitMain(std::condition_variable* condition)
-{
-	condition->notify_all();
-}
-
 int main(int argc, char* argv[])
 {
 	if(argc != 2)
@@ -60,13 +55,14 @@ int main(int argc, char* argv[])
 
 	OpenALDevice device(specs);
 
-	device.lock();
-
-	auto handle = device.play(reader);
-	handle->setStopCallback(stopCallback(quitMain), &condition);
 	auto duration = std::chrono::seconds(reader->getLength()) / specs.rate;
 	std::cout << "Estimated duration: " << duration.count() << " seconds" << std::endl;
 
+	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all();};
+
+	device.lock();
+	auto handle = device.play(reader);
+	handle->setStopCallback(release, &condition);
 	device.unlock();
 
 	condition.wait(lock);

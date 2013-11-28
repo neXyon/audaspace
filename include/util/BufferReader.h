@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include <memory>
 #include "IReader.h"
+
+#include <memory>
 
 AUD_NAMESPACE_BEGIN
 
@@ -25,8 +26,8 @@ class Buffer;
 
 /**
  * This class represents a simple reader from a buffer that exists in memory.
- * \warning Notice that the buffer used for creating the reader must exist as
- *          long as the reader exists.
+ * \warning Notice that the buffer is not multi-threading ready, so changing the
+ *          buffer while the reader is reading is potentially dangerous.
  */
 class BufferReader : public IReader
 {
@@ -46,9 +47,9 @@ private:
 	 */
 	Specs m_specs;
 
-	// hide copy constructor and operator=
-	BufferReader(const BufferReader&);
-	BufferReader& operator=(const BufferReader&);
+	// delete constructor and operator=
+	BufferReader(const BufferReader&) = delete;
+	BufferReader& operator=(const BufferReader&) = delete;
 
 public:
 	/**

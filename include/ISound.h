@@ -17,11 +17,12 @@
 #pragma once
 
 #include "Audaspace.h"
-#include "IReader.h"
 
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
+
+class IReader;
 
 /**
  * This class represents a type of sound source and saves the necessary values

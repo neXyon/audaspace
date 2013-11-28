@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "Audaspace.h"
+
 #include <cmath>
 #include <cstring>
 
