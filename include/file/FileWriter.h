@@ -32,9 +32,9 @@ class FileWriter
 {
 private:
 	// hide default constructor, copy constructor and operator=
-	FileWriter();
-	FileWriter(const FileWriter&);
-	FileWriter& operator=(const FileWriter&);
+	FileWriter() = delete;
+	FileWriter(const FileWriter&) = delete;
+	FileWriter& operator=(const FileWriter&) = delete;
 
 public:
 	/**

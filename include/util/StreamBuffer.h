@@ -41,7 +41,7 @@ private:
 	 */
 	Specs m_specs;
 
-	// delete constructor and operator=
+	// delete copy constructor and operator=
 	StreamBuffer(const StreamBuffer&) = delete;
 	StreamBuffer& operator=(const StreamBuffer&) = delete;
 

@@ -39,7 +39,9 @@ private:
 	/// Saves the data for playback.
 	class OpenALHandle : public IHandle, public I3DHandle
 	{
-	public:
+	private:
+		friend class OpenALDevice;
+
 		static const int CYCLE_BUFFERS = 3;
 
 		/// Whether it's a buffered or a streamed source.
@@ -85,6 +87,10 @@ private:
 		OpenALDevice* m_device;
 
 		bool pause(bool keep);
+
+		// delete copy constructor and operator=
+		OpenALHandle(const OpenALHandle&) = delete;
+		OpenALHandle& operator=(const OpenALHandle&) = delete;
 
 	public:
 
@@ -219,9 +225,9 @@ private:
 	 */
 	bool getFormat(ALenum &format, Specs specs);
 
-	// hide copy constructor and operator=
-	OpenALDevice(const OpenALDevice&);
-	OpenALDevice& operator=(const OpenALDevice&);
+	// delete copy constructor and operator=
+	OpenALDevice(const OpenALDevice&) = delete;
+	OpenALDevice& operator=(const OpenALDevice&) = delete;
 
 public:
 	/**

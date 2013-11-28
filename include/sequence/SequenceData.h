@@ -76,9 +76,9 @@ private:
 	/// The mutex for locking.
 	pthread_mutex_t m_mutex;
 
-	// hide copy constructor and operator=
-	SequenceData(const SequenceData&);
-	SequenceData& operator=(const SequenceData&);
+	// delete copy constructor and operator=
+	SequenceData(const SequenceData&) = delete;
+	SequenceData& operator=(const SequenceData&) = delete;
 
 public:
 	/**

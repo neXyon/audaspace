@@ -84,9 +84,9 @@ private:
 	 */
 	double m_last_factor;
 
-	// hide copy constructor and operator=
-	JOSResampleReader(const JOSResampleReader&);
-	JOSResampleReader& operator=(const JOSResampleReader&);
+	// delete copy constructor and operator=
+	JOSResampleReader(const JOSResampleReader&) = delete;
+	JOSResampleReader& operator=(const JOSResampleReader&) = delete;
 
 	/**
 	 * Resets the resampler to its initial state.

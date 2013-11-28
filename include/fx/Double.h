@@ -36,9 +36,9 @@ private:
 	 */
 	std::shared_ptr<ISound> m_factory2;
 
-	// hide copy constructor and operator=
-	Double(const Double&);
-	Double& operator=(const Double&);
+	// delete copy constructor and operator=
+	Double(const Double&) = delete;
+	Double& operator=(const Double&) = delete;
 
 public:
 	/**

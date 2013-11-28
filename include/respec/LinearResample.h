@@ -26,9 +26,9 @@ AUD_NAMESPACE_BEGIN
 class LinearResample : public SpecsChanger
 {
 private:
-	// hide copy constructor and operator=
-	LinearResample(const LinearResample&);
-	LinearResample& operator=(const LinearResample&);
+	// delete copy constructor and operator=
+	LinearResample(const LinearResample&) = delete;
+	LinearResample& operator=(const LinearResample&) = delete;
 
 public:
 	/**

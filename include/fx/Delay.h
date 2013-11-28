@@ -31,9 +31,9 @@ private:
 	 */
 	const float m_delay;
 
-	// hide copy constructor and operator=
-	Delay(const Delay&);
-	Delay& operator=(const Delay&);
+	// delete copy constructor and operator=
+	Delay(const Delay&) = delete;
+	Delay& operator=(const Delay&) = delete;
 
 public:
 	/**

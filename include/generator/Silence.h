@@ -26,9 +26,9 @@ AUD_NAMESPACE_BEGIN
 class Silence : public ISound
 {
 private:
-	// hide copy constructor and operator=
-	Silence(const Silence&);
-	Silence& operator=(const Silence&);
+	// delete copy constructor and operator=
+	Silence(const Silence&) = delete;
+	Silence& operator=(const Silence&) = delete;
 
 public:
 	/**

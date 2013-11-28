@@ -28,9 +28,9 @@ class CallbackIIRFilterReader;
 class Rectify : public Effect
 {
 private:
-	// hide copy constructor and operator=
-	Rectify(const Rectify&);
-	Rectify& operator=(const Rectify&);
+	// delete copy constructor and operator=
+	Rectify(const Rectify&) = delete;
+	Rectify& operator=(const Rectify&) = delete;
 
 public:
 	/**

@@ -49,9 +49,9 @@ private:
 	 */
 	const float m_arthreshold;
 
-	// hide copy constructor and operator=
-	Envelope(const Envelope&);
-	Envelope& operator=(const Envelope&);
+	// delete copy constructor and operator=
+	Envelope(const Envelope&) = delete;
+	Envelope& operator=(const Envelope&) = delete;
 
 public:
 	/**

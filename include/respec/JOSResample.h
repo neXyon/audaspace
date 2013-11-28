@@ -26,9 +26,9 @@ AUD_NAMESPACE_BEGIN
 class JOSResample : public SpecsChanger
 {
 private:
-	// hide copy constructor and operator=
-	JOSResample(const JOSResample&);
-	JOSResample& operator=(const JOSResample&);
+	// delete copy constructor and operator=
+	JOSResample(const JOSResample&) = delete;
+	JOSResample& operator=(const JOSResample&) = delete;
 
 public:
 	/**

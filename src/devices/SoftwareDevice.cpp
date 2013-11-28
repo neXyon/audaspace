@@ -828,6 +828,10 @@ void SoftwareDevice::setSpecs(Specs specs)
 	}
 }
 
+SoftwareDevice::SoftwareDevice()
+{
+}
+
 DeviceSpecs SoftwareDevice::getSpecs() const
 {
 	return m_specs;

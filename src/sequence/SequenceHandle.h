@@ -51,6 +51,10 @@ private:
 	/// The read device this handle is played on.
 	ReadDevice& m_device;
 
+	// delete copy constructor and operator=
+	SequenceHandle(const SequenceHandle&) = delete;
+	SequenceHandle& operator=(const SequenceHandle&) = delete;
+
 public:
 	/**
 	 * Creates a new sequenced handle.

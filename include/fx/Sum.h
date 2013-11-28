@@ -26,9 +26,9 @@ AUD_NAMESPACE_BEGIN
 class Sum : public Effect
 {
 private:
-	// hide copy constructor and operator=
-	Sum(const Sum&);
-	Sum& operator=(const Sum&);
+	// delete copy constructor and operator=
+	Sum(const Sum&) = delete;
+	Sum& operator=(const Sum&) = delete;
 
 public:
 	/**

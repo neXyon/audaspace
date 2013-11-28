@@ -42,9 +42,9 @@ private:
 	 */
 	std::shared_ptr<Buffer> m_buffer;
 
-	// hide copy constructor and operator=
-	FFMPEG(const FFMPEG&);
-	FFMPEG& operator=(const FFMPEG&);
+	// delete copy constructor and operator=
+	FFMPEG(const FFMPEG&) = delete;
+	FFMPEG& operator=(const FFMPEG&) = delete;
 
 public:
 	/**

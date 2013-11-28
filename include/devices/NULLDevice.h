@@ -30,6 +30,11 @@ class NULLDevice : public IDevice
 private:
 	class NULLHandle : public IHandle
 	{
+	private:
+		// delete copy constructor and operator=
+		NULLHandle(const NULLHandle&) = delete;
+		NULLHandle& operator=(const NULLHandle&) = delete;
+
 	public:
 
 		NULLHandle();
@@ -51,6 +56,11 @@ private:
 		virtual bool setLoopCount(int count);
 		virtual bool setStopCallback(stopCallback callback = 0, void* data = 0);
 	};
+
+	// delete copy constructor and operator=
+	NULLDevice(const NULLDevice&) = delete;
+	NULLDevice& operator=(const NULLDevice&) = delete;
+
 public:
 	/**
 	 * Creates a new NULL device.

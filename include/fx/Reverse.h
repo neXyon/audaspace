@@ -27,9 +27,9 @@ AUD_NAMESPACE_BEGIN
 class Reverse : public Effect
 {
 private:
-	// hide copy constructor and operator=
-	Reverse(const Reverse&);
-	Reverse& operator=(const Reverse&);
+	// delete copy constructor and operator=
+	Reverse(const Reverse&) = delete;
+	Reverse& operator=(const Reverse&) = delete;
 
 public:
 	/**

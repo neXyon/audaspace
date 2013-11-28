@@ -36,9 +36,9 @@ private:
 	 */
 	static void SDL_mix(void *data, Uint8* buffer, int length);
 
-	// hide copy constructor and operator=
-	SDLDevice(const SDLDevice&);
-	SDLDevice& operator=(const SDLDevice&);
+	// delete copy constructor and operator=
+	SDLDevice(const SDLDevice&) = delete;
+	SDLDevice& operator=(const SDLDevice&) = delete;
 
 protected:
 	virtual void playing(bool playing);
@@ -51,8 +51,7 @@ public:
 	 * \note The specification really used for opening the device may differ.
 	 * \exception Exception Thrown if the audio device cannot be opened.
 	 */
-	SDLDevice(DeviceSpecs specs,
-				  int buffersize = AUD_DEFAULT_BUFFER_SIZE);
+	SDLDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE);
 
 	/**
 	 * Closes the SDL audio device.

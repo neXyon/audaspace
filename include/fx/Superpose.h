@@ -38,9 +38,9 @@ private:
 	 */
 	std::shared_ptr<ISound> m_factory2;
 
-	// hide copy constructor and operator=
-	Superpose(const Superpose&);
-	Superpose& operator=(const Superpose&);
+	// delete copy constructor and operator=
+	Superpose(const Superpose&) = delete;
+	Superpose& operator=(const Superpose&) = delete;
 
 public:
 	/**

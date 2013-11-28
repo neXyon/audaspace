@@ -79,9 +79,9 @@ private:
 	static sf_count_t vio_read(void *ptr, sf_count_t count, void *user_data);
 	static sf_count_t vio_tell(void *user_data);
 
-	// hide copy constructor and operator=
-	SndFileReader(const SndFileReader&);
-	SndFileReader& operator=(const SndFileReader&);
+	// delete copy constructor and operator=
+	SndFileReader(const SndFileReader&) = delete;
+	SndFileReader& operator=(const SndFileReader&) = delete;
 
 public:
 	/**

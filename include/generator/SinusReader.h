@@ -43,9 +43,9 @@ private:
 	 */
 	const SampleRate m_sampleRate;
 
-	// hide copy constructor and operator=
-	SinusReader(const SinusReader&);
-	SinusReader& operator=(const SinusReader&);
+	// delete copy constructor and operator=
+	SinusReader(const SinusReader&) = delete;
+	SinusReader& operator=(const SinusReader&) = delete;
 
 public:
 	/**

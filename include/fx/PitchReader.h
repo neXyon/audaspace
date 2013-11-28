@@ -31,9 +31,9 @@ private:
 	 */
 	float m_pitch;
 
-	// hide copy constructor and operator=
-	PitchReader(const PitchReader&);
-	PitchReader& operator=(const PitchReader&);
+	// delete copy constructor and operator=
+	PitchReader(const PitchReader&) = delete;
+	PitchReader& operator=(const PitchReader&) = delete;
 
 public:
 	/**

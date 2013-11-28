@@ -71,9 +71,9 @@ private:
 	 */
 	Buffer m_buffer;
 
-	// hide copy constructor and operator=
-	ADSRReader(const ADSRReader&);
-	ADSRReader& operator=(const ADSRReader&);
+	// delete copy constructor and operator=
+	ADSRReader(const ADSRReader&) = delete;
+	ADSRReader& operator=(const ADSRReader&) = delete;
 
 	void nextState(ADSRState state);
 

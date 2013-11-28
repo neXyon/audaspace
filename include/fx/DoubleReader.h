@@ -44,9 +44,9 @@ private:
 	 */
 	bool m_finished1;
 
-	// hide copy constructor and operator=
-	DoubleReader(const DoubleReader&);
-	DoubleReader& operator=(const DoubleReader&);
+	// delete copy constructor and operator=
+	DoubleReader(const DoubleReader&) = delete;
+	DoubleReader& operator=(const DoubleReader&) = delete;
 
 public:
 	/**

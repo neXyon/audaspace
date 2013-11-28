@@ -78,9 +78,9 @@ private:
 	static const float SURROUND71_ANGLES[];
 	static const float* CHANNEL_ANGLES[];
 
-	// hide copy constructor and operator=
-	ChannelMapperReader(const ChannelMapperReader&);
-	ChannelMapperReader& operator=(const ChannelMapperReader&);
+	// delete copy constructor and operator=
+	ChannelMapperReader(const ChannelMapperReader&) = delete;
+	ChannelMapperReader& operator=(const ChannelMapperReader&) = delete;
 
 	/**
 	 * Calculates the mapping matrix.

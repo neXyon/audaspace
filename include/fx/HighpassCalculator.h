@@ -33,6 +33,10 @@ private:
 	 */
 	const float m_Q;
 
+	// delete copy constructor and operator=
+	HighpassCalculator(const HighpassCalculator&) = delete;
+	HighpassCalculator& operator=(const HighpassCalculator&) = delete;
+
 public:
 	HighpassCalculator(float frequency, float Q);
 

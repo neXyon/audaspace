@@ -28,6 +28,10 @@ private:
 	 */
 	const float m_frequency;
 
+	// delete copy constructor and operator=
+	ButterworthCalculator(const ButterworthCalculator&) = delete;
+	ButterworthCalculator& operator=(const ButterworthCalculator&) = delete;
+
 public:
 	ButterworthCalculator(float frequency);
 

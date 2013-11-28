@@ -26,9 +26,9 @@ AUD_NAMESPACE_BEGIN
 class Butterworth : public DynamicIIRFilter
 {
 private:
-	// hide copy constructor and operator=
-	Butterworth(const Butterworth&);
-	Butterworth& operator=(const Butterworth&);
+	// delete copy constructor and operator=
+	Butterworth(const Butterworth&) = delete;
+	Butterworth& operator=(const Butterworth&) = delete;
 
 public:
 	/**

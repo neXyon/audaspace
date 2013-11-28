@@ -129,8 +129,11 @@ protected:
 
 		bool pause(bool keep);
 
-	public:
+		// delete copy constructor and operator=
+		SoftwareHandle(const SoftwareHandle&) = delete;
+		SoftwareHandle& operator=(const SoftwareHandle&) = delete;
 
+	public:
 		/**
 		 * Creates a new software handle.
 		 * \param device The device this handle is from.
@@ -240,6 +243,12 @@ protected:
 	 */
 	void setSpecs(Specs specs);
 
+	/**
+	 * Empty default constructor. To setup the device call the function create()
+	 * and to uninitialize call destroy().
+	 */
+	SoftwareDevice();
+
 private:
 	/**
 	 * The reading buffer.
@@ -291,6 +300,10 @@ private:
 
 	/// Rendering flags
 	int m_flags;
+
+	// delete copy constructor and operator=
+	SoftwareDevice(const SoftwareDevice&) = delete;
+	SoftwareDevice& operator=(const SoftwareDevice&) = delete;
 
 public:
 

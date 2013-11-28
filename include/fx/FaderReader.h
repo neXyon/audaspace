@@ -44,9 +44,9 @@ private:
 	 */
 	const float m_length;
 
-	// hide copy constructor and operator=
-	FaderReader(const FaderReader&);
-	FaderReader& operator=(const FaderReader&);
+	// delete copy constructor and operator=
+	FaderReader(const FaderReader&) = delete;
+	FaderReader& operator=(const FaderReader&) = delete;
 
 public:
 	/**

@@ -26,9 +26,9 @@ AUD_NAMESPACE_BEGIN
 class Highpass : public DynamicIIRFilter
 {
 private:
-	// hide copy constructor and operator=
-	Highpass(const Highpass&);
-	Highpass& operator=(const Highpass&);
+	// delete copy constructor and operator=
+	Highpass(const Highpass&) = delete;
+	Highpass& operator=(const Highpass&) = delete;
 
 public:
 	/**

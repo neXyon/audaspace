@@ -43,9 +43,9 @@ private:
 	 */
 	const float m_length;
 
-	// hide copy constructor and operator=
-	Fader(const Fader&);
-	Fader& operator=(const Fader&);
+	// delete copy constructor and operator=
+	Fader(const Fader&) = delete;
+	Fader& operator=(const Fader&) = delete;
 
 public:
 	/**

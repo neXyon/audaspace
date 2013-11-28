@@ -67,9 +67,9 @@ private:
 	 */
 	int m_channel;
 
-	// hide copy constructor and operator=
-	BaseIIRFilterReader(const BaseIIRFilterReader&);
-	BaseIIRFilterReader& operator=(const BaseIIRFilterReader&);
+	// delete copy constructor and operator=
+	BaseIIRFilterReader(const BaseIIRFilterReader&) = delete;
+	BaseIIRFilterReader& operator=(const BaseIIRFilterReader&) = delete;
 
 protected:
 	/**

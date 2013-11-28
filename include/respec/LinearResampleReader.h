@@ -52,9 +52,9 @@ private:
 	 */
 	bool m_cache_ok;
 
-	// hide copy constructor and operator=
-	LinearResampleReader(const LinearResampleReader&);
-	LinearResampleReader& operator=(const LinearResampleReader&);
+	// delete copy constructor and operator=
+	LinearResampleReader(const LinearResampleReader&) = delete;
+	LinearResampleReader& operator=(const LinearResampleReader&) = delete;
 
 public:
 	/**

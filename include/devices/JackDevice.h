@@ -128,9 +128,9 @@ private:
 	 */
 	void updateRingBuffers();
 
-	// hide copy constructor and operator=
-	JackDevice(const JackDevice&);
-	JackDevice& operator=(const JackDevice&);
+	// delete copy constructor and operator=
+	JackDevice(const JackDevice&) = delete;
+	JackDevice& operator=(const JackDevice&) = delete;
 
 protected:
 	virtual void playing(bool playing);

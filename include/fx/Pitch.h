@@ -31,9 +31,9 @@ private:
 	 */
 	const float m_pitch;
 
-	// hide copy constructor and operator=
-	Pitch(const Pitch&);
-	Pitch& operator=(const Pitch&);
+	// delete copy constructor and operator=
+	Pitch(const Pitch&) = delete;
+	Pitch& operator=(const Pitch&) = delete;
 
 public:
 	/**

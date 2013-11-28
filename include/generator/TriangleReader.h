@@ -62,9 +62,9 @@ private:
 	 */
 	const SampleRate m_sampleRate;
 
-	// hide copy constructor and operator=
-	TriangleReader(const TriangleReader&);
-	TriangleReader& operator=(const TriangleReader&);
+	// delete copy constructor and operator=
+	TriangleReader(const TriangleReader&) = delete;
+	TriangleReader& operator=(const TriangleReader&) = delete;
 
 public:
 	/**

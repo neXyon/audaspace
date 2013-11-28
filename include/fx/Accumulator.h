@@ -37,9 +37,9 @@ private:
 	 */
 	const bool m_additive;
 
-	// hide copy constructor and operator=
-	Accumulator(const Accumulator&);
-	Accumulator& operator=(const Accumulator&);
+	// delete copy constructor and operator=
+	Accumulator(const Accumulator&) = delete;
+	Accumulator& operator=(const Accumulator&) = delete;
 
 public:
 	/**

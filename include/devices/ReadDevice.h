@@ -31,9 +31,9 @@ private:
 	 */
 	bool m_playing;
 
-	// hide copy constructor and operator=
-	ReadDevice(const ReadDevice&);
-	ReadDevice& operator=(const ReadDevice&);
+	// delete copy constructor and operator=
+	ReadDevice(const ReadDevice&) = delete;
+	ReadDevice& operator=(const ReadDevice&) = delete;
 
 protected:
 	virtual void playing(bool playing);

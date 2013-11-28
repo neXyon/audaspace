@@ -38,9 +38,9 @@ private:
 	/// The sequence.
 	std::shared_ptr<SequenceData> m_sequence;
 
-	// hide copy constructor and operator=
-	Sequence(const Sequence&);
-	Sequence& operator=(const Sequence&);
+	// delete copy constructor and operator=
+	Sequence(const Sequence&) = delete;
+	Sequence& operator=(const Sequence&) = delete;
 
 public:
 	/**

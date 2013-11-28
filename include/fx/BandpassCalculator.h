@@ -22,8 +22,13 @@ AUD_NAMESPACE_BEGIN
 
 class BandpassCalculator
 {
+private:
+	// delete copy constructor and operator=
+	BandpassCalculator(const BandpassCalculator&) = delete;
+	BandpassCalculator& operator=(const BandpassCalculator&) = delete;
+
 public:
-  BandpassCalculator();
+	BandpassCalculator();
 };
 
 AUD_NAMESPACE_END

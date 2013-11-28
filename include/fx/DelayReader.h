@@ -37,9 +37,9 @@ private:
 	 */
 	int m_remdelay;
 
-	// hide copy constructor and operator=
-	DelayReader(const DelayReader&);
-	DelayReader& operator=(const DelayReader&);
+	// delete copy constructor and operator=
+	DelayReader(const DelayReader&) = delete;
+	DelayReader& operator=(const DelayReader&) = delete;
 
 public:
 	/**

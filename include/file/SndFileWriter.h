@@ -44,9 +44,9 @@ private:
 	 */
 	SNDFILE* m_sndfile;
 
-	// hide copy constructor and operator=
-	SndFileWriter(const SndFileWriter&);
-	SndFileWriter& operator=(const SndFileWriter&);
+	// delete copy constructor and operator=
+	SndFileWriter(const SndFileWriter&) = delete;
+	SndFileWriter& operator=(const SndFileWriter&) = delete;
 
 public:
 	/**

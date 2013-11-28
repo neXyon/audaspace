@@ -27,9 +27,9 @@ AUD_NAMESPACE_BEGIN
 class Converter : public SpecsChanger
 {
 private:
-	// hide copy constructor and operator=
-	Converter(const Converter&);
-	Converter& operator=(const Converter&);
+	// delete copy constructor and operator=
+	Converter(const Converter&) = delete;
+	Converter& operator=(const Converter&) = delete;
 
 public:
 	/**

@@ -38,9 +38,9 @@ private:
 	 */
 	int m_left;
 
-	// hide copy constructor and operator=
-	LoopReader(const LoopReader&);
-	LoopReader& operator=(const LoopReader&);
+	// delete copy constructor and operator=
+	LoopReader(const LoopReader&) = delete;
+	LoopReader& operator=(const LoopReader&) = delete;
 
 public:
 	/**

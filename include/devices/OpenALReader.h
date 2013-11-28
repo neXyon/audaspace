@@ -55,9 +55,9 @@ private:
 	 */
 	ALCdevice* m_device;
 
-	// hide copy constructor and operator=
-	OpenALReader(const OpenALReader&);
-	OpenALReader& operator=(const OpenALReader&);
+	// delete copy constructor and operator=
+	OpenALReader(const OpenALReader&) = delete;
+	OpenALReader& operator=(const OpenALReader&) = delete;
 
 public:
 	/**

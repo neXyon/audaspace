@@ -52,6 +52,10 @@ protected:
 	 */
 	convert_f m_convert;
 
+	// delete copy constructor and operator=
+	Mixer(const Mixer&) = delete;
+	Mixer& operator=(const Mixer&) = delete;
+
 public:
 	/**
 	 * Creates the mixer.

@@ -44,9 +44,9 @@ private:
 	 */
 	Buffer m_buffer;
 
-	// hide copy constructor and operator=
-	SuperposeReader(const SuperposeReader&);
-	SuperposeReader& operator=(const SuperposeReader&);
+	// delete copy constructor and operator=
+	SuperposeReader(const SuperposeReader&) = delete;
+	SuperposeReader& operator=(const SuperposeReader&) = delete;
 
 public:
 	/**

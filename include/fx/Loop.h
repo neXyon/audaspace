@@ -32,9 +32,9 @@ private:
 	 */
 	const int m_loop;
 
-	// hide copy constructor and operator=
-	Loop(const Loop&);
-	Loop& operator=(const Loop&);
+	// delete copy constructor and operator=
+	Loop(const Loop&) = delete;
+	Loop& operator=(const Loop&) = delete;
 
 public:
 	/**

@@ -27,9 +27,9 @@ AUD_NAMESPACE_BEGIN
 class ChannelMapper : public SpecsChanger
 {
 private:
-	// hide copy constructor and operator=
-	ChannelMapper(const ChannelMapper&);
-	ChannelMapper& operator=(const ChannelMapper&);
+	// delete copy constructor and operator=
+	ChannelMapper(const ChannelMapper&) = delete;
+	ChannelMapper& operator=(const ChannelMapper&) = delete;
 
 public:
 	/**

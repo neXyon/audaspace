@@ -33,9 +33,9 @@ private:
 	 */
 	const float m_volume;
 
-	// hide copy constructor and operator=
-	Volume(const Volume&);
-	Volume& operator=(const Volume&);
+	// delete copy constructor and operator=
+	Volume(const Volume&) = delete;
+	Volume& operator=(const Volume&) = delete;
 
 public:
 	/**

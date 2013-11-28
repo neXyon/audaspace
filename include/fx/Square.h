@@ -33,9 +33,9 @@ private:
 	 */
 	const float m_threshold;
 
-	// hide copy constructor and operator=
-	Square(const Square&);
-	Square& operator=(const Square&);
+	// delete copy constructor and operator=
+	Square(const Square&) = delete;
+	Square& operator=(const Square&) = delete;
 
 public:
 	/**

@@ -27,9 +27,9 @@ AUD_NAMESPACE_BEGIN
 class PingPong : public Effect
 {
 private:
-	// hide copy constructor and operator=
-	PingPong(const PingPong&);
-	PingPong& operator=(const PingPong&);
+	// delete copy constructor and operator=
+	PingPong(const PingPong&) = delete;
+	PingPong& operator=(const PingPong&) = delete;
 
 public:
 	/**

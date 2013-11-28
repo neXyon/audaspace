@@ -60,9 +60,9 @@ private:
 	 */
 	int m_entry_status;
 
-	// hide copy constructor and operator=
-	SequenceReader(const SequenceReader&);
-	SequenceReader& operator=(const SequenceReader&);
+	// delete copy constructor and operator=
+	SequenceReader(const SequenceReader&) = delete;
+	SequenceReader& operator=(const SequenceReader&) = delete;
 
 public:
 	/**

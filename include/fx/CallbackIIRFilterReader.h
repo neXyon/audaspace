@@ -48,9 +48,9 @@ private:
 	 */
 	void* m_data;
 
-	// hide copy constructor and operator=
-	CallbackIIRFilterReader(const CallbackIIRFilterReader&);
-	CallbackIIRFilterReader& operator=(const CallbackIIRFilterReader&);
+	// delete copy constructor and operator=
+	CallbackIIRFilterReader(const CallbackIIRFilterReader&) = delete;
+	CallbackIIRFilterReader& operator=(const CallbackIIRFilterReader&) = delete;
 
 public:
 	/**

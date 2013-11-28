@@ -38,9 +38,9 @@ private:
 	 */
 	int m_position;
 
-	// hide copy constructor and operator=
-	ReverseReader(const ReverseReader&);
-	ReverseReader& operator=(const ReverseReader&);
+	// delete copy constructor and operator=
+	ReverseReader(const ReverseReader&) = delete;
+	ReverseReader& operator=(const ReverseReader&) = delete;
 
 public:
 	/**

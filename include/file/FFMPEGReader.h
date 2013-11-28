@@ -122,9 +122,9 @@ private:
 	 */
 	void init();
 
-	// hide copy constructor and operator=
-	FFMPEGReader(const FFMPEGReader&);
-	FFMPEGReader& operator=(const FFMPEGReader&);
+	// delete copy constructor and operator=
+	FFMPEGReader(const FFMPEGReader&) = delete;
+	FFMPEGReader& operator=(const FFMPEGReader&) = delete;
 
 public:
 	/**

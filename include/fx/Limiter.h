@@ -36,9 +36,9 @@ private:
 	 */
 	const float m_end;
 
-	// hide copy constructor and operator=
-	Limiter(const Limiter&);
-	Limiter& operator=(const Limiter&);
+	// delete copy constructor and operator=
+	Limiter(const Limiter&) = delete;
+	Limiter& operator=(const Limiter&) = delete;
 
 public:
 	/**

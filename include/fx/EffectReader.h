@@ -29,9 +29,9 @@ AUD_NAMESPACE_BEGIN
 class EffectReader : public IReader
 {
 private:
-	// hide copy constructor and operator=
-	EffectReader(const EffectReader&);
-	EffectReader& operator=(const EffectReader&);
+	// delete copy constructor and operator=
+	EffectReader(const EffectReader&) = delete;
+	EffectReader& operator=(const EffectReader&) = delete;
 
 protected:
 	/**

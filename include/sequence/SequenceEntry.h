@@ -104,6 +104,10 @@ private:
 	/// The animated orientation.
 	AnimateableProperty m_orientation;
 
+	// delete copy constructor and operator=
+	SequenceEntry(const SequenceEntry&) = delete;
+	SequenceEntry& operator=(const SequenceEntry&) = delete;
+
 public:
 	/**
 	 * Creates a new sequenced entry.

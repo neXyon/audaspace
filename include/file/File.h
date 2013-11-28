@@ -40,9 +40,9 @@ private:
 	 */
 	std::shared_ptr<Buffer> m_buffer;
 
-	// hide copy constructor and operator=
-	File(const File&);
-	File& operator=(const File&);
+	// delete copy constructor and operator=
+	File(const File&) = delete;
+	File& operator=(const File&) = delete;
 
 public:
 	/**

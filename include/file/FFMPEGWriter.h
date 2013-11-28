@@ -90,9 +90,9 @@ private:
 	 */
 	convert_f m_convert;
 
-	// hide copy constructor and operator=
-	FFMPEGWriter(const FFMPEGWriter&);
-	FFMPEGWriter& operator=(const FFMPEGWriter&);
+	// delete copy constructor and operator=
+	FFMPEGWriter(const FFMPEGWriter&) = delete;
+	FFMPEGWriter& operator=(const FFMPEGWriter&) = delete;
 
 	/**
 	 * Encodes to the output buffer.

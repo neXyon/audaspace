@@ -47,7 +47,7 @@ private:
 	 */
 	Specs m_specs;
 
-	// delete constructor and operator=
+	// delete copy constructor and operator=
 	BufferReader(const BufferReader&) = delete;
 	BufferReader& operator=(const BufferReader&) = delete;
 

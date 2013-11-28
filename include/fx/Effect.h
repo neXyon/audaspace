@@ -27,9 +27,9 @@ AUD_NAMESPACE_BEGIN
 class Effect : public ISound
 {
 private:
-	// hide copy constructor and operator=
-	Effect(const Effect&);
-	Effect& operator=(const Effect&);
+	// delete copy constructor and operator=
+	Effect(const Effect&) = delete;
+	Effect& operator=(const Effect&) = delete;
 
 protected:
 	/**

@@ -33,9 +33,9 @@ private:
 	 */
 	int m_position;
 
-	// hide copy constructor and operator=
-	SilenceReader(const SilenceReader&);
-	SilenceReader& operator=(const SilenceReader&);
+	// delete copy constructor and operator=
+	SilenceReader(const SilenceReader&) = delete;
+	SilenceReader& operator=(const SilenceReader&) = delete;
 
 public:
 	/**

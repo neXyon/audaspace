@@ -39,9 +39,9 @@ private:
 	 */
 	std::vector<float> m_b;
 
-	// hide copy constructor and operator=
-	IIRFilter(const IIRFilter&);
-	IIRFilter& operator=(const IIRFilter&);
+	// delete copy constructor and operator=
+	IIRFilter(const IIRFilter&) = delete;
+	IIRFilter& operator=(const IIRFilter&) = delete;
 
 public:
 	/**

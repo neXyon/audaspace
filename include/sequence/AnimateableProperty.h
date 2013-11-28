@@ -50,9 +50,9 @@ private:
 	/// The list of unknown buffer areas.
 	std::list<Unknown> m_unknown;
 
-	// hide copy constructor and operator=
-	AnimateableProperty(const AnimateableProperty&);
-	AnimateableProperty& operator=(const AnimateableProperty&);
+	// delete copy constructor and operator=
+	AnimateableProperty(const AnimateableProperty&) = delete;
+	AnimateableProperty& operator=(const AnimateableProperty&) = delete;
 
 	void updateUnknownCache(int start, int end);
 

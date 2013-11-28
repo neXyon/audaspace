@@ -43,9 +43,9 @@ private:
 	 */
 	convert_f m_convert;
 
-	// hide copy constructor and operator=
-	ConverterReader(const ConverterReader&);
-	ConverterReader& operator=(const ConverterReader&);
+	// delete copy constructor and operator=
+	ConverterReader(const ConverterReader&) = delete;
+	ConverterReader& operator=(const ConverterReader&) = delete;
 
 public:
 	/**
