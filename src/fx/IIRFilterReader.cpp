@@ -18,9 +18,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-IIRFilterReader::IIRFilterReader(std::shared_ptr<IReader> reader,
-										 const std::vector<float>& b,
-										 const std::vector<float>& a) :
+IIRFilterReader::IIRFilterReader(std::shared_ptr<IReader> reader, const std::vector<float>& b, const std::vector<float>& a) :
 	BaseIIRFilterReader(reader, b.size(), a.size()), m_a(a), m_b(b)
 {
 	if(m_a.empty() == false)
@@ -45,8 +43,7 @@ sample_t IIRFilterReader::filter()
 	return out;
 }
 
-void IIRFilterReader::setCoefficients(const std::vector<float>& b,
-										  const std::vector<float>& a)
+void IIRFilterReader::setCoefficients(const std::vector<float>& b, const std::vector<float>& a)
 {
 	setLengths(b.size(), a.size());
 	m_a = a;

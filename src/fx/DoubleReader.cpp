@@ -20,9 +20,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-DoubleReader::DoubleReader(std::shared_ptr<IReader> reader1,
-								   std::shared_ptr<IReader> reader2) :
-		m_reader1(reader1), m_reader2(reader2), m_finished1(false)
+DoubleReader::DoubleReader(std::shared_ptr<IReader> reader1, std::shared_ptr<IReader> reader2) :
+	m_reader1(reader1), m_reader2(reader2), m_finished1(false)
 {
 	Specs s1, s2;
 	s1 = reader1->getSpecs();

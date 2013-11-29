@@ -17,7 +17,6 @@
 #pragma once
 
 #include "ISound.h"
-//#include "ILockable.h"
 
 #include <list>
 #include <pthread.h>
@@ -31,7 +30,7 @@ class AnimateableProperty;
 /**
  * This sound represents sequenced entries to play a sound scene.
  */
-class Sequence : public ISound//, public ILockable
+class Sequence : public ISound
 {
 	friend class SequenceReader;
 private:
@@ -50,18 +49,6 @@ public:
 	 * \param muted Whether the whole scene is muted.
 	 */
 	Sequence(Specs specs, float fps, bool muted);
-
-#if 0 // AUD_XXX
-	/**
-	 * Locks the sound.
-	 */
-	virtual void lock();
-
-	/**
-	 * Unlocks the previously locked sound.
-	 */
-	virtual void unlock();
-#endif
 
 	/**
 	 * Sets the audio output specification.

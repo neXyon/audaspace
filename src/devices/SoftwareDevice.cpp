@@ -27,10 +27,6 @@
 #include <limits>
 #include <mutex>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 AUD_NAMESPACE_BEGIN
 
 typedef enum

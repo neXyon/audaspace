@@ -21,9 +21,9 @@
 AUD_NAMESPACE_BEGIN
 
 DelayReader::DelayReader(std::shared_ptr<IReader> reader, float delay) :
-		EffectReader(reader),
-		m_delay(int((SampleRate)delay * reader->getSpecs().rate)),
-		m_remdelay(int((SampleRate)delay * reader->getSpecs().rate))
+	EffectReader(reader),
+	m_delay(int((SampleRate)delay * reader->getSpecs().rate)),
+	m_remdelay(int((SampleRate)delay * reader->getSpecs().rate))
 {
 }
 

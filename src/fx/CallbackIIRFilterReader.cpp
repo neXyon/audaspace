@@ -18,11 +18,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-CallbackIIRFilterReader::CallbackIIRFilterReader(std::shared_ptr<IReader> reader,
-														 int in, int out,
-														 doFilterIIR doFilter,
-														 endFilterIIR endFilter,
-														 void* data) :
+CallbackIIRFilterReader::CallbackIIRFilterReader(std::shared_ptr<IReader> reader, int in, int out, doFilterIIR doFilter, endFilterIIR endFilter, void* data) :
 	BaseIIRFilterReader(reader, in, out),
 	m_filter(doFilter), m_endFilter(endFilter), m_data(data)
 {

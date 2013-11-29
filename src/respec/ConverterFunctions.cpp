@@ -16,6 +16,8 @@
 
 #include "respec/ConverterFunctions.h"
 
+#include <stdint.h>
+
 #define U8_0		0x80
 #define S16_MAX		((int16_t)0x7FFF)
 #define S16_MIN		((int16_t)0x8000)

@@ -16,7 +16,6 @@
 
 #pragma once
 
-#ifdef WITH_PYTHON
 #include "Python.h"
 
 #ifdef __cplusplus
@@ -30,6 +29,4 @@ extern PyObject *AUD_initPython(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

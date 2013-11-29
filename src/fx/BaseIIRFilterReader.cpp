@@ -20,12 +20,11 @@
 
 AUD_NAMESPACE_BEGIN
 
-BaseIIRFilterReader::BaseIIRFilterReader(std::shared_ptr<IReader> reader, int in,
-												 int out) :
-		EffectReader(reader),
-		m_specs(reader->getSpecs()),
-		m_xlen(in), m_ylen(out),
-		m_xpos(0), m_ypos(0), m_channel(0)
+BaseIIRFilterReader::BaseIIRFilterReader(std::shared_ptr<IReader> reader, int in, int out) :
+	EffectReader(reader),
+	m_specs(reader->getSpecs()),
+	m_xlen(in), m_ylen(out),
+	m_xpos(0), m_ypos(0), m_channel(0)
 {
 	m_x = new sample_t[m_xlen * m_specs.channels];
 	m_y = new sample_t[m_ylen * m_specs.channels];

@@ -16,11 +16,6 @@
 
 #pragma once
 
-// needed for INT64_C
-#ifndef __STDC_CONSTANT_MACROS
-#define __STDC_CONSTANT_MACROS
-#endif
-
 #include "respec/ConverterFunctions.h"
 #include "IReader.h"
 #include "util/Buffer.h"

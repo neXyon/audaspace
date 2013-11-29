@@ -43,9 +43,7 @@ void Envelope::endEnvelopeFilter(EnvelopeParameters* param)
 	delete param;
 }
 
-Envelope::Envelope(std::shared_ptr<ISound> sound, float attack,
-										 float release, float threshold,
-										 float arthreshold) :
+Envelope::Envelope(std::shared_ptr<ISound> sound, float attack, float release, float threshold, float arthreshold) :
 		Effect(sound),
 		m_attack(attack),
 		m_release(release),

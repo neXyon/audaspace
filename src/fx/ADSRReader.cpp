@@ -19,8 +19,8 @@
 AUD_NAMESPACE_BEGIN
 
 ADSRReader::ADSRReader(std::shared_ptr<IReader> reader, float attack, float decay, float sustain, float release) :
-		EffectReader(reader),
-		m_attack(attack), m_decay(decay), m_sustain(sustain), m_release(release)
+	EffectReader(reader),
+	m_attack(attack), m_decay(decay), m_sustain(sustain), m_release(release)
 {
 	nextState(ADSR_STATE_ATTACK);
 }

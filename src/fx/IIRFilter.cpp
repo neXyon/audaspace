@@ -20,7 +20,7 @@
 AUD_NAMESPACE_BEGIN
 
 IIRFilter::IIRFilter(std::shared_ptr<ISound> sound, std::vector<float> b,  std::vector<float> a) :
-		Effect(sound), m_a(a), m_b(b)
+	Effect(sound), m_a(a), m_b(b)
 {
 }
 

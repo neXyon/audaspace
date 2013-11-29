@@ -20,8 +20,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-FaderReader::FaderReader(std::shared_ptr<IReader> reader, FadeType type,
-								 float start,float length) :
+FaderReader::FaderReader(std::shared_ptr<IReader> reader, FadeType type, float start,float length) :
 		EffectReader(reader),
 		m_type(type),
 		m_start(start),

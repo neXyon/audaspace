@@ -25,16 +25,6 @@ Sequence::Sequence(Specs specs, float fps, bool muted)
 	m_sequence = std::shared_ptr<SequenceData>(new SequenceData(specs, fps, muted));
 }
 
-/*void Sequence::lock()
-{
-	pthread_mutex_lock(&m_mutex);
-}
-
-void Sequence::unlock()
-{
-	pthread_mutex_unlock(&m_mutex);
-}*/
-
 void Sequence::setSpecs(Specs specs)
 {
 	m_sequence->setSpecs(specs);

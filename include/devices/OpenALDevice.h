@@ -176,11 +176,6 @@ private:
 	std::list<std::shared_ptr<OpenALHandle> > m_pausedSounds;
 
 	/**
-	 * The list of buffered factories.
-	 */
-	//std::list<OpenALBuffered*>* m_bufferedFactories;
-
-	/**
 	 * The mutex for locking.
 	 */
 	pthread_mutex_t m_mutex;

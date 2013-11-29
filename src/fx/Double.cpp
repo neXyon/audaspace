@@ -20,7 +20,7 @@
 AUD_NAMESPACE_BEGIN
 
 Double::Double(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2) :
-		m_sound1(sound1), m_sound2(sound2)
+	m_sound1(sound1), m_sound2(sound2)
 {
 }
 

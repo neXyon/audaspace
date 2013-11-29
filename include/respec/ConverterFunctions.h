@@ -19,17 +19,6 @@
 #include "Audaspace.h"
 
 #include <cstring>
-#ifdef _MSC_VER
-#if (_MSC_VER < 1300)
-   typedef short             int16_t;
-   typedef int               int32_t;
-#else
-   typedef __int16           int16_t;
-   typedef __int32           int32_t;
-#endif
-#else
-#include <stdint.h>
-#endif
 
 AUD_NAMESPACE_BEGIN
 
