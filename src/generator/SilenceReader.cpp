@@ -55,7 +55,7 @@ Specs SilenceReader::getSpecs() const
 
 void SilenceReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	memset(buffer, 0, length * sizeof(sample_t));
+	std::memset(buffer, 0, length * sizeof(sample_t));
 	m_position += length;
 	eos = false;
 }

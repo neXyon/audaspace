@@ -21,6 +21,7 @@
 
 #include "devices/OpenALDevice.h"
 #include "file/File.h"
+#include "IReader.h"
 
 using namespace aud;
 

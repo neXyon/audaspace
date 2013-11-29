@@ -15,13 +15,11 @@
  ******************************************************************************/
 
 #include "fx/Lowpass.h"
-#include "fx/IIRFilterReader.h"
 #include "fx/LowpassCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 
-Lowpass::Lowpass(std::shared_ptr<ISound> factory, float frequency,
-									   float Q) :
+Lowpass::Lowpass(std::shared_ptr<ISound> factory, float frequency, float Q) :
 		DynamicIIRFilter(factory, std::shared_ptr<IDynamicIIRFilterCalculator>(new LowpassCalculator(frequency, Q)))
 {
 }

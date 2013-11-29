@@ -16,11 +16,8 @@
 
 #include "respec/JOSResampleReader.h"
 
-//#include "JOSResampleReaderCoeff.cpp"
-
 #include <cmath>
 #include <cstring>
-#include <iostream>
 
 /* MSVC does not have lrint */
 #ifdef _MSC_VER
@@ -80,9 +77,9 @@ void JOSResampleReader::updateBuffer(int size, double factor, int samplesize)
 	double num_samples = double(m_len) / double(m_L);
 	// first calculate what length we need right now
 	if(factor >= 1)
-		len = ceil(num_samples);
+		len = std::ceil(num_samples);
 	else
-		len = (unsigned int)(ceil(num_samples / factor));
+		len = (unsigned int)(std::ceil(num_samples / factor));
 
 	// then check if afterwards the length is enough for the maximum rate
 	if(len + size < num_samples * RATE_MAX)
@@ -92,7 +89,7 @@ void JOSResampleReader::updateBuffer(int size, double factor, int samplesize)
 	{
 		sample_t* buf = m_buffer.getBuffer();
 		len = m_n - len;
-		memmove(buf, buf + len * m_channels, (m_cache_valid - len) * samplesize);
+		std::memmove(buf, buf + len * m_channels, (m_cache_valid - len) * samplesize);
 		m_n -= len;
 		m_cache_valid -= len;
 	}
@@ -119,13 +116,13 @@ void JOSResampleReader::updateBuffer(int size, double factor, int samplesize)
 	{\
 		factor = (m_last_factor * (length - t - 1) + target_factor * (t + 1)) / length;\
 \
-		memset(sums, 0, sizeof(double) * m_channels);\
+		std::memset(sums, 0, sizeof(double) * m_channels);\
 \
 		if(factor >= 1)\
 		{\
 			P = double_to_fp(m_P * m_L);\
 \
-			end = floor(m_len / double(m_L) - m_P) - 1;\
+			end = std::floor(m_len / double(m_L) - m_P) - 1;\
 			if(m_n < end)\
 				end = m_n;\
 \
@@ -143,7 +140,7 @@ void JOSResampleReader::updateBuffer(int size, double factor, int samplesize)
 \
 			P = int_to_fp(m_L) - P;\
 \
-			end = floor((m_len - 1) / double(m_L) + m_P) - 1;\
+			end = std::floor((m_len - 1) / double(m_L) + m_P) - 1;\
 			if(m_cache_valid - m_n - 2 < end)\
 				end = m_cache_valid - m_n - 2;\
 \
@@ -209,13 +206,13 @@ void JOSResampleReader::updateBuffer(int size, double factor, int samplesize)
 \
 			for(channel = 0; channel < m_channels; channel++)\
 			{\
-								*buffer = factor * sums[channel];\
+				*buffer = factor * sums[channel];\
 				buffer++;\
 			}\
 		}\
 \
-		m_P += fmod(1.0 / factor, 1.0);\
-		m_n += floor(1.0 / factor);\
+		m_P += std::fmod(1.0 / factor, 1.0);\
+		m_n += std::floor(1.0 / factor);\
 \
 		while(m_P >= 1.0)\
 		{\
@@ -272,13 +269,12 @@ void JOSResampleReader::seek(int position)
 
 int JOSResampleReader::getLength() const
 {
-	return floor(m_reader->getLength() * double(m_rate) / double(m_reader->getSpecs().rate));
+	return std::floor(m_reader->getLength() * double(m_rate) / double(m_reader->getSpecs().rate));
 }
 
 int JOSResampleReader::getPosition() const
 {
-	return floor((m_reader->getPosition() + double(m_P))
-				 * m_rate / m_reader->getSpecs().rate);
+	return std::floor((m_reader->getPosition() + double(m_P)) * m_rate / m_reader->getSpecs().rate);
 }
 
 Specs JOSResampleReader::getSpecs() const
@@ -340,7 +336,7 @@ void JOSResampleReader::read(int& length, bool& eos, sample_t* buffer)
 
 		if(length > 0)
 		{
-			memcpy(buffer, buf + m_n * m_channels, length * samplesize);
+			std::memcpy(buffer, buf + m_n * m_channels, length * samplesize);
 			m_n += length;
 		}
 
@@ -376,17 +372,17 @@ void JOSResampleReader::read(int& length, bool& eos, sample_t* buffer)
 				if(eos)
 				{
 					// end of stream, let's check how many more samples we can produce
-					len = floor((m_cache_valid - m_n) * factor);
+					len = std::floor((m_cache_valid - m_n) * factor);
 					if(len < length)
 						length = len;
 				}
 				else
 				{
-					// not enough data available yet, so we recalculate how many samples we can calculate
+					// not enough data available yet, so we recalculate how 				many samples we can calculate
 					if(factor >= 1)
-						len = floor((num_samples + m_cache_valid - m_n) * factor);
+						len = std::floor((num_samples + m_cache_valid - m_n) * factor);
 					else
-						len = floor((num_samples * factor + m_cache_valid - m_n) * factor);
+						len = std::floor((num_samples * factor + m_cache_valid - m_n) * factor);
 					if(len < length)
 						length = len;
 				}

@@ -17,9 +17,10 @@
 #pragma once
 
 #include "fx/IIRFilterReader.h"
-#include "fx/IDynamicIIRFilterCalculator.h"
 
 AUD_NAMESPACE_BEGIN
+
+class IDynamicIIRFilterCalculator;
 
 /**
  * This class is for dynamic infinite impulse response filters with simple

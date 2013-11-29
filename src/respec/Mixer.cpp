@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include "respec/Mixer.h"
-#include "IReader.h"
 
 #include <cstring>
 
@@ -70,7 +69,7 @@ void Mixer::clear(int length)
 
 	m_length = length;
 
-	memset(m_buffer.getBuffer(), 0, length * m_specs.channels * AUD_SAMPLE_SIZE(m_specs));
+	std::memset(m_buffer.getBuffer(), 0, length * m_specs.channels * AUD_SAMPLE_SIZE(m_specs));
 }
 
 void Mixer::mix(sample_t* buffer, int start, int length, float volume)

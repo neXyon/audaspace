@@ -17,13 +17,14 @@
 #pragma once
 
 #include "IReader.h"
-#include "util/Buffer.h"
 
 #include <string>
 #include <sndfile.h>
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
+
+class Buffer;
 
 typedef sf_count_t (*sf_read_f)(SNDFILE *sndfile, void *ptr, sf_count_t frames);
 

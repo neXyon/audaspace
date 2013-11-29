@@ -17,7 +17,6 @@
 #include "sequence/SequenceEntry.h"
 #include "sequence/SequenceReader.h"
 
-#include <cmath>
 #include <limits>
 #include <mutex>
 

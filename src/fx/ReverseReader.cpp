@@ -73,18 +73,18 @@ void ReverseReader::read(int& length, bool& eos, sample_t* buffer)
 
 	// set null if reader didn't give enough data
 	if(len < length)
-		memset(buffer, 0, (length - len) * samplesize);
+		std::memset(buffer, 0, (length - len) * samplesize);
 
 	// copy the samples reverted
 	for(int i = 0; i < length / 2; i++)
 	{
-		memcpy(temp,
+		std::memcpy(temp,
 			   buffer + (len - 1 - i) * specs.channels,
 			   samplesize);
-		memcpy(buffer + (len - 1 - i) * specs.channels,
+		std::memcpy(buffer + (len - 1 - i) * specs.channels,
 			   buffer + i * specs.channels,
 			   samplesize);
-		memcpy(buffer + i * specs.channels,
+		std::memcpy(buffer + i * specs.channels,
 			   temp,
 			   samplesize);
 	}

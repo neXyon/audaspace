@@ -17,7 +17,6 @@
 #pragma once
 
 #include "IReader.h"
-#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -51,11 +50,6 @@ private:
 	 * Whether the wave goes up or down at the moment.
 	 */
 	bool m_up;
-
-	/**
-	 * The playback buffer.
-	 */
-	Buffer m_buffer;
 
 	/**
 	 * The sample rate for the output.

@@ -18,7 +18,6 @@
 
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 }
 
@@ -65,13 +64,13 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 				{
 					for(int i = 0; i < frame->nb_samples; i++)
 					{
-						memcpy(((data_t*)buffer.getBuffer()) + buf_pos + ((m_codecCtx->channels * i) + channel) * single_size,
+						std::memcpy(((data_t*)buffer.getBuffer()) + buf_pos + ((m_codecCtx->channels * i) + channel) * single_size,
 							   frame->data[channel] + i * single_size, single_size);
 					}
 				}
 			}
 			else
-				memcpy(((data_t*)buffer.getBuffer()) + buf_pos, frame->data[0], data_size);
+				std::memcpy(((data_t*)buffer.getBuffer()) + buf_pos, frame->data[0], data_size);
 
 			buf_pos += data_size;
 		}
@@ -248,7 +247,7 @@ int FFMPEGReader::read_packet(void* opaque, uint8_t* buf, int buf_size)
 	if(size < 0)
 		return -1;
 
-	memcpy(buf, ((data_t*)reader->m_membuffer->getBuffer()) + reader->m_membufferpos, size);
+	std::memcpy(buf, ((data_t*)reader->m_membuffer->getBuffer()) + reader->m_membufferpos, size);
 	reader->m_membufferpos += size;
 
 	return size;

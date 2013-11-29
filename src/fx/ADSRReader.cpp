@@ -71,23 +71,14 @@ void ADSRReader::nextState(ADSRState state)
 
 void ADSRReader::read(int & length, bool &eos, sample_t *buffer)
 {
-	sample_t* buf;
-
 	Specs specs = m_reader->getSpecs();
-	int samplesize = AUD_SAMPLE_SIZE(specs);
-
-	m_reader->read(length, eos, buf);
-
-	if(m_buffer.getSize() < length * samplesize)
-		m_buffer.resize(length * samplesize);
-
-	buffer = m_buffer.getBuffer();
+	m_reader->read(length, eos, buffer);
 
 	for(int i = 0; i < length; i++)
 	{
 		for(int channel = 0; channel < specs.channels; channel++)
 		{
-			buffer[i * specs.channels + channel] = buf[i * specs.channels + channel] * m_level;
+			buffer[i * specs.channels + channel] *= m_level;
 		}
 
 		switch(m_state)

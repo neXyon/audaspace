@@ -16,15 +16,15 @@
 
 #pragma once
 
-#include "Audaspace.h"
-#include "ISound.h"
-#include "IReader.h"
-#include "devices/IHandle.h"
 #include "util/ILockable.h"
 
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
+
+class IHandle;
+class IReader;
+class ISound;
 
 /**
  * This class represents an output device for sound sources.

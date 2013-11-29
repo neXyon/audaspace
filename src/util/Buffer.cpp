@@ -27,12 +27,12 @@ AUD_NAMESPACE_BEGIN
 Buffer::Buffer(int size)
 {
 	m_size = size;
-	m_buffer = (data_t*) malloc(size + ALIGNMENT);
+	m_buffer = (data_t*) std::malloc(size + ALIGNMENT);
 }
 
 Buffer::~Buffer()
 {
-	free(m_buffer);
+	std::free(m_buffer);
 }
 
 sample_t* Buffer::getBuffer() const
@@ -49,15 +49,15 @@ void Buffer::resize(int size, bool keep)
 {
 	if(keep)
 	{
-		data_t* buffer = (data_t*) malloc(size + ALIGNMENT);
+		data_t* buffer = (data_t*) std::malloc(size + ALIGNMENT);
 
-		memcpy(ALIGN(buffer), ALIGN(m_buffer), AUD_MIN(size, m_size));
+		std::memcpy(ALIGN(buffer), ALIGN(m_buffer), AUD_MIN(size, m_size));
 
-		free(m_buffer);
+		std::free(m_buffer);
 		m_buffer = buffer;
 	}
 	else
-		m_buffer = (data_t*) realloc(m_buffer, size + ALIGNMENT);
+		m_buffer = (data_t*) std::realloc(m_buffer, size + ALIGNMENT);
 
 	m_size = size;
 }

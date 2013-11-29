@@ -20,16 +20,17 @@
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"
 #include "devices/I3DHandle.h"
-#include "respec/Mixer.h"
 #include "util/Buffer.h"
-#include "fx/PitchReader.h"
-#include "respec/ResampleReader.h"
-#include "respec/ChannelMapperReader.h"
 
 #include <list>
 #include <pthread.h>
 
 AUD_NAMESPACE_BEGIN
+
+class Mixer;
+class PitchReader;
+class ResampleReader;
+class ChannelMapperReader;
 
 /**
  * This device plays is a generic device with software mixing.

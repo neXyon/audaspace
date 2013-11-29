@@ -16,7 +16,7 @@
 
 #include "fx/PingPong.h"
 #include "fx/DoubleReader.h"
-#include "fx/Reverse.h"
+#include "fx/ReverseReader.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -28,8 +28,7 @@ PingPong::PingPong(std::shared_ptr<ISound> factory) :
 std::shared_ptr<IReader> PingPong::createReader()
 {
 	std::shared_ptr<IReader> reader = getReader();
-	Reverse factory(m_factory);
-	std::shared_ptr<IReader> reader2 = factory.createReader();
+	std::shared_ptr<IReader> reader2 = std::shared_ptr<IReader>(new ReverseReader(getReader()));
 
 	return std::shared_ptr<IReader>(new DoubleReader(reader, reader2));
 }

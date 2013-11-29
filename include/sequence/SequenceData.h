@@ -17,15 +17,16 @@
 #pragma once
 
 #include "sequence/AnimateableProperty.h"
-#include "ISound.h"
 #include "util/ILockable.h"
 
 #include <list>
+#include <memory>
 #include <pthread.h>
 
 AUD_NAMESPACE_BEGIN
 
 class SequenceEntry;
+class ISound;
 
 /**
  * This class represents sequenced entries to play a sound scene.

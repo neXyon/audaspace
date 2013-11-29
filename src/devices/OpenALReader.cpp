@@ -17,6 +17,8 @@
 #include "devices/OpenALReader.h"
 #include "respec/ConverterFunctions.h"
 
+#include <AL/al.h>
+
 AUD_NAMESPACE_BEGIN
 
 static const char* open_error = "OpenALReader: Capture device couldn't be opened.";

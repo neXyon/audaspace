@@ -17,7 +17,6 @@
 #pragma once
 
 #include "fx/BaseIIRFilterReader.h"
-#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

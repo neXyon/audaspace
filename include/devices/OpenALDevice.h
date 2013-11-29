@@ -21,7 +21,6 @@
 #include "devices/I3DDevice.h"
 #include "devices/I3DHandle.h"
 #include "util/Buffer.h"
-//struct OpenALBuffered;
 
 #include <AL/al.h>
 #include <AL/alc.h>

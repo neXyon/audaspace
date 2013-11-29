@@ -16,7 +16,6 @@
 
 #include "fx/Delay.h"
 #include "fx/DelayReader.h"
-#include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN
 

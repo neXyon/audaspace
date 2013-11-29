@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 
 sample_t Rectify::rectifyFilter(CallbackIIRFilterReader* reader, void* useless)
 {
-	return fabs(reader->x(0));
+	return std::fabs(reader->x(0));
 }
 
 Rectify::Rectify(std::shared_ptr<ISound> factory) :

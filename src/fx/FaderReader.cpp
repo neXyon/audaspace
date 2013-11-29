@@ -41,14 +41,14 @@ void FaderReader::read(int& length, bool& eos, sample_t* buffer)
 	{
 		if(m_type != FADE_OUT)
 		{
-			memset(buffer, 0, length * samplesize);
+			std::memset(buffer, 0, length * samplesize);
 		}
 	}
 	else if(position / (float)specs.rate >= m_start+m_length)
 	{
 		if(m_type == FADE_OUT)
 		{
-			memset(buffer, 0, length * samplesize);
+			std::memset(buffer, 0, length * samplesize);
 		}
 	}
 	else

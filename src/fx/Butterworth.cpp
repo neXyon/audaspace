@@ -15,13 +15,11 @@
  ******************************************************************************/
 
 #include "fx/Butterworth.h"
-#include "fx/IIRFilterReader.h"
 #include "fx/ButterworthCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 
-Butterworth::Butterworth(std::shared_ptr<ISound> factory,
-											   float frequency) :
+Butterworth::Butterworth(std::shared_ptr<ISound> factory, float frequency) :
 		DynamicIIRFilter(factory, std::shared_ptr<IDynamicIIRFilterCalculator>(new ButterworthCalculator(frequency)))
 {
 }

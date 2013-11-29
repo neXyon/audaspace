@@ -25,7 +25,7 @@ AUD_NAMESPACE_BEGIN
 AnimateableProperty::AnimateableProperty(int count) :
 	Buffer(count * sizeof(float)), m_count(count), m_isAnimated(false)
 {
-	memset(getBuffer(), 0, count * sizeof(float));
+	std::memset(getBuffer(), 0, count * sizeof(float));
 
 	pthread_mutexattr_t attr;
 	pthread_mutexattr_init(&attr);
@@ -42,7 +42,7 @@ void AnimateableProperty::updateUnknownCache(int start, int end)
 
 	for(int i = start; i <= end; i++)
 		// TODO: maybe first instead of zero order interpolation?
-		memcpy(buf + i * m_count, buf + (start - 1) * m_count, m_count * sizeof(float));
+		std::memcpy(buf + i * m_count, buf + (start - 1) * m_count, m_count * sizeof(float));
 }
 
 AnimateableProperty::~AnimateableProperty()
@@ -66,7 +66,7 @@ void AnimateableProperty::write(const float* data)
 
 	m_isAnimated = false;
 	m_unknown.clear();
-	memcpy(getBuffer(), data, m_count * sizeof(float));
+	std::memcpy(getBuffer(), data, m_count * sizeof(float));
 }
 
 void AnimateableProperty::write(const float* data, int position, int count)
@@ -84,7 +84,7 @@ void AnimateableProperty::write(const float* data, int position, int count)
 
 	float* buf = getBuffer();
 
-	memcpy(buf + position * m_count, data, count * m_count * sizeof(float));
+	std::memcpy(buf + position * m_count, data, count * m_count * sizeof(float));
 
 	// have to fill up space between?
 	if(pos < position)
@@ -93,7 +93,7 @@ void AnimateableProperty::write(const float* data, int position, int count)
 
 		if(pos == 0)
 		{
-			memset(buf, 0, position * m_count * sizeof(float));
+			std::memset(buf, 0, position * m_count * sizeof(float));
 		}
 		else
 			updateUnknownCache(pos, position - 1);
@@ -163,12 +163,12 @@ void AnimateableProperty::read(float position, float* out)
 
 	if(!m_isAnimated)
 	{
-		memcpy(out, getBuffer(), m_count * sizeof(float));
+		std::memcpy(out, getBuffer(), m_count * sizeof(float));
 		return;
 	}
 
 	int last = getSize() / (sizeof(float) * m_count) - 1;
-	float t = position - floor(position);
+	float t = position - std::floor(position);
 
 	if(position >= last)
 	{
@@ -178,11 +178,11 @@ void AnimateableProperty::read(float position, float* out)
 
 	if(t == 0)
 	{
-		memcpy(out, getBuffer() + int(floor(position)) * m_count, m_count * sizeof(float));
+		std::memcpy(out, getBuffer() + int(std::floor(position)) * m_count, m_count * sizeof(float));
 	}
 	else
 	{
-		int pos = int(floor(position)) * m_count;
+		int pos = int(std::floor(position)) * m_count;
 		float t2 = t * t;
 		float t3 = t2 * t;
 		float m0, m1;

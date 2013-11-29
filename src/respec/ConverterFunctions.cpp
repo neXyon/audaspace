@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include "respec/ConverterFunctions.h"
-#include "util/Buffer.h"
 
 #define U8_0		0x80
 #define S16_MAX		((int16_t)0x7FFF)
@@ -162,7 +161,7 @@ void convert_s24_s16_le(data_t* target, data_t* source, int length)
 
 void convert_s24_s24(data_t* target, data_t* source, int length)
 {
-	memcpy(target, source, length * 3);
+	std::memcpy(target, source, length * 3);
 }
 
 void convert_s24_s32_be(data_t* target, data_t* source, int length)

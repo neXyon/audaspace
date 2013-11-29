@@ -18,11 +18,11 @@
 
 #include "IReader.h"
 #include "devices/ReadDevice.h"
-#include "sequence/SequenceData.h"
 
 AUD_NAMESPACE_BEGIN
 
 class SequenceHandle;
+class SequenceData;
 
 /**
  * This reader plays back sequenced entries.

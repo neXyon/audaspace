@@ -15,11 +15,12 @@
  ******************************************************************************/
 
 #include "devices/SoftwareDevice.h"
-#include "IReader.h"
 #include "respec/Mixer.h"
 #include "ISound.h"
 #include "respec/JOSResampleReader.h"
 #include "respec/LinearResampleReader.h"
+#include "fx/PitchReader.h"
+#include "respec/ChannelMapperReader.h"
 
 #include <cstring>
 #include <cmath>
@@ -175,7 +176,7 @@ void SoftwareDevice::SoftwareHandle::update()
 				if(m_distance_reference == 0)
 					m_volume = 0;
 				else
-					m_volume = pow(distance / m_distance_reference, -m_attenuation);
+					m_volume = std::pow(distance / m_distance_reference, -m_attenuation);
 				break;
 			default:
 				m_volume = 1.0f;
@@ -190,7 +191,7 @@ void SoftwareDevice::SoftwareHandle::update()
 		{
 			Vector3 SZ = m_orientation.getLookAt();
 
-			float phi = acos(float(SZ * SL / (SZ.length() * SL.length())));
+			float phi = std::acos(float(SZ * SL / (SZ.length() * SL.length())));
 			float t = (phi - m_cone_angle_inner)/(m_cone_angle_outer - m_cone_angle_inner);
 
 			if(t > 0)
@@ -227,7 +228,7 @@ void SoftwareDevice::SoftwareHandle::update()
 
 	if(Asquare > 0)
 	{
-		float phi = acos(float(Z * A / (Z.length() * sqrt(Asquare))));
+		float phi = std::acos(float(Z * A / (Z.length() * std::sqrt(Asquare))));
 		if(N.cross(Z) * A > 0)
 			phi = -phi;
 

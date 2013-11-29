@@ -18,6 +18,7 @@
 #include "file/SndFileWriter.h"
 #include "file/FileWriter.h"
 #include "util/Buffer.h"
+#include "IReader.h"
 
 AUD_NAMESPACE_BEGIN
 

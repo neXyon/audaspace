@@ -30,8 +30,8 @@ BaseIIRFilterReader::BaseIIRFilterReader(std::shared_ptr<IReader> reader, int in
 	m_x = new sample_t[m_xlen * m_specs.channels];
 	m_y = new sample_t[m_ylen * m_specs.channels];
 
-	memset(m_x, 0, sizeof(sample_t) * m_xlen * m_specs.channels);
-	memset(m_y, 0, sizeof(sample_t) * m_ylen * m_specs.channels);
+	std::memset(m_x, 0, sizeof(sample_t) * m_xlen * m_specs.channels);
+	std::memset(m_y, 0, sizeof(sample_t) * m_ylen * m_specs.channels);
 }
 
 BaseIIRFilterReader::~BaseIIRFilterReader()
@@ -45,7 +45,7 @@ void BaseIIRFilterReader::setLengths(int in, int out)
 	if(in != m_xlen)
 	{
 		sample_t* xn = new sample_t[in * m_specs.channels];
-		memset(xn, 0, sizeof(sample_t) * in * m_specs.channels);
+		std::memset(xn, 0, sizeof(sample_t) * in * m_specs.channels);
 
 		for(m_channel = 0; m_channel < m_specs.channels; m_channel++)
 		{
@@ -64,7 +64,7 @@ void BaseIIRFilterReader::setLengths(int in, int out)
 	if(out != m_ylen)
 	{
 		sample_t* yn = new sample_t[out * m_specs.channels];
-		memset(yn, 0, sizeof(sample_t) * out * m_specs.channels);
+		std::memset(yn, 0, sizeof(sample_t) * out * m_specs.channels);
 
 		for(m_channel = 0; m_channel < m_specs.channels; m_channel++)
 		{
@@ -94,8 +94,8 @@ void BaseIIRFilterReader::read(int& length, bool& eos, sample_t* buffer)
 		m_x = new sample_t[m_xlen * m_specs.channels];
 		m_y = new sample_t[m_ylen * m_specs.channels];
 
-		memset(m_x, 0, sizeof(sample_t) * m_xlen * m_specs.channels);
-		memset(m_y, 0, sizeof(sample_t) * m_ylen * m_specs.channels);
+		std::memset(m_x, 0, sizeof(sample_t) * m_xlen * m_specs.channels);
+		std::memset(m_y, 0, sizeof(sample_t) * m_ylen * m_specs.channels);
 	}
 
 	if(specs.rate != m_specs.rate)

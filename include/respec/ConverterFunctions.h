@@ -38,7 +38,7 @@ typedef void (*convert_f)(data_t* target, data_t* source, int length);
 template <class T>
 void convert_copy(data_t* target, data_t* source, int length)
 {
-	memcpy(target, source, length*sizeof(T));
+	std::memcpy(target, source, length*sizeof(T));
 }
 
 void convert_u8_s16(data_t* target, data_t* source, int length);

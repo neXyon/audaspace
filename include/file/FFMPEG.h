@@ -17,12 +17,13 @@
 #pragma once
 
 #include "ISound.h"
-#include "util/Buffer.h"
 
 #include <string>
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
+
+class Buffer;
 
 /**
  * This factory reads a sound file via ffmpeg.

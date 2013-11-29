@@ -16,7 +16,6 @@
 
 #include "generator/Sinus.h"
 #include "generator/SinusReader.h"
-#include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN
 

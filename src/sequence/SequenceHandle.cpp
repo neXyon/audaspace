@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "SequenceHandle.h"
+#include "sequence/SequenceEntry.h"
 #include "devices/ReadDevice.h"
 
 #include <mutex>

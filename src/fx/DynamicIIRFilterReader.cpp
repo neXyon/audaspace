@@ -15,11 +15,11 @@
  ******************************************************************************/
 
 #include "fx/DynamicIIRFilterReader.h"
+#include "fx/IDynamicIIRFilterCalculator.h"
 
 AUD_NAMESPACE_BEGIN
 
-DynamicIIRFilterReader::DynamicIIRFilterReader(std::shared_ptr<IReader> reader,
-													   std::shared_ptr<IDynamicIIRFilterCalculator> calculator) :
+DynamicIIRFilterReader::DynamicIIRFilterReader(std::shared_ptr<IReader> reader, std::shared_ptr<IDynamicIIRFilterCalculator> calculator) :
 	IIRFilterReader(reader, std::vector<float>(), std::vector<float>()),
 	m_calculator(calculator)
 {

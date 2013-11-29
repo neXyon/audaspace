@@ -16,9 +16,10 @@
 
 #include "file/FFMPEGWriter.h"
 
+#include <cstring>
+
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 }
 
@@ -201,7 +202,7 @@ FFMPEGWriter::~FFMPEGWriter()
 	if(m_input_samples)
 	{
 		sample_t* buf = m_input_buffer.getBuffer();
-		memset(buf + m_specs.channels * m_input_samples, 0,
+		std::memset(buf + m_specs.channels * m_input_samples, 0,
 			   (m_input_size - m_input_samples) * AUD_DEVICE_SAMPLE_SIZE(m_specs));
 
 		encode(buf);
@@ -261,7 +262,7 @@ void FFMPEGWriter::write(unsigned int length, sample_t* buffer)
 		{
 			unsigned int len = AUD_MIN(m_input_size - m_input_samples, length);
 
-			memcpy(inbuf + m_input_samples * m_specs.channels, buffer, len * samplesize);
+			std::memcpy(inbuf + m_input_samples * m_specs.channels, buffer, len * samplesize);
 
 			buffer += len * m_specs.channels;
 			m_input_samples += len;

@@ -17,7 +17,6 @@
 #pragma once
 
 #include "fx/Effect.h"
-#include "fx/IDynamicIIRFilterCalculator.h"
 
 #include <vector>
 

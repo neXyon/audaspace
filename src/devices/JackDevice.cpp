@@ -17,8 +17,7 @@
 #include "devices/JackDevice.h"
 #include "IReader.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
 
 AUD_NAMESPACE_BEGIN
 
@@ -97,7 +96,7 @@ int JackDevice::jack_mix(jack_nframes_t length, void *data)
 	{
 		// play silence while syncing
 		for(unsigned int i = 0; i < count; i++)
-			memset(aud_jack_port_get_buffer(device->m_ports[i], length), 0, length * sizeof(float));
+			std::memset(aud_jack_port_get_buffer(device->m_ports[i], length), 0, length * sizeof(float));
 	}
 	else
 	{
@@ -114,7 +113,7 @@ int JackDevice::jack_mix(jack_nframes_t length, void *data)
 			buffer = (char*)aud_jack_port_get_buffer(device->m_ports[i], length);
 			aud_jack_ringbuffer_read(device->m_ringbuffers[i], buffer, readsamples * sizeof(float));
 			if(readsamples < length)
-				memset(buffer + readsamples * sizeof(float), 0, (length - readsamples) * sizeof(float));
+				std::memset(buffer + readsamples * sizeof(float), 0, (length - readsamples) * sizeof(float));
 		}
 
 		if(pthread_mutex_trylock(&(device->m_mixingLock)) == 0)

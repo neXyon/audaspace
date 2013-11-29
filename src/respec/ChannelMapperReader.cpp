@@ -14,6 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
+#include "respec/ChannelMapperReader.h"
+
 #include <cmath>
 
 #ifndef M_PI
@@ -23,8 +25,6 @@
 #ifndef M_PI_2
 #define M_PI_2 1.57079632679489661923
 #endif
-
-#include "respec/ChannelMapperReader.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -150,8 +150,8 @@ void ChannelMapperReader::calculateMapping()
 		}
 		else
 		{
-			m_mapping[channel_left * m_source_channels + i] = cos(M_PI_2 * angle_left / angle);
-			m_mapping[channel_right * m_source_channels + i] = cos(M_PI_2 * angle_right / angle);
+			m_mapping[channel_left * m_source_channels + i] = std::cos(M_PI_2 * angle_left / angle);
+			m_mapping[channel_right * m_source_channels + i] = std::cos(M_PI_2 * angle_right / angle);
 		}
 	}
 

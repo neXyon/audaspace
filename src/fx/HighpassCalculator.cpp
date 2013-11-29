@@ -33,9 +33,9 @@ HighpassCalculator::HighpassCalculator(float frequency, float Q) :
 void HighpassCalculator::recalculateCoefficients(SampleRate rate, std::vector<float> &b, std::vector<float> &a)
 {
 	float w0 = 2.0 * M_PI * (SampleRate)m_frequency / rate;
-	float alpha = (float)(sin(w0) / (2.0 * (double)m_Q));
+	float alpha = (float)(std::sin(w0) / (2.0 * (double)m_Q));
 	float norm = 1 + alpha;
-	float c = cos(w0);
+	float c = std::cos(w0);
 	a.push_back(1);
 	a.push_back(-2 * c / norm);
 	a.push_back((1 - alpha) / norm);

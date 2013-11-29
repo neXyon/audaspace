@@ -16,11 +16,12 @@
 
 #pragma once
 
-#include "IReader.h"
 #include "devices/IDevice.h"
 #include "devices/IHandle.h"
 
 AUD_NAMESPACE_BEGIN
+
+class IReader;
 
 /**
  * This device plays nothing.

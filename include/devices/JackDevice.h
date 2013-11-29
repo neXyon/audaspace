@@ -18,10 +18,9 @@
 
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"
+#include "devices/JackLibrary.h"
 
 #include <string>
-
-#include "devices/JackLibrary.h"
 
 AUD_NAMESPACE_BEGIN
 

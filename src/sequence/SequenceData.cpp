@@ -16,7 +16,6 @@
 
 #include "sequence/SequenceData.h"
 #include "sequence/SequenceReader.h"
-#include "util/Math3D.h"
 #include "sequence/SequenceEntry.h"
 
 #include <mutex>

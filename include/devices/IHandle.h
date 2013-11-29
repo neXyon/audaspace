@@ -16,8 +16,7 @@
 
 #pragma once
 
-//#include "Audaspace.h"
-//#include "Reference.h"
+#include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN
 

@@ -88,7 +88,7 @@ public:
 	 */
 	inline void get(float* destination) const
 	{
-		memcpy(destination, m_v, sizeof(m_v));
+		std::memcpy(destination, m_v, sizeof(m_v));
 	}
 
 	/**
@@ -115,7 +115,7 @@ public:
 	 */
 	inline float length() const
 	{
-		return sqrt(m_x*m_x + m_y*m_y + m_z*m_z);
+		return std::sqrt(m_x*m_x + m_y*m_y + m_z*m_z);
 	}
 
 	/**
@@ -126,8 +126,8 @@ public:
 	inline Vector3 cross(const Vector3& op) const
 	{
 		return Vector3(m_y * op.m_z - m_z * op.m_y,
-		                   m_z * op.m_x - m_x * op.m_z,
-		                   m_x * op.m_y - m_y * op.m_x);
+					   m_z * op.m_x - m_x * op.m_z,
+					   m_x * op.m_y - m_y * op.m_x);
 	}
 
 	/**
@@ -269,7 +269,7 @@ public:
 	 */
 	inline void get(float* destination) const
 	{
-		memcpy(destination, m_v, sizeof(m_v));
+		std::memcpy(destination, m_v, sizeof(m_v));
 	}
 
 	/**
@@ -298,8 +298,8 @@ public:
 	inline Vector3 getLookAt() const
 	{
 		return Vector3(-2 * (m_w * m_y + m_x * m_z),
-							2 * (m_x * m_w - m_z * m_y),
-							2 * (m_x * m_x + m_y * m_y) - 1);
+						2 * (m_x * m_w - m_z * m_y),
+						2 * (m_x * m_x + m_y * m_y) - 1);
 	}
 
 	/**

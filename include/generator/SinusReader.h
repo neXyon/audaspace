@@ -17,7 +17,6 @@
 #pragma once
 
 #include "IReader.h"
-#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 

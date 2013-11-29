@@ -17,9 +17,7 @@
 #pragma once
 
 #include "ISound.h"
-#include "sequence/AnimateableProperty.h"
 //#include "ILockable.h"
-#include "sequence/SequenceData.h"
 
 #include <list>
 #include <pthread.h>
@@ -27,6 +25,8 @@
 AUD_NAMESPACE_BEGIN
 
 class SequenceEntry;
+class SequenceData;
+class AnimateableProperty;
 
 /**
  * This factory represents sequenced entries to play a sound scene.
@@ -51,7 +51,7 @@ public:
 	 */
 	Sequence(Specs specs, float fps, bool muted);
 
-#if 0
+#if 0 // AUD_XXX
 	/**
 	 * Locks the factory.
 	 */

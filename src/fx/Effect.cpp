@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include "fx/Effect.h"
-#include "IReader.h"
 
 AUD_NAMESPACE_BEGIN
 

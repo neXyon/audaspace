@@ -88,7 +88,7 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 
 		if(length > 0)
 		{
-			memcpy(m_cache.getBuffer() + m_channels, buffer + m_channels * (length - 1), samplesize);
+			std::memcpy(m_cache.getBuffer() + m_channels, buffer + m_channels * (length - 1), samplesize);
 			m_cache_pos = 1;
 			m_cache_ok = true;
 		}
@@ -108,7 +108,7 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 		m_buffer.assureSize((len + 2) * samplesize);
 		buf = m_buffer.getBuffer();
 
-		memcpy(buf, m_cache.getBuffer(), 2 * samplesize);
+		std::memcpy(buf, m_cache.getBuffer(), 2 * samplesize);
 		m_reader->read(len, eos, buf + 2 * m_channels);
 
 		if(len < need)
@@ -118,14 +118,14 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 	{
 		m_cache_pos = 1 - 1 / factor;
 
-		int need = ceil(length / factor + m_cache_pos);
+		int need = std::ceil(length / factor + m_cache_pos);
 
 		len = need;
 
 		m_buffer.assureSize((len + 1) * samplesize);
 		buf = m_buffer.getBuffer();
 
-		memset(buf, 0, samplesize);
+		std::memset(buf, 0, samplesize);
 		m_reader->read(len, eos, buf + m_channels);
 
 		if(len == 0)
@@ -136,7 +136,7 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 
 		if(len < need)
 		{
-			length = floor((len - m_cache_pos) * factor);
+			length = std::floor((len - m_cache_pos) * factor);
 		}
 
 		m_cache_ok = true;
@@ -151,22 +151,22 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 		{
 			spos = (i + 1) / factor + m_cache_pos;
 
-			low = buf[(int)floor(spos) * m_channels + channel];
-			high = buf[(int)ceil(spos) * m_channels + channel];
+			low = buf[(int)std::floor(spos) * m_channels + channel];
+			high = buf[(int)std::ceil(spos) * m_channels + channel];
 
-			buffer[i * m_channels + channel] = low + (spos - floor(spos)) * (high - low);
+			buffer[i * m_channels + channel] = low + (spos - std::floor(spos)) * (high - low);
 		}
 	}
 
-	if(floor(spos) == spos)
+	if(std::floor(spos) == spos)
 	{
-		memcpy(m_cache.getBuffer() + m_channels, buf + int(floor(spos)) * m_channels, samplesize);
+		std::memcpy(m_cache.getBuffer() + m_channels, buf + int(std::floor(spos)) * m_channels, samplesize);
 		m_cache_pos = 1;
 	}
 	else
 	{
-		memcpy(m_cache.getBuffer(), buf + int(floor(spos)) * m_channels, 2 * samplesize);
-		m_cache_pos = spos - floor(spos);
+		std::memcpy(m_cache.getBuffer(), buf + int(std::floor(spos)) * m_channels, 2 * samplesize);
+		m_cache_pos = spos - std::floor(spos);
 	}
 
 	eos &= length < size;

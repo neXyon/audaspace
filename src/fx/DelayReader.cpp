@@ -65,7 +65,7 @@ void DelayReader::read(int& length, bool& eos, sample_t* buffer)
 
 		if(length > m_remdelay)
 		{
-			memset(buffer, 0, m_remdelay * samplesize);
+			std::memset(buffer, 0, m_remdelay * samplesize);
 
 			int len = length - m_remdelay;
 			m_reader->read(len, eos, buffer + m_remdelay * specs.channels);
@@ -76,7 +76,7 @@ void DelayReader::read(int& length, bool& eos, sample_t* buffer)
 		}
 		else
 		{
-			memset(buffer, 0, length * samplesize);
+			std::memset(buffer, 0, length * samplesize);
 			m_remdelay -= length;
 		}
 	}

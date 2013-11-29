@@ -17,10 +17,10 @@
 #pragma once
 
 #include "fx/Effect.h"
-#include "fx/IDynamicIIRFilterCalculator.h"
-#include <vector>
 
 AUD_NAMESPACE_BEGIN
+
+class IDynamicIIRFilterCalculator;
 
 /**
  * This factory creates a IIR filter reader.

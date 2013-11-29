@@ -20,10 +20,10 @@
 #include <vector>
 #include <memory>
 
-#include "file/IWriter.h"
-#include "IReader.h"
-
 AUD_NAMESPACE_BEGIN
+
+class IWriter;
+class IReader;
 
 /**
  * This class is able to create IWriter classes as well as write reads to them.

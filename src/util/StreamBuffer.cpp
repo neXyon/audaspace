@@ -18,8 +18,6 @@
 #include "util/BufferReader.h"
 #include "util/Buffer.h"
 
-#include <cstring>
-
 AUD_NAMESPACE_BEGIN
 
 StreamBuffer::StreamBuffer(std::shared_ptr<ISound> factory) :

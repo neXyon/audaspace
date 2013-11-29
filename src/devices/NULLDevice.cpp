@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include <limits>
-
 #include "devices/NULLDevice.h"
+
+#include <limits>
 
 AUD_NAMESPACE_BEGIN
 

@@ -74,7 +74,7 @@ void BufferReader::read(int& length, bool& eos, sample_t* buffer)
 	}
 
 	m_position += length;
-	memcpy(buffer, buf, length * sample_size);
+	std::memcpy(buffer, buf, length * sample_size);
 }
 
 AUD_NAMESPACE_END

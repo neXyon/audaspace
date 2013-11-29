@@ -16,12 +16,10 @@
 
 #include "devices/OpenALDevice.h"
 #include "ISound.h"
-#include "IReader.h"
 #include "respec/ConverterReader.h"
 
-#include <cstring>
-#include <limits>
 #include <mutex>
+#include <cstring>
 
 #ifdef WIN32
 #include <windows.h>
@@ -111,7 +109,7 @@ OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, st
 			{
 				// AUD_XXX: TODO: don't fill all buffers and enqueue them later
 				length = 1;
-				memset(m_device->m_buffer.getBuffer(), 0, length * AUD_DEVICE_SAMPLE_SIZE(specs));
+				std::memset(m_device->m_buffer.getBuffer(), 0, length * AUD_DEVICE_SAMPLE_SIZE(specs));
 			}
 
 			alBufferData(m_buffers[i], m_format, m_device->m_buffer.getBuffer(),
@@ -291,7 +289,7 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 					{
 						// AUD_XXX: TODO: don't fill all buffers and enqueue them later
 						length = 1;
-						memset(m_device->m_buffer.getBuffer(), 0, length * AUD_DEVICE_SAMPLE_SIZE(specs));
+						std::memset(m_device->m_buffer.getBuffer(), 0, length * AUD_DEVICE_SAMPLE_SIZE(specs));
 					}
 
 					alBufferData(m_buffers[i], m_format, m_device->m_buffer.getBuffer(),

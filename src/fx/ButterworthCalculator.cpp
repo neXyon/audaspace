@@ -34,7 +34,7 @@ ButterworthCalculator::ButterworthCalculator(float frequency) :
 
 void ButterworthCalculator::recalculateCoefficients(SampleRate rate, std::vector<float> &b, std::vector<float> &a)
 {
-	float omega = 2 * tan(m_frequency * M_PI / rate);
+	float omega = 2 * std::tan(m_frequency * M_PI / rate);
 	float o2 = omega * omega;
 	float o4 = o2 * o2;
 	float x1 = o2 + 2.0f * (float)BWPB41 * omega + 4.0f;

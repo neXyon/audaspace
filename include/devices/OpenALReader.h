@@ -17,9 +17,7 @@
 #pragma once
 
 #include "IReader.h"
-#include "util/Buffer.h"
 
-#include <AL/al.h>
 #include <AL/alc.h>
 
 AUD_NAMESPACE_BEGIN
@@ -44,11 +42,6 @@ private:
 	 * The current position in samples.
 	 */
 	int m_position;
-
-	/**
-	 * The playback buffer.
-	 */
-	Buffer m_buffer;
 
 	/**
 	 * The capture device.

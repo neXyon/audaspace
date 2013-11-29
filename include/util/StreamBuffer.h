@@ -18,8 +18,6 @@
 
 #include "ISound.h"
 
-#include <memory>
-
 AUD_NAMESPACE_BEGIN
 
 class Buffer;

@@ -79,7 +79,7 @@ void SuperposeReader::read(int& length, bool& eos, sample_t* buffer)
 	m_reader1->read(len1, eos, buffer);
 
 	if(len1 < length)
-		memset(buffer + len1 * specs.channels, 0, (length - len1) * samplesize);
+		std::memset(buffer + len1 * specs.channels, 0, (length - len1) * samplesize);
 
 	int len2 = length;
 	bool eos2;

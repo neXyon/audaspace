@@ -16,6 +16,9 @@
 
 #include "file/FFMPEG.h"
 #include "file/FFMPEGReader.h"
+#include "util/Buffer.h"
+
+#include <cstring>
 
 AUD_NAMESPACE_BEGIN
 
@@ -27,7 +30,7 @@ FFMPEG::FFMPEG(std::string filename) :
 FFMPEG::FFMPEG(const data_t* buffer, int size) :
 		m_buffer(new Buffer(size))
 {
-	memcpy(m_buffer->getBuffer(), buffer, size);
+	std::memcpy(m_buffer->getBuffer(), buffer, size);
 }
 
 std::shared_ptr<IReader> FFMPEG::createReader()

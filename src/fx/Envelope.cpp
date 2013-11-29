@@ -31,7 +31,7 @@ struct EnvelopeParameters
 
 sample_t Envelope::envelopeFilter(CallbackIIRFilterReader* reader, EnvelopeParameters* param)
 {
-	float in = fabs(reader->x(0));
+	float in = std::fabs(reader->x(0));
 	float out = reader->y(-1);
 	if(in < param->threshold)
 		in = 0.0f;
@@ -60,8 +60,8 @@ std::shared_ptr<IReader> Envelope::createReader()
 
 	EnvelopeParameters* param = new EnvelopeParameters();
 	param->arthreshold = m_arthreshold;
-	param->attack = pow(m_arthreshold, 1.0f/(static_cast<float>(reader->getSpecs().rate) * m_attack));
-	param->release = pow(m_arthreshold, 1.0f/(static_cast<float>(reader->getSpecs().rate) * m_release));
+	param->attack = std::pow(m_arthreshold, 1.0f/(static_cast<float>(reader->getSpecs().rate) * m_attack));
+	param->release = std::pow(m_arthreshold, 1.0f/(static_cast<float>(reader->getSpecs().rate) * m_release));
 	param->threshold = m_threshold;
 
 	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(reader, 1, 2,

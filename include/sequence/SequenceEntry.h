@@ -17,13 +17,14 @@
 #pragma once
 
 #include "sequence/AnimateableProperty.h"
-#include "ISound.h"
 #include "util/ILockable.h"
 
 #include <pthread.h>
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
+
+class ISound;
 
 /**
  * This class represents a sequenced entry in a sequencer factory.

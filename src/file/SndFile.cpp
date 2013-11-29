@@ -16,6 +16,7 @@
 
 #include "file/SndFile.h"
 #include "file/SndFileReader.h"
+#include "util/Buffer.h"
 
 #include <cstring>
 
@@ -29,7 +30,7 @@ SndFile::SndFile(std::string filename) :
 SndFile::SndFile(const data_t* buffer, int size) :
 	m_buffer(new Buffer(size))
 {
-	memcpy(m_buffer->getBuffer(), buffer, size);
+	std::memcpy(m_buffer->getBuffer(), buffer, size);
 }
 
 std::shared_ptr<IReader> SndFile::createReader()

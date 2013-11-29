@@ -16,13 +16,16 @@
 
 #pragma once
 
-#include "sequence/SequenceEntry.h"
-#include "devices/IHandle.h"
-#include "devices/I3DHandle.h"
+#include "Audaspace.h"
+
+#include <memory>
 
 AUD_NAMESPACE_BEGIN
 
 class ReadDevice;
+class IHandle;
+class I3DHandle;
+class SequenceEntry;
 
 /**
  * Represents a playing sequenced entry.

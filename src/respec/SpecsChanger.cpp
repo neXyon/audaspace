@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include "respec/SpecsChanger.h"
-#include "IReader.h"
 
 AUD_NAMESPACE_BEGIN
 

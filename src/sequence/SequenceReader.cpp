@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "sequence/SequenceReader.h"
+#include "sequence/SequenceData.h"
 #include "SequenceHandle.h"
 
 #include <mutex>

@@ -66,11 +66,6 @@ private:
 	 */
 	float m_level;
 
-	/**
-	 * The playback buffer.
-	 */
-	Buffer m_buffer;
-
 	// delete copy constructor and operator=
 	ADSRReader(const ADSRReader&) = delete;
 	ADSRReader& operator=(const ADSRReader&) = delete;

@@ -16,8 +16,8 @@
 
 #include "file/FFMPEGReader.h"
 #include "file/SndFileReader.h"
-
 #include "file/File.h"
+
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
@@ -30,7 +30,7 @@ File::File(std::string filename) :
 File::File(const data_t* buffer, int size) :
 	m_buffer(new Buffer(size))
 {
-	memcpy(m_buffer->getBuffer(), buffer, size);
+	std::memcpy(m_buffer->getBuffer(), buffer, size);
 }
 
 static const char* read_error = "File: File couldn't be read.";

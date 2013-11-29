@@ -49,9 +49,9 @@ bool ReadDevice::read(data_t* buffer, int length)
 		mix(buffer, length);
 	else
 		if(m_specs.format == FORMAT_U8)
-			memset(buffer, 0x80, length * AUD_DEVICE_SAMPLE_SIZE(m_specs));
+			std::memset(buffer, 0x80, length * AUD_DEVICE_SAMPLE_SIZE(m_specs));
 		else
-			memset(buffer, 0, length * AUD_DEVICE_SAMPLE_SIZE(m_specs));
+			std::memset(buffer, 0, length * AUD_DEVICE_SAMPLE_SIZE(m_specs));
 	return m_playing;
 }
 

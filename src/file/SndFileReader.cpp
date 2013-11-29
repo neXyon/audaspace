@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "file/SndFileReader.h"
+#include "util/Buffer.h"
 
 #include <cstring>
 
@@ -55,7 +56,7 @@ sf_count_t SndFileReader::vio_read(void *ptr, sf_count_t count,
 	if(reader->m_memoffset + count > reader->m_membuffer->getSize())
 		count = reader->m_membuffer->getSize() - reader->m_memoffset;
 
-	memcpy(ptr, ((data_t*)reader->m_membuffer->getBuffer()) +
+	std::memcpy(ptr, ((data_t*)reader->m_membuffer->getBuffer()) +
 		   reader->m_memoffset, count);
 	reader->m_memoffset += count;
 
