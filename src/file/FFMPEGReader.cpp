@@ -26,7 +26,7 @@ AUD_NAMESPACE_BEGIN
 
 int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 {
-	AVFrame* frame = NULL;
+	AVFrame* frame = nullptr;
 	int got_frame;
 	int read_length;
 	uint8_t* orig_data = packet.data;
@@ -50,7 +50,7 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 
 		if(got_frame)
 		{
-			int data_size = av_samples_get_buffer_size(NULL, m_codecCtx->channels, frame->nb_samples, m_codecCtx->sample_fmt, 1);
+			int data_size = av_samples_get_buffer_size(nullptr, m_codecCtx->channels, frame->nb_samples, m_codecCtx->sample_fmt, 1);
 
 			if(buf_size - buf_pos < data_size)
 			{
@@ -102,7 +102,7 @@ void FFMPEGReader::init()
 	m_position = 0;
 	m_pkgbuf_left = 0;
 
-	if(avformat_find_stream_info(m_formatCtx, NULL) < 0)
+	if(avformat_find_stream_info(m_formatCtx, nullptr) < 0)
 		AUD_THROW(ERROR_FFMPEG, streaminfo_error);
 
 	// find audio stream and codec
@@ -128,11 +128,11 @@ void FFMPEGReader::init()
 	if(!aCodec)
 		AUD_THROW(ERROR_FFMPEG, nodecoder_error);
 
-	if(avcodec_open2(m_codecCtx, aCodec, NULL) < 0)
+	if(avcodec_open2(m_codecCtx, aCodec, nullptr) < 0)
 		AUD_THROW(ERROR_FFMPEG, codecopen_error);
 
 	// XXX this prints file information to stdout:
-	//dump_format(m_formatCtx, 0, NULL, 0);
+	//dump_format(m_formatCtx, 0, nullptr, 0);
 
 	m_specs.channels = (Channels) m_codecCtx->channels;
 	m_tointerleave = av_sample_fmt_is_planar(m_codecCtx->sample_fmt);
@@ -171,14 +171,14 @@ static const char* fileopen_error = "FFMPEGReader: File couldn't be "
 
 FFMPEGReader::FFMPEGReader(std::string filename) :
 	m_pkgbuf(),
-	m_formatCtx(NULL),
-	m_aviocontext(NULL),
-	m_membuf(NULL)
+	m_formatCtx(nullptr),
+	m_aviocontext(nullptr),
+	m_membuf(nullptr)
 {
 	av_register_all(); // AUD_XXX
 
 	// open file
-	if(avformat_open_input(&m_formatCtx, filename.c_str(), NULL, NULL)!=0)
+	if(avformat_open_input(&m_formatCtx, filename.c_str(), nullptr, nullptr)!=0)
 		AUD_THROW(ERROR_FILE, fileopen_error);
 
 	try
@@ -205,7 +205,7 @@ FFMPEGReader::FFMPEGReader(std::shared_ptr<Buffer> buffer) :
 	m_membuf = reinterpret_cast<data_t*>(av_malloc(FF_MIN_BUFFER_SIZE + FF_INPUT_BUFFER_PADDING_SIZE));
 
 	m_aviocontext = avio_alloc_context(m_membuf, FF_MIN_BUFFER_SIZE, 0, this,
-									   read_packet, NULL, seek_packet);
+									   read_packet, nullptr, seek_packet);
 
 	if(!m_aviocontext)
 	{
@@ -215,7 +215,7 @@ FFMPEGReader::FFMPEGReader(std::shared_ptr<Buffer> buffer) :
 
 	m_formatCtx = avformat_alloc_context();
 	m_formatCtx->pb = m_aviocontext;
-	if(avformat_open_input(&m_formatCtx, "", NULL, NULL)!=0)
+	if(avformat_open_input(&m_formatCtx, "", nullptr, nullptr)!=0)
 	{
 		av_free(m_aviocontext);
 		AUD_THROW(ERROR_FILE, streamopen_error);

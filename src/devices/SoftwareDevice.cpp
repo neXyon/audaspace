@@ -81,7 +81,7 @@ SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shar
 	m_reader(reader), m_pitch(pitch), m_resampler(resampler), m_mapper(mapper), m_keep(keep), m_user_pitch(1.0f), m_user_volume(1.0f), m_user_pan(0.0f), m_volume(1.0f), m_loopcount(0),
 	m_relative(true), m_volume_max(1.0f), m_volume_min(0), m_distance_max(std::numeric_limits<float>::max()),
 	m_distance_reference(1.0f), m_attenuation(1.0f), m_cone_angle_outer(M_PI), m_cone_angle_inner(M_PI), m_cone_volume_outer(0),
-	m_flags(RENDER_CONE), m_stop(NULL), m_stop_data(NULL), m_status(STATUS_PLAYING), m_device(device)
+	m_flags(RENDER_CONE), m_stop(nullptr), m_stop_data(nullptr), m_status(STATUS_PLAYING), m_device(device)
 {
 }
 
@@ -311,7 +311,10 @@ bool SoftwareDevice::SoftwareHandle::stop()
 	{
 		if(it->get() == this)
 		{
+			std::shared_ptr<SoftwareHandle> This = *it;
+
 			m_device->m_pausedSounds.erase(it);
+
 			return true;
 		}
 	}
@@ -739,14 +742,8 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 		m_mixer->clear(length);
 
 		// for all sounds
-		auto it = m_playingSounds.begin();
-		while(it != m_playingSounds.end())
+		for(auto& sound : m_playingSounds)
 		{
-			sound = *it;
-			// increment the iterator to make sure it's valid,
-			// in case the sound gets deleted after stopping
-			++it;
-
 			// get the buffer from the source
 			pos = 0;
 			len = length;
@@ -795,11 +792,11 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 		m_mixer->read(buffer, m_volume);
 
 		// cleanup
-		for(it = pauseSounds.begin(); it != pauseSounds.end(); it++)
-			(*it)->pause(true);
+		for(auto& sound : pauseSounds)
+			sound->pause(true);
 
-		for(it = stopSounds.begin(); it != stopSounds.end(); it++)
-			(*it)->stop();
+		for(auto& sound :  stopSounds)
+			sound->stop();
 
 		pauseSounds.clear();
 		stopSounds.clear();
@@ -822,9 +819,9 @@ void SoftwareDevice::setSpecs(Specs specs)
 	m_specs.specs = specs;
 	m_mixer->setSpecs(specs);
 
-	for(auto it = m_playingSounds.begin(); it != m_playingSounds.end(); it++)
+	for(auto& sound : m_playingSounds)
 	{
-		(*it)->setSpecs(specs);
+		sound->setSpecs(specs);
 	}
 }
 

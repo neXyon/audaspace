@@ -85,7 +85,7 @@ bool OpenALDevice::OpenALHandle::pause(bool keep)
 
 OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, std::shared_ptr<IReader> reader, bool keep) :
 	m_isBuffered(false), m_reader(reader), m_keep(keep), m_format(format), m_current(0),
-	m_eos(false), m_loopcount(0), m_stop(NULL), m_stop_data(NULL), m_status(STATUS_PLAYING),
+	m_eos(false), m_loopcount(0), m_stop(nullptr), m_stop_data(nullptr), m_status(STATUS_PLAYING),
 	m_device(device)
 {
 	DeviceSpecs specs = m_device->m_specs;
@@ -211,7 +211,10 @@ bool OpenALDevice::OpenALHandle::stop()
 	{
 		if(it->get() == this)
 		{
+			std::shared_ptr<OpenALHandle> This = *it;
+
 			m_device->m_pausedSounds.erase(it);
+
 			return true;
 		}
 	}
@@ -843,7 +846,7 @@ static void *openalRunThread(void *device)
 {
 	OpenALDevice* dev = (OpenALDevice*)device;
 	dev->updateStreams();
-	return NULL;
+	return nullptr;
 }
 
 void OpenALDevice::start(bool join)
@@ -853,7 +856,7 @@ void OpenALDevice::start(bool join)
 	if(!m_playing)
 	{
 		if(join)
-			pthread_join(m_thread, NULL);
+			pthread_join(m_thread, nullptr);
 
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
@@ -869,8 +872,6 @@ void OpenALDevice::start(bool join)
 
 void OpenALDevice::updateStreams()
 {
-	std::shared_ptr<OpenALHandle> sound;
-
 	int length;
 
 	ALint info;
@@ -878,7 +879,6 @@ void OpenALDevice::updateStreams()
 	ALCenum cerr;
 	std::list<std::shared_ptr<OpenALHandle> > stopSounds;
 	std::list<std::shared_ptr<OpenALHandle> > pauseSounds;
-	std::list<std::shared_ptr<OpenALHandle> >::iterator it;
 
 	while(1)
 	{
@@ -889,10 +889,8 @@ void OpenALDevice::updateStreams()
 		if(cerr == ALC_NO_ERROR)
 		{
 			// for all sounds
-			for(it = m_playingSounds.begin(); it != m_playingSounds.end(); it++)
+			for(auto& sound : m_playingSounds)
 			{
-				sound = *it;
-
 				// is it a streamed sound?
 				if(!sound->m_isBuffered)
 				{
@@ -999,11 +997,11 @@ void OpenALDevice::updateStreams()
 				}
 			}
 
-			for(it = pauseSounds.begin(); it != pauseSounds.end(); it++)
-				(*it)->pause(true);
+			for(auto& sound : pauseSounds)
+				sound->pause(true);
 
-			for(it = stopSounds.begin(); it != stopSounds.end(); it++)
-				(*it)->stop();
+			for(auto& sound : stopSounds)
+				sound->stop();
 
 			pauseSounds.clear();
 			stopSounds.clear();
@@ -1016,7 +1014,7 @@ void OpenALDevice::updateStreams()
 		{
 			m_playing = false;
 			unlock();
-			pthread_exit(NULL);
+			pthread_exit(nullptr);
 		}
 
 		unlock();
@@ -1042,10 +1040,10 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
 	specs.format = FORMAT_S16;
 
 #if 0
-	if(alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT") == AL_TRUE)
+	if(alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT") == AL_TRUE)
 	{
-		ALCchar* devices = const_cast<ALCchar*>(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-		printf("OpenAL devices (standard is: %s):\n", alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER));
+		ALCchar* devices = const_cast<ALCchar*>(alcGetString(nullptr, ALC_DEVICE_SPECIFIER));
+		printf("OpenAL devices (standard is: %s):\n", alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER));
 
 		while(*devices)
 		{
@@ -1055,7 +1053,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
 	}
 #endif
 
-	m_device = alcOpenDevice(NULL);
+	m_device = alcOpenDevice(nullptr);
 
 	if(!m_device)
 		AUD_THROW(ERROR_OPENAL, open_error);
@@ -1064,7 +1062,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
 	ALCint attribs[] = { ALC_FREQUENCY, (ALCint)specs.rate, 0 };
 	ALCint* attributes = attribs;
 	if(specs.rate == RATE_INVALID)
-		attributes = NULL;
+		attributes = nullptr;
 
 	m_context = alcCreateContext(m_device, attributes);
 	alcMakeContextCurrent(m_context);
@@ -1126,12 +1124,12 @@ OpenALDevice::~OpenALDevice()
 
 	// wait for the thread to stop
 	unlock();
-	pthread_join(m_thread, NULL);
+	pthread_join(m_thread, nullptr);
 
 	//delete m_bufferedFactories;
 
 	// quit OpenAL
-	alcMakeContextCurrent(NULL);
+	alcMakeContextCurrent(nullptr);
 	alcDestroyContext(m_context);
 	alcCloseDevice(m_device);
 
@@ -1280,7 +1278,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<IReader> reader, boo
 std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> factory, bool keep)
 {
 	/* AUD_XXX disabled
-	OpenALHandle* sound = NULL;
+	OpenALHandle* sound = nullptr;
 
 	lock();
 
@@ -1299,8 +1297,8 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> factory, boo
 				sound->isBuffered = true;
 				sound->eos = true;
 				sound->loopcount = 0;
-				sound->stop = NULL;
-				sound->stop_data = NULL;
+				sound->stop = nullptr;
+				sound->stop_data = nullptr;
 
 				alcSuspendContext(m_context);
 
@@ -1418,7 +1416,7 @@ bool OpenALDevice::bufferFactory(void *value)
 
 		IReader* reader = factory->createReader();
 
-		if(reader == NULL)
+		if(reader == nullptr)
 			return false;
 
 		DeviceSpecs specs = m_specs;

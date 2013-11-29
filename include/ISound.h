@@ -39,7 +39,7 @@ public:
 
 	/**
 	 * Creates a reader for playback of the sound source.
-	 * \return A pointer to an IReader object or NULL if there has been an
+	 * \return A pointer to an IReader object or nullptr if there has been an
 	 *         error.
 	 * \exception Exception An exception may be thrown if there has been
 	 *            a more unexpected error during reader creation.

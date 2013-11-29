@@ -62,7 +62,7 @@ public:
 
 	/**
 	 * Returns the saved factory.
-	 * \return The factory or NULL if there has no factory been saved.
+	 * \return The factory or nullptr if there has no factory been saved.
 	 */
 	std::shared_ptr<ISound> getFactory() const;
 };

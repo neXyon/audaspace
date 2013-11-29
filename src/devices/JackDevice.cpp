@@ -25,7 +25,7 @@ AUD_NAMESPACE_BEGIN
 void* JackDevice::runMixingThread(void* device)
 {
 	((JackDevice*)device)->updateRingBuffers();
-	return NULL;
+	return nullptr;
 }
 
 void JackDevice::updateRingBuffers()
@@ -184,7 +184,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 
 	// open client
 	m_client = aud_jack_client_open(name.c_str(), options, &status);
-	if(m_client == NULL)
+	if(m_client == nullptr)
 		AUD_THROW(ERROR_JACK, clientopen_error);
 
 	// set callbacks
@@ -204,7 +204,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 			m_ports[i] = aud_jack_port_register(m_client, portname,
 											JACK_DEFAULT_AUDIO_TYPE,
 											JackPortIsOutput, 0);
-			if(m_ports[i] == NULL)
+			if(m_ports[i] == nullptr)
 				AUD_THROW(ERROR_JACK, port_error);
 		}
 	}
@@ -229,11 +229,11 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 
 	m_valid = true;
 	m_sync = 0;
-	m_syncFunc = NULL;
-	m_nextState = m_state = aud_jack_transport_query(m_client, NULL);
+	m_syncFunc = nullptr;
+	m_nextState = m_state = aud_jack_transport_query(m_client, nullptr);
 
-	pthread_mutex_init(&m_mixingLock, NULL);
-	pthread_cond_init(&m_mixingCondition, NULL);
+	pthread_mutex_init(&m_mixingLock, nullptr);
+	pthread_cond_init(&m_mixingCondition, nullptr);
 
 	// activate the client
 	if(aud_jack_activate(m_client))
@@ -250,9 +250,9 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 		AUD_THROW(ERROR_JACK, activate_error);
 	}
 
-	const char** ports = aud_jack_get_ports(m_client, NULL, NULL,
+	const char** ports = aud_jack_get_ports(m_client, nullptr, nullptr,
 										JackPortIsPhysical | JackPortIsInput);
-	if(ports != NULL)
+	if(ports != nullptr)
 	{
 		for(int i = 0; i < m_specs.channels && ports[i]; i++)
 			aud_jack_connect(m_client, aud_jack_port_name(m_ports[i]), ports[i]);
@@ -280,7 +280,7 @@ JackDevice::~JackDevice()
 	pthread_mutex_lock(&m_mixingLock);
 	pthread_cond_signal(&m_mixingCondition);
 	pthread_mutex_unlock(&m_mixingLock);
-	pthread_join(m_mixingThread, NULL);
+	pthread_join(m_mixingThread, nullptr);
 
 	pthread_cond_destroy(&m_mixingCondition);
 	pthread_mutex_destroy(&m_mixingLock);
@@ -329,7 +329,7 @@ float JackDevice::getPlaybackPosition()
 
 bool JackDevice::doesPlayback()
 {
-	jack_transport_state_t state = aud_jack_transport_query(m_client, NULL);
+	jack_transport_state_t state = aud_jack_transport_query(m_client, nullptr);
 
 	if(state != m_state)
 		m_nextState = m_state = state;

@@ -43,9 +43,9 @@ void SequenceReader::seek(int position)
 
 	m_position = position;
 
-	for(auto it = m_handles.begin(); it != m_handles.end(); it++)
+	for(auto& handle : m_handles)
 	{
-		(*it)->seek(position / m_sequence->m_specs.rate);
+		handle->seek(position / m_sequence->m_specs.rate);
 	}
 }
 
@@ -83,7 +83,7 @@ void SequenceReader::read(int& length, bool& eos, sample_t* buffer)
 		std::list<std::shared_ptr<SequenceHandle> > handles;
 
 		auto hit = m_handles.begin();
-		auto  eit = m_sequence->m_entries.begin();
+		auto eit = m_sequence->m_entries.begin();
 
 		int result;
 		std::shared_ptr<SequenceHandle> handle;
@@ -162,9 +162,9 @@ void SequenceReader::read(int& length, bool& eos, sample_t* buffer)
 		len = AUD_MIN(length - pos, len);
 		len = AUD_MAX(len, 1);
 
-		for(auto it = m_handles.begin(); it != m_handles.end(); it++)
+		for(auto& handle : m_handles)
 		{
-			(*it)->update(time, frame, m_sequence->m_fps);
+			handle->update(time, frame, m_sequence->m_fps);
 		}
 
 		m_sequence->m_volume.read(frame, &volume);

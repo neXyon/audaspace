@@ -24,7 +24,7 @@
 #endif
 
 #ifdef WITH_JACK_DYNLOAD
-static void *jack_handle = NULL;
+static void *jack_handle = nullptr;
 #endif
 
 static bool jack_supported = false;
@@ -42,7 +42,7 @@ void aud_jack_init(void)
 	{ \
 		char *error; \
 		*(void **) (&(AUD_##sym)) = dlsym(jack_handle, #sym); \
-		if ((error = dlerror()) != NULL)  { \
+		if ((error = dlerror()) != nullptr)  { \
 			fprintf(stderr, "%s\n", error); \
 			return; \
 		} \

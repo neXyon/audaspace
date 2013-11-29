@@ -24,12 +24,12 @@ static const char* open_error = "OpenALReader: Capture device couldn't be opened
 OpenALReader::OpenALReader(Specs specs, int buffersize) :
 	m_specs(specs),
 	m_position(0),
-	m_device(NULL)
+	m_device(nullptr)
 {
 	if((specs.channels != CHANNELS_MONO) && (specs.channels != CHANNELS_STEREO))
 		specs.channels = CHANNELS_MONO;
 
-	m_device = alcCaptureOpenDevice(NULL, specs.rate,
+	m_device = alcCaptureOpenDevice(nullptr, specs.rate,
 									specs.channels == CHANNELS_MONO ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
 									buffersize * specs.channels * 2);
 

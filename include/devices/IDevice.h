@@ -53,7 +53,7 @@ public:
 	 * \param keep When keep is true the sound source will not be deleted but
 	 *             set to paused when its end has been reached.
 	 * \return Returns a handle with which the playback can be controlled.
-	 *         This is NULL if the sound couldn't be played back.
+	 *         This is nullptr if the sound couldn't be played back.
 	 * \exception Exception Thrown if there's an unexpected (from the
 	 *            device side) error during creation of the reader.
 	 */
@@ -65,7 +65,7 @@ public:
 	 * \param keep When keep is true the sound source will not be deleted but
 	 *             set to paused when its end has been reached.
 	 * \return Returns a handle with which the playback can be controlled.
-	 *         This is NULL if the sound couldn't be played back.
+	 *         This is nullptr if the sound couldn't be played back.
 	 * \exception Exception Thrown if there's an unexpected (from the
 	 *            device side) error during creation of the reader.
 	 */

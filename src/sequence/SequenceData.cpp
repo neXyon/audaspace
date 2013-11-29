@@ -142,7 +142,7 @@ AnimateableProperty* SequenceData::getAnimProperty(AnimateablePropertyType type)
 	case AP_ORIENTATION:
 		return &m_orientation;
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 

@@ -62,10 +62,7 @@ public:
 	 * \param endFilter The finishing callback.
 	 * \param data Data pointer for the callbacks.
 	 */
-	CallbackIIRFilterReader(std::shared_ptr<IReader> reader, int in, int out,
-								doFilterIIR doFilter,
-								endFilterIIR endFilter = 0,
-								void* data = NULL);
+	CallbackIIRFilterReader(std::shared_ptr<IReader> reader, int in, int out, doFilterIIR doFilter, endFilterIIR endFilter = 0, void* data = nullptr);
 
 	virtual ~CallbackIIRFilterReader();
 

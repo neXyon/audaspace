@@ -103,7 +103,7 @@ void AnimateableProperty::write(const float* data, int position, int count)
 	{
 		bool erased = false;
 
-		for(std::list<Unknown>::iterator it = m_unknown.begin(); it != m_unknown.end(); erased ? it : it++)
+		for(auto it = m_unknown.begin(); it != m_unknown.end(); erased ? it : it++)
 		{
 			erased = false;
 

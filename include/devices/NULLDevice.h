@@ -63,7 +63,7 @@ private:
 
 public:
 	/**
-	 * Creates a new NULL device.
+	 * Creates a new NULLDevice.
 	 */
 	NULLDevice();
 

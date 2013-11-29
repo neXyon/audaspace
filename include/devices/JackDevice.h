@@ -119,7 +119,7 @@ private:
 	/**
 	 * Mixing thread function.
 	 * \param device The this pointer.
-	 * \return NULL.
+	 * \return nullptr.
 	 */
 	static void* runMixingThread(void* device);
 

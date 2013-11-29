@@ -81,15 +81,15 @@ Factory_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	Factory *self;
 
 	self = (Factory*)type->tp_alloc(type, 0);
-	if(self != NULL)
+	if(self != nullptr)
 	{
-		static const char *kwlist[] = {"filename", NULL};
-		const char* filename = NULL;
+		static const char *kwlist[] = {"filename", nullptr};
+		const char* filename = nullptr;
 
 		if(!PyArg_ParseTupleAndKeywords(args, kwds, "s:Factory", const_cast<char**>(kwlist), &filename))
 		{
 			Py_DECREF(self);
-			return NULL;
+			return nullptr;
 		}
 
 		try
@@ -100,7 +100,7 @@ Factory_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -125,12 +125,12 @@ Factory_sine(PyTypeObject* type, PyObject *args)
 	double rate = 44100;
 
 	if(!PyArg_ParseTuple(args, "f|d:sine", &frequency, &rate))
-		return NULL;
+		return nullptr;
 
 	Factory *self;
 
 	self = (Factory*)type->tp_alloc(type, 0);
-	if(self != NULL)
+	if(self != nullptr)
 	{
 		try
 		{
@@ -140,7 +140,7 @@ Factory_sine(PyTypeObject* type, PyObject *args)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -161,15 +161,15 @@ PyDoc_STRVAR(M_aud_Factory_file_doc,
 static PyObject *
 Factory_file(PyTypeObject* type, PyObject *args)
 {
-	const char* filename = NULL;
+	const char* filename = nullptr;
 
 	if(!PyArg_ParseTuple(args, "s:file", &filename))
-		return NULL;
+		return nullptr;
 
 	Factory *self;
 
 	self = (Factory*)type->tp_alloc(type, 0);
-	if(self != NULL)
+	if(self != nullptr)
 	{
 		try
 		{
@@ -179,7 +179,7 @@ Factory_file(PyTypeObject* type, PyObject *args)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -204,12 +204,12 @@ Factory_lowpass(Factory* self, PyObject *args)
 	float Q = 0.5;
 
 	if(!PyArg_ParseTuple(args, "f|f:lowpass", &frequency, &Q))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -222,7 +222,7 @@ Factory_lowpass(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -245,12 +245,12 @@ Factory_delay(Factory* self, PyObject *args)
 	float delay;
 
 	if(!PyArg_ParseTuple(args, "f:delay", &delay))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -263,7 +263,7 @@ Factory_delay(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -288,14 +288,14 @@ Factory_join(Factory* self, PyObject *object)
 	if(!PyObject_TypeCheck(object, type))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object has to be of type Factory!");
-		return NULL;
+		return nullptr;
 	}
 
 	Factory *parent;
 	Factory *child = (Factory*)object;
 
 	parent = (Factory*)type->tp_alloc(type, 0);
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		parent->child_list = Py_BuildValue("(OO)", self, object);
 
@@ -307,7 +307,7 @@ Factory_join(Factory* self, PyObject *object)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -332,12 +332,12 @@ Factory_highpass(Factory* self, PyObject *args)
 	float Q = 0.5;
 
 	if(!PyArg_ParseTuple(args, "f|f:highpass", &frequency, &Q))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -350,7 +350,7 @@ Factory_highpass(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -373,12 +373,12 @@ Factory_limit(Factory* self, PyObject *args)
 	float start, end;
 
 	if(!PyArg_ParseTuple(args, "ff:limit", &start, &end))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -391,7 +391,7 @@ Factory_limit(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -417,12 +417,12 @@ Factory_pitch(Factory* self, PyObject *args)
 	float factor;
 
 	if(!PyArg_ParseTuple(args, "f:pitch", &factor))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -435,7 +435,7 @@ Factory_pitch(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -459,12 +459,12 @@ Factory_volume(Factory* self, PyObject *args)
 	float volume;
 
 	if(!PyArg_ParseTuple(args, "f:volume", &volume))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -477,7 +477,7 @@ Factory_volume(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -502,12 +502,12 @@ Factory_fadein(Factory* self, PyObject *args)
 	float start, length;
 
 	if(!PyArg_ParseTuple(args, "ff:fadein", &start, &length))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -520,7 +520,7 @@ Factory_fadein(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -546,12 +546,12 @@ Factory_fadeout(Factory* self, PyObject *args)
 	float start, length;
 
 	if(!PyArg_ParseTuple(args, "ff:fadeout", &start, &length))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -564,7 +564,7 @@ Factory_fadeout(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -588,12 +588,12 @@ Factory_loop(Factory* self, PyObject *args)
 	int loop;
 
 	if(!PyArg_ParseTuple(args, "i:loop", &loop))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -606,7 +606,7 @@ Factory_loop(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -631,13 +631,13 @@ Factory_mix(Factory* self, PyObject *object)
 	if(!PyObject_TypeCheck(object, type))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object is not of type Factory!");
-		return NULL;
+		return nullptr;
 	}
 
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 	Factory *child = (Factory*)object;
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		parent->child_list = Py_BuildValue("(OO)", self, object);
 
@@ -649,7 +649,7 @@ Factory_mix(Factory* self, PyObject *object)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -669,7 +669,7 @@ Factory_pingpong(Factory* self)
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -682,7 +682,7 @@ Factory_pingpong(Factory* self)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -708,7 +708,7 @@ Factory_reverse(Factory* self)
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -721,7 +721,7 @@ Factory_reverse(Factory* self)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -746,7 +746,7 @@ Factory_buffer(Factory* self)
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		try
 		{
@@ -756,7 +756,7 @@ Factory_buffer(Factory* self)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -780,12 +780,12 @@ Factory_square(Factory* self, PyObject *args)
 	float threshold = 0;
 
 	if(!PyArg_ParseTuple(args, "|f:square", &threshold))
-		return NULL;
+		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -798,7 +798,7 @@ Factory_square(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -825,26 +825,26 @@ static PyObject *
 Factory_filter(Factory* self, PyObject *args)
 {
 	PyObject *py_b;
-	PyObject *py_a = NULL;
+	PyObject *py_a = nullptr;
 	Py_ssize_t py_a_len;
 	Py_ssize_t py_b_len;
 
 	if(!PyArg_ParseTuple(args, "O|O:filter", &py_b, &py_a))
-		return NULL;
+		return nullptr;
 
-	if(!PySequence_Check(py_b) || (py_a != NULL && !PySequence_Check(py_a)))
+	if(!PySequence_Check(py_b) || (py_a != nullptr && !PySequence_Check(py_a)))
 	{
 		PyErr_SetString(PyExc_TypeError, "Parameter is not a sequence!");
-		return NULL;
+		return nullptr;
 	}
 
 	py_a_len= py_a ? PySequence_Size(py_a) : 0;
 	py_b_len= PySequence_Size(py_b);
 
-	if(!py_b_len || ((py_a != NULL) && !py_b_len))
+	if(!py_b_len || ((py_a != nullptr) && !py_b_len))
 	{
 		PyErr_SetString(PyExc_ValueError, "The sequence has to contain at least one value!");
-		return NULL;
+		return nullptr;
 	}
 
 	std::vector<float> a, b;
@@ -858,7 +858,7 @@ Factory_filter(Factory* self, PyObject *args)
 		Py_DECREF(py_value);
 
 		if (value==-1.0f && PyErr_Occurred()) {
-			return NULL;
+			return nullptr;
 		}
 
 		b.push_back(value);
@@ -873,7 +873,7 @@ Factory_filter(Factory* self, PyObject *args)
 			Py_DECREF(py_value);
 
 			if (value==-1.0f && PyErr_Occurred()) {
-				return NULL;
+				return nullptr;
 			}
 
 			a.push_back(value);
@@ -888,7 +888,7 @@ Factory_filter(Factory* self, PyObject *args)
 	PyTypeObject* type = Py_TYPE(self);
 	Factory *parent = (Factory*)type->tp_alloc(type, 0);
 
-	if(parent != NULL)
+	if(parent != nullptr)
 	{
 		Py_INCREF(self);
 		parent->child_list = (PyObject *)self;
@@ -901,7 +901,7 @@ Factory_filter(Factory* self, PyObject *args)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -963,7 +963,7 @@ static PyMethodDef Factory_methods[] = {
 	{"filter", (PyCFunction)Factory_filter, METH_VARARGS,
 	 M_aud_Factory_filter_doc
 	},
-	{NULL}  /* Sentinel */
+	{nullptr}  /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Factory_doc,
@@ -973,7 +973,7 @@ PyDoc_STRVAR(M_aud_Factory_doc,
 			 "playback.");
 
 static PyTypeObject FactoryType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
+	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.Factory",               /* tp_name */
 	sizeof(Factory),             /* tp_basicsize */
 	0,                         /* tp_itemsize */
@@ -1039,7 +1039,7 @@ Handle_pause(Handle *self)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1059,7 +1059,7 @@ Handle_resume(Handle *self)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1080,7 +1080,7 @@ Handle_stop(Handle *self)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1094,7 +1094,7 @@ static PyMethodDef Handle_methods[] = {
 	{"stop", (PyCFunction)Handle_stop, METH_NOARGS,
 	 M_aud_Handle_stop_doc
 	},
-	{NULL}  /* Sentinel */
+	{nullptr}  /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Handle_position_doc,
@@ -1110,7 +1110,7 @@ Handle_get_position(Handle *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1155,7 +1155,7 @@ Handle_get_keep(Handle *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1197,7 +1197,7 @@ Handle_get_status(Handle *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1214,7 +1214,7 @@ Handle_get_volume(Handle *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1253,7 +1253,7 @@ Handle_get_pitch(Handle *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1292,7 +1292,7 @@ Handle_get_loop_count(Handle *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1342,7 +1342,7 @@ Handle_get_location(Handle *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -1398,7 +1398,7 @@ Handle_get_velocity(Handle *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -1454,7 +1454,7 @@ Handle_get_orientation(Handle *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -1509,7 +1509,7 @@ Handle_get_relative(Handle *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -1560,13 +1560,13 @@ Handle_get_volume_minimum(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1615,13 +1615,13 @@ Handle_get_volume_maximum(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1671,13 +1671,13 @@ Handle_get_distance_reference(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1727,13 +1727,13 @@ Handle_get_distance_maximum(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1783,13 +1783,13 @@ Handle_get_attenuation(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1844,13 +1844,13 @@ Handle_get_cone_angle_inner(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1899,13 +1899,13 @@ Handle_get_cone_angle_outer(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1954,13 +1954,13 @@ Handle_get_cone_volume_outer(Handle *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1994,42 +1994,42 @@ Handle_set_cone_volume_outer(Handle *self, PyObject *args, void* nothing)
 
 static PyGetSetDef Handle_properties[] = {
 	{(char*)"position", (getter)Handle_get_position, (setter)Handle_set_position,
-	 M_aud_Handle_position_doc, NULL },
+	 M_aud_Handle_position_doc, nullptr },
 	{(char*)"keep", (getter)Handle_get_keep, (setter)Handle_set_keep,
-	 M_aud_Handle_keep_doc, NULL },
-	{(char*)"status", (getter)Handle_get_status, NULL,
-	 M_aud_Handle_status_doc, NULL },
+	 M_aud_Handle_keep_doc, nullptr },
+	{(char*)"status", (getter)Handle_get_status, nullptr,
+	 M_aud_Handle_status_doc, nullptr },
 	{(char*)"volume", (getter)Handle_get_volume, (setter)Handle_set_volume,
-	 M_aud_Handle_volume_doc, NULL },
+	 M_aud_Handle_volume_doc, nullptr },
 	{(char*)"pitch", (getter)Handle_get_pitch, (setter)Handle_set_pitch,
-	 M_aud_Handle_pitch_doc, NULL },
+	 M_aud_Handle_pitch_doc, nullptr },
 	{(char*)"loop_count", (getter)Handle_get_loop_count, (setter)Handle_set_loop_count,
-	 M_aud_Handle_loop_count_doc, NULL },
+	 M_aud_Handle_loop_count_doc, nullptr },
 	{(char*)"location", (getter)Handle_get_location, (setter)Handle_set_location,
-	 M_aud_Handle_location_doc, NULL },
+	 M_aud_Handle_location_doc, nullptr },
 	{(char*)"velocity", (getter)Handle_get_velocity, (setter)Handle_set_velocity,
-	 M_aud_Handle_velocity_doc, NULL },
+	 M_aud_Handle_velocity_doc, nullptr },
 	{(char*)"orientation", (getter)Handle_get_orientation, (setter)Handle_set_orientation,
-	 M_aud_Handle_orientation_doc, NULL },
+	 M_aud_Handle_orientation_doc, nullptr },
 	{(char*)"relative", (getter)Handle_get_relative, (setter)Handle_set_relative,
-	 M_aud_Handle_relative_doc, NULL },
+	 M_aud_Handle_relative_doc, nullptr },
 	{(char*)"volume_minimum", (getter)Handle_get_volume_minimum, (setter)Handle_set_volume_minimum,
-	 M_aud_Handle_volume_minimum_doc, NULL },
+	 M_aud_Handle_volume_minimum_doc, nullptr },
 	{(char*)"volume_maximum", (getter)Handle_get_volume_maximum, (setter)Handle_set_volume_maximum,
-	 M_aud_Handle_volume_maximum_doc, NULL },
+	 M_aud_Handle_volume_maximum_doc, nullptr },
 	{(char*)"distance_reference", (getter)Handle_get_distance_reference, (setter)Handle_set_distance_reference,
-	 M_aud_Handle_distance_reference_doc, NULL },
+	 M_aud_Handle_distance_reference_doc, nullptr },
 	{(char*)"distance_maximum", (getter)Handle_get_distance_maximum, (setter)Handle_set_distance_maximum,
-	 M_aud_Handle_distance_maximum_doc, NULL },
+	 M_aud_Handle_distance_maximum_doc, nullptr },
 	{(char*)"attenuation", (getter)Handle_get_attenuation, (setter)Handle_set_attenuation,
-	 M_aud_Handle_attenuation_doc, NULL },
+	 M_aud_Handle_attenuation_doc, nullptr },
 	{(char*)"cone_angle_inner", (getter)Handle_get_cone_angle_inner, (setter)Handle_set_cone_angle_inner,
-	 M_aud_Handle_cone_angle_inner_doc, NULL },
+	 M_aud_Handle_cone_angle_inner_doc, nullptr },
 	{(char*)"cone_angle_outer", (getter)Handle_get_cone_angle_outer, (setter)Handle_set_cone_angle_outer,
-	 M_aud_Handle_cone_angle_outer_doc, NULL },
+	 M_aud_Handle_cone_angle_outer_doc, nullptr },
 	{(char*)"cone_volume_outer", (getter)Handle_get_cone_volume_outer, (setter)Handle_set_cone_volume_outer,
-	 M_aud_Handle_cone_volume_outer_doc, NULL },
-	{NULL}  /* Sentinel */
+	 M_aud_Handle_cone_volume_outer_doc, nullptr },
+	{nullptr}  /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Handle_doc,
@@ -2038,7 +2038,7 @@ PyDoc_STRVAR(M_aud_Handle_doc,
 			 "then there are as many handles.");
 
 static PyTypeObject HandleType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
+	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.Handle",              /* tp_name */
 	sizeof(Handle),            /* tp_basicsize */
 	0,                         /* tp_itemsize */
@@ -2093,7 +2093,7 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
 	Device *self;
 
-	static const char *kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", NULL};
+	static const char *kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", nullptr};
 	int device;
 	double rate = RATE_44100;
 	int channels = CHANNELS_STEREO;
@@ -2103,23 +2103,23 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 	if(!PyArg_ParseTupleAndKeywords(args, kwds, "i|diiis:Device", const_cast<char**>(kwlist),
 									&device, &rate, &channels, &format, &buffersize, &name))
-		return NULL;
+		return nullptr;
 
 	if(buffersize < 128)
 	{
 		PyErr_SetString(PyExc_ValueError, "buffer_size must be greater than 127!");
-		return NULL;
+		return nullptr;
 	}
 
 	self = (Device*)type->tp_alloc(type, 0);
-	if(self != NULL)
+	if(self != nullptr)
 	{
 		DeviceSpecs specs;
 		specs.channels = (Channels)channels;
 		specs.format = (SampleFormat)format;
 		specs.rate = (SampleRate)rate;
 
-		self->device = NULL;
+		self->device = nullptr;
 
 		try
 		{
@@ -2147,14 +2147,14 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 
 		if(!self->device)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, "Unsupported device type!");
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -2176,27 +2176,27 @@ static PyObject *
 Device_play(Device *self, PyObject *args, PyObject *kwds)
 {
 	PyObject *object;
-	PyObject *keepo = NULL;
+	PyObject *keepo = nullptr;
 
 	bool keep = false;
 
-	static const char *kwlist[] = {"factory", "keep", NULL};
+	static const char *kwlist[] = {"factory", "keep", nullptr};
 
 	if(!PyArg_ParseTupleAndKeywords(args, kwds, "O|O:play", const_cast<char**>(kwlist), &object, &keepo))
-		return NULL;
+		return nullptr;
 
 	if(!PyObject_TypeCheck(object, &FactoryType))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object is not of type Factory!");
-		return NULL;
+		return nullptr;
 	}
 
-	if(keepo != NULL)
+	if(keepo != nullptr)
 	{
 		if(!PyBool_Check(keepo))
 		{
 			PyErr_SetString(PyExc_TypeError, "keep is not a boolean!");
-			return NULL;
+			return nullptr;
 		}
 
 		keep = keepo == Py_True;
@@ -2206,7 +2206,7 @@ Device_play(Device *self, PyObject *args, PyObject *kwds)
 	Handle *handle;
 
 	handle = (Handle*)HandleType.tp_alloc(&HandleType, 0);
-	if(handle != NULL)
+	if(handle != nullptr)
 	{
 		try
 		{
@@ -2216,7 +2216,7 @@ Device_play(Device *self, PyObject *args, PyObject *kwds)
 		{
 			Py_DECREF(handle);
 			PyErr_SetString(AUDError, e.str);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -2238,7 +2238,7 @@ Device_stopAll(Device *self)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2264,7 +2264,7 @@ Device_lock(Device *self)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2284,7 +2284,7 @@ Device_unlock(Device *self)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2301,7 +2301,7 @@ static PyMethodDef Device_methods[] = {
 	{"unlock", (PyCFunction)Device_unlock, METH_NOARGS,
 	 M_aud_Device_unlock_doc
 	},
-	{NULL}  /* Sentinel */
+	{nullptr}  /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Device_rate_doc,
@@ -2318,7 +2318,7 @@ Device_get_rate(Device *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2336,7 +2336,7 @@ Device_get_format(Device *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2354,7 +2354,7 @@ Device_get_channels(Device *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2371,7 +2371,7 @@ Device_get_volume(Device *self, void* nothing)
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2419,7 +2419,7 @@ Device_get_listener_location(Device *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -2474,7 +2474,7 @@ Device_get_listener_velocity(Device *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -2529,7 +2529,7 @@ Device_get_listener_orientation(Device *self, void* nothing)
 		PyErr_SetString(AUDError, e.str);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int
@@ -2577,13 +2577,13 @@ Device_get_speed_of_sound(Device *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2633,13 +2633,13 @@ Device_get_doppler_factor(Device *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2687,13 +2687,13 @@ Device_get_distance_model(Device *self, void* nothing)
 		else
 		{
 			PyErr_SetString(AUDError, device_not_3d_error);
-			return NULL;
+			return nullptr;
 		}
 	}
 	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.str);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2725,27 +2725,27 @@ Device_set_distance_model(Device *self, PyObject *args, void* nothing)
 }
 
 static PyGetSetDef Device_properties[] = {
-	{(char*)"rate", (getter)Device_get_rate, NULL,
-	 M_aud_Device_rate_doc, NULL },
-	{(char*)"format", (getter)Device_get_format, NULL,
-	 M_aud_Device_format_doc, NULL },
-	{(char*)"channels", (getter)Device_get_channels, NULL,
-	 M_aud_Device_channels_doc, NULL },
+	{(char*)"rate", (getter)Device_get_rate, nullptr,
+	 M_aud_Device_rate_doc, nullptr },
+	{(char*)"format", (getter)Device_get_format, nullptr,
+	 M_aud_Device_format_doc, nullptr },
+	{(char*)"channels", (getter)Device_get_channels, nullptr,
+	 M_aud_Device_channels_doc, nullptr },
 	{(char*)"volume", (getter)Device_get_volume, (setter)Device_set_volume,
-	 M_aud_Device_volume_doc, NULL },
+	 M_aud_Device_volume_doc, nullptr },
 	{(char*)"listener_location", (getter)Device_get_listener_location, (setter)Device_set_listener_location,
-	 M_aud_Device_listener_location_doc, NULL },
+	 M_aud_Device_listener_location_doc, nullptr },
 	{(char*)"listener_velocity", (getter)Device_get_listener_velocity, (setter)Device_set_listener_velocity,
-	 M_aud_Device_listener_velocity_doc, NULL },
+	 M_aud_Device_listener_velocity_doc, nullptr },
 	{(char*)"listener_orientation", (getter)Device_get_listener_orientation, (setter)Device_set_listener_orientation,
-	 M_aud_Device_listener_orientation_doc, NULL },
+	 M_aud_Device_listener_orientation_doc, nullptr },
 	{(char*)"speed_of_sound", (getter)Device_get_speed_of_sound, (setter)Device_set_speed_of_sound,
-	 M_aud_Device_speed_of_sound_doc, NULL },
+	 M_aud_Device_speed_of_sound_doc, nullptr },
 	{(char*)"doppler_factor", (getter)Device_get_doppler_factor, (setter)Device_set_doppler_factor,
-	 M_aud_Device_doppler_factor_doc, NULL },
+	 M_aud_Device_doppler_factor_doc, nullptr },
 	{(char*)"distance_model", (getter)Device_get_distance_model, (setter)Device_set_distance_model,
-	 M_aud_Device_distance_model_doc, NULL },
-	{NULL}  /* Sentinel */
+	 M_aud_Device_distance_model_doc, nullptr },
+	{nullptr}  /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Device_doc,
@@ -2754,7 +2754,7 @@ PyDoc_STRVAR(M_aud_Device_doc,
 			 "output.");
 
 static PyTypeObject DeviceType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
+	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.Device",              /* tp_name */
 	sizeof(Device),            /* tp_basicsize */
 	0,                         /* tp_itemsize */
@@ -2812,7 +2812,7 @@ checkFactory(PyObject *factory)
 	if(!PyObject_TypeCheck(factory, &FactoryType))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object is not of type Factory!");
-		return NULL;
+		return nullptr;
 	}
 
 	return (Factory*)factory;
@@ -2830,7 +2830,7 @@ static struct PyModuleDef audmodule = {
 	M_aud_doc, /* module documentation */
 	-1,        /* size of per-interpreter state of the module,
 				  or -1 if the module keeps state in global variables. */
-   NULL, NULL, NULL, NULL, NULL
+   nullptr, nullptr, nullptr, nullptr, nullptr
 };
 
 PyMODINIT_FUNC
@@ -2839,17 +2839,17 @@ PyInit_aud(void)
 	PyObject *m;
 
 	if(PyType_Ready(&FactoryType) < 0)
-		return NULL;
+		return nullptr;
 
 	if(PyType_Ready(&DeviceType) < 0)
-		return NULL;
+		return nullptr;
 
 	if(PyType_Ready(&HandleType) < 0)
-		return NULL;
+		return nullptr;
 
 	m = PyModule_Create(&audmodule);
-	if(m == NULL)
-		return NULL;
+	if(m == nullptr)
+		return nullptr;
 
 	Py_INCREF(&FactoryType);
 	PyModule_AddObject(m, "Factory", (PyObject *)&FactoryType);
@@ -2860,7 +2860,7 @@ PyInit_aud(void)
 	Py_INCREF(&HandleType);
 	PyModule_AddObject(m, "Handle", (PyObject *)&HandleType);
 
-	AUDError = PyErr_NewException("aud.error", NULL, NULL);
+	AUDError = PyErr_NewException("aud.error", nullptr, nullptr);
 	Py_INCREF(AUDError);
 	PyModule_AddObject(m, "error", AUDError);
 

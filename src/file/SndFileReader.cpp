@@ -98,7 +98,7 @@ SndFileReader::SndFileReader(std::shared_ptr<Buffer> buffer) :
 	m_vio.read = vio_read;
 	m_vio.seek = vio_seek;
 	m_vio.tell = vio_tell;
-	m_vio.write = NULL;
+	m_vio.write = nullptr;
 
 	SF_INFO sfinfo;
 
