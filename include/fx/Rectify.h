@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 class CallbackIIRFilterReader;
 
 /**
- * This factory rectifies another factory.
+ * This sound rectifies another sound.
  */
 class Rectify : public Effect
 {
@@ -34,10 +34,10 @@ private:
 
 public:
 	/**
-	 * Creates a new rectify factory.
-	 * \param factory The input factory.
+	 * Creates a new rectify sound.
+	 * \param sound The input sound.
 	 */
-	Rectify(std::shared_ptr<ISound> factory);
+	Rectify(std::shared_ptr<ISound> sound);
 
 	virtual std::shared_ptr<IReader> createReader();
 

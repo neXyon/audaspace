@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory fades another factory.
+ * This sound fades another sound.
  * If the fading type is FADE_IN, everything before the fading start will be
  * silenced, for FADE_OUT that's true for everything after fading ends.
  */
@@ -49,13 +49,13 @@ private:
 
 public:
 	/**
-	 * Creates a new fader factory.
-	 * \param factory The input factory.
+	 * Creates a new fader sound.
+	 * \param sound The input sound.
 	 * \param type The fading type.
 	 * \param start The time where fading should start in seconds.
 	 * \param length How long fading should last in seconds.
 	 */
-	Fader(std::shared_ptr<ISound> factory,
+	Fader(std::shared_ptr<ISound> sound,
 	                 FadeType type = FADE_IN,
 	                 float start = 0.0f, float length = 1.0f);
 

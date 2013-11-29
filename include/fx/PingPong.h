@@ -21,8 +21,8 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory plays another factory first normal, then reversed.
- * \note Readers from the underlying factory must be reversable with seeking.
+ * This sound plays another sound first normal, then reversed.
+ * \note Readers from the underlying sound must be reversable with seeking.
  */
 class PingPong : public Effect
 {
@@ -33,10 +33,10 @@ private:
 
 public:
 	/**
-	 * Creates a new ping pong factory.
-	 * \param factory The input factory.
+	 * Creates a new ping pong sound.
+	 * \param sound The input sound.
 	 */
-	PingPong(std::shared_ptr<ISound> factory);
+	PingPong(std::shared_ptr<ISound> sound);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

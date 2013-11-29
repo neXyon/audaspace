@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a sum reader.
+ * This sound creates a sum reader.
  */
 class Sum : public Effect
 {
@@ -32,10 +32,10 @@ private:
 
 public:
 	/**
-	 * Creates a new sum factory.
-	 * \param factory The input factory.
+	 * Creates a new sum sound.
+	 * \param sound The input sound.
 	 */
-	Sum(std::shared_ptr<ISound> factory);
+	Sum(std::shared_ptr<ISound> sound);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

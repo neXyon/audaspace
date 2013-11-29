@@ -19,9 +19,9 @@
 
 AUD_NAMESPACE_BEGIN
 
-Converter::Converter(std::shared_ptr<ISound> factory,
+Converter::Converter(std::shared_ptr<ISound> sound,
 										   DeviceSpecs specs) :
-		SpecsChanger(factory, specs)
+		SpecsChanger(sound, specs)
 {
 }
 

@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a reader that maps a sound source's channels to a
+ * This sound creates a reader that maps a sound source's channels to a
  * specific output channel count.
  */
 class ChannelMapper : public SpecsChanger
@@ -33,11 +33,11 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
-	 * \param factory The input factory.
+	 * Creates a new sound.
+	 * \param sound The input sound.
 	 * \param specs The target specifications.
 	 */
-	ChannelMapper(std::shared_ptr<ISound> factory, DeviceSpecs specs);
+	ChannelMapper(std::shared_ptr<ISound> sound, DeviceSpecs specs);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

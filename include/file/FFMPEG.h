@@ -26,7 +26,7 @@ AUD_NAMESPACE_BEGIN
 class Buffer;
 
 /**
- * This factory reads a sound file via ffmpeg.
+ * This sound reads a sound file via ffmpeg.
  * \warning Notice that the needed formats and codecs have to be registered
  * for ffmpeg before this class can be used.
  */
@@ -49,13 +49,13 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
+	 * Creates a new sound.
 	 * \param filename The sound file path.
 	 */
 	FFMPEG(std::string filename);
 
 	/**
-	 * Creates a new factory.
+	 * Creates a new sound.
 	 * \param buffer The buffer to read from.
 	 * \param size The size of the buffer.
 	 */

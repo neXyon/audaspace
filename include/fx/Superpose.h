@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory mixes two other factories, playing them the same time.
+ * This sound mixes two other factories, playing them the same time.
  * \note Readers from the underlying factories must have the same sample rate
  *       and channel count.
  */
@@ -29,14 +29,14 @@ class Superpose : public ISound
 {
 private:
 	/**
-	 * First played factory.
+	 * First played sound.
 	 */
-	std::shared_ptr<ISound> m_factory1;
+	std::shared_ptr<ISound> m_sound1;
 
 	/**
-	 * Second played factory.
+	 * Second played sound.
 	 */
-	std::shared_ptr<ISound> m_factory2;
+	std::shared_ptr<ISound> m_sound2;
 
 	// delete copy constructor and operator=
 	Superpose(const Superpose&) = delete;
@@ -44,11 +44,11 @@ private:
 
 public:
 	/**
-	 * Creates a new superpose factory.
-	 * \param factory1 The first input factory.
-	 * \param factory2 The second input factory.
+	 * Creates a new superpose sound.
+	 * \param sound1 The first input sound.
+	 * \param sound2 The second input sound.
 	 */
-	Superpose(std::shared_ptr<ISound> factory1, std::shared_ptr<ISound> factory2);
+	Superpose(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

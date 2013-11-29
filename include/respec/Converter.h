@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a converter reader that is able to convert from one
+ * This sound creates a converter reader that is able to convert from one
  * audio format to another.
  */
 class Converter : public SpecsChanger
@@ -33,11 +33,11 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
-	 * \param factory The input factory.
+	 * Creates a new sound.
+	 * \param sound The input sound.
 	 * \param specs The target specifications.
 	 */
-	Converter(std::shared_ptr<ISound> factory, DeviceSpecs specs);
+	Converter(std::shared_ptr<ISound> sound, DeviceSpecs specs);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

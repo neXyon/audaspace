@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Butterworth::Butterworth(std::shared_ptr<ISound> factory, float frequency) :
-		DynamicIIRFilter(factory, std::shared_ptr<IDynamicIIRFilterCalculator>(new ButterworthCalculator(frequency)))
+Butterworth::Butterworth(std::shared_ptr<ISound> sound, float frequency) :
+        DynamicIIRFilter(sound, std::shared_ptr<IDynamicIIRFilterCalculator>(new ButterworthCalculator(frequency)))
 {
 }
 

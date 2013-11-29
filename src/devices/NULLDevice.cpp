@@ -121,7 +121,7 @@ std::shared_ptr<IHandle> NULLDevice::play(std::shared_ptr<IReader> reader, bool 
 	return std::shared_ptr<IHandle>(new NULLHandle());
 }
 
-std::shared_ptr<IHandle> NULLDevice::play(std::shared_ptr<ISound> factory, bool keep)
+std::shared_ptr<IHandle> NULLDevice::play(std::shared_ptr<ISound> sound, bool keep)
 {
 	return std::shared_ptr<IHandle>(new NULLHandle());
 }

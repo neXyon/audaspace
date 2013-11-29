@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory plays another factory delayed.
+ * This sound plays another sound delayed.
  */
 class Delay : public Effect
 {
@@ -37,11 +37,11 @@ private:
 
 public:
 	/**
-	 * Creates a new delay factory.
-	 * \param factory The input factory.
+	 * Creates a new delay sound.
+	 * \param sound The input sound.
 	 * \param delay The desired delay in seconds.
 	 */
-	Delay(std::shared_ptr<ISound> factory, float delay = 0);
+	Delay(std::shared_ptr<ISound> sound, float delay = 0);
 
 	/**
 	 * Returns the delay in seconds.

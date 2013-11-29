@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a reader that plays a sine tone.
+ * This sound creates a reader that plays a sine tone.
  */
 class Sinus : public ISound
 {
@@ -42,7 +42,7 @@ private:
 
 public:
 	/**
-	 * Creates a new sine factory.
+	 * Creates a new sine sound.
 	 * \param frequency The desired frequency.
 	 * \param sampleRate The target sample rate for playback.
 	 */

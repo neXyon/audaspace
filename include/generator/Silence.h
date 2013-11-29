@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a reader that plays silence.
+ * This sound creates a reader that plays silence.
  */
 class Silence : public ISound
 {
@@ -32,7 +32,7 @@ private:
 
 public:
 	/**
-	 * Creates a new silence factory.
+	 * Creates a new silence sound.
 	 */
 	Silence();
 

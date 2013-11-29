@@ -18,18 +18,18 @@
 
 AUD_NAMESPACE_BEGIN
 
-Effect::Effect(std::shared_ptr<ISound> factory)
+Effect::Effect(std::shared_ptr<ISound> sound)
 {
-	m_factory = factory;
+    m_sound = sound;
 }
 
 Effect::~Effect()
 {
 }
 
-std::shared_ptr<ISound> Effect::getFactory() const
+std::shared_ptr<ISound> Effect::getSound() const
 {
-	return m_factory;
+    return m_sound;
 }
 
 AUD_NAMESPACE_END

@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a resampling reader that does Julius O. Smith's resampling algorithm.
+ * This sound creates a resampling reader that does Julius O. Smith's resampling algorithm.
  */
 class JOSResample : public SpecsChanger
 {
@@ -32,11 +32,11 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
-	 * \param factory The input factory.
+	 * Creates a new sound.
+	 * \param sound The input sound.
 	 * \param specs The target specifications.
 	 */
-	JOSResample(std::shared_ptr<ISound> factory, DeviceSpecs specs);
+	JOSResample(std::shared_ptr<ISound> sound, DeviceSpecs specs);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

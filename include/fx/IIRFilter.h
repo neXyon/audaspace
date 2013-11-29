@@ -23,7 +23,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a IIR filter reader.
+ * This sound creates a IIR filter reader.
  */
 class IIRFilter : public Effect
 {
@@ -44,12 +44,12 @@ private:
 
 public:
 	/**
-	 * Creates a new IIR filter factory.
-	 * \param factory The input factory.
+	 * Creates a new IIR filter sound.
+	 * \param sound The input sound.
 	 * \param b The input filter coefficients.
 	 * \param a The output filter coefficients.
 	 */
-	IIRFilter(std::shared_ptr<ISound> factory, std::vector<float> b,
+	IIRFilter(std::shared_ptr<ISound> sound, std::vector<float> b,
 						 std::vector<float> a);
 
 	virtual std::shared_ptr<IReader> createReader();

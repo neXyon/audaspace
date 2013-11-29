@@ -29,7 +29,7 @@ class SequenceData;
 class AnimateableProperty;
 
 /**
- * This factory represents sequenced entries to play a sound scene.
+ * This sound represents sequenced entries to play a sound scene.
  */
 class Sequence : public ISound//, public ILockable
 {
@@ -53,12 +53,12 @@ public:
 
 #if 0 // AUD_XXX
 	/**
-	 * Locks the factory.
+	 * Locks the sound.
 	 */
 	virtual void lock();
 
 	/**
-	 * Unlocks the previously locked factory.
+	 * Unlocks the previously locked sound.
 	 */
 	virtual void unlock();
 #endif
@@ -130,10 +130,10 @@ public:
 	void setDistanceModel(DistanceModel model);
 
 	/**
-	 * Retrieves one of the animated properties of the factory.
+	 * Retrieves one of the animated properties of the sound.
 	 * \param type Which animated property to retrieve.
 	 * \return A pointer to the animated property, valid as long as the
-	 *         factory is.
+	 *         sound is.
 	 */
 	AnimateableProperty* getAnimProperty(AnimateablePropertyType type);
 

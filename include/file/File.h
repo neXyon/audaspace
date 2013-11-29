@@ -26,7 +26,7 @@ AUD_NAMESPACE_BEGIN
 class Buffer;
 
 /**
- * This factory tries to read a sound file via all available file readers.
+ * This sound tries to read a sound file via all available file readers.
  */
 class File : public ISound
 {
@@ -47,13 +47,13 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
+	 * Creates a new sound.
 	 * \param filename The sound file path.
 	 */
 	File(std::string filename);
 
 	/**
-	 * Creates a new factory.
+	 * Creates a new sound.
 	 * \param buffer The buffer to read from.
 	 * \param size The size of the buffer.
 	 */

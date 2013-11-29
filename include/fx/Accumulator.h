@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 class CallbackIIRFilterReader;
 
 /**
- * This factory creates an accumulator reader.
+ * This sound creates an accumulator reader.
  *
  * The accumulator adds the difference at the input to the last output in case
  * it's positive. In additive mode it additionaly adds the difference always.
@@ -43,11 +43,11 @@ private:
 
 public:
 	/**
-	 * Creates a new accumulator factory.
-	 * \param factory The input factory.
+	 * Creates a new accumulator sound.
+	 * \param sound The input sound.
 	 * \param additive Whether the accumulator is additive.
 	 */
-	Accumulator(std::shared_ptr<ISound> factory, bool additive = false);
+	Accumulator(std::shared_ptr<ISound> sound, bool additive = false);
 
 	virtual std::shared_ptr<IReader> createReader();
 

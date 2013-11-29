@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory limits another factory in start and end time.
+ * This sound limits another sound in start and end time.
  */
 class Limiter : public Effect
 {
@@ -42,13 +42,13 @@ private:
 
 public:
 	/**
-	 * Creates a new limiter factory.
-	 * \param factory The input factory.
+	 * Creates a new limiter sound.
+	 * \param sound The input sound.
 	 * \param start The desired start time.
 	 * \param end The desired end time, a negative value signals that it should
 	 *            play to the end.
 	 */
-	Limiter(std::shared_ptr<ISound> factory,
+	Limiter(std::shared_ptr<ISound> sound,
 					   float start = 0, float end = -1);
 
 	/**

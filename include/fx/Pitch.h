@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory changes the pitch of another factory.
+ * This sound changes the pitch of another sound.
  */
 class Pitch : public Effect
 {
@@ -37,11 +37,11 @@ private:
 
 public:
 	/**
-	 * Creates a new pitch factory.
-	 * \param factory The input factory.
+	 * Creates a new pitch sound.
+	 * \param sound The input sound.
 	 * \param pitch The desired pitch.
 	 */
-	Pitch(std::shared_ptr<ISound> factory, float pitch);
+	Pitch(std::shared_ptr<ISound> sound, float pitch);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Reverse::Reverse(std::shared_ptr<ISound> factory) :
-		Effect(factory)
+Reverse::Reverse(std::shared_ptr<ISound> sound) :
+		Effect(sound)
 {
 }
 

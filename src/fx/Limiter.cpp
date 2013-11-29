@@ -19,9 +19,9 @@
 
 AUD_NAMESPACE_BEGIN
 
-Limiter::Limiter(std::shared_ptr<ISound> factory,
+Limiter::Limiter(std::shared_ptr<ISound> sound,
 									   float start, float end) :
-		Effect(factory),
+		Effect(sound),
 		m_start(start),
 		m_end(end)
 {

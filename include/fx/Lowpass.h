@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a lowpass filter reader.
+ * This sound creates a lowpass filter reader.
  */
 class Lowpass : public DynamicIIRFilter
 {
@@ -32,12 +32,12 @@ private:
 
 public:
 	/**
-	 * Creates a new lowpass factory.
-	 * \param factory The input factory.
+	 * Creates a new lowpass sound.
+	 * \param sound The input sound.
 	 * \param frequency The cutoff frequency.
 	 * \param Q The Q factor.
 	 */
-	Lowpass(std::shared_ptr<ISound> factory, float frequency, float Q = 1.0f);
+	Lowpass(std::shared_ptr<ISound> sound, float frequency, float Q = 1.0f);
 };
 
 AUD_NAMESPACE_END

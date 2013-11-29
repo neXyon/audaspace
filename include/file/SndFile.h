@@ -26,7 +26,7 @@ AUD_NAMESPACE_BEGIN
 class Buffer;
 
 /**
- * This factory reads a sound file via libsndfile.
+ * This sound reads a sound file via libsndfile.
  */
 class SndFile : public ISound
 {
@@ -47,13 +47,13 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
+	 * Creates a new sound.
 	 * \param filename The sound file path.
 	 */
 	SndFile(std::string filename);
 
 	/**
-	 * Creates a new factory.
+	 * Creates a new sound.
 	 * \param buffer The buffer to read from.
 	 * \param size The size of the buffer.
 	 */

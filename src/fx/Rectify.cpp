@@ -26,8 +26,8 @@ sample_t Rectify::rectifyFilter(CallbackIIRFilterReader* reader, void* useless)
 	return std::fabs(reader->x(0));
 }
 
-Rectify::Rectify(std::shared_ptr<ISound> factory) :
-		Effect(factory)
+Rectify::Rectify(std::shared_ptr<ISound> sound) :
+		Effect(sound)
 {
 }
 

@@ -19,10 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-IIRFilter::IIRFilter(std::shared_ptr<ISound> factory,
-										   std::vector<float> b,
-										   std::vector<float> a) :
-		Effect(factory), m_a(a), m_b(b)
+IIRFilter::IIRFilter(std::shared_ptr<ISound> sound, std::vector<float> b,  std::vector<float> a) :
+		Effect(sound), m_a(a), m_b(b)
 {
 }
 

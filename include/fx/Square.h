@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 class CallbackIIRFilterReader;
 
 /**
- * This factory Transforms any signal to a square signal.
+ * This sound Transforms any signal to a square signal.
  */
 class Square : public Effect
 {
@@ -39,11 +39,11 @@ private:
 
 public:
 	/**
-	 * Creates a new square factory.
-	 * \param factory The input factory.
+	 * Creates a new square sound.
+	 * \param sound The input sound.
 	 * \param threshold The threshold.
 	 */
-	Square(std::shared_ptr<ISound> factory, float threshold = 0.0f);
+	Square(std::shared_ptr<ISound> sound, float threshold = 0.0f);
 
 	/**
 	 * Returns the threshold.

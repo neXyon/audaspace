@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Loop::Loop(std::shared_ptr<ISound> factory, int loop) :
-		Effect(factory),
+Loop::Loop(std::shared_ptr<ISound> sound, int loop) :
+		Effect(sound),
 		m_loop(loop)
 {
 }

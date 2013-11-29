@@ -20,10 +20,10 @@
 
 AUD_NAMESPACE_BEGIN
 
-StreamBuffer::StreamBuffer(std::shared_ptr<ISound> factory) :
+StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
 	m_buffer(new Buffer())
 {
-	std::shared_ptr<IReader> reader = factory->createReader();
+	std::shared_ptr<IReader> reader = sound->createReader();
 
 	m_specs = reader->getSpecs();
 

@@ -33,7 +33,7 @@ class ISound
 {
 public:
 	/**
-	 * Destroys the factory.
+	 * Destroys the sound.
 	 */
 	virtual ~ISound() {}
 

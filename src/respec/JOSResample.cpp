@@ -19,9 +19,9 @@
 
 AUD_NAMESPACE_BEGIN
 
-JOSResample::JOSResample(std::shared_ptr<ISound> factory,
+JOSResample::JOSResample(std::shared_ptr<ISound> sound,
 													 DeviceSpecs specs) :
-		SpecsChanger(factory, specs)
+		SpecsChanger(sound, specs)
 {
 }
 

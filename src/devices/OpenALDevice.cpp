@@ -31,8 +31,8 @@ AUD_NAMESPACE_BEGIN
 
 /*struct OpenALBuffered
 {
-	/// The factory.
-	ISound* factory;
+	/// The sound.
+	ISound* sound;
 
 	/// The OpenAL buffer.
 	ALuint buffer;
@@ -1273,7 +1273,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<IReader> reader, boo
 	return std::shared_ptr<IHandle>(sound);
 }
 
-std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> factory, bool keep)
+std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> sound, bool keep)
 {
 	/* AUD_XXX disabled
 	OpenALHandle* sound = nullptr;
@@ -1282,11 +1282,11 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> factory, boo
 
 	try
 	{
-		// check if it is a buffered factory
+		// check if it is a buffered sound
 		for(auto i = m_bufferedFactories->begin();
 			i != m_bufferedFactories->end(); i++)
 		{
-			if((*i)->factory == factory)
+			if((*i)->sound == sound)
 			{
 				// create the handle
 				sound = new OpenALHandle;
@@ -1347,7 +1347,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> factory, boo
 	if(sound)
 		return sound;*/
 
-	return play(factory->createReader(), keep);
+	return play(sound->createReader(), keep);
 }
 
 void OpenALDevice::stopAll()
@@ -1389,20 +1389,20 @@ void OpenALDevice::setVolume(float volume)
 
 /* AUD_XXX Temorary disabled
 
-bool OpenALDevice::bufferFactory(void *value)
+bool OpenALDevice::bufferSound(void *value)
 {
 	bool result = false;
-	ISound* factory = (ISound*) value;
+	ISound* sound = (ISound*) value;
 
-	// load the factory into an OpenAL buffer
-	if(factory)
+	// load the sound into an OpenAL buffer
+	if(sound)
 	{
-		// check if the factory is already buffered
+		// check if the sound is already buffered
 		lock();
 		for(auto i = m_bufferedFactories->begin();
 			i != m_bufferedFactories->end(); i++)
 		{
-			if((*i)->factory == factory)
+			if((*i)->sound == sound)
 			{
 				result = true;
 				break;
@@ -1412,7 +1412,7 @@ bool OpenALDevice::bufferFactory(void *value)
 		if(result)
 			return result;
 
-		IReader* reader = factory->createReader();
+		IReader* reader = sound->createReader();
 
 		if(reader == nullptr)
 			return false;
@@ -1435,7 +1435,7 @@ bool OpenALDevice::bufferFactory(void *value)
 		alcSuspendContext(m_context);
 
 		OpenALBuffered* bf = new OpenALBuffered;
-		bf->factory = factory;
+		bf->sound = sound;
 
 		try
 		{

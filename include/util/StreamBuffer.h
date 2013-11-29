@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 class Buffer;
 
 /**
- * This factory creates a buffer out of a reader. This way normally streamed
+ * This sound creates a buffer out of a reader. This way normally streamed
  * sound sources can be loaded into memory for buffered playback.
  */
 class StreamBuffer : public ISound
@@ -45,12 +45,12 @@ private:
 
 public:
 	/**
-	 * Creates the factory and reads the reader created by the factory supplied
+	 * Creates the sound and reads the reader created by the sound supplied
 	 * to the buffer.
-	 * \param factory The factory that creates the reader for buffering.
+	 * \param sound The sound that creates the reader for buffering.
 	 * \exception Exception Thrown if the reader cannot be created.
 	 */
-	StreamBuffer(std::shared_ptr<ISound> factory);
+	StreamBuffer(std::shared_ptr<ISound> sound);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

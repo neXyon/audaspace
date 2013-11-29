@@ -35,8 +35,8 @@ void Square::endSquareFilter(float* threshold)
 	delete threshold;
 }
 
-Square::Square(std::shared_ptr<ISound> factory, float threshold) :
-		Effect(factory),
+Square::Square(std::shared_ptr<ISound> sound, float threshold) :
+		Effect(sound),
 		m_threshold(threshold)
 {
 }

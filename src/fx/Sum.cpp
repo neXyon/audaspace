@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Sum::Sum(std::shared_ptr<ISound> factory) :
-		Effect(factory)
+Sum::Sum(std::shared_ptr<ISound> sound) :
+		Effect(sound)
 {
 }
 

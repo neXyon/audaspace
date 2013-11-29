@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory loops another factory.
+ * This sound loops another sound.
  * \note The reader has to be seekable.
  */
 class Loop : public Effect
@@ -38,12 +38,12 @@ private:
 
 public:
 	/**
-	 * Creates a new loop factory.
-	 * \param factory The input factory.
+	 * Creates a new loop sound.
+	 * \param sound The input sound.
 	 * \param loop The desired loop count, negative values result in endless
 	 *        looping.
 	 */
-	Loop(std::shared_ptr<ISound> factory, int loop = -1);
+	Loop(std::shared_ptr<ISound> sound, int loop = -1);
 
 	/**
 	 * Returns the loop count.

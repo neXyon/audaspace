@@ -19,9 +19,9 @@
 
 AUD_NAMESPACE_BEGIN
 
-Fader::Fader(std::shared_ptr<ISound> factory, FadeType type,
+Fader::Fader(std::shared_ptr<ISound> sound, FadeType type,
 								   float start, float length) :
-		Effect(factory),
+		Effect(sound),
 		m_type(type),
 		m_start(start),
 		m_length(length)

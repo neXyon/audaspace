@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a resampling reader that does simple linear resampling.
+ * This sound creates a resampling reader that does simple linear resampling.
  */
 class LinearResample : public SpecsChanger
 {
@@ -32,11 +32,11 @@ private:
 
 public:
 	/**
-	 * Creates a new factory.
-	 * \param factory The input factory.
+	 * Creates a new sound.
+	 * \param sound The input sound.
 	 * \param specs The target specifications.
 	 */
-	LinearResample(std::shared_ptr<ISound> factory, DeviceSpecs specs);
+	LinearResample(std::shared_ptr<ISound> sound, DeviceSpecs specs);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

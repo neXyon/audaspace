@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a butterworth lowpass filter reader.
+ * This sound creates a butterworth lowpass filter reader.
  */
 class Butterworth : public DynamicIIRFilter
 {
@@ -32,11 +32,11 @@ private:
 
 public:
 	/**
-	 * Creates a new butterworth factory.
-	 * \param factory The input factory.
+	 * Creates a new butterworth sound.
+	 * \param sound The input sound.
 	 * \param frequency The cutoff frequency.
 	 */
-	Butterworth(std::shared_ptr<ISound> factory, float frequency);
+	Butterworth(std::shared_ptr<ISound> sound, float frequency);
 };
 
 AUD_NAMESPACE_END

@@ -20,12 +20,12 @@ AUD_NAMESPACE_BEGIN
 
 std::shared_ptr<IReader> SpecsChanger::getReader() const
 {
-	return m_factory->createReader();
+	return m_sound->createReader();
 }
 
-SpecsChanger::SpecsChanger(std::shared_ptr<ISound> factory,
+SpecsChanger::SpecsChanger(std::shared_ptr<ISound> sound,
 								   DeviceSpecs specs) :
-	m_specs(specs), m_factory(factory)
+	m_specs(specs), m_sound(sound)
 {
 }
 
@@ -34,9 +34,9 @@ DeviceSpecs SpecsChanger::getSpecs() const
 	return m_specs;
 }
 
-std::shared_ptr<ISound> SpecsChanger::getFactory() const
+std::shared_ptr<ISound> SpecsChanger::getSound() const
 {
-	return m_factory;
+	return m_sound;
 }
 
 AUD_NAMESPACE_END

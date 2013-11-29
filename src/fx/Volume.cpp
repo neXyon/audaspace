@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Volume::Volume(std::shared_ptr<ISound> factory, float volume) :
-		Effect(factory),
+Volume::Volume(std::shared_ptr<ISound> sound, float volume) :
+		Effect(sound),
 		m_volume(volume)
 {
 }

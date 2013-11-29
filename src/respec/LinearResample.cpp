@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-LinearResample::LinearResample(std::shared_ptr<ISound> factory, DeviceSpecs specs) :
-		SpecsChanger(factory, specs)
+LinearResample::LinearResample(std::shared_ptr<ISound> sound, DeviceSpecs specs) :
+		SpecsChanger(sound, specs)
 {
 }
 

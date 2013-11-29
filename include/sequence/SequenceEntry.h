@@ -27,7 +27,7 @@ AUD_NAMESPACE_BEGIN
 class ISound;
 
 /**
- * This class represents a sequenced entry in a sequencer factory.
+ * This class represents a sequenced entry in a sequencer sound.
  */
 class SequenceEntry : public ILockable
 {
@@ -42,7 +42,7 @@ private:
 	/// The sound status, changed when the sound is changed.
 	int m_sound_status;
 
-	/// The unique (regarding the factory) ID of the entry.
+	/// The unique (regarding the sound) ID of the entry.
 	int m_id;
 
 	/// The sound this entry plays.

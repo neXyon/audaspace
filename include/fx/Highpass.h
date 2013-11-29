@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory creates a highpass filter reader.
+ * This sound creates a highpass filter reader.
  */
 class Highpass : public DynamicIIRFilter
 {
@@ -32,12 +32,12 @@ private:
 
 public:
 	/**
-	 * Creates a new highpass factory.
-	 * \param factory The input factory.
+	 * Creates a new highpass sound.
+	 * \param sound The input sound.
 	 * \param frequency The cutoff frequency.
 	 * \param Q The Q factor.
 	 */
-	Highpass(std::shared_ptr<ISound> factory, float frequency, float Q = 1.0f);
+	Highpass(std::shared_ptr<ISound> sound, float frequency, float Q = 1.0f);
 };
 
 AUD_NAMESPACE_END

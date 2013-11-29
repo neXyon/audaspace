@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Pitch::Pitch(std::shared_ptr<ISound> factory, float pitch) :
-		Effect(factory),
+Pitch::Pitch(std::shared_ptr<ISound> sound, float pitch) :
+		Effect(sound),
 		m_pitch(pitch)
 {
 }

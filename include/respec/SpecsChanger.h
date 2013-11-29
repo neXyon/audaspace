@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory is a base class for all mixer factories.
+ * This sound is a base class for all mixer factories.
  */
 class SpecsChanger : public ISound
 {
@@ -32,12 +32,12 @@ protected:
 	const DeviceSpecs m_specs;
 
 	/**
-	 * If there is no reader it is created out of this factory.
+	 * If there is no reader it is created out of this sound.
 	 */
-	std::shared_ptr<ISound> m_factory;
+	std::shared_ptr<ISound> m_sound;
 
 	/**
-	 * Returns the reader created out of the factory.
+	 * Returns the reader created out of the sound.
 	 * This method can be used for the createReader function of the implementing
 	 * classes.
 	 * \return The reader to mix.
@@ -46,11 +46,11 @@ protected:
 
 public:
 	/**
-	 * Creates a new factory.
-	 * \param factory The factory to create the readers to mix out of.
+	 * Creates a new sound.
+	 * \param sound The sound to create the readers to mix out of.
 	 * \param specs The target specification.
 	 */
-	SpecsChanger(std::shared_ptr<ISound> factory, DeviceSpecs specs);
+	SpecsChanger(std::shared_ptr<ISound> sound, DeviceSpecs specs);
 
 	/**
 	 * Returns the target specification for resampling.
@@ -58,10 +58,10 @@ public:
 	DeviceSpecs getSpecs() const;
 
 	/**
-	 * Returns the saved factory.
-	 * \return The factory.
+	 * Returns the saved sound.
+	 * \return The sound.
 	 */
-	std::shared_ptr<ISound> getFactory() const;
+	std::shared_ptr<ISound> getSound() const;
 };
 
 AUD_NAMESPACE_END

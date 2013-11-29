@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Delay::Delay(std::shared_ptr<ISound> factory, float delay) :
-		Effect(factory),
+Delay::Delay(std::shared_ptr<ISound> sound, float delay) :
+		Effect(sound),
 		m_delay(delay)
 {
 }

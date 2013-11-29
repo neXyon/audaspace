@@ -20,8 +20,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Highpass::Highpass(std::shared_ptr<ISound> factory, float frequency, float Q) :
-		DynamicIIRFilter(factory, std::shared_ptr<IDynamicIIRFilterCalculator>(new HighpassCalculator(frequency, Q)))
+Highpass::Highpass(std::shared_ptr<ISound> sound, float frequency, float Q) :
+        DynamicIIRFilter(sound, std::shared_ptr<IDynamicIIRFilterCalculator>(new HighpassCalculator(frequency, Q)))
 {
 }
 

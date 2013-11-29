@@ -19,9 +19,9 @@
 
 AUD_NAMESPACE_BEGIN
 
-DynamicIIRFilter::DynamicIIRFilter(std::shared_ptr<ISound> factory,
+DynamicIIRFilter::DynamicIIRFilter(std::shared_ptr<ISound> sound,
 														 std::shared_ptr<IDynamicIIRFilterCalculator> calculator) :
-	Effect(factory),
+	Effect(sound),
 	m_calculator(calculator)
 {
 }

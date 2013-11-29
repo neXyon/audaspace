@@ -39,9 +39,9 @@ sample_t Accumulator::accumulatorFilter(CallbackIIRFilterReader* reader, void* u
 	return out;
 }
 
-Accumulator::Accumulator(std::shared_ptr<ISound> factory,
+Accumulator::Accumulator(std::shared_ptr<ISound> sound,
 											   bool additive) :
-		Effect(factory),
+		Effect(sound),
 		m_additive(additive)
 {
 }

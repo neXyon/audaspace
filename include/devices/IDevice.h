@@ -61,7 +61,7 @@ public:
 
 	/**
 	 * Plays a sound source.
-	 * \param factory The factory to create the reader for the sound source.
+	 * \param sound The sound to create the reader for the sound source.
 	 * \param keep When keep is true the sound source will not be deleted but
 	 *             set to paused when its end has been reached.
 	 * \return Returns a handle with which the playback can be controlled.
@@ -69,7 +69,7 @@ public:
 	 * \exception Exception Thrown if there's an unexpected (from the
 	 *            device side) error during creation of the reader.
 	 */
-	virtual std::shared_ptr<IHandle> play(std::shared_ptr<ISound> factory, bool keep = false)=0;
+	virtual std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound, bool keep = false)=0;
 
 	/**
 	 * Stops all playing sounds.

@@ -21,8 +21,8 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory reads another factory reverted.
- * \note Readers from the underlying factory must be seekable.
+ * This sound reads another sound reverted.
+ * \note Readers from the underlying sound must be seekable.
  */
 class Reverse : public Effect
 {
@@ -33,10 +33,10 @@ private:
 
 public:
 	/**
-	 * Creates a new reverse factory.
-	 * \param factory The input factory.
+	 * Creates a new reverse sound.
+	 * \param sound The input sound.
 	 */
-	Reverse(std::shared_ptr<ISound> factory);
+	Reverse(std::shared_ptr<ISound> sound);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

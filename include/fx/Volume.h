@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory changes the volume of another factory.
+ * This sound changes the volume of another sound.
  * The set volume should be a value between 0.0 and 1.0, higher values at your
  * own risk!
  */
@@ -39,11 +39,11 @@ private:
 
 public:
 	/**
-	 * Creates a new volume factory.
-	 * \param factory The input factory.
+	 * Creates a new volume sound.
+	 * \param sound The input sound.
 	 * \param volume The desired volume.
 	 */
-	Volume(std::shared_ptr<ISound> factory, float volume);
+	Volume(std::shared_ptr<ISound> sound, float volume);
 
 	/**
 	 * Returns the volume.

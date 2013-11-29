@@ -872,9 +872,9 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 	return std::shared_ptr<IHandle>(sound);
 }
 
-std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<ISound> factory, bool keep)
+std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<ISound> sound, bool keep)
 {
-	return play(factory->createReader(), keep);
+	return play(sound->createReader(), keep);
 }
 
 void SoftwareDevice::stopAll()

@@ -33,8 +33,8 @@ typedef void Reference_IHandle;
 typedef struct {
 	PyObject_HEAD
 	PyObject *child_list;
-	Reference_ISound* factory;
-} Factory;
+	Reference_ISound* sound;
+} Sound;
 
 typedef struct {
 	PyObject_HEAD
@@ -50,8 +50,8 @@ PyMODINIT_FUNC
 PyInit_aud(void);
 
 extern PyObject *Device_empty();
-extern PyObject *Factory_empty();
-extern Factory  *checkFactory(PyObject *factory);
+extern PyObject *Sound_empty();
+extern Sound  *checkSound(PyObject *sound);
 
 #ifdef __cplusplus
 }

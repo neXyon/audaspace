@@ -21,20 +21,20 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This factory plays two other factories behind each other.
+ * This sound plays two other factories behind each other.
  */
 class Double : public ISound
 {
 private:
 	/**
-	 * First played factory.
+	 * First played sound.
 	 */
-	std::shared_ptr<ISound> m_factory1;
+	std::shared_ptr<ISound> m_sound1;
 
 	/**
-	 * Second played factory.
+	 * Second played sound.
 	 */
-	std::shared_ptr<ISound> m_factory2;
+	std::shared_ptr<ISound> m_sound2;
 
 	// delete copy constructor and operator=
 	Double(const Double&) = delete;
@@ -42,11 +42,11 @@ private:
 
 public:
 	/**
-	 * Creates a new double factory.
-	 * \param factory1 The first input factory.
-	 * \param factory2 The second input factory.
+	 * Creates a new double sound.
+	 * \param sound1 The first input sound.
+	 * \param sound2 The second input sound.
 	 */
-	Double(std::shared_ptr<ISound> factory1, std::shared_ptr<ISound> factory2);
+	Double(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

@@ -24,7 +24,7 @@ class CallbackIIRFilterReader;
 struct EnvelopeParameters;
 
 /**
- * This factory creates an envelope follower reader.
+ * This sound creates an envelope follower reader.
  */
 class Envelope : public Effect
 {
@@ -55,14 +55,14 @@ private:
 
 public:
 	/**
-	 * Creates a new envelope factory.
-	 * \param factory The input factory.
+	 * Creates a new envelope sound.
+	 * \param sound The input sound.
 	 * \param attack The attack value in seconds.
 	 * \param release The release value in seconds.
 	 * \param threshold The threshold value.
 	 * \param arthreshold The attack/release threshold value.
 	 */
-	Envelope(std::shared_ptr<ISound> factory, float attack, float release,
+	Envelope(std::shared_ptr<ISound> sound, float attack, float release,
 						float threshold, float arthreshold);
 
 	virtual std::shared_ptr<IReader> createReader();

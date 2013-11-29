@@ -30,7 +30,7 @@ class DynamicIIRFilterReader : public IIRFilterReader
 {
 private:
 	/**
-	 * The factory for dynamically recalculating filter coefficients.
+	 * The sound for dynamically recalculating filter coefficients.
 	 */
 	std::shared_ptr<IDynamicIIRFilterCalculator> m_calculator;
 

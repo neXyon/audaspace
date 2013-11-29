@@ -19,15 +19,15 @@
 
 AUD_NAMESPACE_BEGIN
 
-Superpose::Superpose(std::shared_ptr<ISound> factory1, std::shared_ptr<ISound> factory2) :
-		m_factory1(factory1), m_factory2(factory2)
+Superpose::Superpose(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2) :
+		m_sound1(sound1), m_sound2(sound2)
 {
 }
 
 std::shared_ptr<IReader> Superpose::createReader()
 {
-	std::shared_ptr<IReader> reader1 = m_factory1->createReader();
-	std::shared_ptr<IReader> reader2 = m_factory2->createReader();
+	std::shared_ptr<IReader> reader1 = m_sound1->createReader();
+	std::shared_ptr<IReader> reader2 = m_sound2->createReader();
 
 	return std::shared_ptr<IReader>(new SuperposeReader(reader1, reader2));
 }

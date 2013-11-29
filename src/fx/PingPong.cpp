@@ -20,8 +20,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-PingPong::PingPong(std::shared_ptr<ISound> factory) :
-		Effect(factory)
+PingPong::PingPong(std::shared_ptr<ISound> sound) :
+		Effect(sound)
 {
 }
 

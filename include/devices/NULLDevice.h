@@ -72,7 +72,7 @@ public:
 
 	virtual DeviceSpecs getSpecs() const;
 	virtual std::shared_ptr<IHandle> play(std::shared_ptr<IReader> reader, bool keep = false);
-	virtual std::shared_ptr<IHandle> play(std::shared_ptr<ISound> factory, bool keep = false);
+	virtual std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound, bool keep = false);
 	virtual void stopAll();
 	virtual void lock();
 	virtual void unlock();

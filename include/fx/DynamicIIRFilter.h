@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 class IDynamicIIRFilterCalculator;
 
 /**
- * This factory creates a IIR filter reader.
+ * This sound creates a IIR filter reader.
  *
  * This means that on sample rate change the filter recalculates its
  * coefficients.
@@ -35,10 +35,10 @@ protected:
 
 public:
 	/**
-	 * Creates a new Dynmic IIR filter factory.
-	 * \param factory The input factory.
+	 * Creates a new Dynmic IIR filter sound.
+	 * \param sound The input sound.
 	 */
-	DynamicIIRFilter(std::shared_ptr<ISound> factory,
+	DynamicIIRFilter(std::shared_ptr<ISound> sound,
 								std::shared_ptr<IDynamicIIRFilterCalculator> calculator);
 
 	virtual std::shared_ptr<IReader> createReader();

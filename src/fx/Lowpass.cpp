@@ -19,8 +19,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Lowpass::Lowpass(std::shared_ptr<ISound> factory, float frequency, float Q) :
-		DynamicIIRFilter(factory, std::shared_ptr<IDynamicIIRFilterCalculator>(new LowpassCalculator(frequency, Q)))
+Lowpass::Lowpass(std::shared_ptr<ISound> sound, float frequency, float Q) :
+		DynamicIIRFilter(sound, std::shared_ptr<IDynamicIIRFilterCalculator>(new LowpassCalculator(frequency, Q)))
 {
 }
 
