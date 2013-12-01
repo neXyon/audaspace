@@ -71,9 +71,9 @@ private:
 	Buffer m_input_buffer;
 
 	/**
-	 * The output buffer for the encoded audio data.
+	 * The buffer used for deinterleaving.
 	 */
-	Buffer m_output_buffer;
+	Buffer m_deinterleave_buffer;
 
 	/**
 	 * The count of input samples we have so far.
@@ -86,6 +86,11 @@ private:
 	unsigned int m_input_size;
 
 	/**
+	 * Whether the ouput has to be deinterleaved before writing.
+	 */
+	bool m_deinterleave;
+
+	/**
 	 * Converter function.
 	 */
 	convert_f m_convert;
@@ -96,9 +101,8 @@ private:
 
 	/**
 	 * Encodes to the output buffer.
-	 * \param data Pointer to the data to encode.
 	 */
-	void encode(sample_t* data);
+	void encode();
 
 public:
 	/**

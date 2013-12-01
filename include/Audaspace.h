@@ -186,7 +186,8 @@ typedef enum
 	CODEC_MP2,
 	CODEC_MP3,
 	CODEC_PCM,
-	CODEC_VORBIS
+	CODEC_VORBIS,
+	CODEC_OPUS
 } Codec;
 
 /// Sample type.(float samples)

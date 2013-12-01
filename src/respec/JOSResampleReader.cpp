@@ -19,29 +19,6 @@
 #include <cmath>
 #include <cstring>
 
-/* MSVC does not have lrint */
-#ifdef _MSC_VER
-#ifdef _M_X64
-#include <emmintrin.h>
-static inline int lrint(double d)
-{
-		return _mm_cvtsd_si32(_mm_load_sd(&d));
-}
-#else
-static inline int lrint(double d)
-{
-	int i;
-
-	_asm{
-		fld d
-		fistp i
-	};
-
-	return i;
-}
-#endif
-#endif
-
 #define RATE_MAX 256
 #define SHIFT_BITS 12
 #define double_to_fp(x) (lrint(x * double(1 << SHIFT_BITS)))

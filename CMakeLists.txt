@@ -78,6 +78,12 @@ target_link_libraries(audaplay
 	audaspace
 )
 
+add_executable(audaconvert demos/audaconvert.cpp)
+
+target_link_libraries(audaconvert
+	audaspace
+)
+
 add_executable(python bindings/python/PyAPI.cpp bindings/python/PyAPI.h bindings/python/PyInit.h)
 
 target_link_libraries(python

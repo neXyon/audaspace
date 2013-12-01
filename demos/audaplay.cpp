@@ -14,14 +14,14 @@
  * limitations under the License.
  ******************************************************************************/
 
+#include "devices/OpenALDevice.h"
+#include "file/File.h"
+#include "IReader.h"
+
 #include <iostream>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
-
-#include "devices/OpenALDevice.h"
-#include "file/File.h"
-#include "IReader.h"
 
 using namespace aud;
 
