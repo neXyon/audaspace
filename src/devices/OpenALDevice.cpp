@@ -20,24 +20,10 @@
 
 #include <mutex>
 #include <cstring>
-
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
+#include <chrono>
+#include <thread>
 
 AUD_NAMESPACE_BEGIN
-
-/*struct OpenALBuffered
-{
-	/// The sound.
-	ISound* sound;
-
-	/// The OpenAL buffer.
-	ALuint buffer;
-};*/
-
 
 /******************************************************************************/
 /*********************** OpenALHandle Handle Code *************************/
@@ -878,7 +864,9 @@ void OpenALDevice::updateStreams()
 	std::list<std::shared_ptr<OpenALHandle> > stopSounds;
 	std::list<std::shared_ptr<OpenALHandle> > pauseSounds;
 
-	while(1)
+	auto sleepDuration = std::chrono::milliseconds(20);
+
+	for(;;)
 	{
 		lock();
 
@@ -931,7 +919,7 @@ void OpenALDevice::updateStreams()
 									break;
 								}
 
-								// unqueue buffer (warning: this might fail for slow early returning sources (none exist so far) if the buffer was not queued due to recent changes - has to be tested)
+								// AUD_XXX unqueue buffer (warning: this might fail for slow early returning sources (none exist so far) if the buffer was not queued due to recent changes - has to be tested)
 								alSourceUnqueueBuffers(sound->m_source, 1, &sound->m_buffers[sound->m_current]);
 								ALenum err;
 								if((err = alGetError()) != AL_NO_ERROR)
@@ -1017,11 +1005,7 @@ void OpenALDevice::updateStreams()
 
 		unlock();
 
-#ifdef WIN32
-		Sleep(20);
-#else
-		usleep(20000);
-#endif
+		std::this_thread::sleep_for(sleepDuration);
 	}
 }
 
@@ -1037,7 +1021,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
 	// it at least is able to play 16 bit stereo audio
 	specs.format = FORMAT_S16;
 
-#if 0
+#if 0 // AUD_XXX
 	if(alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT") == AL_TRUE)
 	{
 		ALCchar* devices = const_cast<ALCchar*>(alcGetString(nullptr, ALC_DEVICE_SPECIFIER));
@@ -1085,8 +1069,6 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
 	m_buffersize = buffersize;
 	m_playing = false;
 
-//	m_bufferedFactories = new std::list<OpenALBuffered*>();
-
 	pthread_mutexattr_t attr;
 	pthread_mutexattr_init(&attr);
 	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
@@ -1109,22 +1091,11 @@ OpenALDevice::~OpenALDevice()
 	while(!m_pausedSounds.empty())
 		m_pausedSounds.front()->stop();
 
-
-	// delete all buffered factories
-	/*while(!m_bufferedFactories->empty())
-	{
-		alDeleteBuffers(1, &(*(m_bufferedFactories->begin()))->buffer);
-		delete *m_bufferedFactories->begin();
-		m_bufferedFactories->erase(m_bufferedFactories->begin());
-	}*/
-
 	alcProcessContext(m_context);
 
 	// wait for the thread to stop
 	unlock();
 	pthread_join(m_thread, nullptr);
-
-	//delete m_bufferedFactories;
 
 	// quit OpenAL
 	alcMakeContextCurrent(nullptr);
@@ -1275,78 +1246,6 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<IReader> reader, boo
 
 std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> sound, bool keep)
 {
-	/* AUD_XXX disabled
-	OpenALHandle* sound = nullptr;
-
-	lock();
-
-	try
-	{
-		// check if it is a buffered sound
-		for(auto i = m_bufferedFactories->begin();
-			i != m_bufferedFactories->end(); i++)
-		{
-			if((*i)->sound == sound)
-			{
-				// create the handle
-				sound = new OpenALHandle;
-				sound->keep = keep;
-				sound->current = -1;
-				sound->isBuffered = true;
-				sound->eos = true;
-				sound->loopcount = 0;
-				sound->stop = nullptr;
-				sound->stop_data = nullptr;
-
-				alcSuspendContext(m_context);
-
-				// OpenAL playback code
-				try
-				{
-					alGenSources(1, &sound->source);
-					if(alGetError() != AL_NO_ERROR)
-						AUD_THROW(ERROR_OPENAL, gensource_error);
-
-					try
-					{
-						alSourcei(sound->source, AL_BUFFER, (*i)->buffer);
-						if(alGetError() != AL_NO_ERROR)
-							AUD_THROW(ERROR_OPENAL, queue_error);
-					}
-					catch(Exception&)
-					{
-						alDeleteSources(1, &sound->source);
-						throw;
-					}
-				}
-				catch(Exception&)
-				{
-					delete sound;
-					alcProcessContext(m_context);
-					throw;
-				}
-
-				// play sound
-				m_playingSounds->push_back(sound);
-
-				alSourcei(sound->source, AL_SOURCE_RELATIVE, 1);
-				start();
-
-				alcProcessContext(m_context);
-			}
-		}
-	}
-	catch(Exception&)
-	{
-		unlock();
-		throw;
-	}
-
-	unlock();
-
-	if(sound)
-		return sound;*/
-
 	return play(sound->createReader(), keep);
 }
 
@@ -1386,124 +1285,6 @@ void OpenALDevice::setVolume(float volume)
 {
 	alListenerf(AL_GAIN, volume);
 }
-
-/* AUD_XXX Temorary disabled
-
-bool OpenALDevice::bufferSound(void *value)
-{
-	bool result = false;
-	ISound* sound = (ISound*) value;
-
-	// load the sound into an OpenAL buffer
-	if(sound)
-	{
-		// check if the sound is already buffered
-		lock();
-		for(auto i = m_bufferedFactories->begin();
-			i != m_bufferedFactories->end(); i++)
-		{
-			if((*i)->sound == sound)
-			{
-				result = true;
-				break;
-			}
-		}
-		unlock();
-		if(result)
-			return result;
-
-		IReader* reader = sound->createReader();
-
-		if(reader == nullptr)
-			return false;
-
-		DeviceSpecs specs = m_specs;
-		specs.specs = reader->getSpecs();
-
-		if(m_specs.format != FORMAT_FLOAT32)
-			reader = new ConverterReader(reader, m_specs);
-
-		ALenum format;
-
-		if(!getFormat(format, specs.specs))
-		{
-			return false;
-		}
-
-		// load into a buffer
-		lock();
-		alcSuspendContext(m_context);
-
-		OpenALBuffered* bf = new OpenALBuffered;
-		bf->sound = sound;
-
-		try
-		{
-			alGenBuffers(1, &bf->buffer);
-			if(alGetError() != AL_NO_ERROR)
-				AUD_THROW(ERROR_OPENAL);
-
-			try
-			{
-				sample_t* buf;
-				int length = reader->getLength();
-
-				reader->read(length, buf);
-				alBufferData(bf->buffer, format, buf,
-							 length * AUD_DEVICE_SAMPLE_SIZE(specs),
-							 specs.rate);
-				if(alGetError() != AL_NO_ERROR)
-					AUD_THROW(ERROR_OPENAL);
-			}
-			catch(Exception&)
-			{
-				alDeleteBuffers(1, &bf->buffer);
-				throw;
-			}
-		}
-		catch(Exception&)
-		{
-			delete bf;
-			alcProcessContext(m_context);
-			unlock();
-			return false;
-		}
-
-		m_bufferedFactories->push_back(bf);
-
-		alcProcessContext(m_context);
-		unlock();
-	}
-	else
-	{
-		// stop all playing and paused buffered sources
-		lock();
-		alcSuspendContext(m_context);
-
-		OpenALHandle* sound;
-		auto it = m_playingSounds->begin();
-		while(it != m_playingSounds->end())
-		{
-			sound = *it;
-			++it;
-
-			if(sound->isBuffered)
-				stop(sound);
-		}
-		alcProcessContext(m_context);
-
-		while(!m_bufferedFactories->empty())
-		{
-			alDeleteBuffers(1,
-							&(*(m_bufferedFactories->begin()))->buffer);
-			delete *m_bufferedFactories->begin();
-			m_bufferedFactories->erase(m_bufferedFactories->begin());
-		}
-		unlock();
-	}
-
-	return true;
-}*/
 
 /******************************************************************************/
 /**************************** 3D Device Code **********************************/
