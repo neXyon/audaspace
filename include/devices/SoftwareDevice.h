@@ -23,7 +23,7 @@
 #include "util/Buffer.h"
 
 #include <list>
-#include <pthread.h>
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -274,7 +274,7 @@ private:
 	/**
 	 * The mutex for locking.
 	 */
-	pthread_mutex_t m_mutex;
+	std::recursive_mutex m_mutex;
 
 	/**
 	 * The overall volume of the device.

@@ -25,7 +25,8 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <list>
-#include <pthread.h>
+#include <mutex>
+#include <thread>
 
 AUD_NAMESPACE_BEGIN
 
@@ -178,12 +179,12 @@ private:
 	/**
 	 * The mutex for locking.
 	 */
-	pthread_mutex_t m_mutex;
+	std::recursive_mutex m_mutex;
 
 	/**
 	 * The streaming thread.
 	 */
-	pthread_t m_thread;
+	std::thread m_thread;
 
 	/**
 	 * The condition for streaming thread wakeup.
@@ -209,7 +210,12 @@ private:
 	 * Starts the streaming thread.
 	 * \param Whether the previous thread should be joined.
 	 */
-	void start(bool join = true);
+	void start();
+
+	/**
+	 * Streaming thread main function.
+	 */
+	void updateStreams();
 
 	/**
 	 * Gets the format according to the specs.
@@ -232,13 +238,7 @@ public:
 	 * \note The buffersize will be multiplicated by three for this device.
 	 * \exception Exception Thrown if the audio device cannot be opened.
 	 */
-	OpenALDevice(DeviceSpecs specs,
-					 int buffersize = AUD_DEFAULT_BUFFER_SIZE);
-
-	/**
-	 * Streaming thread main function.
-	 */
-	void updateStreams();
+	OpenALDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE);
 
 	virtual ~OpenALDevice();
 

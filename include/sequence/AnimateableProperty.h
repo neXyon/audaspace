@@ -19,7 +19,7 @@
 #include "util/Buffer.h"
 #include "util/ILockable.h"
 
-#include <pthread.h>
+#include <mutex>
 #include <list>
 
 AUD_NAMESPACE_BEGIN
@@ -27,7 +27,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class saves animation data for float properties.
  */
-class AnimateableProperty : private Buffer, public ILockable
+class AnimateableProperty : private Buffer
 {
 private:
 	struct Unknown {
@@ -45,7 +45,7 @@ private:
 	bool m_isAnimated;
 
 	/// The mutex for locking.
-	pthread_mutex_t m_mutex;
+	std::recursive_mutex m_mutex;
 
 	/// The list of unknown buffer areas.
 	std::list<Unknown> m_unknown;
@@ -67,16 +67,6 @@ public:
 	 * Destroys the animateable property.
 	 */
 	~AnimateableProperty();
-
-	/**
-	 * Locks the property.
-	 */
-	virtual void lock();
-
-	/**
-	 * Unlocks the previously locked property.
-	 */
-	virtual void unlock();
 
 	/**
 	 * Writes the properties value and marks it non-animated.

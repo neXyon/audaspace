@@ -26,14 +26,6 @@ AnimateableProperty::AnimateableProperty(int count) :
 	Buffer(count * sizeof(float)), m_count(count), m_isAnimated(false)
 {
 	std::memset(getBuffer(), 0, count * sizeof(float));
-
-	pthread_mutexattr_t attr;
-	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-	pthread_mutex_init(&m_mutex, &attr);
-
-	pthread_mutexattr_destroy(&attr);
 }
 
 void AnimateableProperty::updateUnknownCache(int start, int end)
@@ -47,22 +39,11 @@ void AnimateableProperty::updateUnknownCache(int start, int end)
 
 AnimateableProperty::~AnimateableProperty()
 {
-	pthread_mutex_destroy(&m_mutex);
-}
-
-void AnimateableProperty::lock()
-{
-	pthread_mutex_lock(&m_mutex);
-}
-
-void AnimateableProperty::unlock()
-{
-	pthread_mutex_unlock(&m_mutex);
 }
 
 void AnimateableProperty::write(const float* data)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_isAnimated = false;
 	m_unknown.clear();
@@ -71,7 +52,7 @@ void AnimateableProperty::write(const float* data)
 
 void AnimateableProperty::write(const float* data, int position, int count)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	int pos = getSize() / (sizeof(float) * m_count);
 
@@ -159,7 +140,7 @@ void AnimateableProperty::write(const float* data, int position, int count)
 
 void AnimateableProperty::read(float position, float* out)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	if(!m_isAnimated)
 	{

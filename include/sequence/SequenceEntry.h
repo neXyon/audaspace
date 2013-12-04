@@ -19,7 +19,7 @@
 #include "sequence/AnimateableProperty.h"
 #include "util/ILockable.h"
 
-#include <pthread.h>
+#include <mutex>
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
@@ -88,7 +88,7 @@ private:
 	float m_cone_volume_outer;
 
 	/// The mutex for locking.
-	pthread_mutex_t m_mutex;
+	std::recursive_mutex m_mutex;
 
 	/// The animated volume.
 	AnimateableProperty m_volume;

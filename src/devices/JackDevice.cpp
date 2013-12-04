@@ -21,12 +21,6 @@
 
 AUD_NAMESPACE_BEGIN
 
-void* JackDevice::runMixingThread(void* device)
-{
-	((JackDevice*)device)->updateRingBuffers();
-	return nullptr;
-}
-
 void JackDevice::updateRingBuffers()
 {
 	size_t size, temp;
@@ -38,7 +32,8 @@ void JackDevice::updateRingBuffers()
 	jack_transport_state_t state;
 	jack_position_t position;
 
-	pthread_mutex_lock(&m_mixingLock);
+	std::unique_lock<std::mutex> lock(m_mixingLock);
+
 	while(m_valid)
 	{
 		if(m_sync > 1)
@@ -80,9 +75,8 @@ void JackDevice::updateRingBuffers()
 			m_sync = 3;
 		}
 
-		pthread_cond_wait(&m_mixingCondition, &m_mixingLock);
+		m_mixingCondition.wait(lock);
 	}
-	pthread_mutex_unlock(&m_mixingLock);
 }
 
 int JackDevice::jack_mix(jack_nframes_t length, void *data)
@@ -116,10 +110,10 @@ int JackDevice::jack_mix(jack_nframes_t length, void *data)
 				std::memset(buffer + readsamples * sizeof(float), 0, (length - readsamples) * sizeof(float));
 		}
 
-		if(pthread_mutex_trylock(&(device->m_mixingLock)) == 0)
+		if(device->m_mixingLock.try_lock())
 		{
-			pthread_cond_signal(&(device->m_mixingCondition));
-			pthread_mutex_unlock(&(device->m_mixingLock));
+			device->m_mixingCondition.notify_all();
+			device->m_mixingLock.unlock();
 		}
 	}
 
@@ -133,23 +127,23 @@ int JackDevice::jack_sync(jack_transport_state_t state, jack_position_t* pos, vo
 	if(state == JackTransportStopped)
 		return 1;
 
-	if(pthread_mutex_trylock(&(device->m_mixingLock)) == 0)
+	if(device->m_mixingLock.try_lock())
 	{
 		if(device->m_sync > 2)
 		{
 			if(device->m_sync == 3)
 			{
 				device->m_sync = 0;
-				pthread_mutex_unlock(&(device->m_mixingLock));
+				device->m_mixingLock.unlock();
 				return 1;
 			}
 		}
 		else
 		{
 			device->m_sync = 2;
-			pthread_cond_signal(&(device->m_mixingCondition));
+			device->m_mixingCondition.notify_all();
 		}
-		pthread_mutex_unlock(&(device->m_mixingLock));
+		device->m_mixingLock.unlock();
 	}
 	else if(!device->m_sync)
 		device->m_sync = 1;
@@ -231,9 +225,6 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 	m_syncFunc = nullptr;
 	m_nextState = m_state = aud_jack_transport_query(m_client, nullptr);
 
-	pthread_mutex_init(&m_mixingLock, nullptr);
-	pthread_cond_init(&m_mixingCondition, nullptr);
-
 	// activate the client
 	if(aud_jack_activate(m_client))
 	{
@@ -242,8 +233,6 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 		for(unsigned int i = 0; i < specs.channels; i++)
 			aud_jack_ringbuffer_free(m_ringbuffers[i]);
 		delete[] m_ringbuffers;
-		pthread_mutex_destroy(&m_mixingLock);
-		pthread_cond_destroy(&m_mixingCondition);
 		destroy();
 
 		AUD_THROW(ERROR_JACK, activate_error);
@@ -259,13 +248,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 		free(ports);
 	}
 
-	pthread_attr_t attr;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-	pthread_create(&m_mixingThread, &attr, runMixingThread, this);
-
-	pthread_attr_destroy(&attr);
+	m_mixingThread = std::thread(&JackDevice::updateRingBuffers, this);
 }
 
 JackDevice::~JackDevice()
@@ -276,13 +259,12 @@ JackDevice::~JackDevice()
 
 	delete[] m_ports;
 
-	pthread_mutex_lock(&m_mixingLock);
-	pthread_cond_signal(&m_mixingCondition);
-	pthread_mutex_unlock(&m_mixingLock);
-	pthread_join(m_mixingThread, nullptr);
+	m_mixingLock.lock();
+	m_mixingCondition.notify_all();
+	m_mixingLock.unlock();
 
-	pthread_cond_destroy(&m_mixingCondition);
-	pthread_mutex_destroy(&m_mixingLock);
+	m_mixingThread.join();
+
 	for(unsigned int i = 0; i < m_specs.channels; i++)
 		aud_jack_ringbuffer_free(m_ringbuffers[i]);
 	delete[] m_ringbuffers;

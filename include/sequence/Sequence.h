@@ -19,7 +19,6 @@
 #include "ISound.h"
 
 #include <list>
-#include <pthread.h>
 
 AUD_NAMESPACE_BEGIN
 

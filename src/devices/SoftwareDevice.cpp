@@ -697,14 +697,6 @@ void SoftwareDevice::create()
 	m_distance_model = DISTANCE_MODEL_INVERSE_CLAMPED;
 	m_flags = 0;
 	m_quality = false;
-
-	pthread_mutexattr_t attr;
-	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-	pthread_mutex_init(&m_mutex, &attr);
-
-	pthread_mutexattr_destroy(&attr);
 }
 
 void SoftwareDevice::destroy()
@@ -717,15 +709,13 @@ void SoftwareDevice::destroy()
 
 	while(!m_pausedSounds.empty())
 		m_pausedSounds.front()->stop();
-
-	pthread_mutex_destroy(&m_mutex);
 }
 
 void SoftwareDevice::mix(data_t* buffer, int length)
 {
 	m_buffer.assureSize(length * AUD_SAMPLE_SIZE(m_specs));
 
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	{
 		std::shared_ptr<SoftwareDevice::SoftwareHandle> sound;
@@ -858,7 +848,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 	// play sound
 	std::shared_ptr<SoftwareDevice::SoftwareHandle> sound = std::shared_ptr<SoftwareDevice::SoftwareHandle>(new SoftwareDevice::SoftwareHandle(this, reader, pitch, resampler, mapper, keep));
 
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_playingSounds.push_back(sound);
 
@@ -875,7 +865,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<ISound> sound, boo
 
 void SoftwareDevice::stopAll()
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	while(!m_playingSounds.empty())
 		m_playingSounds.front()->stop();
@@ -886,12 +876,12 @@ void SoftwareDevice::stopAll()
 
 void SoftwareDevice::lock()
 {
-	pthread_mutex_lock(&m_mutex);
+	m_mutex.lock();
 }
 
 void SoftwareDevice::unlock()
 {
-	pthread_mutex_unlock(&m_mutex);
+	m_mutex.unlock();
 }
 
 float SoftwareDevice::getVolume() const

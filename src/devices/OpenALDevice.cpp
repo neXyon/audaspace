@@ -826,29 +826,16 @@ bool OpenALDevice::OpenALHandle::setConeVolumeOuter(float volume)
 /**************************** Threading Code **********************************/
 /******************************************************************************/
 
-static void *openalRunThread(void *device)
-{
-	OpenALDevice* dev = (OpenALDevice*)device;
-	dev->updateStreams();
-	return nullptr;
-}
-
-void OpenALDevice::start(bool join)
+void OpenALDevice::start()
 {
 	std::lock_guard<ILockable> lock(*this);
 
 	if(!m_playing)
 	{
-		if(join)
-			pthread_join(m_thread, nullptr);
+		if(m_thread.joinable())
+			m_thread.join();
 
-		pthread_attr_t attr;
-		pthread_attr_init(&attr);
-		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-		pthread_create(&m_thread, &attr, openalRunThread, this);
-
-		pthread_attr_destroy(&attr);
+		m_thread = std::thread(&OpenALDevice::updateStreams, this);
 
 		m_playing = true;
 	}
@@ -1000,7 +987,8 @@ void OpenALDevice::updateStreams()
 		{
 			m_playing = false;
 			unlock();
-			pthread_exit(nullptr);
+
+			return;
 		}
 
 		unlock();
@@ -1015,7 +1003,8 @@ void OpenALDevice::updateStreams()
 
 static const char* open_error = "OpenALDevice: Device couldn't be opened.";
 
-OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
+OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize) :
+	m_buffersize(buffersize), m_playing(false)
 {
 	// cannot determine how many channels or which format OpenAL uses, but
 	// it at least is able to play 16 bit stereo audio
@@ -1066,18 +1055,6 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize)
 	alcGetError(m_device);
 
 	m_specs = specs;
-	m_buffersize = buffersize;
-	m_playing = false;
-
-	pthread_mutexattr_t attr;
-	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-	pthread_mutex_init(&m_mutex, &attr);
-
-	pthread_mutexattr_destroy(&attr);
-
-	start(false);
 }
 
 OpenALDevice::~OpenALDevice()
@@ -1095,14 +1072,12 @@ OpenALDevice::~OpenALDevice()
 
 	// wait for the thread to stop
 	unlock();
-	pthread_join(m_thread, nullptr);
+	m_thread.join();
 
 	// quit OpenAL
 	alcMakeContextCurrent(nullptr);
 	alcDestroyContext(m_context);
 	alcCloseDevice(m_device);
-
-	pthread_mutex_destroy(&m_mutex);
 }
 
 DeviceSpecs OpenALDevice::getSpecs() const
@@ -1266,12 +1241,12 @@ void OpenALDevice::stopAll()
 
 void OpenALDevice::lock()
 {
-	pthread_mutex_lock(&m_mutex);
+	m_mutex.lock();
 }
 
 void OpenALDevice::unlock()
 {
-	pthread_mutex_unlock(&m_mutex);
+	m_mutex.unlock();
 }
 
 float OpenALDevice::getVolume() const

@@ -21,6 +21,8 @@
 #include "devices/JackLibrary.h"
 
 #include <string>
+#include <condition_variable>
+#include <thread>
 
 AUD_NAMESPACE_BEGIN
 
@@ -103,24 +105,17 @@ private:
 	/**
 	 * The mixing thread.
 	 */
-	pthread_t m_mixingThread;
+	std::thread m_mixingThread;
 
 	/**
 	 * Mutex for mixing.
 	 */
-	pthread_mutex_t m_mixingLock;
+	std::mutex m_mixingLock;
 
 	/**
 	 * Condition for mixing.
 	 */
-	pthread_cond_t m_mixingCondition;
-
-	/**
-	 * Mixing thread function.
-	 * \param device The this pointer.
-	 * \return nullptr.
-	 */
-	static void* runMixingThread(void* device);
+	std::condition_variable m_mixingCondition;
 
 	/**
 	 * Updates the ring buffers.

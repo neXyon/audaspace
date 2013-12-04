@@ -49,34 +49,25 @@ SequenceEntry::SequenceEntry(std::shared_ptr<ISound> sound, float begin, float e
 	float f = 1;
 	m_volume.write(&f);
 	m_pitch.write(&f);
-
-	pthread_mutexattr_t attr;
-	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-	pthread_mutex_init(&m_mutex, &attr);
-
-	pthread_mutexattr_destroy(&attr);
 }
 
 SequenceEntry::~SequenceEntry()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 void SequenceEntry::lock()
 {
-	pthread_mutex_lock(&m_mutex);
+	m_mutex.lock();
 }
 
 void SequenceEntry::unlock()
 {
-	pthread_mutex_unlock(&m_mutex);
+	m_mutex.unlock();
 }
 
 void SequenceEntry::setSound(std::shared_ptr<ISound> sound)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	if(m_sound.get() != sound.get())
 	{
@@ -87,7 +78,7 @@ void SequenceEntry::setSound(std::shared_ptr<ISound> sound)
 
 void SequenceEntry::move(float begin, float end, float skip)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	if(m_begin != begin || m_skip != skip || m_end != end)
 	{
@@ -100,7 +91,7 @@ void SequenceEntry::move(float begin, float end, float skip)
 
 void SequenceEntry::mute(bool mute)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_muted = mute;
 }
@@ -133,7 +124,7 @@ void SequenceEntry::updateAll(float volume_max, float volume_min, float distance
 								   float distance_reference, float attenuation, float cone_angle_outer,
 								   float cone_angle_inner, float cone_volume_outer)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	if(volume_max != m_volume_max)
 	{
@@ -191,7 +182,7 @@ bool SequenceEntry::isRelative()
 
 void SequenceEntry::setRelative(bool relative)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	if(m_relative != relative)
 	{
@@ -207,7 +198,7 @@ float SequenceEntry::getVolumeMaximum()
 
 void SequenceEntry::setVolumeMaximum(float volume)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_volume_max = volume;
 	m_status++;
@@ -220,7 +211,7 @@ float SequenceEntry::getVolumeMinimum()
 
 void SequenceEntry::setVolumeMinimum(float volume)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_volume_min = volume;
 	m_status++;
@@ -233,7 +224,7 @@ float SequenceEntry::getDistanceMaximum()
 
 void SequenceEntry::setDistanceMaximum(float distance)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_distance_max = distance;
 	m_status++;
@@ -246,7 +237,7 @@ float SequenceEntry::getDistanceReference()
 
 void SequenceEntry::setDistanceReference(float distance)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_distance_reference = distance;
 	m_status++;
@@ -259,7 +250,7 @@ float SequenceEntry::getAttenuation()
 
 void SequenceEntry::setAttenuation(float factor)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_attenuation = factor;
 	m_status++;
@@ -272,7 +263,7 @@ float SequenceEntry::getConeAngleOuter()
 
 void SequenceEntry::setConeAngleOuter(float angle)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_cone_angle_outer = angle;
 	m_status++;
@@ -285,7 +276,7 @@ float SequenceEntry::getConeAngleInner()
 
 void SequenceEntry::setConeAngleInner(float angle)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_cone_angle_inner = angle;
 	m_status++;
@@ -298,7 +289,7 @@ float SequenceEntry::getConeVolumeOuter()
 
 void SequenceEntry::setConeVolumeOuter(float volume)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_cone_volume_outer = volume;
 	m_status++;

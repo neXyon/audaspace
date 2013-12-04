@@ -21,7 +21,7 @@
 
 #include <list>
 #include <memory>
-#include <pthread.h>
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -75,7 +75,7 @@ private:
 	AnimateableProperty m_orientation;
 
 	/// The mutex for locking.
-	pthread_mutex_t m_mutex;
+	std::recursive_mutex m_mutex;
 
 	// delete copy constructor and operator=
 	SequenceData(const SequenceData&) = delete;

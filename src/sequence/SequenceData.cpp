@@ -39,34 +39,25 @@ SequenceData::SequenceData(Specs specs, float fps, bool muted) :
 	m_orientation.write(q.get());
 	float f = 1;
 	m_volume.write(&f);
-
-	pthread_mutexattr_t attr;
-	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-	pthread_mutex_init(&m_mutex, &attr);
-
-	pthread_mutexattr_destroy(&attr);
 }
 
 SequenceData::~SequenceData()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 void SequenceData::lock()
 {
-	pthread_mutex_lock(&m_mutex);
+	m_mutex.lock();
 }
 
 void SequenceData::unlock()
 {
-	pthread_mutex_unlock(&m_mutex);
+	m_mutex.unlock();
 }
 
 void SequenceData::setSpecs(Specs specs)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_specs = specs;
 	m_status++;
@@ -74,14 +65,14 @@ void SequenceData::setSpecs(Specs specs)
 
 void SequenceData::setFPS(float fps)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_fps = fps;
 }
 
 void SequenceData::mute(bool muted)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_muted = muted;
 }
@@ -98,7 +89,7 @@ float SequenceData::getSpeedOfSound() const
 
 void SequenceData::setSpeedOfSound(float speed)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_speed_of_sound = speed;
 	m_status++;
@@ -111,7 +102,7 @@ float SequenceData::getDopplerFactor() const
 
 void SequenceData::setDopplerFactor(float factor)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_doppler_factor = factor;
 	m_status++;
@@ -124,7 +115,7 @@ DistanceModel SequenceData::getDistanceModel() const
 
 void SequenceData::setDistanceModel(DistanceModel model)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_distance_model = model;
 	m_status++;
@@ -147,7 +138,7 @@ AnimateableProperty* SequenceData::getAnimProperty(AnimateablePropertyType type)
 
 std::shared_ptr<SequenceEntry> SequenceData::add(std::shared_ptr<ISound> sound, float begin, float end, float skip)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	std::shared_ptr<SequenceEntry> entry = std::shared_ptr<SequenceEntry>(new SequenceEntry(sound, begin, end, skip, m_id++));
 
@@ -159,7 +150,7 @@ std::shared_ptr<SequenceEntry> SequenceData::add(std::shared_ptr<ISound> sound, 
 
 void SequenceData::remove(std::shared_ptr<SequenceEntry> entry)
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_entries.remove(entry);
 	m_entry_status++;
