@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "respec/Specification.h"
 #include "util/ILockable.h"
 
 #include <memory>

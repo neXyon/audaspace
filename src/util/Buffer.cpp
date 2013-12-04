@@ -16,6 +16,7 @@
 
 #include "util/Buffer.h"
 
+#include <algorithm>
 #include <cstring>
 #include <cstdlib>
 
@@ -51,7 +52,7 @@ void Buffer::resize(int size, bool keep)
 	{
 		data_t* buffer = (data_t*) std::malloc(size + ALIGNMENT);
 
-		std::memcpy(ALIGN(buffer), ALIGN(m_buffer), AUD_MIN(size, m_size));
+		std::memcpy(ALIGN(buffer), ALIGN(m_buffer), std::min(size, m_size));
 
 		std::free(m_buffer);
 		m_buffer = buffer;

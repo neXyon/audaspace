@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "Audaspace.h"
+#include "respec/Specification.h"
 
 #include <vector>
 

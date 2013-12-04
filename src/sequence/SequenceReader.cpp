@@ -18,6 +18,7 @@
 #include "sequence/SequenceData.h"
 #include "SequenceHandle.h"
 
+#include <algorithm>
 #include <mutex>
 
 AUD_NAMESPACE_BEGIN
@@ -160,8 +161,8 @@ void SequenceReader::read(int& length, bool& eos, sample_t* buffer)
 		cfra = int(floor(frame));
 
 		len = int(ceil((cfra + 1) / m_sequence->m_fps * specs.rate)) - m_position;
-		len = AUD_MIN(length - pos, len);
-		len = AUD_MAX(len, 1);
+		len = std::min(length - pos, len);
+		len = std::max(len, 1);
 
 		for(auto& handle : m_handles)
 		{

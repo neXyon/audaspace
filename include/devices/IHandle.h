@@ -20,6 +20,15 @@
 
 AUD_NAMESPACE_BEGIN
 
+/// Status of a playback handle.
+enum Status
+{
+	STATUS_INVALID = 0,			/// Invalid handle. Maybe due to stopping.
+	STATUS_PLAYING,				/// Sound is playing.
+	STATUS_PAUSED,				/// Sound is being paused.
+	STATUS_STOPPED				/// Sound is stopped but kept in the device.
+};
+
 typedef void (*stopCallback)(void*);
 
 /**

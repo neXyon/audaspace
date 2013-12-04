@@ -20,6 +20,18 @@
 
 AUD_NAMESPACE_BEGIN
 
+/// Possible distance models for the 3D device.
+enum DistanceModel
+{
+	DISTANCE_MODEL_INVALID = 0,
+	DISTANCE_MODEL_INVERSE,
+	DISTANCE_MODEL_INVERSE_CLAMPED,
+	DISTANCE_MODEL_LINEAR,
+	DISTANCE_MODEL_LINEAR_CLAMPED,
+	DISTANCE_MODEL_EXPONENT,
+	DISTANCE_MODEL_EXPONENT_CLAMPED
+};
+
 /**
  * This class represents an output device for 3D sound.
  */

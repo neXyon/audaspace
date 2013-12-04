@@ -16,6 +16,7 @@
 
 #include "respec/Mixer.h"
 
+#include <algorithm>
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
@@ -76,7 +77,7 @@ void Mixer::mix(sample_t* buffer, int start, int length, float volume)
 {
 	sample_t* out = m_buffer.getBuffer();
 
-	length = (AUD_MIN(m_length, length + start) - start) * m_specs.channels;
+	length = (std::min(m_length, length + start) - start) * m_specs.channels;
 	start *= m_specs.channels;
 
 	for(int i = 0; i < length; i++)

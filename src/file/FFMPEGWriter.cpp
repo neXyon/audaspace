@@ -16,6 +16,7 @@
 
 #include "file/FFMPEGWriter.h"
 
+#include <algorithm>
 #include <cstring>
 
 extern "C" {
@@ -230,7 +231,7 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 			if(avcodec_open2(m_codecCtx, codec, nullptr))
 				AUD_THROW(ERROR_FFMPEG, codec_error);
 
-			int samplesize = AUD_MAX(AUD_SAMPLE_SIZE(m_specs), AUD_DEVICE_SAMPLE_SIZE(m_specs));
+			int samplesize = std::max(int(AUD_SAMPLE_SIZE(m_specs)), AUD_DEVICE_SAMPLE_SIZE(m_specs));
 
 			if(m_codecCtx->frame_size <= 1)
 				m_input_size = 0;
@@ -380,7 +381,7 @@ void FFMPEGWriter::write(unsigned int length, sample_t* buffer)
 
 		while(length)
 		{
-			unsigned int len = AUD_MIN(m_input_size - m_input_samples, length);
+			unsigned int len = std::min(m_input_size - m_input_samples, length);
 
 			std::memcpy(inbuf + m_input_samples * m_specs.channels, buffer, len * samplesize);
 
@@ -400,7 +401,7 @@ void FFMPEGWriter::write(unsigned int length, sample_t* buffer)
 	else // PCM data, can write directly!
 	{
 		int samplesize = AUD_SAMPLE_SIZE(m_specs);
-		m_input_buffer.assureSize(length * AUD_MAX(AUD_DEVICE_SAMPLE_SIZE(m_specs), samplesize));
+		m_input_buffer.assureSize(length * std::max(AUD_DEVICE_SAMPLE_SIZE(m_specs), samplesize));
 
 		sample_t* buf = m_input_buffer.getBuffer();
 		m_convert(reinterpret_cast<data_t*>(buf), reinterpret_cast<data_t*>(buffer), length * m_specs.channels);

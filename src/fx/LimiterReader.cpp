@@ -17,6 +17,8 @@
 #include "fx/LimiterReader.h"
 #include "util/Buffer.h"
 
+#include <algorithm>
+
 AUD_NAMESPACE_BEGIN
 
 LimiterReader::LimiterReader(std::shared_ptr<IReader> reader, float start, float end) :
@@ -81,7 +83,7 @@ int LimiterReader::getPosition() const
 {
 	int pos = m_reader->getPosition();
 	SampleRate rate = m_reader->getSpecs().rate;
-	return AUD_MIN(pos, m_end * rate) - m_start * rate;
+	return std::min(pos, int(m_end * rate)) - m_start * rate;
 }
 
 void LimiterReader::read(int& length, bool& eos, sample_t* buffer)

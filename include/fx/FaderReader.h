@@ -20,6 +20,13 @@
 
 AUD_NAMESPACE_BEGIN
 
+/// Fading types.
+enum FadeType
+{
+	FADE_IN,
+	FADE_OUT
+};
+
 /**
  * This class fades another reader.
  * If the fading type is FADE_IN, everything before the fading start will be

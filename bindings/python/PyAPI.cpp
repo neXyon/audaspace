@@ -45,14 +45,14 @@ using namespace aud;
 
 // ====================================================================
 
-typedef enum
+enum DeviceTypes
 {
 	DEVICE_NULL = 0,
 	DEVICE_OPENAL,
 	DEVICE_SDL,
 	DEVICE_JACK,
 	DEVICE_READ,
-} DeviceTypes;
+};
 
 // ====================================================================
 

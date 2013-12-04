@@ -16,6 +16,7 @@
 
 #include "respec/JOSResampleReader.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 
@@ -321,7 +322,7 @@ void JOSResampleReader::read(int& length, bool& eos, sample_t* buffer)
 	}
 
 	// use minimum for the following calculations
-	double factor = AUD_MIN(target_factor, m_last_factor);
+	double factor = std::min(target_factor, m_last_factor);
 
 	if(factor >= 1)
 		len = (int(m_n) - m_cache_valid) + int(ceil(length / factor)) + ceil(num_samples);
@@ -344,7 +345,7 @@ void JOSResampleReader::read(int& length, bool& eos, sample_t* buffer)
 			else
 			{
 				// use maximum for the following calculations
-				factor = AUD_MAX(target_factor, m_last_factor);
+				factor = std::max(target_factor, m_last_factor);
 
 				if(eos)
 				{

@@ -17,6 +17,7 @@
 #include "devices/OpenALReader.h"
 #include "respec/ConverterFunctions.h"
 
+#include <algorithm>
 #include <AL/al.h>
 
 AUD_NAMESPACE_BEGIN
@@ -80,7 +81,7 @@ Specs OpenALReader::getSpecs() const
 void OpenALReader::read(int & length, bool& eos, sample_t* buffer)
 {
 	int len = getLength();
-	length = AUD_MIN(length, len);
+	length = std::min(length, len);
 
 	if(length > 0)
 	{

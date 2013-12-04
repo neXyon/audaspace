@@ -16,6 +16,7 @@
 
 #include "fx/SuperposeReader.h"
 
+#include <algorithm>
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
@@ -49,14 +50,14 @@ int SuperposeReader::getLength() const
 	int len2 = m_reader2->getLength();
 	if((len1 < 0) || (len2 < 0))
 		return -1;
-	return AUD_MIN(len1, len2);
+	return std::min(len1, len2);
 }
 
 int SuperposeReader::getPosition() const
 {
 	int pos1 = m_reader1->getPosition();
 	int pos2 = m_reader2->getPosition();
-	return AUD_MAX(pos1, pos2);
+	return std::max(pos1, pos2);
 }
 
 Specs SuperposeReader::getSpecs() const
@@ -89,7 +90,7 @@ void SuperposeReader::read(int& length, bool& eos, sample_t* buffer)
 	for(int i = 0; i < len2 * specs.channels; i++)
 		buffer[i] += buf[i];
 
-	length = AUD_MAX(len1, len2);
+	length = std::max(len1, len2);
 	eos &= eos2;
 }
 

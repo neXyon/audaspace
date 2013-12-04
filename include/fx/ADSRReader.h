@@ -27,14 +27,14 @@ AUD_NAMESPACE_BEGIN
 class ADSRReader : public EffectReader
 {
 private:
-	typedef enum
+	enum ADSRState
 	{
 		ADSR_STATE_INVALID = 0,		/// Invalid ADSR state or finished.
 		ADSR_STATE_ATTACK  = 1,		/// Initial attack state.
 		ADSR_STATE_DECAY   = 2,		/// Decay state.
 		ADSR_STATE_SUSTAIN = 3,		/// Sustain state.
 		ADSR_STATE_RELEASE = 4		/// Release state.
-	} ADSRState;
+	};
 
 	/**
 	 * Attack time.

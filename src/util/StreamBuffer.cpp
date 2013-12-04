@@ -18,6 +18,9 @@
 #include "util/BufferReader.h"
 #include "util/Buffer.h"
 
+// 5 sec * 44100 samples/sec * 4 bytes/sample * 6 channels
+#define BUFFER_RESIZE_BYTES 5292000
+
 AUD_NAMESPACE_BEGIN
 
 StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
@@ -36,7 +39,7 @@ StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
 	int size = reader->getLength();
 
 	if(size <= 0)
-		size = AUD_BUFFER_RESIZE_BYTES / sample_size;
+		size = BUFFER_RESIZE_BYTES / sample_size;
 	else
 		size += m_specs.rate;
 
@@ -50,7 +53,7 @@ StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
 		length = size-index;
 		reader->read(length, eos, m_buffer->getBuffer() + index * m_specs.channels);
 		if(index == m_buffer->getSize() / sample_size)
-			size += AUD_BUFFER_RESIZE_BYTES / sample_size;
+			size += BUFFER_RESIZE_BYTES / sample_size;
 		index += length;
 	}
 

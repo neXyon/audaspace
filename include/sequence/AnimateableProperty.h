@@ -24,6 +24,16 @@
 
 AUD_NAMESPACE_BEGIN
 
+/// Possible animatable properties for Sequencer Factories and Entries.
+enum AnimateablePropertyType
+{
+	AP_VOLUME,
+	AP_PANNING,
+	AP_PITCH,
+	AP_LOCATION,
+	AP_ORIENTATION
+};
+
 /**
  * This class saves animation data for float properties.
  */

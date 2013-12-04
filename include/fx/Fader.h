@@ -17,6 +17,7 @@
 #pragma once
 
 #include "fx/Effect.h"
+#include "fx/FaderReader.h"
 
 AUD_NAMESPACE_BEGIN
 

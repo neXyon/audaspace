@@ -16,7 +16,9 @@
 
 #pragma once
 
+#include "respec/Specification.h"
 #include "sequence/AnimateableProperty.h"
+#include "devices/I3DDevice.h"
 #include "util/ILockable.h"
 
 #include <list>

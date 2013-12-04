@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include "Audaspace.h"
+#include "respec/Specification.h"
+#include "file/IWriter.h"
 
 #include <string>
 #include <vector>
@@ -24,7 +25,6 @@
 
 AUD_NAMESPACE_BEGIN
 
-class IWriter;
 class IReader;
 
 /**

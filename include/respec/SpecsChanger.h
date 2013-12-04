@@ -17,6 +17,7 @@
 #pragma once
 
 #include "ISound.h"
+#include "respec/Specification.h"
 
 AUD_NAMESPACE_BEGIN
 

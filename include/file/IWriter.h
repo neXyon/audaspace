@@ -16,9 +16,36 @@
 
 #pragma once
 
-#include "Audaspace.h"
+#include "respec/Specification.h"
 
 AUD_NAMESPACE_BEGIN
+
+/// Container formats for writers.
+enum Container
+{
+	CONTAINER_INVALID = 0,
+	CONTAINER_AC3,
+	CONTAINER_FLAC,
+	CONTAINER_MATROSKA,
+	CONTAINER_MP2,
+	CONTAINER_MP3,
+	CONTAINER_OGG,
+	CONTAINER_WAV
+};
+
+/// Audio codecs for writers.
+enum Codec
+{
+	CODEC_INVALID = 0,
+	CODEC_AAC,
+	CODEC_AC3,
+	CODEC_FLAC,
+	CODEC_MP2,
+	CODEC_MP3,
+	CODEC_PCM,
+	CODEC_VORBIS,
+	CODEC_OPUS
+};
 
 /**
  * This class represents a sound sink where audio data can be written to.

@@ -18,6 +18,7 @@
 #include "IReader.h"
 
 #include <cstring>
+#include <algorithm>
 
 AUD_NAMESPACE_BEGIN
 
@@ -100,7 +101,7 @@ int JackDevice::jack_mix(jack_nframes_t length, void *data)
 			if((temp = aud_jack_ringbuffer_read_space(device->m_ringbuffers[i])) < readsamples)
 				readsamples = temp;
 
-		readsamples = AUD_MIN(readsamples / sizeof(float), length);
+		readsamples = std::min(readsamples / sizeof(float), size_t(length));
 
 		for(unsigned int i = 0; i < count; i++)
 		{

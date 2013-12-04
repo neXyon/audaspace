@@ -17,6 +17,9 @@
 #pragma once
 
 #include "ISound.h"
+#include "respec/Specification.h"
+#include "devices/I3DDevice.h"
+#include "sequence/AnimateableProperty.h"
 
 #include <list>
 
@@ -24,7 +27,6 @@ AUD_NAMESPACE_BEGIN
 
 class SequenceEntry;
 class SequenceData;
-class AnimateableProperty;
 
 /**
  * This sound represents sequenced entries to play a sound scene.

@@ -22,6 +22,7 @@
 #include "fx/PitchReader.h"
 #include "respec/ChannelMapperReader.h"
 
+#include <algorithm>
 #include <cstring>
 #include <cmath>
 #include <limits>
@@ -29,13 +30,13 @@
 
 AUD_NAMESPACE_BEGIN
 
-typedef enum
+enum RenderFlags
 {
 	RENDER_DISTANCE = 0x01,
 	RENDER_DOPPLER = 0x02,
 	RENDER_CONE = 0x04,
 	RENDER_VOLUME = 0x08
-} RenderFlags;
+};
 
 #define PITCH_MAX 10
 
@@ -143,7 +144,7 @@ void SoftwareDevice::SoftwareHandle::update()
 			   m_device->m_distance_model == DISTANCE_MODEL_LINEAR_CLAMPED ||
 			   m_device->m_distance_model == DISTANCE_MODEL_EXPONENT_CLAMPED)
 			{
-				distance = AUD_MAX(AUD_MIN(m_distance_max, distance), m_distance_reference);
+				distance = std::max(std::min(m_distance_max, distance), m_distance_reference);
 			}
 
 			switch(m_device->m_distance_model)

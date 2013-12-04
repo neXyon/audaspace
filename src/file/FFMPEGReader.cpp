@@ -16,6 +16,8 @@
 
 #include "file/FFMPEGReader.h"
 
+#include <algorithm>
+
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avio.h>
@@ -242,7 +244,7 @@ int FFMPEGReader::read_packet(void* opaque, uint8_t* buf, int buf_size)
 {
 	FFMPEGReader* reader = reinterpret_cast<FFMPEGReader*>(opaque);
 
-	int size = AUD_MIN(buf_size, reader->m_membuffer->getSize() - reader->m_membufferpos);
+	int size = std::min(buf_size, int(reader->m_membuffer->getSize() - reader->m_membufferpos));
 
 	if(size < 0)
 		return -1;
@@ -317,8 +319,7 @@ void FFMPEGReader::seek(int position)
 					if(packet.pts != AV_NOPTS_VALUE)
 					{
 						// calculate real position, and read to frame!
-						m_position = (packet.pts - 
-							pts_st_time) * pts_time_base * m_specs.rate;
+						m_position = (packet.pts - pts_st_time) * pts_time_base * m_specs.rate;
 
 						if(m_position < position)
 						{
@@ -326,9 +327,7 @@ void FFMPEGReader::seek(int position)
 							int length = AUD_DEFAULT_BUFFER_SIZE;
 							Buffer buffer(length * AUD_SAMPLE_SIZE(m_specs));
 							bool eos;
-							for(int len = position - m_position;
-								length == AUD_DEFAULT_BUFFER_SIZE;
-								len -= AUD_DEFAULT_BUFFER_SIZE)
+							for(int len = position - m_position; len > 0; len -= AUD_DEFAULT_BUFFER_SIZE)
 							{
 								if(len < AUD_DEFAULT_BUFFER_SIZE)
 									length = len;
@@ -381,9 +380,8 @@ void FFMPEGReader::read(int& length, bool& eos, sample_t* buffer)
 	// there may still be data in the buffer from the last call
 	if(pkgbuf_pos > 0)
 	{
-		data_size = AUD_MIN(pkgbuf_pos, left * sample_size);
-		m_convert((data_t*) buf, (data_t*) m_pkgbuf.getBuffer(),
-		          data_size / AUD_FORMAT_SIZE(m_specs.format));
+		data_size = std::min(pkgbuf_pos, left * sample_size);
+		m_convert((data_t*) buf, (data_t*) m_pkgbuf.getBuffer(), data_size / AUD_FORMAT_SIZE(m_specs.format));
 		buf += data_size / AUD_FORMAT_SIZE(m_specs.format);
 		left -= data_size/sample_size;
 	}
@@ -398,9 +396,8 @@ void FFMPEGReader::read(int& length, bool& eos, sample_t* buffer)
 			pkgbuf_pos = decode(packet, m_pkgbuf);
 
 			// copy to output buffer
-			data_size = AUD_MIN(pkgbuf_pos, left * sample_size);
-			m_convert((data_t*) buf, (data_t*) m_pkgbuf.getBuffer(),
-					  data_size / AUD_FORMAT_SIZE(m_specs.format));
+			data_size = std::min(pkgbuf_pos, left * sample_size);
+			m_convert((data_t*) buf, (data_t*) m_pkgbuf.getBuffer(), data_size / AUD_FORMAT_SIZE(m_specs.format));
 			buf += data_size / AUD_FORMAT_SIZE(m_specs.format);
 			left -= data_size/sample_size;
 		}

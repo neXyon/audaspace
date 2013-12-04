@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "respec/Specification.h"
 #include "respec/ConverterFunctions.h"
 #include "util/Buffer.h"
 

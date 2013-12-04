@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include "fx/Fader.h"
-#include "fx/FaderReader.h"
 
 AUD_NAMESPACE_BEGIN
 
