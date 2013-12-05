@@ -106,10 +106,31 @@ public:
 	~ChannelMapperReader();
 
 	/**
+	 * Returns the channel configuration of the source reader.
+	 * @return The channel configuration of the reader.
+	 */
+	Channels getSourceChannels() const;
+
+	/**
+	 * Returns the target channel configuration.
+	 * Equals getSpecs().channels.
+	 * @return The target channel configuration.
+	 */
+	Channels getChannels() const;
+
+	/**
 	 * Sets the requested channel output count.
 	 * \param channels The channel output count.
 	 */
 	void setChannels(Channels channels);
+
+	/**
+	 * Returns the mapping of the source channel to the target channel.
+	 * @param source The number of the source channel. Should be in the range [0, source channels).
+	 * @param target The number of the target channel. Should be in the range [0, target channels).
+	 * @return The mapping value which should be between 0.0 and 1.0. If source or target are out of range, NaN is returned.
+	 */
+	float getMapping(int source, int target);
 
 	/**
 	 * Sets the angle for mono sources.

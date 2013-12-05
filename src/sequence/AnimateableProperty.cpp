@@ -32,9 +32,14 @@ void AnimateableProperty::updateUnknownCache(int start, int end)
 {
 	float* buf = getBuffer();
 
-	for(int i = start; i <= end; i++)
+	if(start == 0)
+		std::memset(buf, 0, (end + 1) * m_count * sizeof(float));
+	else
+	{
 		// TODO: maybe first instead of zero order interpolation?
-		std::memcpy(buf + i * m_count, buf + (start - 1) * m_count, m_count * sizeof(float));
+		for(int i = start; i <= end; i++)
+			std::memcpy(buf + i * m_count, buf + (start - 1) * m_count, m_count * sizeof(float));
+	}
 }
 
 AnimateableProperty::~AnimateableProperty()
@@ -71,13 +76,7 @@ void AnimateableProperty::write(const float* data, int position, int count)
 	if(pos < position)
 	{
 		m_unknown.push_back(Unknown(pos, position - 1));
-
-		if(pos == 0)
-		{
-			std::memset(buf, 0, position * m_count * sizeof(float));
-		}
-		else
-			updateUnknownCache(pos, position - 1);
+		updateUnknownCache(pos, position - 1);
 	}
 	// otherwise it's not at the end, let's check if some unknown part got filled
 	else

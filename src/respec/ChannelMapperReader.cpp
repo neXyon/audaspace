@@ -17,13 +17,14 @@
 #include "respec/ChannelMapperReader.h"
 
 #include <cmath>
+#include <limits>
 
 AUD_NAMESPACE_BEGIN
 
 ChannelMapperReader::ChannelMapperReader(std::shared_ptr<IReader> reader,
 												 Channels channels) :
 		EffectReader(reader), m_target_channels(channels),
-	m_source_channels(CHANNELS_INVALID), m_mapping(0), m_map_size(0), m_mono_angle(0)
+	m_source_channels(CHANNELS_INVALID), m_mapping(nullptr), m_map_size(0), m_mono_angle(0)
 {
 }
 
@@ -32,10 +33,35 @@ ChannelMapperReader::~ChannelMapperReader()
 	delete[] m_mapping;
 }
 
+Channels ChannelMapperReader::getSourceChannels() const
+{
+	return m_reader->getSpecs().channels;
+}
+
+Channels ChannelMapperReader::getChannels() const
+{
+	return m_target_channels;
+}
+
 void ChannelMapperReader::setChannels(Channels channels)
 {
 	m_target_channels = channels;
 	calculateMapping();
+}
+
+float ChannelMapperReader::getMapping(int source, int target)
+{
+	Channels source_channels = m_reader->getSpecs().channels;
+	if(source_channels != m_source_channels)
+	{
+		m_source_channels = source_channels;
+		calculateMapping();
+	}
+
+	if(source < 0 || source >= source_channels || target < 0 || target >= m_target_channels)
+		return std::numeric_limits<float>::quiet_NaN();
+
+	return m_mapping[target * source_channels + source];
 }
 
 void ChannelMapperReader::setMonoAngle(float angle)
@@ -146,15 +172,6 @@ void ChannelMapperReader::calculateMapping()
 			m_mapping[channel_right * m_source_channels + i] = std::cos(M_PI_2 * angle_right / angle);
 		}
 	}
-
-	/* AUD_XXX for(int i = 0; i < m_source_channels; i++)
-	{
-		for(int j = 0; j < m_target_channels; j++)
-		{
-			std::cout << m_mapping[i * m_source_channels + j] << " ";
-		}
-		std::cout << std::endl;
-	}*/
 }
 
 Specs ChannelMapperReader::getSpecs() const
@@ -292,9 +309,9 @@ const float ChannelMapperReader::STEREO_ANGLES[] =
 
 const float ChannelMapperReader::STEREO_LFE_ANGLES[] =
 {
-   -90.0f * M_PI / 180.0f,
-	90.0f * M_PI / 180.0f,
-	 0.0f * M_PI / 180.0f
+	-90.0f * M_PI / 180.0f,
+	 90.0f * M_PI / 180.0f,
+	  0.0f * M_PI / 180.0f
 };
 
 const float ChannelMapperReader::SURROUND4_ANGLES[] =

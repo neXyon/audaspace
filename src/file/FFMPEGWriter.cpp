@@ -177,8 +177,19 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 
 			if(!format_supported)
 			{
-				// AUD_XXX maybe there's a better way to select one?
-				m_codecCtx->sample_fmt = codec->sample_fmts[0];
+				int chosen_index = 0;
+				auto chosen = av_get_alt_sample_fmt(codec->sample_fmts[chosen_index], false);
+				for(int i = 1; codec->sample_fmts[i] != -1; i++)
+				{
+					auto fmt = av_get_alt_sample_fmt(codec->sample_fmts[i], false);
+					if((fmt > chosen && chosen < m_codecCtx->sample_fmt) || (fmt > m_codecCtx->sample_fmt && fmt < chosen))
+					{
+						chosen = fmt;
+						chosen_index = i;
+					}
+				}
+
+				m_codecCtx->sample_fmt = codec->sample_fmts[chosen_index];
 				m_deinterleave = av_sample_fmt_is_planar(m_codecCtx->sample_fmt);
 				switch(av_get_alt_sample_fmt(m_codecCtx->sample_fmt, false))
 				{
