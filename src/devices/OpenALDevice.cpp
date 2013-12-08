@@ -68,7 +68,7 @@ bool OpenALDevice::OpenALHandle::pause(bool keep)
 	return false;}
 
 OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, std::shared_ptr<IReader> reader, bool keep) :
-	m_isBuffered(false), m_reader(reader), m_keep(keep), m_format(format), m_current(0),
+	m_isBuffered(false), m_reader(reader), m_keep(keep), m_format(format),
 	m_eos(false), m_loopcount(0), m_stop(nullptr), m_stop_data(nullptr), m_status(STATUS_PLAYING),
 	m_device(device)
 {
@@ -86,21 +86,16 @@ OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, st
 		int length;
 		bool eos;
 
-		for(int i = 0; i < CYCLE_BUFFERS; i++)
+		for(m_current = 0; m_current < CYCLE_BUFFERS; m_current++)
 		{
 			length = m_device->m_buffersize;
 			reader->read(length, eos, m_device->m_buffer.getBuffer());
 
 			if(length == 0)
-			{
-				// AUD_XXX: TODO: don't fill all buffers and enqueue them later
-				length = 1;
-				std::memset(m_device->m_buffer.getBuffer(), 0, length * AUD_DEVICE_SAMPLE_SIZE(specs));
-			}
+				break;
 
-			alBufferData(m_buffers[i], m_format, m_device->m_buffer.getBuffer(),
-						 length * AUD_DEVICE_SAMPLE_SIZE(specs),
-						 specs.rate);
+			alBufferData(m_buffers[m_current], m_format, m_device->m_buffer.getBuffer(), length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
+
 			if(alGetError() != AL_NO_ERROR)
 				AUD_THROW(ERROR_OPENAL, bufferdata_error);
 		}
@@ -256,7 +251,6 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 				alSourceStop(m_source);
 
 			alSourcei(m_source, AL_BUFFER, 0);
-			m_current = 0;
 
 			ALenum err;
 			if((err = alGetError()) == AL_NO_ERROR)
@@ -266,20 +260,15 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 				specs.specs = m_reader->getSpecs();
 				m_device->m_buffer.assureSize(m_device->m_buffersize * AUD_DEVICE_SAMPLE_SIZE(specs));
 
-				for(int i = 0; i < CYCLE_BUFFERS; i++)
+				for(m_current = 0; m_current < CYCLE_BUFFERS; m_current++)
 				{
 					length = m_device->m_buffersize;
 					m_reader->read(length, m_eos, m_device->m_buffer.getBuffer());
 
 					if(length == 0)
-					{
-						// AUD_XXX: TODO: don't fill all buffers and enqueue them later
-						length = 1;
-						std::memset(m_device->m_buffer.getBuffer(), 0, length * AUD_DEVICE_SAMPLE_SIZE(specs));
-					}
+						break;
 
-					alBufferData(m_buffers[i], m_format, m_device->m_buffer.getBuffer(),
-								 length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
+					alBufferData(m_buffers[m_current], m_format, m_device->m_buffer.getBuffer(), length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
 
 					if(alGetError() != AL_NO_ERROR)
 						break;
@@ -288,7 +277,7 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 				if(m_loopcount != 0)
 					m_eos = false;
 
-				alSourceQueueBuffers(m_source, CYCLE_BUFFERS, m_buffers);
+				alSourceQueueBuffers(m_source, m_current, m_buffers);
 			}
 
 			alSourceRewind(m_source);
@@ -318,8 +307,7 @@ float OpenALDevice::OpenALHandle::getPosition()
 	if(!m_isBuffered)
 	{
 		Specs specs = m_reader->getSpecs();
-		position += (m_reader->getPosition() - m_device->m_buffersize *
-					 CYCLE_BUFFERS) / (float)specs.rate;
+		position += (m_reader->getPosition() - m_device->m_buffersize * CYCLE_BUFFERS) / (float)specs.rate;
 	}
 
 	return position;
@@ -870,6 +858,8 @@ void OpenALDevice::updateStreams()
 					// check for buffer refilling
 					alGetSourcei(sound->m_source, AL_BUFFERS_PROCESSED, &info);
 
+					info += (OpenALHandle::CYCLE_BUFFERS - sound->m_current);
+
 					if(info)
 					{
 						specs.specs = sound->m_reader->getSpecs();
@@ -906,8 +896,13 @@ void OpenALDevice::updateStreams()
 									break;
 								}
 
-								// AUD_XXX unqueue buffer (warning: this might fail for slow early returning sources (none exist so far) if the buffer was not queued due to recent changes - has to be tested)
-								alSourceUnqueueBuffers(sound->m_source, 1, &sound->m_buffers[sound->m_current]);
+								ALuint buffer;
+
+								if(sound->m_current < OpenALHandle::CYCLE_BUFFERS)
+									buffer = sound->m_buffers[sound->m_current++];
+								else
+									alSourceUnqueueBuffers(sound->m_source, 1, &buffer);
+
 								ALenum err;
 								if((err = alGetError()) != AL_NO_ERROR)
 								{
@@ -916,11 +911,7 @@ void OpenALDevice::updateStreams()
 								}
 
 								// fill with new data
-								alBufferData(sound->m_buffers[sound->m_current],
-											 sound->m_format,
-											 m_buffer.getBuffer(), length *
-											 AUD_DEVICE_SAMPLE_SIZE(specs),
-											 specs.rate);
+								alBufferData(buffer, sound->m_format, m_buffer.getBuffer(), length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
 
 								if((err = alGetError()) != AL_NO_ERROR)
 								{
@@ -929,16 +920,12 @@ void OpenALDevice::updateStreams()
 								}
 
 								// and queue again
-								alSourceQueueBuffers(sound->m_source, 1,
-												&sound->m_buffers[sound->m_current]);
+								alSourceQueueBuffers(sound->m_source, 1,&buffer);
 								if(alGetError() != AL_NO_ERROR)
 								{
 									sound->m_eos = true;
 									break;
 								}
-
-								sound->m_current = (sound->m_current+1) %
-												 OpenALHandle::CYCLE_BUFFERS;
 							}
 							else
 								break;
