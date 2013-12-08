@@ -33,6 +33,104 @@ static const char* format_error = "FFMPEGWriter: Unsupported sample format.";
 static const char* file_error = "FFMPEGWriter: File couldn't be written.";
 static const char* write_error = "FFMPEGWriter: Error writing packet.";
 
+void FFMPEGWriter::encode()
+{
+	sample_t* data = m_input_buffer.getBuffer();
+
+	if(m_deinterleave)
+	{
+		m_deinterleave_buffer.assureSize(m_input_buffer.getSize());
+
+		sample_t* dbuf = m_deinterleave_buffer.getBuffer();
+		// deinterleave
+		int single_size = AUD_FORMAT_SIZE(m_specs.format);
+		for(int channel = 0; channel < m_specs.channels; channel++)
+		{
+			for(int i = 0; i < m_input_buffer.getSize() / AUD_SAMPLE_SIZE(m_specs); i++)
+			{
+				std::memcpy(((data_t*)dbuf) + (m_input_samples * channel + i) * single_size,
+							((data_t*)data) + ((m_specs.channels * i) + channel) * single_size, single_size);
+			}
+		}
+
+		// convert first
+		if(m_input_size)
+			m_convert(reinterpret_cast<data_t*>(data), reinterpret_cast<data_t*>(dbuf), m_input_samples * m_specs.channels);
+		else
+			std::memcpy(data, dbuf, m_input_buffer.getSize());
+	}
+	else
+		// convert first
+		if(m_input_size)
+			m_convert(reinterpret_cast<data_t*>(data), reinterpret_cast<data_t*>(data), m_input_samples * m_specs.channels);
+
+	AVPacket packet;
+
+	av_init_packet(&packet);
+	packet.data = NULL;
+	packet.size = 0;
+
+	AVFrame* frame = avcodec_alloc_frame();
+	avcodec_get_frame_defaults(frame);
+	int got_packet;
+
+	frame->nb_samples = m_input_samples;
+	frame->format = m_codecCtx->sample_fmt;
+
+	if(avcodec_fill_audio_frame(frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_samples * AUD_DEVICE_SAMPLE_SIZE(m_specs), 1) < 0)
+	{
+		avcodec_free_frame(&frame);
+		AUD_THROW(ERROR_FFMPEG, write_error);
+	}
+
+	if(m_codecCtx->coded_frame && m_codecCtx->coded_frame->pts != AV_NOPTS_VALUE)
+		frame->pts = av_rescale_q(m_codecCtx->coded_frame->pts, m_codecCtx->time_base, m_stream->time_base);
+	else
+		frame->pts = AV_NOPTS_VALUE;
+
+	if(avcodec_encode_audio2(m_codecCtx, &packet, frame, &got_packet))
+		AUD_THROW(ERROR_FFMPEG, write_error);
+
+	if(got_packet)
+	{
+		packet.flags |= AV_PKT_FLAG_KEY;
+		packet.stream_index = m_stream->index;
+		if(av_interleaved_write_frame(m_formatCtx, &packet))
+			AUD_THROW(ERROR_FFMPEG, write_error);
+		av_free_packet(&packet);
+	}
+
+	avcodec_free_frame(&frame);
+}
+
+void FFMPEGWriter::close()
+{
+
+
+	int got_packet = true;
+
+	while(got_packet)
+	{
+		AVPacket packet;
+
+		av_init_packet(&packet);
+		packet.data = NULL;
+		packet.size = 0;
+
+		if(avcodec_encode_audio2(m_codecCtx, &packet, nullptr, &got_packet))
+			AUD_THROW(ERROR_FFMPEG, write_error);
+
+		if(got_packet)
+		{
+			packet.flags |= AV_PKT_FLAG_KEY;
+			packet.stream_index = m_stream->index;
+			if(av_interleaved_write_frame(m_formatCtx, &packet))
+				AUD_THROW(ERROR_FFMPEG, write_error);
+			av_free_packet(&packet);
+		}
+	}
+}
+
 FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate) :
 	m_position(0),
 	m_specs(specs),
@@ -284,15 +382,10 @@ FFMPEGWriter::~FFMPEGWriter()
 	// writte missing data
 	if(m_input_samples)
 	{
-		// AUD_XXX TODO: do not write zeros at the end...
-
-		sample_t* buf = m_input_buffer.getBuffer();
-		std::memset(buf + m_specs.channels * m_input_samples, 0,
-			   (m_input_size - m_input_samples) * AUD_SAMPLE_SIZE(m_specs));
-		m_input_samples = m_input_size;
-
 		encode();
 	}
+
+	close();
 
 	av_write_trailer(m_formatCtx);
 
@@ -310,76 +403,6 @@ int FFMPEGWriter::getPosition() const
 DeviceSpecs FFMPEGWriter::getSpecs() const
 {
 	return m_specs;
-}
-
-void FFMPEGWriter::encode()
-{
-	sample_t* data = m_input_buffer.getBuffer();
-
-	if(m_deinterleave)
-	{
-		m_deinterleave_buffer.assureSize(m_input_buffer.getSize());
-
-		sample_t* dbuf = m_deinterleave_buffer.getBuffer();
-		// deinterleave
-		int single_size = AUD_FORMAT_SIZE(m_specs.format);
-		for(int channel = 0; channel < m_specs.channels; channel++)
-		{
-			for(int i = 0; i < m_input_buffer.getSize() / AUD_SAMPLE_SIZE(m_specs); i++)
-			{
-				std::memcpy(((data_t*)dbuf) + (m_input_samples * channel + i) * single_size,
-							((data_t*)data) + ((m_specs.channels * i) + channel) * single_size, single_size);
-			}
-		}
-
-		// convert first
-		if(m_input_size)
-			m_convert(reinterpret_cast<data_t*>(data), reinterpret_cast<data_t*>(dbuf), m_input_size * m_specs.channels);
-		else
-			std::memcpy(data, dbuf, m_input_buffer.getSize());
-	}
-	else
-		// convert first
-		if(m_input_size)
-			m_convert(reinterpret_cast<data_t*>(data), reinterpret_cast<data_t*>(data), m_input_size * m_specs.channels);
-
-	AVPacket packet;
-
-	av_init_packet(&packet);
-	packet.data = NULL;
-	packet.size = 0;
-
-	AVFrame* frame = avcodec_alloc_frame();
-	avcodec_get_frame_defaults(frame);
-	int got_packet;
-
-	frame->nb_samples = m_input_samples;
-	frame->format = m_codecCtx->sample_fmt;
-
-	if(avcodec_fill_audio_frame(frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_samples * AUD_DEVICE_SAMPLE_SIZE(m_specs), 1) < 0)
-	{
-		avcodec_free_frame(&frame);
-		AUD_THROW(ERROR_FFMPEG, write_error);
-	}
-
-	if(m_codecCtx->coded_frame && m_codecCtx->coded_frame->pts != AV_NOPTS_VALUE)
-		frame->pts = av_rescale_q(m_codecCtx->coded_frame->pts, m_codecCtx->time_base, m_stream->time_base);
-	else
-		frame->pts = AV_NOPTS_VALUE;
-
-	if(avcodec_encode_audio2(m_codecCtx, &packet, frame, &got_packet))
-		AUD_THROW(ERROR_FFMPEG, write_error);
-
-	if(got_packet)
-	{
-		packet.flags |= AV_PKT_FLAG_KEY;
-		packet.stream_index = m_stream->index;
-		if(av_interleaved_write_frame(m_formatCtx, &packet))
-			AUD_THROW(ERROR_FFMPEG, write_error);
-		av_free_packet(&packet);
-	}
-
-	avcodec_free_frame(&frame);
 }
 
 void FFMPEGWriter::write(unsigned int length, sample_t* buffer)

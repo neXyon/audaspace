@@ -104,6 +104,11 @@ private:
 	 */
 	void encode();
 
+	/**
+	 * Finishes writing to the file.
+	 */
+	void close();
+
 public:
 	/**
 	 * Creates a new writer.
