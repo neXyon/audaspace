@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "file/FFMPEGReader.h"
+#include "Exception.h"
 
 #include <algorithm>
 
@@ -87,24 +88,13 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 	return buf_pos;
 }
 
-static const char* streaminfo_error = "FFMPEGReader: Stream info couldn't "
-									  "be found.";
-static const char* noaudio_error = "FFMPEGReader: File doesn't include an "
-								   "audio stream.";
-static const char* nodecoder_error = "FFMPEGReader: No decoder found for "
-									 "the audio stream.";
-static const char* codecopen_error = "FFMPEGReader: Codec couldn't be "
-									 "opened.";
-static const char* format_error = "FFMPEGReader: Unsupported sample "
-								  "format.";
-
 void FFMPEGReader::init()
 {
 	m_position = 0;
 	m_pkgbuf_left = 0;
 
 	if(avformat_find_stream_info(m_formatCtx, nullptr) < 0)
-		AUD_THROW(ERROR_FFMPEG, streaminfo_error);
+		AUD_THROW(FileException, "File couldn't be read, ffmpeg couldn't find the stream info.");
 
 	// find audio stream and codec
 	m_stream = -1;
@@ -120,17 +110,17 @@ void FFMPEGReader::init()
 	}
 
 	if(m_stream == -1)
-		AUD_THROW(ERROR_FFMPEG, noaudio_error);
+		AUD_THROW(FileException, "File couldn't be read, no audio stream found by ffmpeg.");
 
 	m_codecCtx = m_formatCtx->streams[m_stream]->codec;
 
 	// get a decoder and open it
 	AVCodec *aCodec = avcodec_find_decoder(m_codecCtx->codec_id);
 	if(!aCodec)
-		AUD_THROW(ERROR_FFMPEG, nodecoder_error);
+		AUD_THROW(FileException, "File couldn't be read, no decoder found with ffmpeg.");
 
 	if(avcodec_open2(m_codecCtx, aCodec, nullptr) < 0)
-		AUD_THROW(ERROR_FFMPEG, codecopen_error);
+		AUD_THROW(FileException, "File couldn't be read, ffmpeg codec couldn't be opened.");
 
 	// XXX this prints file information to stdout:
 	//dump_format(m_formatCtx, 0, nullptr, 0);
@@ -161,14 +151,11 @@ void FFMPEGReader::init()
 		m_specs.format = FORMAT_FLOAT64;
 		break;
 	default:
-		AUD_THROW(ERROR_FFMPEG, format_error);
+		AUD_THROW(FileException, "File couldn't be read, ffmpeg sample format unknown.");
 	}
 
 	m_specs.rate = (SampleRate) m_codecCtx->sample_rate;
 }
-
-static const char* fileopen_error = "FFMPEGReader: File couldn't be "
-									"opened.";
 
 FFMPEGReader::FFMPEGReader(std::string filename) :
 	m_pkgbuf(),
@@ -180,7 +167,7 @@ FFMPEGReader::FFMPEGReader(std::string filename) :
 
 	// open file
 	if(avformat_open_input(&m_formatCtx, filename.c_str(), nullptr, nullptr)!=0)
-		AUD_THROW(ERROR_FILE, fileopen_error);
+		AUD_THROW(FileException, "File couldn't be opened with ffmpeg.");
 
 	try
 	{
@@ -193,9 +180,6 @@ FFMPEGReader::FFMPEGReader(std::string filename) :
 	}
 }
 
-static const char* streamopen_error = "FFMPEGReader: Stream couldn't be "
-									  "opened.";
-
 FFMPEGReader::FFMPEGReader(std::shared_ptr<Buffer> buffer) :
 		m_pkgbuf(),
 		m_membuffer(buffer),
@@ -205,13 +189,12 @@ FFMPEGReader::FFMPEGReader(std::shared_ptr<Buffer> buffer) :
 
 	m_membuf = reinterpret_cast<data_t*>(av_malloc(FF_MIN_BUFFER_SIZE + FF_INPUT_BUFFER_PADDING_SIZE));
 
-	m_aviocontext = avio_alloc_context(m_membuf, FF_MIN_BUFFER_SIZE, 0, this,
-									   read_packet, nullptr, seek_packet);
+	m_aviocontext = avio_alloc_context(m_membuf, FF_MIN_BUFFER_SIZE, 0, this, read_packet, nullptr, seek_packet);
 
 	if(!m_aviocontext)
 	{
 		av_free(m_aviocontext);
-		AUD_THROW(ERROR_FILE, fileopen_error);
+		AUD_THROW(FileException, "Buffer reading context couldn't be created with ffmpeg.");
 	}
 
 	m_formatCtx = avformat_alloc_context();
@@ -219,7 +202,7 @@ FFMPEGReader::FFMPEGReader(std::shared_ptr<Buffer> buffer) :
 	if(avformat_open_input(&m_formatCtx, "", nullptr, nullptr)!=0)
 	{
 		av_free(m_aviocontext);
-		AUD_THROW(ERROR_FILE, streamopen_error);
+		AUD_THROW(FileException, "Buffer couldn't be read with ffmpeg.");
 	}
 
 	try

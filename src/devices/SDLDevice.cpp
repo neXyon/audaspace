@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "devices/SDLDevice.h"
+#include "Exception.h"
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN
@@ -25,10 +26,6 @@ void SDLDevice::SDL_mix(void *data, Uint8* buffer, int length)
 
 	device->mix((data_t*)buffer,length/AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
 }
-
-static const char* open_error = "SDLDevice: Device couldn't be opened.";
-static const char* format_error = "SDLDevice: Obtained unsupported sample "
-								  "format.";
 
 SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
 {
@@ -54,7 +51,7 @@ SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
 	format.userdata = this;
 
 	if(SDL_OpenAudio(&format, &obtained) != 0)
-		AUD_THROW(ERROR_SDL, open_error);
+		AUD_THROW(DeviceException, "The audio device couldn't be opened with SDL.");
 
 	m_specs.rate = (SampleRate)obtained.freq;
 	m_specs.channels = (Channels)obtained.channels;
@@ -65,7 +62,7 @@ SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
 	else
 	{
 		SDL_CloseAudio();
-		AUD_THROW(ERROR_SDL, format_error);
+		AUD_THROW(DeviceException, "The sample format obtained from SDL is not supported.");
 	}
 
 	create();

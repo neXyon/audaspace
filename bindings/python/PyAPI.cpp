@@ -40,6 +40,7 @@
 #include "devices/SDLDevice.h"
 #include "devices/OpenALDevice.h"
 #include "devices/JackDevice.h"
+#include "Exception.h"
 
 using namespace aud;
 
@@ -99,7 +100,7 @@ Sound_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 		catch(Exception& e)
 		{
 			Py_DECREF(self);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -139,7 +140,7 @@ Sound_sine(PyTypeObject* type, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(self);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -178,7 +179,7 @@ Sound_file(PyTypeObject* type, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(self);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -221,7 +222,7 @@ Sound_lowpass(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -262,7 +263,7 @@ Sound_delay(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -306,7 +307,7 @@ Sound_join(Sound* self, PyObject *object)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -349,7 +350,7 @@ Sound_highpass(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -390,7 +391,7 @@ Sound_limit(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -434,7 +435,7 @@ Sound_pitch(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -476,7 +477,7 @@ Sound_volume(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -519,7 +520,7 @@ Sound_fadein(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -563,7 +564,7 @@ Sound_fadeout(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -605,7 +606,7 @@ Sound_loop(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -648,7 +649,7 @@ Sound_mix(Sound* self, PyObject *object)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -681,7 +682,7 @@ Sound_pingpong(Sound* self)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -720,7 +721,7 @@ Sound_reverse(Sound* self)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -755,7 +756,7 @@ Sound_buffer(Sound* self)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -797,7 +798,7 @@ Sound_square(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -900,7 +901,7 @@ Sound_filter(Sound* self, PyObject *args)
 		catch(Exception& e)
 		{
 			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -1038,7 +1039,7 @@ Handle_pause(Handle *self)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1058,7 +1059,7 @@ Handle_resume(Handle *self)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1079,7 +1080,7 @@ Handle_stop(Handle *self)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1109,7 +1110,7 @@ Handle_get_position(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1130,7 +1131,7 @@ Handle_set_position(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1154,7 +1155,7 @@ Handle_get_keep(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1178,7 +1179,7 @@ Handle_set_keep(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1196,7 +1197,7 @@ Handle_get_status(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1213,7 +1214,7 @@ Handle_get_volume(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1234,7 +1235,7 @@ Handle_set_volume(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1252,7 +1253,7 @@ Handle_get_pitch(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1273,7 +1274,7 @@ Handle_set_pitch(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1291,7 +1292,7 @@ Handle_get_loop_count(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1312,7 +1313,7 @@ Handle_set_loop_count(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1339,7 +1340,7 @@ Handle_get_location(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -1368,7 +1369,7 @@ Handle_set_location(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1395,7 +1396,7 @@ Handle_get_velocity(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -1424,7 +1425,7 @@ Handle_set_velocity(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1451,7 +1452,7 @@ Handle_get_orientation(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -1480,7 +1481,7 @@ Handle_set_orientation(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1506,7 +1507,7 @@ Handle_get_relative(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -1537,7 +1538,7 @@ Handle_set_relative(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1565,7 +1566,7 @@ Handle_get_volume_minimum(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1592,7 +1593,7 @@ Handle_set_volume_minimum(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1620,7 +1621,7 @@ Handle_get_volume_maximum(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1647,7 +1648,7 @@ Handle_set_volume_maximum(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1676,7 +1677,7 @@ Handle_get_distance_reference(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1703,7 +1704,7 @@ Handle_set_distance_reference(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1732,7 +1733,7 @@ Handle_get_distance_maximum(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1759,7 +1760,7 @@ Handle_set_distance_maximum(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1788,7 +1789,7 @@ Handle_get_attenuation(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1815,7 +1816,7 @@ Handle_set_attenuation(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1849,7 +1850,7 @@ Handle_get_cone_angle_inner(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1876,7 +1877,7 @@ Handle_set_cone_angle_inner(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1904,7 +1905,7 @@ Handle_get_cone_angle_outer(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1931,7 +1932,7 @@ Handle_set_cone_angle_outer(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -1959,7 +1960,7 @@ Handle_get_cone_volume_outer(Handle *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -1986,7 +1987,7 @@ Handle_set_cone_volume_outer(Handle *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -2146,7 +2147,7 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 		catch(Exception& e)
 		{
 			Py_DECREF(self);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 
@@ -2215,7 +2216,7 @@ Device_play(Device *self, PyObject *args, PyObject *kwds)
 		catch(Exception& e)
 		{
 			Py_DECREF(handle);
-			PyErr_SetString(AUDError, e.str);
+			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
@@ -2237,7 +2238,7 @@ Device_stopAll(Device *self)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2263,7 +2264,7 @@ Device_lock(Device *self)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2283,7 +2284,7 @@ Device_unlock(Device *self)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2317,7 +2318,7 @@ Device_get_rate(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2335,7 +2336,7 @@ Device_get_format(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2353,7 +2354,7 @@ Device_get_channels(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2370,7 +2371,7 @@ Device_get_volume(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2390,7 +2391,7 @@ Device_set_volume(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return -1;
 	}
 }
@@ -2416,7 +2417,7 @@ Device_get_listener_location(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -2444,7 +2445,7 @@ Device_set_listener_location(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -2471,7 +2472,7 @@ Device_get_listener_velocity(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -2499,7 +2500,7 @@ Device_set_listener_velocity(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -2526,7 +2527,7 @@ Device_get_listener_orientation(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return nullptr;
@@ -2554,7 +2555,7 @@ Device_set_listener_orientation(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -2582,7 +2583,7 @@ Device_get_speed_of_sound(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2608,7 +2609,7 @@ Device_set_speed_of_sound(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -2638,7 +2639,7 @@ Device_get_doppler_factor(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2664,7 +2665,7 @@ Device_set_doppler_factor(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;
@@ -2692,7 +2693,7 @@ Device_get_distance_model(Device *self, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
 }
@@ -2718,7 +2719,7 @@ Device_set_distance_model(Device *self, PyObject *args, void* nothing)
 	}
 	catch(Exception& e)
 	{
-		PyErr_SetString(AUDError, e.str);
+		PyErr_SetString(AUDError, e.what());
 	}
 
 	return -1;

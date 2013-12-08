@@ -16,13 +16,12 @@
 
 #include "devices/OpenALReader.h"
 #include "respec/ConverterFunctions.h"
+#include "Exception.h"
 
 #include <algorithm>
 #include <AL/al.h>
 
 AUD_NAMESPACE_BEGIN
-
-static const char* open_error = "OpenALReader: Capture device couldn't be opened.";
 
 OpenALReader::OpenALReader(Specs specs, int buffersize) :
 	m_specs(specs),
@@ -37,7 +36,7 @@ OpenALReader::OpenALReader(Specs specs, int buffersize) :
 									buffersize * specs.channels * 2);
 
 	if(!m_device)
-		AUD_THROW(ERROR_OPENAL, open_error);
+		AUD_THROW(DeviceException, "The capture device couldn't be opened with OpenAL.");
 
 	alcCaptureStart(m_device);
 }

@@ -19,6 +19,7 @@
 #include "respec/JOSResampleReader.h"
 #include "IReader.h"
 #include "file/IWriter.h"
+#include "Exception.h"
 
 #include <string>
 #include <iostream>
@@ -84,7 +85,7 @@ int main(int argc, char* argv[])
 	}
 	catch(Exception& e)
 	{
-		std::cerr << "Error opening file " << argv[1] << " - " << e.str << std::endl;
+		std::cerr << "Error opening file " << argv[1] << " - " << e.getMessage() << std::endl;
 		return 2;
 	}
 

@@ -15,13 +15,11 @@
  ******************************************************************************/
 
 #include "file/SndFileWriter.h"
+#include "Exception.h"
 
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
-
-static const char* fileopen_error = "SndFileWriter: File couldn't be written.";
-static const char* format_error = "SndFileWriter: Unsupported format.";
 
 SndFileWriter::SndFileWriter(std::string filename, DeviceSpecs specs,
 									 Container format, Codec codec, unsigned int bitrate) :
@@ -97,12 +95,12 @@ SndFileWriter::SndFileWriter(std::string filename, DeviceSpecs specs,
 	}
 
 	if(sfinfo.format == 0)
-		AUD_THROW(ERROR_SPECS, format_error);
+		AUD_THROW(FileException, "This format couldn't be written with libsndfile.");
 
 	m_sndfile = sf_open(filename.c_str(), SFM_WRITE, &sfinfo);
 
 	if(!m_sndfile)
-		AUD_THROW(ERROR_FILE, fileopen_error);
+		AUD_THROW(FileException, "The file couldn't be written with libsndfile.");
 }
 
 SndFileWriter::~SndFileWriter()

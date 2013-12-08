@@ -16,6 +16,7 @@
 
 #include "sequence/SequenceReader.h"
 #include "sequence/SequenceData.h"
+#include "Exception.h"
 #include "SequenceHandle.h"
 
 #include <algorithm>

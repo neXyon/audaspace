@@ -15,8 +15,9 @@
  ******************************************************************************/
 
 #include "file/File.h"
-#include "IReader.h"
 #include "respec/ChannelMapperReader.h"
+#include "Exception.h"
+#include "IReader.h"
 
 #include <string>
 #include <iostream>
@@ -59,7 +60,7 @@ int main(int argc, char* argv[])
 	}
 	catch(Exception& e)
 	{
-		std::cerr << "Error opening file " << argv[1] << " - " << e.str << std::endl;
+		std::cerr << "Error opening file " << argv[1] << " - " << e.getMessage() << std::endl;
 		return 2;
 	}
 

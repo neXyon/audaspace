@@ -19,10 +19,9 @@
 #include "file/FileWriter.h"
 #include "util/Buffer.h"
 #include "IReader.h"
+#include "Exception.h"
 
 AUD_NAMESPACE_BEGIN
-
-static const char* write_error = "FileWriter: File couldn't be written.";
 
 std::shared_ptr<IWriter> FileWriter::createWriter(std::string filename,DeviceSpecs specs,
 														Container format, Codec codec, unsigned int bitrate)
@@ -39,7 +38,7 @@ std::shared_ptr<IWriter> FileWriter::createWriter(std::string filename,DeviceSpe
 	}
 	catch(Exception&) {}
 
-	AUD_THROW(ERROR_SPECS, write_error);
+	AUD_THROW(FileException, "The file couldn't be written with any installed writer.");
 }
 
 void FileWriter::writeReader(std::shared_ptr<IReader> reader, std::shared_ptr<IWriter> writer, unsigned int length, unsigned int buffersize)

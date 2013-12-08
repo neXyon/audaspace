@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "devices/JackDevice.h"
+#include "Exception.h"
 #include "IReader.h"
 
 #include <cstring>
@@ -158,12 +159,6 @@ void JackDevice::jack_shutdown(void *data)
 	device->m_valid = false;
 }
 
-static const char* clientopen_error = "JackDevice: Couldn't connect to "
-									  "jack server.";
-static const char* port_error = "JackDevice: Couldn't create output port.";
-static const char* activate_error = "JackDevice: Couldn't activate the "
-									"client.";
-
 JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 {
 	if(specs.channels == CHANNELS_INVALID)
@@ -179,7 +174,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 	// open client
 	m_client = aud_jack_client_open(name.c_str(), options, &status);
 	if(m_client == nullptr)
-		AUD_THROW(ERROR_JACK, clientopen_error);
+		AUD_THROW(DeviceException, "Connecting to the Jack server failed.");
 
 	// set callbacks
 	aud_jack_set_process_callback(m_client, JackDevice::jack_mix, this);
@@ -195,11 +190,9 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 		for(int i = 0; i < m_specs.channels; i++)
 		{
 			sprintf(portname, "out %d", i+1);
-			m_ports[i] = aud_jack_port_register(m_client, portname,
-											JACK_DEFAULT_AUDIO_TYPE,
-											JackPortIsOutput, 0);
+			m_ports[i] = aud_jack_port_register(m_client, portname, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 			if(m_ports[i] == nullptr)
-				AUD_THROW(ERROR_JACK, port_error);
+				AUD_THROW(DeviceException, "Registering output port with Jack failed.");
 		}
 	}
 	catch(Exception&)
@@ -236,7 +229,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
 		delete[] m_ringbuffers;
 		destroy();
 
-		AUD_THROW(ERROR_JACK, activate_error);
+		AUD_THROW(DeviceException, "Client activation with Jack failed.");
 	}
 
 	const char** ports = aud_jack_get_ports(m_client, nullptr, nullptr,

@@ -16,6 +16,7 @@
 
 #include "file/SndFileReader.h"
 #include "util/Buffer.h"
+#include "Exception.h"
 
 #include <cstring>
 
@@ -70,9 +71,6 @@ sf_count_t SndFileReader::vio_tell(void *user_data)
 	return reader->m_memoffset;
 }
 
-static const char* fileopen_error = "SndFileReader: File couldn't be "
-									"read.";
-
 SndFileReader::SndFileReader(std::string filename) :
 	m_position(0)
 {
@@ -82,7 +80,7 @@ SndFileReader::SndFileReader(std::string filename) :
 	m_sndfile = sf_open(filename.c_str(), SFM_READ, &sfinfo);
 
 	if(!m_sndfile)
-		AUD_THROW(ERROR_FILE, fileopen_error);
+		AUD_THROW(FileException, "The file couldn't be opened with libsndfile.");
 
 	m_specs.channels = (Channels) sfinfo.channels;
 	m_specs.rate = (SampleRate) sfinfo.samplerate;
@@ -107,7 +105,7 @@ SndFileReader::SndFileReader(std::shared_ptr<Buffer> buffer) :
 	m_sndfile = sf_open_virtual(&m_vio, SFM_READ, &sfinfo, this);
 
 	if(!m_sndfile)
-		AUD_THROW(ERROR_FILE, fileopen_error);
+		AUD_THROW(FileException, "The buffer couldn't be read with libsndfile.");
 
 	m_specs.channels = (Channels) sfinfo.channels;
 	m_specs.rate = (SampleRate) sfinfo.samplerate;

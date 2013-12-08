@@ -16,6 +16,7 @@
 
 #include "devices/OpenALDevice.h"
 #include "file/File.h"
+#include "Exception.h"
 #include "IReader.h"
 
 #include <iostream>
@@ -44,7 +45,7 @@ int main(int argc, char* argv[])
 	}
 	catch(Exception& e)
 	{
-		std::cerr << "Error opening file " << argv[1] << " - " << e.str << std::endl;
+		std::cerr << "Error opening file " << argv[1] << " - " << e.getMessage() << std::endl;
 		return 2;
 	}
 

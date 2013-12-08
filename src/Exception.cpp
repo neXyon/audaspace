@@ -14,20 +14,46 @@
  * limitations under the License.
  ******************************************************************************/
 
-#pragma once
+#include "Exception.h"
 
-/// The default playback buffer size of a device.
-#define AUD_DEFAULT_BUFFER_SIZE 1024
-
-#define AUD_NAMESPACE_BEGIN namespace aud {
-#define AUD_NAMESPACE_END }
+#include <sstream>
 
 AUD_NAMESPACE_BEGIN
 
-/// Sample type.(float samples)
-typedef float sample_t;
+Exception::Exception(std::string message, std::string file, int line) :
+	m_message(message),
+	m_file(file),
+	m_line(line)
+{
+}
 
-/// Sample data type (format samples)
-typedef unsigned char data_t;
+const char *Exception::what() const noexcept
+{
+	return m_message.c_str();
+}
+
+std::string Exception::getDebugMessage() const
+{
+	std::stringstream out;
+
+	out << m_message << " File " << m_file << ":" << m_line;
+
+	return out.str();
+}
+
+const std::string& Exception::getMessage() const
+{
+	return m_message;
+}
+
+const std::string& Exception::getFile() const
+{
+	return m_file;
+}
+
+int Exception::getLine() const
+{
+	return m_line;
+}
 
 AUD_NAMESPACE_END

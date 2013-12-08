@@ -17,6 +17,7 @@
 #include "file/FFMPEGReader.h"
 #include "file/SndFileReader.h"
 #include "file/File.h"
+#include "Exception.h"
 
 #include <cstring>
 
@@ -33,8 +34,6 @@ File::File(const data_t* buffer, int size) :
 	std::memcpy(m_buffer->getBuffer(), buffer, size);
 }
 
-static const char* read_error = "File: File couldn't be read.";
-
 std::shared_ptr<IReader> File::createReader()
 {
 	try
@@ -44,9 +43,7 @@ std::shared_ptr<IReader> File::createReader()
 		else
 			return std::shared_ptr<IReader>(new SndFileReader(m_filename));
 	}
-	catch(Exception &e) {
-		e.error = e.error;
-	}
+	catch(Exception &e) {}
 
 	try
 	{
@@ -57,7 +54,7 @@ std::shared_ptr<IReader> File::createReader()
 	}
 	catch(Exception&) {}
 
-	AUD_THROW(ERROR_FILE, read_error);
+	AUD_THROW(FileException, "The file couldn't be read with any installed file reader.");
 }
 
 AUD_NAMESPACE_END

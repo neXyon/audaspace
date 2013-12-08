@@ -15,13 +15,11 @@
  ******************************************************************************/
 
 #include "fx/ReverseReader.h"
+#include "Exception.h"
 
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
-
-static const char* props_error = "ReverseReader: The reader has to be "
-								 "seekable and a finite length.";
 
 ReverseReader::ReverseReader(std::shared_ptr<IReader> reader) :
 		EffectReader(reader),
@@ -29,7 +27,7 @@ ReverseReader::ReverseReader(std::shared_ptr<IReader> reader) :
 		m_position(0)
 {
 	if(m_length < 0 || !reader->isSeekable())
-		AUD_THROW(ERROR_PROPS, props_error);
+		AUD_THROW(StateException, "A reader has to be seekable and have finite length to be reversible.");
 }
 
 void ReverseReader::seek(int position)
@@ -78,15 +76,9 @@ void ReverseReader::read(int& length, bool& eos, sample_t* buffer)
 	// copy the samples reverted
 	for(int i = 0; i < length / 2; i++)
 	{
-		std::memcpy(temp,
-			   buffer + (len - 1 - i) * specs.channels,
-			   samplesize);
-		std::memcpy(buffer + (len - 1 - i) * specs.channels,
-			   buffer + i * specs.channels,
-			   samplesize);
-		std::memcpy(buffer + i * specs.channels,
-			   temp,
-			   samplesize);
+		std::memcpy(temp, buffer + (len - 1 - i) * specs.channels, samplesize);
+		std::memcpy(buffer + (len - 1 - i) * specs.channels, buffer + i * specs.channels, samplesize);
+		std::memcpy(buffer + i * specs.channels, temp, samplesize);
 	}
 
 	m_position += length;

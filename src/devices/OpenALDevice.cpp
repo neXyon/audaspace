@@ -15,8 +15,9 @@
  ******************************************************************************/
 
 #include "devices/OpenALDevice.h"
-#include "ISound.h"
 #include "respec/ConverterReader.h"
+#include "Exception.h"
+#include "ISound.h"
 
 #include <mutex>
 #include <cstring>
@@ -28,15 +29,6 @@ AUD_NAMESPACE_BEGIN
 /******************************************************************************/
 /*********************** OpenALHandle Handle Code *************************/
 /******************************************************************************/
-
-static const char* genbuffer_error = "OpenALDevice: Buffer couldn't be "
-									 "generated.";
-static const char* gensource_error = "OpenALDevice: Source couldn't be "
-									 "generated.";
-static const char* queue_error = "OpenALDevice: Buffer couldn't be "
-								 "queued to the source.";
-static const char* bufferdata_error = "OpenALDevice: Buffer couldn't be "
-									  "filled with data.";
 
 bool OpenALDevice::OpenALHandle::pause(bool keep)
 {
@@ -78,7 +70,7 @@ OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, st
 	// OpenAL playback code
 	alGenBuffers(CYCLE_BUFFERS, m_buffers);
 	if(alGetError() != AL_NO_ERROR)
-		AUD_THROW(ERROR_OPENAL, genbuffer_error);
+		AUD_THROW(DeviceException, "Buffer generation failed while staring playback with OpenAL.");
 
 	try
 	{
@@ -97,18 +89,18 @@ OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, st
 			alBufferData(m_buffers[m_current], m_format, m_device->m_buffer.getBuffer(), length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
 
 			if(alGetError() != AL_NO_ERROR)
-				AUD_THROW(ERROR_OPENAL, bufferdata_error);
+				AUD_THROW(DeviceException, "Filling the buffer with data failed while starting playback with OpenAL.");
 		}
 
 		alGenSources(1, &m_source);
 		if(alGetError() != AL_NO_ERROR)
-			AUD_THROW(ERROR_OPENAL, gensource_error);
+			AUD_THROW(DeviceException, "Source generation failed while starting playback with OpenAL.");
 
 		try
 		{
 			alSourceQueueBuffers(m_source, CYCLE_BUFFERS, m_buffers);
 			if(alGetError() != AL_NO_ERROR)
-				AUD_THROW(ERROR_OPENAL, queue_error);
+				AUD_THROW(DeviceException, "Buffer queuing failed while starting playback with OpenAL.");
 		}
 		catch(Exception&)
 		{
@@ -988,8 +980,6 @@ void OpenALDevice::updateStreams()
 /**************************** IDevice Code ************************************/
 /******************************************************************************/
 
-static const char* open_error = "OpenALDevice: Device couldn't be opened.";
-
 OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize) :
 	m_buffersize(buffersize), m_playing(false)
 {
@@ -1014,7 +1004,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize) :
 	m_device = alcOpenDevice(nullptr);
 
 	if(!m_device)
-		AUD_THROW(ERROR_OPENAL, open_error);
+		AUD_THROW(DeviceException, "The audio device couldn't be opened with OpenAL.");
 
 	// at least try to set the frequency
 	ALCint attribs[] = { ALC_FREQUENCY, (ALCint)specs.rate, 0 };

@@ -15,14 +15,12 @@
  ******************************************************************************/
 
 #include "fx/SuperposeReader.h"
+#include "Exception.h"
 
 #include <algorithm>
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
-
-static const char* specs_error = "SuperposeReader: Both readers have to "
-								 "have the same specs.";
 
 SuperposeReader::SuperposeReader(std::shared_ptr<IReader> reader1, std::shared_ptr<IReader> reader2) :
 	m_reader1(reader1), m_reader2(reader2)
@@ -70,7 +68,7 @@ void SuperposeReader::read(int& length, bool& eos, sample_t* buffer)
 	Specs specs = m_reader1->getSpecs();
 	Specs s2 = m_reader2->getSpecs();
 	if(!AUD_COMPARE_SPECS(specs, s2))
-		AUD_THROW(ERROR_SPECS, specs_error);
+		AUD_THROW(StateException, "Two readers with different specifiactions cannot be superposed.");
 
 	int samplesize = AUD_SAMPLE_SIZE(specs);
 
