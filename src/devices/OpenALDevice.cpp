@@ -19,9 +19,10 @@
 #include "Exception.h"
 #include "ISound.h"
 
-#include <mutex>
-#include <cstring>
 #include <chrono>
+#include <cstring>
+#include <iostream>
+#include <mutex>
 #include <thread>
 
 AUD_NAMESPACE_BEGIN
@@ -255,6 +256,7 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 				for(m_current = 0; m_current < CYCLE_BUFFERS; m_current++)
 				{
 					length = m_device->m_buffersize;
+
 					m_reader->read(length, m_eos, m_device->m_buffer.getBuffer());
 
 					if(length == 0)
@@ -865,18 +867,27 @@ void OpenALDevice::updateStreams()
 							{
 								// read data
 								length = m_buffersize;
-								sound->m_reader->read(length, sound->m_eos, m_buffer.getBuffer());
 
-								// looping necessary?
-								if(length == 0 && sound->m_loopcount)
+								try
 								{
-									if(sound->m_loopcount > 0)
-										sound->m_loopcount--;
-
-									sound->m_reader->seek(0);
-
-									length = m_buffersize;
 									sound->m_reader->read(length, sound->m_eos, m_buffer.getBuffer());
+
+									// looping necessary?
+									if(length == 0 && sound->m_loopcount)
+									{
+										if(sound->m_loopcount > 0)
+											sound->m_loopcount--;
+
+										sound->m_reader->seek(0);
+
+										length = m_buffersize;
+										sound->m_reader->read(length, sound->m_eos, m_buffer.getBuffer());
+									}
+								}
+								catch(Exception& e)
+								{
+									length = 0;
+									std::cerr << "Caught exception while reading sound data during playback with OpenAL: " << e.getMessage() << std::endl;
 								}
 
 								if(sound->m_loopcount != 0)

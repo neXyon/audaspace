@@ -15,16 +15,18 @@
  ******************************************************************************/
 
 #include "devices/SoftwareDevice.h"
-#include "respec/Mixer.h"
-#include "ISound.h"
-#include "respec/JOSResampleReader.h"
-#include "respec/LinearResampleReader.h"
 #include "fx/PitchReader.h"
 #include "respec/ChannelMapperReader.h"
+#include "respec/JOSResampleReader.h"
+#include "respec/LinearResampleReader.h"
+#include "respec/Mixer.h"
+#include "Exception.h"
+#include "ISound.h"
 
 #include <algorithm>
-#include <cstring>
 #include <cmath>
+#include <cstring>
+#include <iostream>
 #include <limits>
 #include <mutex>
 
@@ -739,26 +741,34 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 			// update 3D Info
 			sound->update();
 
-			sound->m_reader->read(len, eos, buf);
-
-			// in case of looping
-			while(pos + len < length && sound->m_loopcount && eos)
+			try
 			{
-				m_mixer->mix(buf, pos, len, sound->m_volume);
-
-				pos += len;
-
-				if(sound->m_loopcount > 0)
-					sound->m_loopcount--;
-
-				sound->m_reader->seek(0);
-
-				len = length - pos;
 				sound->m_reader->read(len, eos, buf);
 
-				// prevent endless loop
-				if(!len)
-					break;
+				// in case of looping
+				while(pos + len < length && sound->m_loopcount && eos)
+				{
+					m_mixer->mix(buf, pos, len, sound->m_volume);
+
+					pos += len;
+
+					if(sound->m_loopcount > 0)
+						sound->m_loopcount--;
+
+					sound->m_reader->seek(0);
+
+					len = length - pos;
+					sound->m_reader->read(len, eos, buf);
+
+					// prevent endless loop
+					if(!len)
+						break;
+				}
+			}
+			catch(Exception& e)
+			{
+				len = 0;
+				std::cerr << "Caught exception while reading sound data during playback with software mixing: " << e.getMessage() << std::endl;
 			}
 
 			m_mixer->mix(buf, pos, len, sound->m_volume);
