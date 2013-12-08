@@ -816,7 +816,7 @@ bool OpenALDevice::OpenALHandle::setConeVolumeOuter(float volume)
 
 void OpenALDevice::start()
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	if(!m_playing)
 	{
@@ -1179,7 +1179,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<IReader> reader, boo
 	if(!getFormat(format, specs))
 		return std::shared_ptr<IHandle>();
 
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	alcSuspendContext(m_context);
 
@@ -1213,7 +1213,7 @@ std::shared_ptr<IHandle> OpenALDevice::play(std::shared_ptr<ISound> sound, bool 
 
 void OpenALDevice::stopAll()
 {
-	std::lock_guard<ILockable> lock(*this);
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	alcSuspendContext(m_context);
 
@@ -1239,12 +1239,15 @@ void OpenALDevice::unlock()
 float OpenALDevice::getVolume() const
 {
 	float result;
+
 	alGetListenerf(AL_GAIN, &result);
 	return result;
 }
 
 void OpenALDevice::setVolume(float volume)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	alListenerf(AL_GAIN, volume);
 }
 
@@ -1255,24 +1258,30 @@ void OpenALDevice::setVolume(float volume)
 Vector3 OpenALDevice::getListenerLocation() const
 {
 	ALfloat p[3];
+
 	alGetListenerfv(AL_POSITION, p);
 	return Vector3(p[0], p[1], p[2]);
 }
 
 void OpenALDevice::setListenerLocation(const Vector3& location)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	alListenerfv(AL_POSITION, (ALfloat*)location.get());
 }
 
 Vector3 OpenALDevice::getListenerVelocity() const
 {
 	ALfloat v[3];
+
 	alGetListenerfv(AL_VELOCITY, v);
 	return Vector3(v[0], v[1], v[2]);
 }
 
 void OpenALDevice::setListenerVelocity(const Vector3& velocity)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	alListenerfv(AL_VELOCITY, (ALfloat*)velocity.get());
 }
 
@@ -1284,6 +1293,9 @@ Quaternion OpenALDevice::getListenerOrientation() const
 void OpenALDevice::setListenerOrientation(const Quaternion& orientation)
 {
 	ALfloat direction[6];
+
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	direction[0] = -2 * (orientation.w() * orientation.y() +
 						 orientation.x() * orientation.z());
 	direction[1] = 2 * (orientation.x() * orientation.w() -
@@ -1307,6 +1319,8 @@ float OpenALDevice::getSpeedOfSound() const
 
 void OpenALDevice::setSpeedOfSound(float speed)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	alSpeedOfSound(speed);
 }
 
@@ -1317,6 +1331,8 @@ float OpenALDevice::getDopplerFactor() const
 
 void OpenALDevice::setDopplerFactor(float factor)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	alDopplerFactor(factor);
 }
 
@@ -1343,6 +1359,8 @@ DistanceModel OpenALDevice::getDistanceModel() const
 
 void OpenALDevice::setDistanceModel(DistanceModel model)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
 	switch(model)
 	{
 	case DISTANCE_MODEL_INVERSE:
