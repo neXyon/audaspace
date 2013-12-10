@@ -16,17 +16,20 @@ The following (probably incomplete) features are supported by audaspace:
 * generators for simple waveforms like silence, sine and triangle
 * respecification - this term is used for changing stream parameters which are
  * channel count - channel remapping
- * sample format - the library internaly uses 32 bit floats
+ * sample format - the library internally uses 32 bit floats
  * sample rate - resampling
 * simple (superposition, joining and ping-pong aka forward-reverse) and more complex (non-linear audio editing) sequencing of sounds
 
 Library Concepts
 ----------------
 
-* Interfaces (Device, Handle, Sound)
-* Memory Management (shared_ptr)
-* Error handling (exceptions)
-* Architecture (pull, not push, reason: buffers)
+The most important classes to understand the overall architecture of the library are the interfaces Device, Handle and Sound. A device is an output device, that usually outputs to speakers through a soundcard. A sound is merely a description of a playable sound, but not yet a realisation of a single playback event. Thus a sound can be played multiple times and in parallel. Actual playback instances are so called Handles which are returned by the play method of the device.
+
+Additionally to these, two more interfaces might be important depending on the application case. The Reader represents an actual playback instance. The difference to the Handle here is, that the Handle is associated to a Device, while a Reader is not. Sounds actually produce Readers and a Handle internally always reads from a Reader. Writers exist too and are usually used for writing sound data to files. The main difference between a Device and a Writer is that a Device pulls the sound data by itself from multiple readers and has a quite complex structure, while a Writer is lightweight and needs to be fed with sample data.
+
+The architecture of sample data reading is top-down and not bottom-up. That means that the Devices are supplying the data buffers for the Readers to read into. This saves memory and increases the speed, except for the case where a simple buffer is played back and thus has to be copied during playback.
+
+The memory management of audaspace is as far as possible done with shared_ptr objects and the library follows the RAII principle wherever possible. Errors are dealt with using exceptions instead of error values.
 
 Build Dependencies
 ------------------
