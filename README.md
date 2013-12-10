@@ -1,7 +1,44 @@
 audaspace
 =========
 
-Audaspace is a high level audio library written in C++ with language bindings for Python for example. It started out as the audio engine of the 3D modelling application Blender. It's currently under heavy development to be released as a standalone library.
+Audaspace (pronounced "outer space") is a high level audio library written in C++ with language bindings for Python for example. It started out as the audio engine of the 3D modelling application Blender. It's currently under heavy development to be released as a standalone library.
+
+Features
+--------
+
+The following (probably incomplete) features are supported by audaspace:
+
+* input/output devices
+ * input from microphones, line in, etc.
+ * output devices including 3D audio support
+* file reading/writing
+* filters like low-/highpass and effects like delay, reverse or fading
+* generators for simple waveforms like silence, sine and triangle
+* respecification - this term is used for changing stream parameters which are
+ * channel count - channel remapping
+ * sample format - the library internaly uses 32 bit floats
+ * sample rate - resampling
+* simple (superposition, joining and ping-pong aka forward-reverse) and more complex (non-linear audio editing) sequencing of sounds
+
+Library Concepts
+----------------
+
+* Interfaces (Device, Handle, Sound)
+* Memory Management (shared_ptr)
+* Error handling (exceptions)
+* Architecture (pull, not push, reason: buffers)
+
+Build Dependencies
+------------------
+
+Audaspace is written in C++ 11 so a fairly recent compiler (g++ 4.8.2, clang 3.3, MSVC 2013) is needed to build it. The following build dependencies are all optional, but without any it's neither possible to open sound files nor play back through the speakers.
+
+* OpenAL (input/output device)
+* SDL (output device)
+* Jack (output device)
+* libsndfile (file access)
+* ffmpeg (file access)
+* Python (language binding)
 
 License
 -------
