@@ -17,12 +17,11 @@
 #pragma once
 
 #include "fx/EffectReader.h"
-#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
 /**
- * This class is a base class for infinite impulse response filters.
+ * This class is an ADSR filters.
  */
 class ADSRReader : public EffectReader
 {

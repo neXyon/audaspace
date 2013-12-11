@@ -14,40 +14,40 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "generator/SinusReader.h"
+#include "generator/SineReader.h"
 
 #include <cmath>
 
 AUD_NAMESPACE_BEGIN
 
-SinusReader::SinusReader(float frequency, SampleRate sampleRate) :
+SineReader::SineReader(float frequency, SampleRate sampleRate) :
 	m_frequency(frequency),
 	m_position(0),
 	m_sampleRate(sampleRate)
 {
 }
 
-bool SinusReader::isSeekable() const
+bool SineReader::isSeekable() const
 {
 	return true;
 }
 
-void SinusReader::seek(int position)
+void SineReader::seek(int position)
 {
 	m_position = position;
 }
 
-int SinusReader::getLength() const
+int SineReader::getLength() const
 {
 	return -1;
 }
 
-int SinusReader::getPosition() const
+int SineReader::getPosition() const
 {
 	return m_position;
 }
 
-Specs SinusReader::getSpecs() const
+Specs SineReader::getSpecs() const
 {
 	Specs specs;
 	specs.rate = m_sampleRate;
@@ -55,7 +55,7 @@ Specs SinusReader::getSpecs() const
 	return specs;
 }
 
-void SinusReader::read(int& length, bool& eos, sample_t* buffer)
+void SineReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	// fill with sine data
 	for(int i = 0; i < length; i++)

@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/PingPong.h"
-#include "fx/DoubleReader.h"
+#include "sequence/PingPong.h"
+#include "sequence/DoubleReader.h"
 #include "fx/ReverseReader.h"
 
 AUD_NAMESPACE_BEGIN

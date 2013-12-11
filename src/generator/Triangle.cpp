@@ -14,22 +14,25 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "sequence/Double.h"
-#include "sequence/DoubleReader.h"
+#include "generator/Triangle.h"
+#include "generator/TriangleReader.h"
 
 AUD_NAMESPACE_BEGIN
 
-Double::Double(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2) :
-	m_sound1(sound1), m_sound2(sound2)
+Triangle::Triangle(float frequency, SampleRate sampleRate) :
+	m_frequency(frequency),
+	m_sampleRate(sampleRate)
 {
 }
 
-std::shared_ptr<IReader> Double::createReader()
+float Triangle::getFrequency() const
 {
-	std::shared_ptr<IReader> reader1 = m_sound1->createReader();
-	std::shared_ptr<IReader> reader2 = m_sound2->createReader();
+	return m_frequency;
+}
 
-	return std::shared_ptr<IReader>(new DoubleReader(reader1, reader2));
+std::shared_ptr<IReader> Triangle::createReader()
+{
+	return std::shared_ptr<IReader>(new TriangleReader(m_frequency, m_sampleRate));
 }
 
 AUD_NAMESPACE_END

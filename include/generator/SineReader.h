@@ -24,7 +24,7 @@ AUD_NAMESPACE_BEGIN
  * This class is used for sine tone playback.
  * The sample rate can be specified, the signal is mono.
  */
-class SinusReader : public IReader
+class SineReader : public IReader
 {
 private:
 	/**
@@ -43,8 +43,8 @@ private:
 	const SampleRate m_sampleRate;
 
 	// delete copy constructor and operator=
-	SinusReader(const SinusReader&) = delete;
-	SinusReader& operator=(const SinusReader&) = delete;
+	SineReader(const SineReader&) = delete;
+	SineReader& operator=(const SineReader&) = delete;
 
 public:
 	/**
@@ -52,7 +52,7 @@ public:
 	 * \param frequency The frequency of the sine wave.
 	 * \param sampleRate The output sample rate.
 	 */
-	SinusReader(float frequency, SampleRate sampleRate);
+	SineReader(float frequency, SampleRate sampleRate);
 
 	virtual bool isSeekable() const;
 	virtual void seek(int position);

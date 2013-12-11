@@ -14,22 +14,48 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "sequence/Double.h"
-#include "sequence/DoubleReader.h"
+#pragma once
+
+#include "ISound.h"
+#include "respec/Specification.h"
 
 AUD_NAMESPACE_BEGIN
 
-Double::Double(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2) :
-	m_sound1(sound1), m_sound2(sound2)
+/**
+ * This sound creates a reader that plays a sine tone.
+ */
+class Sine : public ISound
 {
-}
+private:
+	/**
+	 * The frequence of the sine wave.
+	 */
+	const float m_frequency;
 
-std::shared_ptr<IReader> Double::createReader()
-{
-	std::shared_ptr<IReader> reader1 = m_sound1->createReader();
-	std::shared_ptr<IReader> reader2 = m_sound2->createReader();
+	/**
+	 * The target sample rate for output.
+	 */
+	const SampleRate m_sampleRate;
 
-	return std::shared_ptr<IReader>(new DoubleReader(reader1, reader2));
-}
+	// delete copy constructor and operator=
+	Sine(const Sine&) = delete;
+	Sine& operator=(const Sine&) = delete;
+
+public:
+	/**
+	 * Creates a new sine sound.
+	 * \param frequency The desired frequency.
+	 * \param sampleRate The target sample rate for playback.
+	 */
+	Sine(float frequency,
+					 SampleRate sampleRate = RATE_44100);
+
+	/**
+	 * Returns the frequency of the sine wave.
+	 */
+	float getFrequency() const;
+
+	virtual std::shared_ptr<IReader> createReader();
+};
 
 AUD_NAMESPACE_END

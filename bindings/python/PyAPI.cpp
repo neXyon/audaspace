@@ -21,20 +21,20 @@
 #include "devices/I3DHandle.h"
 #include "devices/NULLDevice.h"
 #include "fx/Delay.h"
-#include "fx/Double.h"
+#include "sequence/Double.h"
 #include "fx/Fader.h"
 #include "fx/Highpass.h"
 #include "fx/Limiter.h"
 #include "fx/Loop.h"
 #include "fx/Lowpass.h"
-#include "fx/PingPong.h"
+#include "sequence/PingPong.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
-#include "generator/Sinus.h"
+#include "generator/Sine.h"
 #include "file/File.h"
 #include "fx/Square.h"
 #include "util/StreamBuffer.h"
-#include "fx/Superpose.h"
+#include "sequence/Superpose.h"
 #include "fx/Volume.h"
 #include "fx/IIRFilter.h"
 #include "devices/SDLDevice.h"
@@ -135,7 +135,7 @@ Sound_sine(PyTypeObject* type, PyObject *args)
 	{
 		try
 		{
-			self->sound = new std::shared_ptr<ISound>(new Sinus(frequency, (SampleRate)rate));
+			self->sound = new std::shared_ptr<ISound>(new Sine(frequency, (SampleRate)rate));
 		}
 		catch(Exception& e)
 		{

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/DoubleReader.h"
+#include "sequence/DoubleReader.h"
 
 #include <cstring>
 

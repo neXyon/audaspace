@@ -22,13 +22,13 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This sound creates a reader that plays a sine tone.
+ * This sound creates a reader that plays a triangle tone.
  */
-class Sinus : public ISound
+class Triangle : public ISound
 {
 private:
 	/**
-	 * The frequence of the sine wave.
+	 * The frequence of the triangle wave.
 	 */
 	const float m_frequency;
 
@@ -38,20 +38,20 @@ private:
 	const SampleRate m_sampleRate;
 
 	// delete copy constructor and operator=
-	Sinus(const Sinus&) = delete;
-	Sinus& operator=(const Sinus&) = delete;
+	Triangle(const Triangle&) = delete;
+	Triangle& operator=(const Triangle&) = delete;
 
 public:
 	/**
-	 * Creates a new sine sound.
+	 * Creates a new triangle sound.
 	 * \param frequency The desired frequency.
 	 * \param sampleRate The target sample rate for playback.
 	 */
-	Sinus(float frequency,
+	Triangle(float frequency,
 					 SampleRate sampleRate = RATE_44100);
 
 	/**
-	 * Returns the frequency of the sine wave.
+	 * Returns the frequency of the triangle wave.
 	 */
 	float getFrequency() const;
 

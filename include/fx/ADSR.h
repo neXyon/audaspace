@@ -14,22 +14,59 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "sequence/Double.h"
-#include "sequence/DoubleReader.h"
+#pragma once
+
+#include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN
 
-Double::Double(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2) :
-	m_sound1(sound1), m_sound2(sound2)
+class ADSR : public Effect
 {
-}
+private:
+	/**
+	 * Attack time.
+	 */
+	float m_attack;
 
-std::shared_ptr<IReader> Double::createReader()
-{
-	std::shared_ptr<IReader> reader1 = m_sound1->createReader();
-	std::shared_ptr<IReader> reader2 = m_sound2->createReader();
+	/**
+	 * Decay time.
+	 */
+	float m_decay;
 
-	return std::shared_ptr<IReader>(new DoubleReader(reader1, reader2));
-}
+	/**
+	 * Sustain level.
+	 */
+	float m_sustain;
+
+	/**
+	 * Release time.
+	 */
+	float m_release;
+
+	// delete copy constructor and operator=
+	ADSR(const ADSR&) = delete;
+	ADSR& operator=(const ADSR&) = delete;
+
+public:
+	ADSR(std::shared_ptr<ISound> sound, float attack, float decay, float sustain, float release);
+
+	float getAttack() const;
+
+	void setAttack(float attack);
+
+	float getDecay() const;
+
+	void setDecay(float decay);
+
+	float getSustain() const;
+
+	void setSustain(float sustain);
+
+	float getRelease() const;
+
+	void setRelease(float release);
+
+	virtual std::shared_ptr<IReader> createReader();
+};
 
 AUD_NAMESPACE_END

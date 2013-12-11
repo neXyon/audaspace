@@ -14,25 +14,25 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "generator/Sinus.h"
-#include "generator/SinusReader.h"
+#include "generator/Sine.h"
+#include "generator/SineReader.h"
 
 AUD_NAMESPACE_BEGIN
 
-Sinus::Sinus(float frequency, SampleRate sampleRate) :
+Sine::Sine(float frequency, SampleRate sampleRate) :
 	m_frequency(frequency),
 	m_sampleRate(sampleRate)
 {
 }
 
-float Sinus::getFrequency() const
+float Sine::getFrequency() const
 {
 	return m_frequency;
 }
 
-std::shared_ptr<IReader> Sinus::createReader()
+std::shared_ptr<IReader> Sine::createReader()
 {
-	return std::shared_ptr<IReader>(new SinusReader(m_frequency, m_sampleRate));
+	return std::shared_ptr<IReader>(new SineReader(m_frequency, m_sampleRate));
 }
 
 AUD_NAMESPACE_END

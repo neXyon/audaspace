@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/SuperposeReader.h"
+#include "sequence/SuperposeReader.h"
 #include "Exception.h"
 
 #include <algorithm>

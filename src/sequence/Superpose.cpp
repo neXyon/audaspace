@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/Superpose.h"
-#include "fx/SuperposeReader.h"
+#include "sequence/Superpose.h"
+#include "sequence/SuperposeReader.h"
 
 AUD_NAMESPACE_BEGIN
 
