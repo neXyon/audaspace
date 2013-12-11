@@ -37,9 +37,7 @@ public:
 	 * \param[out] b The input filter coefficients.
 	 * \param[out] a The output filter coefficients.
 	 */
-	virtual void recalculateCoefficients(SampleRate rate,
-										 std::vector<float>& b,
-										 std::vector<float>& a)=0;
+	virtual void recalculateCoefficients(SampleRate rate, std::vector<float>& b, std::vector<float>& a)=0;
 };
 
 AUD_NAMESPACE_END

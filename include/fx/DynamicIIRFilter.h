@@ -38,8 +38,7 @@ public:
 	 * Creates a new Dynmic IIR filter sound.
 	 * \param sound The input sound.
 	 */
-	DynamicIIRFilter(std::shared_ptr<ISound> sound,
-								std::shared_ptr<IDynamicIIRFilterCalculator> calculator);
+	DynamicIIRFilter(std::shared_ptr<ISound> sound, std::shared_ptr<IDynamicIIRFilterCalculator> calculator);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

@@ -48,8 +48,7 @@ Accumulator::Accumulator(std::shared_ptr<ISound> sound,
 
 std::shared_ptr<IReader> Accumulator::createReader()
 {
-	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(getReader(), 2, 2,
-							m_additive ? accumulatorFilterAdditive : accumulatorFilter));
+	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(getReader(), 2, 2, m_additive ? accumulatorFilterAdditive : accumulatorFilter));
 }
 
 AUD_NAMESPACE_END
