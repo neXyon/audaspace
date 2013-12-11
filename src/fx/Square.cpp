@@ -48,10 +48,7 @@ float Square::getThreshold() const
 
 std::shared_ptr<IReader> Square::createReader()
 {
-	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(getReader(), 1, 1,
-										   (doFilterIIR) squareFilter,
-										   (endFilterIIR) endSquareFilter,
-										   new float(m_threshold)));
+	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(getReader(), 1, 0, doFilterIIR(squareFilter), endFilterIIR(endSquareFilter), new float(m_threshold)));
 }
 
 AUD_NAMESPACE_END
