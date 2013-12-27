@@ -16,32 +16,29 @@
 
 #pragma once
 
-#include "IFileInput.h"
-#include "IFileOutput.h"
+#include "file/IWriter.h"
+#include "respec/Specification.h"
+
+#include <memory>
 
 AUD_NAMESPACE_BEGIN
 
 /**
- * This plugin class reads and writes sounds via ffmpeg.
+ * This class represents a file output plugin that can write files.
  */
-class FFMPEG : public IFileInput, public IFileOutput
+class IFileOutput
 {
-private:
-	// delete copy constructor and operator=
-	FFMPEG(const FFMPEG&) = delete;
-	FFMPEG& operator=(const FFMPEG&) = delete;
-
 public:
 	/**
-	 * Creates a new ffmpeg plugin.
+	 * Creates a new file writer.
+	 * \param filename The path to the file to be written.
+	 * \param specs The file's audio specification.
+	 * \param format The file's container format.
+	 * \param codec The codec used for encoding the audio data.
+	 * \param bitrate The bitrate for encoding.
+	 * \exception Exception Thrown if the file specified cannot be written.
 	 */
-	FFMPEG();
-
-	static void registerPlugin();
-
-	virtual std::shared_ptr<IReader> createReader(std::string filename);
-	virtual std::shared_ptr<IReader> createReader(std::shared_ptr<Buffer> buffer);
-	virtual std::shared_ptr<IWriter> createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate);
+	virtual std::shared_ptr<IWriter> createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate)=0;
 };
 
 AUD_NAMESPACE_END

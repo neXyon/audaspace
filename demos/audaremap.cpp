@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "file/File.h"
+#include "file/FFMPEG.h"
+#include "file/SndFile.h"
 #include "respec/ChannelMapperReader.h"
 #include "Exception.h"
 #include "IReader.h"
@@ -50,6 +52,9 @@ int main(int argc, char* argv[])
 		std::cerr << "Error: invalid channel count " << channels << std::endl;
 		return 3;
 	}
+
+	SndFile::registerPlugin();
+	FFMPEG::registerPlugin();
 
 	File file(infile);
 	std::shared_ptr<ChannelMapperReader> reader;

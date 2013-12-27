@@ -16,50 +16,32 @@
 
 #pragma once
 
-#include "ISound.h"
-
-#include <string>
-#include <memory>
+#include "IFileInput.h"
+#include "IFileOutput.h"
 
 AUD_NAMESPACE_BEGIN
 
-class Buffer;
-
 /**
- * This sound reads a sound file via libsndfile.
+ * This plugin class reads and writes sounds via libsndfile.
  */
-class SndFile : public ISound
+class SndFile : public IFileInput, public IFileOutput
 {
 private:
-	/**
-	 * The filename of the sound source file.
-	 */
-	std::string m_filename;
-
-	/**
-	 * The buffer to read from.
-	 */
-	std::shared_ptr<Buffer> m_buffer;
-
 	// delete copy constructor and operator=
 	SndFile(const SndFile&) = delete;
 	SndFile& operator=(const SndFile&) = delete;
 
 public:
 	/**
-	 * Creates a new sound.
-	 * \param filename The sound file path.
+	 * Creates a new libsndfile plugin.
 	 */
-	SndFile(std::string filename);
+	SndFile();
 
-	/**
-	 * Creates a new sound.
-	 * \param buffer The buffer to read from.
-	 * \param size The size of the buffer.
-	 */
-	SndFile(const data_t* buffer, int size);
+	static void registerPlugin();
 
-	virtual std::shared_ptr<IReader> createReader();
+	virtual std::shared_ptr<IReader> createReader(std::string filename);
+	virtual std::shared_ptr<IReader> createReader(std::shared_ptr<Buffer> buffer);
+	virtual std::shared_ptr<IWriter> createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate);
 };
 
 AUD_NAMESPACE_END

@@ -16,6 +16,8 @@
 
 #include "devices/OpenALDevice.h"
 #include "file/File.h"
+#include "file/FFMPEG.h"
+#include "file/SndFile.h"
 #include "Exception.h"
 #include "IReader.h"
 
@@ -33,6 +35,9 @@ int main(int argc, char* argv[])
 		std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
 		return 1;
 	}
+
+	SndFile::registerPlugin();
+	FFMPEG::registerPlugin();
 
 	DeviceSpecs specs;
 	specs.format = FORMAT_FLOAT32;

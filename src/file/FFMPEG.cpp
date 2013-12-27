@@ -16,29 +16,36 @@
 
 #include "file/FFMPEG.h"
 #include "file/FFMPEGReader.h"
-#include "util/Buffer.h"
-
-#include <cstring>
+#include "file/FFMPEGWriter.h"
+#include "file/FileManager.h"
 
 AUD_NAMESPACE_BEGIN
 
-FFMPEG::FFMPEG(std::string filename) :
-		m_filename(filename)
+FFMPEG::FFMPEG()
 {
+	av_register_all();
 }
 
-FFMPEG::FFMPEG(const data_t* buffer, int size) :
-		m_buffer(new Buffer(size))
+void FFMPEG::registerPlugin()
 {
-	std::memcpy(m_buffer->getBuffer(), buffer, size);
+	std::shared_ptr<FFMPEG> plugin = std::shared_ptr<FFMPEG>(new FFMPEG);
+	FileManager::registerInput(plugin);
+	FileManager::registerOutput(plugin);
 }
 
-std::shared_ptr<IReader> FFMPEG::createReader()
+std::shared_ptr<IReader> FFMPEG::createReader(std::string filename)
 {
-	if(m_buffer.get())
-		return std::shared_ptr<IReader>(new FFMPEGReader(m_buffer));
-	else
-		return std::shared_ptr<IReader>(new FFMPEGReader(m_filename));
+	return std::shared_ptr<IReader>(new FFMPEGReader(filename));
+}
+
+std::shared_ptr<IReader> FFMPEG::createReader(std::shared_ptr<Buffer> buffer)
+{
+	return std::shared_ptr<IReader>(new FFMPEGReader(buffer));
+}
+
+std::shared_ptr<IWriter> FFMPEG::createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate)
+{
+	return std::shared_ptr<IWriter>(new FFMPEGWriter(filename, specs, format, codec, bitrate));
 }
 
 AUD_NAMESPACE_END

@@ -16,29 +16,35 @@
 
 #include "file/SndFile.h"
 #include "file/SndFileReader.h"
-#include "util/Buffer.h"
-
-#include <cstring>
+#include "file/SndFileWriter.h"
+#include "file/FileManager.h"
 
 AUD_NAMESPACE_BEGIN
 
-SndFile::SndFile(std::string filename) :
-	m_filename(filename)
+SndFile::SndFile()
 {
 }
 
-SndFile::SndFile(const data_t* buffer, int size) :
-	m_buffer(new Buffer(size))
+void SndFile::registerPlugin()
 {
-	std::memcpy(m_buffer->getBuffer(), buffer, size);
+	std::shared_ptr<SndFile> plugin = std::shared_ptr<SndFile>(new SndFile);
+	FileManager::registerInput(plugin);
+	FileManager::registerOutput(plugin);
 }
 
-std::shared_ptr<IReader> SndFile::createReader()
+std::shared_ptr<IReader> SndFile::createReader(std::string filename)
 {
-	if(m_buffer.get())
-		return std::shared_ptr<IReader>(new SndFileReader(m_buffer));
-	else
-		return std::shared_ptr<IReader>(new SndFileReader(m_filename));
+	return std::shared_ptr<IReader>(new SndFileReader(filename));
+}
+
+std::shared_ptr<IReader> SndFile::createReader(std::shared_ptr<Buffer> buffer)
+{
+	return std::shared_ptr<IReader>(new SndFileReader(buffer));
+}
+
+std::shared_ptr<IWriter> SndFile::createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate)
+{
+	return std::shared_ptr<IWriter>(new SndFileWriter(filename, specs, format, codec, bitrate));
 }
 
 AUD_NAMESPACE_END

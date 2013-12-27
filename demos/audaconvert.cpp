@@ -14,11 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/File.h"
-#include "file/FileWriter.h"
-#include "respec/JOSResampleReader.h"
 #include "IReader.h"
+#include "file/File.h"
 #include "file/IWriter.h"
+#include "file/FileWriter.h"
+#include "file/FFMPEG.h"
+#include "file/SndFile.h"
+#include "respec/JOSResampleReader.h"
 #include "Exception.h"
 
 #include <string>
@@ -75,6 +77,9 @@ int main(int argc, char* argv[])
 		std::cerr << "Unknown codec format: " << sCodec << std::endl;
 		return 4;
 	}
+
+	SndFile::registerPlugin();
+	FFMPEG::registerPlugin();
 
 	File file(infile);
 	std::shared_ptr<IReader> reader;

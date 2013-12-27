@@ -16,32 +16,36 @@
 
 #pragma once
 
-#include "IFileInput.h"
-#include "IFileOutput.h"
+#include "Audaspace.h"
+
+#include <memory>
 
 AUD_NAMESPACE_BEGIN
 
-/**
- * This plugin class reads and writes sounds via ffmpeg.
- */
-class FFMPEG : public IFileInput, public IFileOutput
-{
-private:
-	// delete copy constructor and operator=
-	FFMPEG(const FFMPEG&) = delete;
-	FFMPEG& operator=(const FFMPEG&) = delete;
+class IReader;
+class Buffer;
 
+/**
+ * This class represents a file input plugin that can create file input readers from filenames or buffers.
+ */
+class IFileInput
+{
 public:
 	/**
-	 * Creates a new ffmpeg plugin.
+	 * Creates a reader for a file to be read.
+	 * \param filename Path to the file to be read.
+	 * \return The reader that reads the file.
+	 * \exception Exception Thrown if the file specified cannot be read.
 	 */
-	FFMPEG();
+	virtual std::shared_ptr<IReader> createReader(std::string filename)=0;
 
-	static void registerPlugin();
-
-	virtual std::shared_ptr<IReader> createReader(std::string filename);
-	virtual std::shared_ptr<IReader> createReader(std::shared_ptr<Buffer> buffer);
-	virtual std::shared_ptr<IWriter> createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate);
+	/**
+	 * Creates a reader for a file to be read from memory.
+	 * \param buffer The in-memory file buffer.
+	 * \return The reader that reads the file.
+	 * \exception Exception Thrown if the file specified cannot be read.
+	 */
+	virtual std::shared_ptr<IReader> createReader(std::shared_ptr<Buffer> buffer)=0;
 };
 
 AUD_NAMESPACE_END

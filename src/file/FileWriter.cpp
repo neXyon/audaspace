@@ -14,31 +14,17 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/FFMPEGWriter.h"
-#include "file/SndFileWriter.h"
 #include "file/FileWriter.h"
+#include "file/FileManager.h"
 #include "util/Buffer.h"
 #include "IReader.h"
 #include "Exception.h"
 
 AUD_NAMESPACE_BEGIN
 
-std::shared_ptr<IWriter> FileWriter::createWriter(std::string filename,DeviceSpecs specs,
-														Container format, Codec codec, unsigned int bitrate)
+std::shared_ptr<IWriter> FileWriter::createWriter(std::string filename,DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate)
 {
-	try
-	{
-		return std::shared_ptr<IWriter>(new SndFileWriter(filename, specs, format, codec, bitrate));
-	}
-	catch(Exception&) {}
-
-	try
-	{
-		return std::shared_ptr<IWriter>(new FFMPEGWriter(filename, specs, format, codec, bitrate));
-	}
-	catch(Exception&) {}
-
-	AUD_THROW(FileException, "The file couldn't be written with any installed writer.");
+	return FileManager::createWriter(filename, specs, format, codec, bitrate);
 }
 
 void FileWriter::writeReader(std::shared_ptr<IReader> reader, std::shared_ptr<IWriter> writer, unsigned int length, unsigned int buffersize)

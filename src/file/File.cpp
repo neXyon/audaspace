@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/FFMPEGReader.h"
-#include "file/SndFileReader.h"
 #include "file/File.h"
+#include "file/FileManager.h"
+#include "util/Buffer.h"
 #include "Exception.h"
 
 #include <cstring>
@@ -36,25 +36,10 @@ File::File(const data_t* buffer, int size) :
 
 std::shared_ptr<IReader> File::createReader()
 {
-	try
-	{
-		if(m_buffer.get())
-			return std::shared_ptr<IReader>(new SndFileReader(m_buffer));
-		else
-			return std::shared_ptr<IReader>(new SndFileReader(m_filename));
-	}
-	catch(Exception &e) {}
-
-	try
-	{
-		if(m_buffer.get())
-			return std::shared_ptr<IReader>(new FFMPEGReader(m_buffer));
-		else
-			return std::shared_ptr<IReader>(new FFMPEGReader(m_filename));
-	}
-	catch(Exception&) {}
-
-	AUD_THROW(FileException, "The file couldn't be read with any installed file reader.");
+	if(m_buffer.get())
+		return FileManager::createReader(m_buffer);
+	else
+		return FileManager::createReader(m_filename);
 }
 
 AUD_NAMESPACE_END

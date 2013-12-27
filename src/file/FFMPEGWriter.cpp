@@ -136,8 +136,6 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 	m_input_samples(0),
 	m_deinterleave(false)
 {
-	av_register_all(); // AUD_XXX
-
 	static const char* formats[] = { nullptr, "ac3", "flac", "matroska", "mp2", "mp3", "ogg", "wav" };
 
 	if(avformat_alloc_output_context2(&m_formatCtx, nullptr, formats[format], filename.c_str()) < 0)

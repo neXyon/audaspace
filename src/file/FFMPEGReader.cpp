@@ -163,8 +163,6 @@ FFMPEGReader::FFMPEGReader(std::string filename) :
 	m_aviocontext(nullptr),
 	m_membuf(nullptr)
 {
-	av_register_all(); // AUD_XXX
-
 	// open file
 	if(avformat_open_input(&m_formatCtx, filename.c_str(), nullptr, nullptr)!=0)
 		AUD_THROW(FileException, "File couldn't be opened with ffmpeg.");
@@ -185,8 +183,6 @@ FFMPEGReader::FFMPEGReader(std::shared_ptr<Buffer> buffer) :
 		m_membuffer(buffer),
 		m_membufferpos(0)
 {
-	av_register_all(); // AUD_XXX
-
 	m_membuf = reinterpret_cast<data_t*>(av_malloc(FF_MIN_BUFFER_SIZE + FF_INPUT_BUFFER_PADDING_SIZE));
 
 	m_aviocontext = avio_alloc_context(m_membuf, FF_MIN_BUFFER_SIZE, 0, this, read_packet, nullptr, seek_packet);
