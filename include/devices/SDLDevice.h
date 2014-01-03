@@ -57,6 +57,8 @@ public:
 	 * Closes the SDL audio device.
 	 */
 	virtual ~SDLDevice();
+
+	static void registerPlugin();
 };
 
 AUD_NAMESPACE_END

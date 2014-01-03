@@ -238,7 +238,7 @@ public:
 	 * \note The buffersize will be multiplicated by three for this device.
 	 * \exception Exception Thrown if the audio device cannot be opened.
 	 */
-	OpenALDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE);
+	OpenALDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE, std::string name = "");
 
 	virtual ~OpenALDevice();
 
@@ -263,6 +263,10 @@ public:
 	virtual void setDopplerFactor(float factor);
 	virtual DistanceModel getDistanceModel() const;
 	virtual void setDistanceModel(DistanceModel model);
+
+	static std::list<std::string> getDeviceNames();
+
+	static void registerPlugin();
 };
 
 AUD_NAMESPACE_END

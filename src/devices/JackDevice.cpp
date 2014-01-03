@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "devices/JackDevice.h"
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 #include "Exception.h"
 #include "IReader.h"
 
@@ -310,6 +312,54 @@ bool JackDevice::doesPlayback()
 		m_nextState = m_state = state;
 
 	return m_nextState != JackTransportStopped;
+}
+
+class JackDeviceFactory : public IDeviceFactory
+{
+private:
+	DeviceSpecs m_specs;
+	int m_buffersize;
+	std::string m_name;
+
+public:
+	JackDeviceFactory() :
+		m_buffersize(AUD_DEFAULT_BUFFER_SIZE),
+		m_name("Audaspace")
+	{
+		m_specs.format = FORMAT_FLOAT32;
+		m_specs.channels = CHANNELS_STEREO;
+		m_specs.rate = RATE_48000;
+	}
+
+	virtual std::shared_ptr<IDevice> openDevice()
+	{
+		return std::shared_ptr<IDevice>(new JackDevice(m_name, m_specs, m_buffersize));
+	}
+
+	virtual int getPriority()
+	{
+		return 0;
+	}
+
+	virtual void setSpecs(DeviceSpecs specs)
+	{
+		m_specs = specs;
+	}
+
+	virtual void setBufferSize(int buffersize)
+	{
+		m_buffersize = buffersize;
+	}
+
+	virtual void setName(std::string name)
+	{
+		m_name = name;
+	}
+};
+
+void JackDevice::registerPlugin()
+{
+	DeviceManager::registerDevice("Jack", std::shared_ptr<IDeviceFactory>(new JackDeviceFactory));
 }
 
 AUD_NAMESPACE_END

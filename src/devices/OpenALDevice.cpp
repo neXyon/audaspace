@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "devices/OpenALDevice.h"
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 #include "respec/ConverterReader.h"
 #include "Exception.h"
 #include "ISound.h"
@@ -58,7 +60,8 @@ bool OpenALDevice::OpenALHandle::pause(bool keep)
 		}
 	}
 
-	return false;}
+	return false;
+}
 
 OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, std::shared_ptr<IReader> reader, bool keep) :
 	m_isBuffered(false), m_reader(reader), m_keep(keep), m_format(format),
@@ -991,28 +994,17 @@ void OpenALDevice::updateStreams()
 /**************************** IDevice Code ************************************/
 /******************************************************************************/
 
-OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize) :
+OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, std::string name) :
 	m_buffersize(buffersize), m_playing(false)
 {
 	// cannot determine how many channels or which format OpenAL uses, but
 	// it at least is able to play 16 bit stereo audio
 	specs.format = FORMAT_S16;
 
-#if 0 // AUD_XXX
-	if(alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT") == AL_TRUE)
-	{
-		ALCchar* devices = const_cast<ALCchar*>(alcGetString(nullptr, ALC_DEVICE_SPECIFIER));
-		printf("OpenAL devices (standard is: %s):\n", alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER));
-
-		while(*devices)
-		{
-			printf("%s\n", devices);
-			devices += strlen(devices) + 1;
-		}
-	}
-#endif
-
-	m_device = alcOpenDevice(nullptr);
+	if(name.empty())
+		m_device = alcOpenDevice(nullptr);
+	else
+		m_device = alcOpenDevice(name.c_str());
 
 	if(!m_device)
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with OpenAL.");
@@ -1385,6 +1377,78 @@ void OpenALDevice::setDistanceModel(DistanceModel model)
 	default:
 		alDistanceModel(AL_NONE);
 	}
+}
+
+std::list<std::string> OpenALDevice::getDeviceNames()
+{
+	std::list<std::string> names;
+
+	if(alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT") == AL_TRUE)
+	{
+		ALCchar* devices = const_cast<ALCchar*>(alcGetString(nullptr, ALC_DEVICE_SPECIFIER));
+		std::string default_device = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
+
+		while(*devices)
+		{
+			std::string device = devices;
+
+			if(device == default_device)
+				names.push_front(device);
+			else
+				names.push_back(device);
+
+			devices += strlen(devices) + 1;
+		}
+	}
+
+	return names;
+}
+
+class OpenALDeviceFactory : public IDeviceFactory
+{
+private:
+	DeviceSpecs m_specs;
+	int m_buffersize;
+	std::string m_name;
+
+public:
+	OpenALDeviceFactory() :
+		m_buffersize(AUD_DEFAULT_BUFFER_SIZE)
+	{
+		m_specs.format = FORMAT_FLOAT32;
+		m_specs.channels = CHANNELS_SURROUND51;
+		m_specs.rate = RATE_48000;
+	}
+
+	virtual std::shared_ptr<IDevice> openDevice()
+	{
+		return std::shared_ptr<IDevice>(new OpenALDevice(m_specs, m_buffersize, m_name));
+	}
+
+	virtual int getPriority()
+	{
+		return 1 << 10;
+	}
+
+	virtual void setSpecs(DeviceSpecs specs)
+	{
+		m_specs = specs;
+	}
+
+	virtual void setBufferSize(int buffersize)
+	{
+		m_buffersize = buffersize;
+	}
+
+	virtual void setName(std::string name)
+	{
+		m_name = name;
+	}
+};
+
+void OpenALDevice::registerPlugin()
+{
+	DeviceManager::registerDevice("OpenAL", std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory));
 }
 
 AUD_NAMESPACE_END

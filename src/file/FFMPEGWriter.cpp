@@ -60,7 +60,7 @@ void FFMPEGWriter::encode()
 
 	AVPacket packet;
 
-	packet.data = NULL;
+	packet.data = nullptr;
 	packet.size = 0;
 
 	av_init_packet(&packet);
@@ -110,7 +110,7 @@ void FFMPEGWriter::close()
 	{
 		AVPacket packet;
 
-		packet.data = NULL;
+		packet.data = nullptr;
 		packet.size = 0;
 
 		if(avcodec_encode_audio2(m_codecCtx, &packet, nullptr, &got_packet))

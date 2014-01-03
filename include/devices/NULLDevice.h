@@ -78,6 +78,8 @@ public:
 	virtual void unlock();
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
+
+	static void registerPlugin();
 };
 
 AUD_NAMESPACE_END

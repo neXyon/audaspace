@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "devices/NULLDevice.h"
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 
 #include <limits>
 
@@ -145,6 +147,41 @@ float NULLDevice::getVolume() const
 
 void NULLDevice::setVolume(float volume)
 {
+}
+
+class NULLDeviceFactory : public IDeviceFactory
+{
+public:
+	NULLDeviceFactory()
+	{
+	}
+
+	virtual std::shared_ptr<IDevice> openDevice()
+	{
+		return std::shared_ptr<IDevice>(new NULLDevice());
+	}
+
+	virtual int getPriority()
+	{
+		return std::numeric_limits<int>::min();
+	}
+
+	virtual void setSpecs(DeviceSpecs specs)
+	{
+	}
+
+	virtual void setBufferSize(int buffersize)
+	{
+	}
+
+	virtual void setName(std::string name)
+	{
+	}
+};
+
+void NULLDevice::registerPlugin()
+{
+	DeviceManager::registerDevice("Null", std::shared_ptr<IDeviceFactory>(new NULLDeviceFactory));
 }
 
 AUD_NAMESPACE_END

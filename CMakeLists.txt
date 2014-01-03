@@ -129,6 +129,9 @@ target_link_libraries(audaconvert audaspace)
 add_executable(audaremap demos/audaremap.cpp)
 target_link_libraries(audaremap audaspace)
 
+add_executable(openaldevices demos/openaldevices.cpp)
+target_link_libraries(openaldevices audaspace)
+
 if(${WITH_PYTHON})
 	add_executable(python bindings/python/PyAPI.cpp bindings/python/PyAPI.h bindings/python/PyInit.h)
 	target_link_libraries(python audaspace ${PYTHON_LIBRARIES})

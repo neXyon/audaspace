@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "devices/OpenALDevice.h"
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 #include "file/File.h"
 #include "file/FFMPEG.h"
 #include "file/SndFile.h"
@@ -38,6 +40,7 @@ int main(int argc, char* argv[])
 
 	SndFile::registerPlugin();
 	FFMPEG::registerPlugin();
+	OpenALDevice::registerPlugin();
 
 	DeviceSpecs specs;
 	specs.format = FORMAT_FLOAT32;
@@ -60,17 +63,19 @@ int main(int argc, char* argv[])
 
 	specs.specs = reader->getSpecs();
 
-	OpenALDevice device(specs);
+	auto factory = DeviceManager::getDefaultDeviceFactory();
+	factory->setSpecs(specs);
+	auto device = factory->openDevice();
 
 	auto duration = std::chrono::seconds(reader->getLength()) / specs.rate;
 	std::cout << "Estimated duration: " << duration.count() << " seconds" << std::endl;
 
 	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all();};
 
-	device.lock();
-	auto handle = device.play(reader);
+	device->lock();
+	auto handle = device->play(reader);
 	handle->setStopCallback(release, &condition);
-	device.unlock();
+	device->unlock();
 
 	condition.wait(lock);
 

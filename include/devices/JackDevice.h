@@ -179,6 +179,8 @@ public:
 	 * \return Whether jack transport plays back.
 	 */
 	bool doesPlayback();
+
+	static void registerPlugin();
 };
 
 AUD_NAMESPACE_END

@@ -122,9 +122,6 @@ void FFMPEGReader::init()
 	if(avcodec_open2(m_codecCtx, aCodec, nullptr) < 0)
 		AUD_THROW(FileException, "File couldn't be read, ffmpeg codec couldn't be opened.");
 
-	// XXX this prints file information to stdout:
-	//dump_format(m_formatCtx, 0, nullptr, 0);
-
 	m_specs.channels = (Channels) m_codecCtx->channels;
 	m_tointerleave = av_sample_fmt_is_planar(m_codecCtx->sample_fmt);
 

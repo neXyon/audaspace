@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "devices/SDLDevice.h"
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 #include "Exception.h"
 #include "IReader.h"
 
@@ -25,6 +27,11 @@ void SDLDevice::SDL_mix(void *data, Uint8* buffer, int length)
 	SDLDevice* device = (SDLDevice*)data;
 
 	device->mix((data_t*)buffer,length/AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
+}
+
+void SDLDevice::playing(bool playing)
+{
+	SDL_PauseAudio(playing ? 0 : 1);
 }
 
 SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
@@ -77,9 +84,49 @@ SDLDevice::~SDLDevice()
 	destroy();
 }
 
-void SDLDevice::playing(bool playing)
+class SDLDeviceFactory : public IDeviceFactory
 {
-	SDL_PauseAudio(playing ? 0 : 1);
+private:
+	DeviceSpecs m_specs;
+	int m_buffersize;
+
+public:
+	SDLDeviceFactory() :
+		m_buffersize(AUD_DEFAULT_BUFFER_SIZE)
+	{
+		m_specs.format = FORMAT_S16;
+		m_specs.channels = CHANNELS_STEREO;
+		m_specs.rate = RATE_48000;
+	}
+
+	virtual std::shared_ptr<IDevice> openDevice()
+	{
+		return std::shared_ptr<IDevice>(new SDLDevice(m_specs, m_buffersize));
+	}
+
+	virtual int getPriority()
+	{
+		return 1 << 5;
+	}
+
+	virtual void setSpecs(DeviceSpecs specs)
+	{
+		m_specs = specs;
+	}
+
+	virtual void setBufferSize(int buffersize)
+	{
+		m_buffersize = buffersize;
+	}
+
+	virtual void setName(std::string name)
+	{
+	}
+};
+
+void SDLDevice::registerPlugin()
+{
+	DeviceManager::registerDevice("SDL", std::shared_ptr<IDeviceFactory>(new SDLDeviceFactory));
 }
 
 AUD_NAMESPACE_END
