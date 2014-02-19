@@ -129,4 +129,16 @@ void SDLDevice::registerPlugin()
 	DeviceManager::registerDevice("SDL", std::shared_ptr<IDeviceFactory>(new SDLDeviceFactory));
 }
 
+#ifdef SDL_PLUGIN
+extern "C" void registerPlugin()
+{
+	SDLDevice::registerPlugin();
+}
+
+extern "C" const char* getName()
+{
+	return "SDL";
+}
+#endif
+
 AUD_NAMESPACE_END

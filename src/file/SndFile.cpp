@@ -47,4 +47,16 @@ std::shared_ptr<IWriter> SndFile::createWriter(std::string filename, DeviceSpecs
 	return std::shared_ptr<IWriter>(new SndFileWriter(filename, specs, format, codec, bitrate));
 }
 
+#ifdef LIBSNDFILE_PLUGIN
+extern "C" void registerPlugin()
+{
+	SndFile::registerPlugin();
+}
+
+extern "C" const char* getName()
+{
+	return "LibSndFile";
+}
+#endif
+
 AUD_NAMESPACE_END

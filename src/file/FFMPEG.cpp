@@ -48,4 +48,16 @@ std::shared_ptr<IWriter> FFMPEG::createWriter(std::string filename, DeviceSpecs 
 	return std::shared_ptr<IWriter>(new FFMPEGWriter(filename, specs, format, codec, bitrate));
 }
 
+#ifdef FFMPEG_PLUGIN
+extern "C" void registerPlugin()
+{
+	FFMPEG::registerPlugin();
+}
+
+extern "C" const char* getName()
+{
+	return "FFMPEG";
+}
+#endif
+
 AUD_NAMESPACE_END

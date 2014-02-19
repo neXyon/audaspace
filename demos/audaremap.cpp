@@ -15,8 +15,7 @@
  ******************************************************************************/
 
 #include "file/File.h"
-#include "file/FFMPEG.h"
-#include "file/SndFile.h"
+#include "plugin/PluginManager.h"
 #include "respec/ChannelMapperReader.h"
 #include "Exception.h"
 #include "IReader.h"
@@ -53,8 +52,7 @@ int main(int argc, char* argv[])
 		return 3;
 	}
 
-	SndFile::registerPlugin();
-	FFMPEG::registerPlugin();
+	PluginManager::loadPlugins(".");
 
 	File file(infile);
 	std::shared_ptr<ChannelMapperReader> reader;

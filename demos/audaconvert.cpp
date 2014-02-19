@@ -18,8 +18,7 @@
 #include "file/File.h"
 #include "file/IWriter.h"
 #include "file/FileWriter.h"
-#include "file/FFMPEG.h"
-#include "file/SndFile.h"
+#include "plugin/PluginManager.h"
 #include "respec/JOSResampleReader.h"
 #include "Exception.h"
 
@@ -78,8 +77,7 @@ int main(int argc, char* argv[])
 		return 4;
 	}
 
-	SndFile::registerPlugin();
-	FFMPEG::registerPlugin();
+	PluginManager::loadPlugins(".");
 
 	File file(infile);
 	std::shared_ptr<IReader> reader;

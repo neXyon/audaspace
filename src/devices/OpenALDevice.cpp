@@ -1451,4 +1451,16 @@ void OpenALDevice::registerPlugin()
 	DeviceManager::registerDevice("OpenAL", std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory));
 }
 
+#ifdef OPENAL_PLUGIN
+extern "C" void registerPlugin()
+{
+	OpenALDevice::registerPlugin();
+}
+
+extern "C" const char* getName()
+{
+	return "OpenAL";
+}
+#endif
+
 AUD_NAMESPACE_END

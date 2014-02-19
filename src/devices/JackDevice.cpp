@@ -362,4 +362,16 @@ void JackDevice::registerPlugin()
 	DeviceManager::registerDevice("Jack", std::shared_ptr<IDeviceFactory>(new JackDeviceFactory));
 }
 
+#ifdef JACK_PLUGIN
+extern "C" void registerPlugin()
+{
+	JackDevice::registerPlugin();
+}
+
+extern "C" const char* getName()
+{
+	return "Jack";
+}
+#endif
+
 AUD_NAMESPACE_END

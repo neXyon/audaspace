@@ -151,60 +151,60 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 	switch(codec)
 	{
 	case CODEC_AAC:
-		m_outputFmt->audio_codec = CODEC_ID_AAC;
+		m_outputFmt->audio_codec = AV_CODEC_ID_AAC;
 		break;
 	case CODEC_AC3:
-		m_outputFmt->audio_codec = CODEC_ID_AC3;
+		m_outputFmt->audio_codec = AV_CODEC_ID_AC3;
 		break;
 	case CODEC_FLAC:
-		m_outputFmt->audio_codec = CODEC_ID_FLAC;
+		m_outputFmt->audio_codec = AV_CODEC_ID_FLAC;
 		break;
 	case CODEC_MP2:
-		m_outputFmt->audio_codec = CODEC_ID_MP2;
+		m_outputFmt->audio_codec = AV_CODEC_ID_MP2;
 		break;
 	case CODEC_MP3:
-		m_outputFmt->audio_codec = CODEC_ID_MP3;
+		m_outputFmt->audio_codec = AV_CODEC_ID_MP3;
 		break;
 	case CODEC_OPUS:
-		m_outputFmt->audio_codec = CODEC_ID_OPUS;
+		m_outputFmt->audio_codec = AV_CODEC_ID_OPUS;
 		break;
 	case CODEC_PCM:
 		switch(specs.format)
 		{
 		case FORMAT_U8:
-			m_outputFmt->audio_codec = CODEC_ID_PCM_U8;
+			m_outputFmt->audio_codec = AV_CODEC_ID_PCM_U8;
 			break;
 		case FORMAT_S16:
-			m_outputFmt->audio_codec = CODEC_ID_PCM_S16LE;
+			m_outputFmt->audio_codec = AV_CODEC_ID_PCM_S16LE;
 			break;
 		case FORMAT_S24:
-			m_outputFmt->audio_codec = CODEC_ID_PCM_S24LE;
+			m_outputFmt->audio_codec = AV_CODEC_ID_PCM_S24LE;
 			break;
 		case FORMAT_S32:
-			m_outputFmt->audio_codec = CODEC_ID_PCM_S32LE;
+			m_outputFmt->audio_codec = AV_CODEC_ID_PCM_S32LE;
 			break;
 		case FORMAT_FLOAT32:
-			m_outputFmt->audio_codec = CODEC_ID_PCM_F32LE;
+			m_outputFmt->audio_codec = AV_CODEC_ID_PCM_F32LE;
 			break;
 		case FORMAT_FLOAT64:
-			m_outputFmt->audio_codec = CODEC_ID_PCM_F64LE;
+			m_outputFmt->audio_codec = AV_CODEC_ID_PCM_F64LE;
 			break;
 		default:
-			m_outputFmt->audio_codec = CODEC_ID_NONE;
+			m_outputFmt->audio_codec = AV_CODEC_ID_NONE;
 			break;
 		}
 		break;
 	case CODEC_VORBIS:
-		m_outputFmt->audio_codec = CODEC_ID_VORBIS;
+		m_outputFmt->audio_codec = AV_CODEC_ID_VORBIS;
 		break;
 	default:
-		m_outputFmt->audio_codec = CODEC_ID_NONE;
+		m_outputFmt->audio_codec = AV_CODEC_ID_NONE;
 		break;
 	}
 
 	try
 	{
-		if(m_outputFmt->audio_codec == CODEC_ID_NONE)
+		if(m_outputFmt->audio_codec == AV_CODEC_ID_NONE)
 			AUD_THROW(FileException, "File couldn't be written, audio codec not found with ffmpeg.");
 
 		AVCodec* codec = avcodec_find_encoder(m_outputFmt->audio_codec);

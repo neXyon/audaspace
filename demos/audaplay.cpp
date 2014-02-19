@@ -14,12 +14,12 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "devices/OpenALDevice.h"
 #include "devices/DeviceManager.h"
+#include "devices/IDevice.h"
 #include "devices/IDeviceFactory.h"
+#include "devices/IHandle.h"
+#include "plugin/PluginManager.h"
 #include "file/File.h"
-#include "file/FFMPEG.h"
-#include "file/SndFile.h"
 #include "Exception.h"
 #include "IReader.h"
 
@@ -38,9 +38,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	SndFile::registerPlugin();
-	FFMPEG::registerPlugin();
-	OpenALDevice::registerPlugin();
+	PluginManager::loadPlugins(".");
 
 	DeviceSpecs specs;
 	specs.format = FORMAT_FLOAT32;
