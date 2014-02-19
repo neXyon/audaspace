@@ -18,7 +18,7 @@
 
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"
-#include "devices/JackLibrary.h"
+#include "JackLibrary.h"
 
 #include <string>
 #include <condition_variable>

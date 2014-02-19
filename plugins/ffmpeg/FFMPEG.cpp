@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/FFMPEG.h"
-#include "file/FFMPEGReader.h"
-#include "file/FFMPEGWriter.h"
+#include "FFMPEG.h"
+#include "FFMPEGReader.h"
+#include "FFMPEGWriter.h"
 #include "file/FileManager.h"
 
 AUD_NAMESPACE_BEGIN

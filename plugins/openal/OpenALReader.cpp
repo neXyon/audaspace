@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "devices/OpenALReader.h"
+#include "OpenALReader.h"
 #include "respec/ConverterFunctions.h"
 #include "Exception.h"
 

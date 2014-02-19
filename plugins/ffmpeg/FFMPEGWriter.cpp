@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/FFMPEGWriter.h"
+#include "FFMPEGWriter.h"
 #include "Exception.h"
 
 #include <algorithm>

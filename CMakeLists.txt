@@ -57,36 +57,11 @@ cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LI
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY;NOT WIN32" FALSE)
 
-file(GLOB_RECURSE REMOVE_SRC src/*FFMPEG*.cpp)
-file(GLOB_RECURSE REMOVE_HDR include/*FFMPEG*.h)
-list(REMOVE_ITEM SRC ${REMOVE_SRC})
-list(REMOVE_ITEM PUBLIC_HDR ${REMOVE_SRC})
-
-file(GLOB_RECURSE REMOVE_SRC src/*Jack*.cpp)
-file(GLOB_RECURSE REMOVE_HDR include/*Jack*.h)
-list(REMOVE_ITEM SRC ${REMOVE_SRC})
-list(REMOVE_ITEM PUBLIC_HDR ${REMOVE_SRC})
-
-file(GLOB_RECURSE REMOVE_SRC src/*SndFile*.cpp)
-file(GLOB_RECURSE REMOVE_HDR include/*SndFile*.h)
-list(REMOVE_ITEM SRC ${REMOVE_SRC})
-list(REMOVE_ITEM PUBLIC_HDR ${REMOVE_SRC})
-
-file(GLOB_RECURSE REMOVE_SRC src/*OpenAL*.cpp)
-file(GLOB_RECURSE REMOVE_HDR include/*OpenAL*.h)
-list(REMOVE_ITEM SRC ${REMOVE_SRC})
-list(REMOVE_ITEM PUBLIC_HDR ${REMOVE_SRC})
-
-file(GLOB_RECURSE REMOVE_SRC src/*SDL*.cpp)
-file(GLOB_RECURSE REMOVE_HDR include/*SDL*.h)
-list(REMOVE_ITEM SRC ${REMOVE_SRC})
-list(REMOVE_ITEM PUBLIC_HDR ${REMOVE_SRC})
-
 # FFMPEG
 if(${WITH_FFMPEG})
 	find_package(FFMPEG REQUIRED)
-	file(GLOB_RECURSE FFMPEG_SRC src/*FFMPEG*.cpp)
-	file(GLOB_RECURSE FFMPEG_HDR include/*FFMPEG*.h)
+	file(GLOB_RECURSE FFMPEG_SRC plugins/ffmpeg/*.cpp)
+	file(GLOB_RECURSE FFMPEG_HDR plugins/ffmpeg/*.h)
 
 	if(NOT ${PLUGIN_FFMPEG})
 		list(APPEND INCLUDE ${FFMPEG_INCLUDE_DIRS})
@@ -99,8 +74,8 @@ endif()
 # Jack
 if(${WITH_JACK})
 	find_package(Jack REQUIRED)
-	file(GLOB_RECURSE JACK_SRC src/*Jack*.cpp)
-	file(GLOB_RECURSE JACK_HDR include/*Jack*.h)
+	file(GLOB_RECURSE JACK_SRC plugins/jack/*.cpp)
+	file(GLOB_RECURSE JACK_HDR plugins/jack/*.h)
 
 	if(NOT ${PLUGIN_JACK})
 		list(APPEND INCLUDE ${JACK_INCLUDE_DIRS})
@@ -113,8 +88,8 @@ endif()
 # LibSndFile
 if(${WITH_LIBSNDFILE})
 	find_package(LibSndFile REQUIRED)
-	file(GLOB_RECURSE LIBSNDFILE_SRC src/*SndFile*.cpp)
-	file(GLOB_RECURSE LIBSNDFILE_HDR include/*SndFile*.h)
+	file(GLOB_RECURSE LIBSNDFILE_SRC plugins/libsndfile/*.cpp)
+	file(GLOB_RECURSE LIBSNDFILE_HDR plugins/libsndfile/*.h)
 
 	if(NOT ${PLUGIN_LIBSNDFILE})
 		list(APPEND INCLUDE ${LIBSNDFILE_INCLUDE_DIRS})
@@ -127,8 +102,8 @@ endif()
 # OpenAL
 if(${WITH_OPENAL})
 	find_package(OpenAL REQUIRED)
-	file(GLOB_RECURSE OPENAL_SRC src/*OpenAL*.cpp)
-	file(GLOB_RECURSE OPENAL_HDR include/*OpenAL*.h)
+	file(GLOB_RECURSE OPENAL_SRC plugins/openal/*.cpp)
+	file(GLOB_RECURSE OPENAL_HDR plugins/openal/*.h)
 
 	if(NOT ${PLUGIN_OPENAL})
 		list(APPEND INCLUDE ${OPENAL_INCLUDE_DIR})
@@ -148,8 +123,8 @@ endif()
 # SDL
 if(${WITH_SDL})
 	find_package(SDL REQUIRED)
-	file(GLOB_RECURSE SDL_SRC src/*SDL*.cpp)
-	file(GLOB_RECURSE SDL_HDR include/*SDL*.h)
+	file(GLOB_RECURSE SDL_SRC plugins/sdl/*.cpp)
+	file(GLOB_RECURSE SDL_HDR plugins/sdl/*.h)
 
 	if(NOT ${PLUGIN_SDL})
 		list(APPEND INCLUDE ${SDL_INCLUDE_DIR})

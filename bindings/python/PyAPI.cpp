@@ -37,9 +37,9 @@
 #include "sequence/Superpose.h"
 #include "fx/Volume.h"
 #include "fx/IIRFilter.h"
-#include "devices/SDLDevice.h"
-#include "devices/OpenALDevice.h"
-#include "devices/JackDevice.h"
+#include "../plugins/sdl/SDLDevice.h"
+#include "../plugins/openal/OpenALDevice.h"
+#include "../plugins/jack/JackDevice.h"
 #include "Exception.h"
 
 using namespace aud;

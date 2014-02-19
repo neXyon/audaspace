@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/SndFileReader.h"
+#include "SndFileReader.h"
 #include "util/Buffer.h"
 #include "Exception.h"
 

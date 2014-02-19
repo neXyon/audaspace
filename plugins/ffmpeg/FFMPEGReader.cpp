@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/FFMPEGReader.h"
+#include "FFMPEGReader.h"
 #include "Exception.h"
 
 #include <algorithm>

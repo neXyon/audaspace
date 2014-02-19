@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "devices/OpenALDevice.h"
+#include "../plugins/openal/OpenALDevice.h"
 
 #include <iostream>
 

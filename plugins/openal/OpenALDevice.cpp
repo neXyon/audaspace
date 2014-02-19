@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "devices/OpenALDevice.h"
+#include "OpenALDevice.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDeviceFactory.h"
 #include "respec/ConverterReader.h"

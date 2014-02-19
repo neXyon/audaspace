@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file/SndFile.h"
-#include "file/SndFileReader.h"
-#include "file/SndFileWriter.h"
+#include "SndFile.h"
+#include "SndFileReader.h"
+#include "SndFileWriter.h"
 #include "file/FileManager.h"
 
 AUD_NAMESPACE_BEGIN
