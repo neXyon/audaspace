@@ -18,11 +18,12 @@
 
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"
-#include "JackLibrary.h"
 
 #include <string>
 #include <condition_variable>
 #include <thread>
+#include <jack.h>
+#include <ringbuffer.h>
 
 AUD_NAMESPACE_BEGIN
 
