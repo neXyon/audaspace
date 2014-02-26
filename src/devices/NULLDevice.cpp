@@ -149,6 +149,11 @@ void NULLDevice::setVolume(float volume)
 {
 }
 
+ISynchronizer* NULLDevice::getSynchronizer()
+{
+	return nullptr;
+}
+
 class NULLDeviceFactory : public IDeviceFactory
 {
 public:

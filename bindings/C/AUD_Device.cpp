@@ -207,3 +207,47 @@ void AUD_closeReadDevice(AUD_Device *device)
 	{
 	}
 }
+
+void AUD_seekSynchronizer(AUD_Handle *handle, float time)
+{
+	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
+	if(synchronizer)
+		synchronizer->seek(*reinterpret_cast<std::shared_ptr<IHandle>*>(handle), time);
+}
+
+float AUD_getSynchronizerPosition(AUD_Handle *handle)
+{
+	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
+	if(synchronizer)
+		return synchronizer->getPosition(*reinterpret_cast<std::shared_ptr<IHandle>*>(handle));
+	return (*reinterpret_cast<std::shared_ptr<IHandle>*>(handle))->getPosition();
+}
+
+void AUD_playSynchronizer()
+{
+	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
+	if(synchronizer)
+		synchronizer->play();
+}
+
+void AUD_stopSynchronizer()
+{
+	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
+	if(synchronizer)
+		synchronizer->stop();
+}
+
+void AUD_setSynchronizerCallback(AUD_syncFunction function, void *data)
+{
+	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
+	if(synchronizer)
+		synchronizer->setSyncCallback(function, data);
+}
+
+int AUD_isSynchronizerPlaying()
+{
+	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
+	if(synchronizer)
+		return synchronizer->isPlaying();
+	return false;
+}

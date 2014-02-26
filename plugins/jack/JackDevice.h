@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "JackSynchronizer.h"
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"
 
@@ -61,6 +62,9 @@ private:
 	 * Whether the device is valid.
 	 */
 	bool m_valid;
+
+	/// Synchronizer.
+	JackSynchronizer m_synchronizer;
 
 	/**
 	 * Invalidates the jack device.
@@ -145,6 +149,8 @@ public:
 	 * Closes the Jack client.
 	 */
 	virtual ~JackDevice();
+
+	virtual ISynchronizer* getSynchronizer();
 
 	/**
 	 * Starts jack transport playback.

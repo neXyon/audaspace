@@ -161,7 +161,8 @@ void JackDevice::jack_shutdown(void *data)
 	device->m_valid = false;
 }
 
-JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize)
+JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize) :
+	m_synchronizer(this)
 {
 	if(specs.channels == CHANNELS_INVALID)
 		specs.channels = CHANNELS_STEREO;
@@ -266,6 +267,11 @@ JackDevice::~JackDevice()
 	delete[] m_ringbuffers;
 
 	destroy();
+}
+
+ISynchronizer* JackDevice::getSynchronizer()
+{
+	return &m_synchronizer;
 }
 
 void JackDevice::playing(bool playing)

@@ -1244,6 +1244,11 @@ void OpenALDevice::setVolume(float volume)
 	alListenerf(AL_GAIN, volume);
 }
 
+ISynchronizer* OpenALDevice::getSynchronizer()
+{
+	return &m_synchronizer;
+}
+
 /******************************************************************************/
 /**************************** 3D Device Code **********************************/
 /******************************************************************************/

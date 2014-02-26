@@ -20,6 +20,7 @@
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"
 #include "devices/I3DHandle.h"
+#include "devices/DefaultSynchronizer.h"
 #include "util/Buffer.h"
 
 #include <AL/al.h>
@@ -206,6 +207,9 @@ private:
 	 */
 	Quaternion m_orientation;
 
+	/// Synchronizer.
+	DefaultSynchronizer m_synchronizer;
+
 	/**
 	 * Starts the streaming thread.
 	 * \param Whether the previous thread should be joined.
@@ -250,6 +254,7 @@ public:
 	virtual void unlock();
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
+	virtual ISynchronizer* getSynchronizer();
 
 	virtual Vector3 getListenerLocation() const;
 	virtual void setListenerLocation(const Vector3& location);

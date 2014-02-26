@@ -78,6 +78,7 @@ public:
 	virtual void unlock();
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
+	virtual ISynchronizer* getSynchronizer();
 
 	static void registerPlugin();
 };

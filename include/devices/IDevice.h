@@ -26,6 +26,7 @@ AUD_NAMESPACE_BEGIN
 class IHandle;
 class IReader;
 class ISound;
+class ISynchronizer;
 
 /**
  * This class represents an output device for sound sources.
@@ -104,6 +105,8 @@ public:
 	 * \param volume The overall device volume.
 	 */
 	virtual void setVolume(float volume)=0;
+
+	virtual ISynchronizer* getSynchronizer()=0;
 };
 
 AUD_NAMESPACE_END

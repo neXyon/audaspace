@@ -905,6 +905,11 @@ void SoftwareDevice::setVolume(float volume)
 	m_volume = volume;
 }
 
+ISynchronizer* SoftwareDevice::getSynchronizer()
+{
+	return &m_synchronizer;
+}
+
 /******************************************************************************/
 /**************************** 3D Device Code **********************************/
 /******************************************************************************/
