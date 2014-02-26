@@ -37,8 +37,8 @@ private:
 	PluginManager() = delete;
 
 public:
-	static bool loadPlugin(const std::string &path);
-	static void loadPlugins(const std::string &path);
+	static bool loadPlugin(const std::string& path);
+	static void loadPlugins(const std::string& path = "");
 };
 
 AUD_NAMESPACE_END

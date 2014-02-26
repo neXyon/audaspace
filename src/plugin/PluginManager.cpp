@@ -46,11 +46,16 @@ bool PluginManager::loadPlugin(const std::string& path)
 	return true;
 }
 
-void PluginManager::loadPlugins(const std::string &path)
+void PluginManager::loadPlugins(const std::string& path)
 {
 	// AUD_XXX TODO: register linked plugins!
 
-	DIR* dir = opendir(path.c_str());
+	std::string readpath = path;
+
+	if(path == "")
+		readpath = "@DEFAULT_PLUGIN_PATH@";
+
+	DIR* dir = opendir(readpath.c_str());
 
 	if(!dir)
 		return;
@@ -63,7 +68,7 @@ void PluginManager::loadPlugins(const std::string &path)
 
 		if(filename.length() >= end.length() + start.length() && filename.substr(0, start.length()) == start && filename.substr(filename.length() - end.length()) == end)
 		{
-			loadPlugin(path + "/" + filename);
+			loadPlugin(readpath + "/" + filename);
 		}
 	}
 

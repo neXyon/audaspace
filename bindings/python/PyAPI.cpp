@@ -22,6 +22,7 @@
 #include "respec/Specification.h"
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"
+#include "plugin/PluginManager.h"
 #include "ISound.h"
 
 #include <memory>
@@ -36,9 +37,8 @@ using namespace aud;
 
 // ====================================================================
 
-static PyObject *AUDError;
-
-static const char* device_not_3d_error = "Device is not a 3D device!";
+extern PyObject *AUDError;
+PyObject *AUDError = NULL;
 
 // ====================================================================
 
@@ -58,6 +58,8 @@ PyMODINIT_FUNC
 PyInit_aud(void)
 {
 	PyObject *module;
+
+	PluginManager::loadPlugins();
 
 	if(!initializeSound())
 		return nullptr;
@@ -80,12 +82,6 @@ PyInit_aud(void)
 	Py_INCREF(AUDError);
 	PyModule_AddObject(module, "error", AUDError);
 
-	// device constants
-	PY_MODULE_ADD_CONSTANT(module, DEVICE_NULL);
-	PY_MODULE_ADD_CONSTANT(module, DEVICE_OPENAL);
-	PY_MODULE_ADD_CONSTANT(module, DEVICE_SDL);
-	PY_MODULE_ADD_CONSTANT(module, DEVICE_JACK);
-	//PY_MODULE_ADD_CONSTANT(m, DEVICE_READ);
 	// format constants
 	PY_MODULE_ADD_CONSTANT(module, FORMAT_FLOAT32);
 	PY_MODULE_ADD_CONSTANT(module, FORMAT_FLOAT64);
@@ -134,9 +130,4 @@ void* AUD_getSoundFromPython(PyObject* object)
 		return NULL;
 
 	return new std::shared_ptr<ISound>(*reinterpret_cast<std::shared_ptr<ISound>*>(sound->sound));
-}
-
-int main()
-{
-	return 0;
 }

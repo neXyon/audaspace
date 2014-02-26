@@ -40,7 +40,7 @@
 
 using namespace aud;
 
-static PyObject *AUDError;
+extern PyObject *AUDError;
 
 static void
 Sound_dealloc(Sound* self)
@@ -989,7 +989,6 @@ static PyTypeObject SoundType = {
 	Sound_new,                 /* tp_new */
 };
 
-/* AUD_XXX TODO */
 PyObject *
 Sound_empty()
 {

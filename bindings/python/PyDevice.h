@@ -25,16 +25,6 @@ typedef struct {
 	Reference_IDevice* device;
 } Device;
 
-/* AUD_XXX TODO */
-enum DeviceTypes
-{
-	DEVICE_NULL = 0,
-	DEVICE_OPENAL,
-	DEVICE_SDL,
-	DEVICE_JACK,
-	DEVICE_READ,
-};
-
 extern PyObject *Device_empty();
 extern Device *checkDevice(PyObject *device);
 

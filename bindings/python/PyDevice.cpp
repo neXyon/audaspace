@@ -21,16 +21,15 @@
 
 #include "Exception.h"
 #include "devices/IDevice.h"
-#include "devices/NULLDevice.h"
-#include "../plugins/sdl/SDLDevice.h"
-#include "../plugins/openal/OpenALDevice.h"
-#include "../plugins/jack/JackDevice.h"
+#include "devices/I3DDevice.h"
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 
 #include <structmember.h>
 
 using namespace aud;
 
-static PyObject *AUDError;
+extern PyObject *AUDError;
 static const char* device_not_3d_error = "Device is not a 3D device!";
 
 // ====================================================================
@@ -49,24 +48,25 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	Device *self;
 
 	static const char *kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", nullptr};
-	int device;
+	const char* device;
 	double rate = RATE_44100;
 	int channels = CHANNELS_STEREO;
 	int format = FORMAT_FLOAT32;
 	int buffersize = AUD_DEFAULT_BUFFER_SIZE;
-	const char* name = "Audaspace";
+	const char* name = "";
 
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "i|diiis:Device", const_cast<char**>(kwlist),
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "s|diiis:Device", const_cast<char**>(kwlist),
 									&device, &rate, &channels, &format, &buffersize, &name))
 		return nullptr;
 
 	if(buffersize < 128)
 	{
-		PyErr_SetString(PyExc_ValueError, "buffer_size must be greater than 127!");
+		PyErr_SetString(PyExc_ValueError, "buffer_size must be at least 128!");
 		return nullptr;
 	}
 
 	self = (Device*)type->tp_alloc(type, 0);
+
 	if(self != nullptr)
 	{
 		DeviceSpecs specs;
@@ -78,25 +78,15 @@ Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 		try
 		{
-			switch(device)
-			{
-			case DEVICE_NULL:
-				(void)specs; /* quiet warning when others disabled */
-				self->device = new std::shared_ptr<IDevice>(new NULLDevice());
-				break;
-			case DEVICE_OPENAL:
-				self->device = new std::shared_ptr<IDevice>(new OpenALDevice(specs, buffersize));
-				break;
-			case DEVICE_SDL:
-				self->device = new std::shared_ptr<IDevice>(new SDLDevice(specs, buffersize));
-				break;
-			case DEVICE_JACK:
-				self->device = new std::shared_ptr<IDevice>(new JackDevice(name, specs, buffersize));
-				break;
-			case DEVICE_READ:
-				break;
-			}
+			auto factory = DeviceManager::getDeviceFactory(device);
 
+			if(factory)
+			{
+				factory->setName(name);
+				factory->setSpecs(specs);
+				factory->setBufferSize(buffersize);
+				self->device = new std::shared_ptr<IDevice>(factory->openDevice());
+			}
 		}
 		catch(Exception& e)
 		{

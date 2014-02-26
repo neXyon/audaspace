@@ -26,7 +26,7 @@
 
 using namespace aud;
 
-static PyObject *AUDError;
+extern PyObject *AUDError;
 static const char* device_not_3d_error = "Device is not a 3D device!";
 
 static void

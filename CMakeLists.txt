@@ -30,10 +30,6 @@ set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 set(INCLUDE include)
 if(${WIN32})
 	set(LIBRARIES)
-	file(GLOB_RECURSE REMOVE_SRC src/plugin/*.cpp)
-	file(GLOB_RECURSE REMOVE_HDR include/plugin/*.h)
-	list(REMOVE_ITEM SRC ${REMOVE_SRC})
-	list(REMOVE_ITEM PUBLIC_HDR ${REMOVE_SRC})
 else()
 	set(LIBRARIES ${CMAKE_DL_LIBS} -lpthread)
 endif()
@@ -51,6 +47,8 @@ option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
 option(WITH_PYTHON "Build Python Module" FALSE)
 option(WITH_SDL "Build With SDL" FALSE)
+
+set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin loading path.")
 
 cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY;NOT WIN32" FALSE)
@@ -147,6 +145,12 @@ if(${WITH_SDL})
 	endif()
 endif()
 
+# file configuration
+set(PLUGINMANAGER_FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManager.cpp)
+list(REMOVE_ITEM SRC ${PLUGINMANAGER_FILENAME})
+configure_file(${PLUGINMANAGER_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
+
 # directories and compiler options
 
 include_directories(${INCLUDE})
@@ -164,7 +168,7 @@ endif()
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
 
-# plugin building
+# plugins
 
 if(${PLUGIN_FFMPEG})
 	add_definitions(-DFFMPEG_PLUGIN)
@@ -223,29 +227,24 @@ if(${WITH_OPENAL})
 	endif()
 endif()
 
+# bindings
+
 if(${WITH_C} AND ${SEPARATE_C})
 	add_library(caudaspace ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
 	target_link_libraries(caudaspace audaspace)
 endif()
 
-if(${WITH_PYTHON} AND ${WITH_JACK} AND ${WITH_OPENAL} AND ${WITH_SDL})
-	set(PYTHON_PLUGIN_LIBS)
-
-	if(${PLUGIN_OPENAL})
-		list(APPEND PYTHON_PLUGIN_LIBS audopenal)
-	endif()
-
-	if(${PLUGIN_SDL})
-		list(APPEND PYTHON_PLUGIN_LIBS audsdl)
-	endif()
-
-	if(${PLUGIN_JACK})
-		list(APPEND PYTHON_PLUGIN_LIBS audjack)
-	endif()
-
+if(${WITH_PYTHON})
 	file(GLOB_RECURSE PYTHON_SRC bindings/python/*.cpp)
 	file(GLOB_RECURSE PYTHON_HDR bindings/python/*.h)
 
-	add_executable(python ${PYTHON_SRC} ${PYTHON_HDR})
-	target_link_libraries(python audaspace ${PYTHON_LIBRARIES} ${PYTHON_PLUGIN_LIBS})
+	#add_executable(audapython ${PYTHON_SRC} ${PYTHON_HDR})
+	#target_link_libraries(audapython audaspace ${PYTHON_LIBRARIES})
+
+	set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
+	configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
+
+	add_custom_command(OUTPUT build COMMAND python setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
+	add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
+	add_dependencies(pythonmodule audaspace)
 endif()
