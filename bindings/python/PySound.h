@@ -16,29 +16,18 @@
 
 #pragma once
 
-#include "Python.h"
+#include <Python.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef void Reference_ISound;
 
-PyMODINIT_FUNC
-PyInit_aud(void);
+typedef struct {
+	PyObject_HEAD
+	PyObject *child_list; /* AUD_XXX remove!*/
+	Reference_ISound* sound;
+} Sound;
 
-/**
- * Retrieves the python factory of a sound.
- * \param sound The sound factory.
- * \return The python factory.
- */
-extern PyObject* AUD_getPythonSound(void* sound);
+extern PyObject *Sound_empty();
+extern Sound *checkSound(PyObject *sound);
 
-/**
- * Retrieves the sound factory of a python factory.
- * \param sound The python factory.
- * \return The sound factory.
- */
-extern void* AUD_getSoundFromPython(PyObject* object);
-
-#ifdef __cplusplus
-}
-#endif
+bool initializeSound();
+void addSoundToModule(PyObject* module);

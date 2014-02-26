@@ -16,29 +16,19 @@
 
 #pragma once
 
-#include "Python.h"
+#ifdef AUD_CAPI_IMPLEMENTATION
+#include "ISound.h"
+#include "devices/IHandle.h"
+#include "devices/IDevice.h"
+#include "sequence/SequenceEntry.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-PyMODINIT_FUNC
-PyInit_aud(void);
-
-/**
- * Retrieves the python factory of a sound.
- * \param sound The sound factory.
- * \return The python factory.
- */
-extern PyObject* AUD_getPythonSound(void* sound);
-
-/**
- * Retrieves the sound factory of a python factory.
- * \param sound The python factory.
- * \return The sound factory.
- */
-extern void* AUD_getSoundFromPython(PyObject* object);
-
-#ifdef __cplusplus
-}
+typedef std::shared_ptr<aud::ISound> AUD_Sound;
+typedef std::shared_ptr<aud::IHandle> AUD_Handle;
+typedef std::shared_ptr<aud::IDevice> AUD_Device;
+typedef std::shared_ptr<aud::SequenceEntry> AUD_SEntry;
+#else
+typedef void AUD_Sound;
+typedef void AUD_Handle;
+typedef void AUD_Device;
+typedef void AUD_SEntry;
 #endif

@@ -44,6 +44,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 option(SHARED_LIBRARY "Build Shared Library" TRUE)
 
+option(WITH_C "Build C Module" FALSE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
 option(WITH_JACK "Build With Jack" FALSE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
@@ -51,11 +52,23 @@ option(WITH_OPENAL "Build With OpenAL" TRUE)
 option(WITH_PYTHON "Build Python Module" FALSE)
 option(WITH_SDL "Build With SDL" FALSE)
 
+cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY;NOT WIN32" FALSE)
+
+# C
+if(${WITH_PYTHON})
+	file(GLOB_RECURSE C_SRC bindings/C/*.cpp)
+	file(GLOB_RECURSE C_HDR bindings/C/*.h)
+
+	if(NOT ${SEPARATE_C})
+		list(APPEND SRC ${C_SRC})
+		list(APPEND HDR ${C_HDR})
+	endif()
+endif()
 
 # FFMPEG
 if(${WITH_FFMPEG})
@@ -210,6 +223,11 @@ if(${WITH_OPENAL})
 	endif()
 endif()
 
+if(${WITH_C} AND ${SEPARATE_C})
+	add_library(caudaspace ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
+	target_link_libraries(caudaspace audaspace)
+endif()
+
 if(${WITH_PYTHON} AND ${WITH_JACK} AND ${WITH_OPENAL} AND ${WITH_SDL})
 	set(PYTHON_PLUGIN_LIBS)
 
@@ -225,6 +243,9 @@ if(${WITH_PYTHON} AND ${WITH_JACK} AND ${WITH_OPENAL} AND ${WITH_SDL})
 		list(APPEND PYTHON_PLUGIN_LIBS audjack)
 	endif()
 
-	add_executable(python bindings/python/PyAPI.cpp bindings/python/PyAPI.h bindings/python/PyInit.h)
+	file(GLOB_RECURSE PYTHON_SRC bindings/python/*.cpp)
+	file(GLOB_RECURSE PYTHON_HDR bindings/python/*.h)
+
+	add_executable(python ${PYTHON_SRC} ${PYTHON_HDR})
 	target_link_libraries(python audaspace ${PYTHON_LIBRARIES} ${PYTHON_PLUGIN_LIBS})
 endif()

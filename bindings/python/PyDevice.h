@@ -16,29 +16,27 @@
 
 #pragma once
 
-#include "Python.h"
+#include <Python.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef void Reference_IDevice;
 
-PyMODINIT_FUNC
-PyInit_aud(void);
+typedef struct {
+	PyObject_HEAD
+	Reference_IDevice* device;
+} Device;
 
-/**
- * Retrieves the python factory of a sound.
- * \param sound The sound factory.
- * \return The python factory.
- */
-extern PyObject* AUD_getPythonSound(void* sound);
+/* AUD_XXX TODO */
+enum DeviceTypes
+{
+	DEVICE_NULL = 0,
+	DEVICE_OPENAL,
+	DEVICE_SDL,
+	DEVICE_JACK,
+	DEVICE_READ,
+};
 
-/**
- * Retrieves the sound factory of a python factory.
- * \param sound The python factory.
- * \return The sound factory.
- */
-extern void* AUD_getSoundFromPython(PyObject* object);
+extern PyObject *Device_empty();
+extern Device *checkDevice(PyObject *device);
 
-#ifdef __cplusplus
-}
-#endif
+bool initializeDevice();
+void addDeviceToModule(PyObject* module);
