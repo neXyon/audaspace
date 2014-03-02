@@ -57,6 +57,17 @@ extern "C" const char* getName()
 {
 	return "LibSndFile";
 }
+#else
+class SndFileRegister
+{
+public:
+	SndFileRegister()
+	{
+		SndFile::registerPlugin();
+	}
+};
+
+static SndFileRegister reg;
 #endif
 
 AUD_NAMESPACE_END

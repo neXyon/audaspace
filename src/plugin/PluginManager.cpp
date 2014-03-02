@@ -48,8 +48,6 @@ bool PluginManager::loadPlugin(const std::string& path)
 
 void PluginManager::loadPlugins(const std::string& path)
 {
-	// AUD_XXX TODO: register linked plugins!
-
 	std::string readpath = path;
 
 	if(path == "")

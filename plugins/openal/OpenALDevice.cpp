@@ -1466,6 +1466,17 @@ extern "C" const char* getName()
 {
 	return "OpenAL";
 }
+#else
+class OpenALRegister
+{
+public:
+	OpenALRegister()
+	{
+		OpenALDevice::registerPlugin();
+	}
+};
+
+static OpenALRegister reg;
 #endif
 
 AUD_NAMESPACE_END

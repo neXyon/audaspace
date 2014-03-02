@@ -58,6 +58,17 @@ extern "C" const char* getName()
 {
 	return "FFMPEG";
 }
+#else
+class FFMPEGRegister
+{
+public:
+	FFMPEGRegister()
+	{
+		FFMPEG::registerPlugin();
+	}
+};
+
+static FFMPEGRegister reg;
 #endif
 
 AUD_NAMESPACE_END

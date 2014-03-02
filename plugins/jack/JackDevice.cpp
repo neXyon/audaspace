@@ -378,6 +378,17 @@ extern "C" const char* getName()
 {
 	return "Jack";
 }
+#else
+class JackRegister
+{
+public:
+	JackRegister()
+	{
+		JackDevice::registerPlugin();
+	}
+};
+
+static JackRegister reg;
 #endif
 
 AUD_NAMESPACE_END
