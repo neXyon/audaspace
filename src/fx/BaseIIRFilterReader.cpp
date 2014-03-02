@@ -112,8 +112,8 @@ void BaseIIRFilterReader::read(int& length, bool& eos, sample_t* buffer)
 			m_x[m_xpos * m_specs.channels + m_channel] = buffer[i * m_specs.channels + m_channel];
 			m_y[m_ypos * m_specs.channels + m_channel] = buffer[i * m_specs.channels + m_channel] = filter();
 
-			m_xpos = (m_xpos + 1) % m_xlen;
-			m_ypos = (m_ypos + 1) % m_ylen;
+			m_xpos = m_xlen ? (m_xpos + 1) % m_xlen : 0;
+			m_ypos = m_ylen ? (m_ypos + 1) % m_ylen : 0;
 		}
 	}
 }
