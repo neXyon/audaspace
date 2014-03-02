@@ -38,17 +38,19 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
+option(BUILD_DEMOS "Build and install demos" TRUE)
+
 option(SHARED_LIBRARY "Build Shared Library" TRUE)
 
-option(WITH_C "Build C Module" FALSE)
+option(WITH_C "Build C Module" TRUE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
 option(WITH_JACK "Build With Jack" FALSE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
 option(WITH_PYTHON "Build Python Module" FALSE)
-option(WITH_SDL "Build With SDL" FALSE)
+option(WITH_SDL "Build With SDL" TRUE)
 
-set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin loading path.")
+set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
 
 cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY;NOT WIN32" FALSE)
@@ -168,6 +170,14 @@ endif()
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
 
+install(TARGETS audaspace
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION "lib${LIB_SUFFIX}"
+	ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
+
 # plugins
 
 if(${PLUGIN_FFMPEG})
@@ -175,6 +185,7 @@ if(${PLUGIN_FFMPEG})
 	include_directories(${INCLUDE} ${FFMPEG_INCLUDE_DIRS})
 	add_library(audffmpeg SHARED ${FFMPEG_SRC} ${FFMPEG_HDR} ${HDR})
 	target_link_libraries(audffmpeg audaspace ${FFMPEG_LIBRARIES})
+	install(TARGETS audffmpeg DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 if(${PLUGIN_JACK})
@@ -182,6 +193,7 @@ if(${PLUGIN_JACK})
 	include_directories(${INCLUDE} ${JACK_INCLUDE_DIRS})
 	add_library(audjack SHARED ${JACK_SRC} ${JACK_HDR} ${HDR})
 	target_link_libraries(audjack audaspace ${JACK_LIBRARIES})
+	install(TARGETS audjack DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 if(${PLUGIN_LIBSNDFILE})
@@ -189,6 +201,7 @@ if(${PLUGIN_LIBSNDFILE})
 	include_directories(${INCLUDE} ${LIBSNDFILE_INCLUDE_DIRS})
 	add_library(audlibsndfile SHARED ${LIBSNDFILE_SRC} ${LIBSNDFILE_HDR} ${HDR})
 	target_link_libraries(audlibsndfile audaspace ${LIBSNDFILE_LIBRARIES})
+	install(TARGETS audlibsndfile DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 if(${PLUGIN_OPENAL})
@@ -196,6 +209,7 @@ if(${PLUGIN_OPENAL})
 	include_directories(${INCLUDE} ${OPENAL_INCLUDE_DIR})
 	add_library(audopenal SHARED ${OPENAL_SRC} ${OPENAL_HDR} ${HDR})
 	target_link_libraries(audopenal audaspace ${OPENAL_LIBRARY})
+	install(TARGETS audopenal DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 if(${PLUGIN_SDL})
@@ -203,28 +217,41 @@ if(${PLUGIN_SDL})
 	include_directories(${INCLUDE} ${SDL_INCLUDE_DIR})
 	add_library(audsdl SHARED ${SDL_SRC} ${SDL_HDR} ${HDR})
 	target_link_libraries(audsdl audaspace ${SDL_LIBRARY})
+	install(TARGETS audsdl DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 # demos
 
-include_directories(${INCLUDE})
+if(${BUILD_DEMOS})
+	include_directories(${INCLUDE})
 
-add_executable(audaplay demos/audaplay.cpp)
-target_link_libraries(audaplay audaspace)
+	set(DEMOS audaplay audaconvert audaremap)
 
-add_executable(audaconvert demos/audaconvert.cpp)
-target_link_libraries(audaconvert audaspace)
+	add_executable(audaplay demos/audaplay.cpp)
+	target_link_libraries(audaplay audaspace)
 
-add_executable(audaremap demos/audaremap.cpp)
-target_link_libraries(audaremap audaspace)
+	add_executable(audaconvert demos/audaconvert.cpp)
+	target_link_libraries(audaconvert audaspace)
 
-if(${WITH_OPENAL})
-	add_executable(openaldevices demos/openaldevices.cpp)
-	if(${PLUGIN_OPENAL})
-		target_link_libraries(openaldevices audaspace audopenal)
-	else()
-		target_link_libraries(openaldevices audaspace)
+	add_executable(audaremap demos/audaremap.cpp)
+	target_link_libraries(audaremap audaspace)
+
+	if(${WITH_OPENAL})
+		list(APPEND DEMOS openaldevices)
+
+		add_executable(openaldevices demos/openaldevices.cpp)
+		if(${PLUGIN_OPENAL})
+			target_link_libraries(openaldevices audaspace audopenal)
+		else()
+			target_link_libraries(openaldevices audaspace)
+		endif()
 	endif()
+
+	install(TARGETS ${DEMOS}
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
+		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+	)
 endif()
 
 # bindings
@@ -232,6 +259,13 @@ endif()
 if(${WITH_C} AND ${SEPARATE_C})
 	add_library(caudaspace ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
 	target_link_libraries(caudaspace audaspace)
+	install(TARGETS caudaspace
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
+		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+	)
+
+	install(FILES ${C_HDR} DESTINATION include/audaspace)
 endif()
 
 if(${WITH_PYTHON})
@@ -247,4 +281,6 @@ if(${WITH_PYTHON})
 	add_custom_command(OUTPUT build COMMAND python setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
 	add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
 	add_dependencies(pythonmodule audaspace)
+
+	install(CODE "EXECUTE_PROCESS(COMMAND python setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
 endif()
