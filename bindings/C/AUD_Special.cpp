@@ -359,7 +359,7 @@ AUD_Device *AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound *sequencer, f
 
 void AUD_initOnce()
 {
-	PluginManager::loadPlugins(".");
+	PluginManager::loadPlugins();
 	NULLDevice::registerPlugin();
 }
 

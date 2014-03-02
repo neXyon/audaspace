@@ -47,7 +47,6 @@ Sound_dealloc(Sound* self)
 {
 	if(self->sound)
 		delete reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
-	Py_XDECREF(self->child_list);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -187,9 +186,6 @@ Sound_lowpass(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Lowpass(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), frequency, Q));
@@ -228,9 +224,6 @@ Sound_delay(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Delay(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), delay));
@@ -273,8 +266,6 @@ Sound_join(Sound* self, PyObject *object)
 	parent = (Sound*)type->tp_alloc(type, 0);
 	if(parent != nullptr)
 	{
-		parent->child_list = Py_BuildValue("(OO)", self, object);
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Double(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ISound>*>(child->sound)));
@@ -315,9 +306,6 @@ Sound_highpass(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Highpass(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), frequency, Q));
@@ -356,9 +344,6 @@ Sound_limit(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Limiter(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), start, end));
@@ -400,9 +385,6 @@ Sound_pitch(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Pitch(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), factor));
@@ -442,9 +424,6 @@ Sound_volume(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Volume(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), volume));
@@ -485,9 +464,6 @@ Sound_fadein(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Fader(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), FADE_IN, start, length));
@@ -529,9 +505,6 @@ Sound_fadeout(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Fader(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), FADE_OUT, start, length));
@@ -571,9 +544,6 @@ Sound_loop(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Loop(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), loop));
@@ -615,8 +585,6 @@ Sound_mix(Sound* self, PyObject *object)
 
 	if(parent != nullptr)
 	{
-		parent->child_list = Py_BuildValue("(OO)", self, object);
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Superpose(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ISound>*>(child->sound)));
@@ -647,9 +615,6 @@ Sound_pingpong(Sound* self)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new PingPong(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
@@ -686,9 +651,6 @@ Sound_reverse(Sound* self)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Reverse(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
@@ -763,9 +725,6 @@ Sound_square(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Square(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), threshold));
@@ -866,9 +825,6 @@ Sound_filter(Sound* self, PyObject *args)
 
 	if(parent != nullptr)
 	{
-		Py_INCREF(self);
-		parent->child_list = (PyObject *)self;
-
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new IIRFilter(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), b, a));

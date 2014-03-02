@@ -22,7 +22,6 @@ typedef void Reference_ISound;
 
 typedef struct {
 	PyObject_HEAD
-	PyObject *child_list; /* AUD_XXX remove!*/
 	Reference_ISound* sound;
 } Sound;
 
