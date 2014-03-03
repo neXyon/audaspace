@@ -19,6 +19,8 @@ include(CMakeDependentOption)
 
 project(audaspace)
 
+set(AUDASPACE_VERSION 0.1)
+
 # sources
 
 file(GLOB_RECURSE SRC src/*.cpp)
@@ -60,13 +62,15 @@ cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHA
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY;NOT WIN32" FALSE)
 
 # C
-if(${WITH_PYTHON})
+if(${WITH_C})
 	file(GLOB_RECURSE C_SRC bindings/C/*.cpp)
 	file(GLOB_RECURSE C_HDR bindings/C/*.h)
 
 	if(NOT ${SEPARATE_C})
 		list(APPEND SRC ${C_SRC})
 		list(APPEND HDR ${C_HDR})
+	else()
+		set(CAUDASPACE_LIBRARY -lcaudaspace)
 	endif()
 endif()
 
@@ -177,6 +181,9 @@ install(TARGETS audaspace
 )
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages/pkgconfig/audaspace.pc.in ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc DESTINATION "lib${LIB_SUFFIX}/pkgconfig")
 
 # plugins
 
