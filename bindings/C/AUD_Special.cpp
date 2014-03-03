@@ -367,7 +367,7 @@ void AUD_exitOnce()
 {
 }
 
-int AUD_init(std::string device, std::string name, AUD_DeviceSpecs specs, int buffersize)
+int AUD_init(const char *device, const char *name, AUD_DeviceSpecs specs, int buffersize)
 {
 	try
 	{

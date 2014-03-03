@@ -47,6 +47,8 @@ typedef void (*AUD_syncFunction)(void*, int, float);
  */
 extern AUD_Handle *AUD_play(AUD_Sound *sound, int keep);
 
+extern void AUD_stopAll(void);
+
 /**
  * Sets the listener location.
  * \param location The new location.

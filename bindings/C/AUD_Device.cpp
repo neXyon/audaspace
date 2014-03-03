@@ -43,6 +43,11 @@ AUD_Handle *AUD_play(AUD_Sound *sound, int keep)
 	return NULL;
 }
 
+void AUD_stopAll()
+{
+	DeviceManager::getDevice()->stopAll();
+}
+
 int AUD_setListenerLocation(const float location[3])
 {
 	auto device = DeviceManager::get3DDevice();
@@ -251,3 +256,4 @@ int AUD_isSynchronizerPlaying()
 		return synchronizer->isPlaying();
 	return false;
 }
+
