@@ -2,14 +2,14 @@
 
 pkgname=audaspace-git
 pkgver=0.1.41.389cdf1
-pkgrel=1
+pkgrel=2
 pkgdesc="A feature rich high level audio library."
 arch=('i686' 'x86_64')
 url="https://github.com/neXyon/audaspace"
 license=('MIT')
 groups=()
 depends=('python' 'openal' 'sdl' 'libsndfile' 'ffmpeg' 'jack')
-makedepends=('gcc' 'cmake' 'git')
+makedepends=('gcc' 'cmake' 'git' 'python-setuptools')
 optdepends=()
 provides=()
 conflicts=()
