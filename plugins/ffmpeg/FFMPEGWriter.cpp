@@ -113,6 +113,8 @@ void FFMPEGWriter::close()
 		packet.data = nullptr;
 		packet.size = 0;
 
+		av_init_packet(&packet);
+
 		if(avcodec_encode_audio2(m_codecCtx, &packet, nullptr, &got_packet))
 			AUD_THROW(FileException, "File end couldn't be written, audio encoding failed with ffmpeg.");
 
@@ -309,17 +311,20 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 
 		m_codecCtx->sample_rate = 0;
 
-		for(int i = 0; codec->supported_samplerates[i]; i++)
+		if(codec->supported_samplerates)
 		{
-			if(codec->supported_samplerates[i] == m_specs.rate)
+			for(int i = 0; codec->supported_samplerates[i]; i++)
 			{
-				m_codecCtx->sample_rate = codec->supported_samplerates[i];
-				break;
-			}
-			else if((codec->supported_samplerates[i] > m_codecCtx->sample_rate && m_specs.rate > m_codecCtx->sample_rate) ||
-					(codec->supported_samplerates[i] < m_codecCtx->sample_rate && m_specs.rate < codec->supported_samplerates[i]))
-			{
-				m_codecCtx->sample_rate = codec->supported_samplerates[i];
+				if(codec->supported_samplerates[i] == m_specs.rate)
+				{
+					m_codecCtx->sample_rate = codec->supported_samplerates[i];
+					break;
+				}
+				else if((codec->supported_samplerates[i] > m_codecCtx->sample_rate && m_specs.rate > m_codecCtx->sample_rate) ||
+						(codec->supported_samplerates[i] < m_codecCtx->sample_rate && m_specs.rate < codec->supported_samplerates[i]))
+				{
+					m_codecCtx->sample_rate = codec->supported_samplerates[i];
+				}
 			}
 		}
 
