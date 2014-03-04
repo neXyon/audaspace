@@ -1417,8 +1417,9 @@ private:
 	std::string m_name;
 
 public:
-	OpenALDeviceFactory() :
-		m_buffersize(AUD_DEFAULT_BUFFER_SIZE)
+	OpenALDeviceFactory(std::string name = "") :
+		m_buffersize(AUD_DEFAULT_BUFFER_SIZE),
+		m_name(name)
 	{
 		m_specs.format = FORMAT_FLOAT32;
 		m_specs.channels = CHANNELS_SURROUND51;
@@ -1447,13 +1448,17 @@ public:
 
 	virtual void setName(std::string name)
 	{
-		m_name = name;
 	}
 };
 
 void OpenALDevice::registerPlugin()
 {
+	auto names = OpenALDevice::getDeviceNames();
 	DeviceManager::registerDevice("OpenAL", std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory));
+	for(std::string &name : names)
+	{
+		DeviceManager::registerDevice("OpenAL - " + name, std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory(name)));
+	}
 }
 
 #ifdef OPENAL_PLUGIN
