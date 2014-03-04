@@ -289,6 +289,8 @@ if(${WITH_PYTHON})
 		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
 	)
 
+	install(FILES ${PYTHON_HDR} DESTINATION include/audaspace/python)
+
 	set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
 	configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
