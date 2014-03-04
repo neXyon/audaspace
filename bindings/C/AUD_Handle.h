@@ -22,6 +22,15 @@
 extern "C" {
 #endif
 
+/// Status of a playback handle.
+typedef enum
+{
+	AUD_STATUS_INVALID = 0,			/// Invalid handle. Maybe due to stopping.
+	AUD_STATUS_PLAYING,				/// Sound is playing.
+	AUD_STATUS_PAUSED,				/// Sound is being paused.
+	AUD_STATUS_STOPPED				/// Sound is stopped but kept in the device.
+} AUD_Status;
+
 /**
  * Sets a remaining loop count of a looping sound that currently plays.
  * \param handle The playback handle.
@@ -81,7 +90,7 @@ extern float AUD_getPosition(AUD_Handle *handle);
  * \param handle The handle to the sound.
  * \return The status of the sound behind the handle.
  */
-extern Status AUD_getStatus(AUD_Handle *handle);
+extern AUD_Status AUD_getStatus(AUD_Handle *handle);
 
 /**
  * Sets the location of a source.

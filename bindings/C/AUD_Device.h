@@ -129,7 +129,7 @@ extern AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs);
  *         played back currently, in that case the buffer is filled with
  *         silence.
  */
-extern int AUD_readDevice(AUD_Device *device, data_t *buffer, int length);
+extern int AUD_readDevice(AUD_Device *device, unsigned char *buffer, int length);
 
 /**
  * Closes a read device.

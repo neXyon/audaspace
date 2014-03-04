@@ -200,10 +200,10 @@ AUD_Handle *AUD_pauseAfter(AUD_Handle *handle, float seconds)
 	return NULL;
 }
 
-int AUD_readSound(AUD_Sound *sound, sample_t *buffer, int length, int samples_per_second)
+int AUD_readSound(AUD_Sound *sound, float *buffer, int length, int samples_per_second)
 {
 	DeviceSpecs specs;
-	sample_t *buf;
+	float *buf;
 	Buffer aBuffer;
 
 	specs.rate = RATE_INVALID;

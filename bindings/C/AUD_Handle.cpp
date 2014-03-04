@@ -77,10 +77,10 @@ float AUD_getPosition(AUD_Handle *handle)
 	return (*handle)->getPosition();
 }
 
-Status AUD_getStatus(AUD_Handle *handle)
+AUD_Status AUD_getStatus(AUD_Handle *handle)
 {
 	assert(handle);
-	return (*handle)->getStatus();
+	return static_cast<AUD_Status>((*handle)->getStatus());
 }
 
 int AUD_setSourceLocation(AUD_Handle *handle, const float location[3])

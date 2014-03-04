@@ -197,7 +197,7 @@ AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs)
 	}
 }
 
-int AUD_readDevice(AUD_Device *device, data_t *buffer, int length)
+int AUD_readDevice(AUD_Device *device, unsigned char *buffer, int length)
 {
 	assert(device);
 	assert(buffer);
