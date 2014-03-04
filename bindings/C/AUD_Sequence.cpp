@@ -88,9 +88,9 @@ void AUD_updateSequenceSound(AUD_SEntry *entry, AUD_Sound *sound)
 		(*entry)->setSound(AUD_Sound());
 }
 
-void AUD_setSequenceAnimData(AUD_SEntry *entry, AnimateablePropertyType type, int frame, float *data, char animated)
+void AUD_setSequenceAnimData(AUD_SEntry *entry, AUD_AnimateablePropertyType type, int frame, float *data, char animated)
 {
-	AnimateableProperty *prop = (*entry)->getAnimProperty(type);
+	AnimateableProperty *prop = (*entry)->getAnimProperty(static_cast<AnimateablePropertyType>(type));
 	if(animated)
 	{
 		if(frame >= 0)
@@ -102,9 +102,9 @@ void AUD_setSequenceAnimData(AUD_SEntry *entry, AnimateablePropertyType type, in
 	}
 }
 
-void AUD_setSequencerAnimData(AUD_Sound *sequencer, AnimateablePropertyType type, int frame, float *data, char animated)
+void AUD_setSequencerAnimData(AUD_Sound *sequencer, AUD_AnimateablePropertyType type, int frame, float *data, char animated)
 {
-	AnimateableProperty *prop = dynamic_cast<Sequence *>(sequencer->get())->getAnimProperty(type);
+	AnimateableProperty *prop = dynamic_cast<Sequence *>(sequencer->get())->getAnimProperty(static_cast<AnimateablePropertyType>(type));
 	if(animated)
 	{
 		if(frame >= 0)
@@ -140,7 +140,15 @@ void AUD_setSequencerDeviceSpecs(AUD_Sound *sequencer)
 	dynamic_cast<Sequence *>(sequencer->get())->setSpecs(DeviceManager::getDevice()->getSpecs().specs);
 }
 
-void AUD_setSequencerSpecs(AUD_Sound *sequencer, Specs specs)
+static inline aud::Specs convCToSpec(AUD_Specs specs)
 {
-	dynamic_cast<Sequence *>(sequencer->get())->setSpecs(specs);
+	aud::Specs s;
+	s.channels = static_cast<Channels>(specs.channels);
+	s.rate = static_cast<SampleRate>(specs.rate);
+	return s;
+}
+
+void AUD_setSequencerSpecs(AUD_Sound *sequencer, AUD_Specs specs)
+{
+	dynamic_cast<Sequence *>(sequencer->get())->setSpecs(convCToSpec(specs));
 }

@@ -111,12 +111,12 @@ int AUD_setDopplerFactor(float factor)
 	return false;
 }
 
-int AUD_setDistanceModel(DistanceModel model)
+int AUD_setDistanceModel(AUD_DistanceModel model)
 {
 	auto device = DeviceManager::get3DDevice();
 	if(device)
 	{
-		device->setDistanceModel(model);
+		device->setDistanceModel(static_cast<DistanceModel>(model));
 		return true;
 	}
 
@@ -169,11 +169,27 @@ int AUD_setDeviceVolume(AUD_Device *device, float volume)
 	return false;
 }
 
-AUD_Device *AUD_openReadDevice(DeviceSpecs specs)
+static inline aud::Specs convCToSpec(AUD_Specs specs)
+{
+	aud::Specs s;
+	s.channels = static_cast<Channels>(specs.channels);
+	s.rate = static_cast<SampleRate>(specs.rate);
+	return s;
+}
+
+static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
+{
+	aud::DeviceSpecs s;
+	s.specs = convCToSpec(specs.specs);
+	s.format = static_cast<SampleFormat>(specs.format);
+	return s;
+}
+
+AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs)
 {
 	try
 	{
-		return new AUD_Device(new ReadDevice(specs));
+		return new AUD_Device(new ReadDevice(convCToDSpec(specs)));
 	}
 	catch(Exception&)
 	{

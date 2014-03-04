@@ -18,23 +18,21 @@
 
 #include "AUD_Types.h"
 
-#ifndef AUD_CAPI_IMPLEMENTATION
-/// Possible distance models for the 3D device.
-enum DistanceModel
-{
-	DISTANCE_MODEL_INVALID = 0,
-	DISTANCE_MODEL_INVERSE,
-	DISTANCE_MODEL_INVERSE_CLAMPED,
-	DISTANCE_MODEL_LINEAR,
-	DISTANCE_MODEL_LINEAR_CLAMPED,
-	DISTANCE_MODEL_EXPONENT,
-	DISTANCE_MODEL_EXPONENT_CLAMPED
-};
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/// Possible distance models for the 3D device.
+typedef enum
+{
+	AUD_DISTANCE_MODEL_INVALID = 0,
+	AUD_DISTANCE_MODEL_INVERSE,
+	AUD_DISTANCE_MODEL_INVERSE_CLAMPED,
+	AUD_DISTANCE_MODEL_LINEAR,
+	AUD_DISTANCE_MODEL_LINEAR_CLAMPED,
+	AUD_DISTANCE_MODEL_EXPONENT,
+	AUD_DISTANCE_MODEL_EXPONENT_CLAMPED
+} AUD_DistanceModel;
 
 typedef void (*AUD_syncFunction)(void*, int, float);
 
@@ -86,7 +84,7 @@ extern int AUD_setDopplerFactor(float factor);
  * Sets the distance model.
  * \param model distance model.
  */
-extern int AUD_setDistanceModel(DistanceModel model);
+extern int AUD_setDistanceModel(AUD_DistanceModel model);
 
 /**
  * Locks the playback device.
@@ -120,7 +118,7 @@ extern AUD_Handle *AUD_playDevice(AUD_Device *device, AUD_Sound *sound, float se
  * \param specs The specification of the audio data.
  * \return A device handle.
  */
-extern AUD_Device *AUD_openReadDevice(DeviceSpecs specs);
+extern AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs);
 
 /**
  * Reads the next samples into the supplied buffer.

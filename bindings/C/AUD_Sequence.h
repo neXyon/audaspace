@@ -22,6 +22,16 @@
 extern "C" {
 #endif
 
+/// Possible animatable properties for Sequencer Factories and Entries.
+typedef enum
+{
+	AUD_AP_VOLUME,
+	AUD_AP_PANNING,
+	AUD_AP_PITCH,
+	AUD_AP_LOCATION,
+	AUD_AP_ORIENTATION
+} AUD_AnimateablePropertyType;
+
 /**
  * Creates a new sequenced sound scene.
  * \param fps The FPS of the scene.
@@ -109,7 +119,7 @@ extern void AUD_updateSequenceSound(AUD_SEntry *entry, AUD_Sound *sound);
  * \param data The data to write.
  * \param animated Whether the attribute is animated.
  */
-extern void AUD_setSequenceAnimData(AUD_SEntry *entry, AnimateablePropertyType type, int frame, float *data, char animated);
+extern void AUD_setSequenceAnimData(AUD_SEntry *entry, AUD_AnimateablePropertyType type, int frame, float *data, char animated);
 
 /**
  * Writes animation data to a sequenced entry.
@@ -119,7 +129,7 @@ extern void AUD_setSequenceAnimData(AUD_SEntry *entry, AnimateablePropertyType t
  * \param data The data to write.
  * \param animated Whether the attribute is animated.
  */
-extern void AUD_setSequencerAnimData(AUD_Sound *sequencer, AnimateablePropertyType type, int frame, float *data, char animated);
+extern void AUD_setSequencerAnimData(AUD_Sound *sequencer, AUD_AnimateablePropertyType type, int frame, float *data, char animated);
 
 /**
  * Updates all non-animated parameters of the entry.
@@ -159,7 +169,7 @@ extern void AUD_setSequencerDeviceSpecs(AUD_Sound *sequencer);
  * \param sequencer The sound scene.
  * \param specs The new specification.
  */
-extern void AUD_setSequencerSpecs(AUD_Sound *sequencer, Specs specs);
+extern void AUD_setSequencerSpecs(AUD_Sound *sequencer, AUD_Specs specs);
 
 #ifdef __cplusplus
 }
