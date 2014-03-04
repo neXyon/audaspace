@@ -43,7 +43,7 @@ public:
 	virtual void play() = 0;
 	virtual void stop() = 0;
 	virtual void setSyncCallback(syncFunction function, void* data) = 0;
-	virtual bool isPlaying() = 0;
+	virtual int isPlaying() = 0;
 };
 
 AUD_NAMESPACE_END

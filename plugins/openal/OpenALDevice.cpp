@@ -102,7 +102,7 @@ OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, st
 
 		try
 		{
-			alSourceQueueBuffers(m_source, CYCLE_BUFFERS, m_buffers);
+			alSourceQueueBuffers(m_source, m_current, m_buffers);
 			if(alGetError() != AL_NO_ERROR)
 				AUD_THROW(DeviceException, "Buffer queuing failed while starting playback with OpenAL.");
 		}
@@ -1052,7 +1052,8 @@ OpenALDevice::~OpenALDevice()
 
 	// wait for the thread to stop
 	unlock();
-	m_thread.join();
+	if(m_thread.joinable())
+		m_thread.join();
 
 	// quit OpenAL
 	alcMakeContextCurrent(nullptr);

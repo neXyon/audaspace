@@ -31,7 +31,7 @@ public:
 	virtual void play();
 	virtual void stop();
 	virtual void setSyncCallback(syncFunction function, void* data);
-	virtual bool isPlaying();
+	virtual int isPlaying();
 };
 
 AUD_NAMESPACE_END

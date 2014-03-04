@@ -50,7 +50,7 @@ void JackSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, voi
 	m_device->setSyncCallback(function, data);
 }
 
-bool JackSynchronizer::isPlaying()
+int JackSynchronizer::isPlaying()
 {
 	return m_device->doesPlayback();
 }

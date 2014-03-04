@@ -41,9 +41,9 @@ void DefaultSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, 
 {
 }
 
-bool DefaultSynchronizer::isPlaying()
+int DefaultSynchronizer::isPlaying()
 {
-	return false;
+	return -1;
 }
 
 AUD_NAMESPACE_END
