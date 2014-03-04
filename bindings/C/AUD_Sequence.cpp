@@ -127,12 +127,12 @@ void AUD_updateSequenceData(AUD_SEntry *entry, float volume_max, float volume_mi
 }
 
 void AUD_updateSequencerData(AUD_Sound *sequencer, float speed_of_sound,
-							 float factor, DistanceModel model)
+							 float factor, AUD_DistanceModel model)
 {
 	Sequence *f = dynamic_cast<Sequence *>(sequencer->get());
 	f->setSpeedOfSound(speed_of_sound);
 	f->setDopplerFactor(factor);
-	f->setDistanceModel(model);
+	f->setDistanceModel(static_cast<DistanceModel>(model));
 }
 
 void AUD_setSequencerDeviceSpecs(AUD_Sound *sequencer)

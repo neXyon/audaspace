@@ -34,7 +34,7 @@ typedef void AUD_SEntry;
 #endif
 
 /// Container formats for writers.
-enum AUD_Container
+typedef enum
 {
 	AUD_CONTAINER_INVALID = 0,
 	AUD_CONTAINER_AC3,
@@ -44,10 +44,10 @@ enum AUD_Container
 	AUD_CONTAINER_MP3,
 	AUD_CONTAINER_OGG,
 	AUD_CONTAINER_WAV
-};
+} AUD_Container;
 
 /// Audio codecs for writers.
-enum AUD_Codec
+typedef enum
 {
 	AUD_CODEC_INVALID = 0,
 	AUD_CODEC_AAC,
@@ -58,7 +58,7 @@ enum AUD_Codec
 	AUD_CODEC_PCM,
 	AUD_CODEC_VORBIS,
 	AUD_CODEC_OPUS
-};
+} AUD_Codec;
 
 /**
  * The format of a sample.

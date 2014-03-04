@@ -155,7 +155,7 @@ extern void AUD_updateSequenceData(AUD_SEntry *entry, float volume_max, float vo
  * \param model The distance model for distance calculation.
  */
 extern void AUD_updateSequencerData(AUD_Sound *sequencer, float speed_of_sound,
-									float factor, DistanceModel model);
+									float factor, AUD_DistanceModel model);
 
 /**
  * Sets the audio output specification of the sound scene to the specs of the
