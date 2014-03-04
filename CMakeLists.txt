@@ -135,6 +135,7 @@ if(${WITH_PYTHON})
 	set(Python_ADDITIONAL_VERSIONS 3.3)
 	find_package(PythonLibs REQUIRED)
 	list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
+	set(PYAUDASPACE_LIBRARY -lpyaudaspace)
 endif()
 
 # SDL
@@ -279,8 +280,14 @@ if(${WITH_PYTHON})
 	file(GLOB_RECURSE PYTHON_SRC bindings/python/*.cpp)
 	file(GLOB_RECURSE PYTHON_HDR bindings/python/*.h)
 
-	#add_executable(audapython ${PYTHON_SRC} ${PYTHON_HDR})
-	#target_link_libraries(audapython audaspace ${PYTHON_LIBRARIES})
+	add_library(pyaudaspace ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
+	target_link_libraries(pyaudaspace audaspace ${PYTHON_LIBRARIES})
+
+	install(TARGETS pyaudaspace
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
+		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+	)
 
 	set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
 	configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
