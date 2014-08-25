@@ -28,12 +28,24 @@ AnimateableProperty::AnimateableProperty(int count) :
 	std::memset(getBuffer(), 0, count * sizeof(float));
 }
 
+AnimateableProperty::AnimateableProperty(int count, float value) :
+	Buffer(count * sizeof(float)), m_count(count), m_isAnimated(false)
+{
+	sample_t* buf = getBuffer();
+
+	for(int i = 0; i < count; i++)
+		buf[i] = value;
+}
+
 void AnimateableProperty::updateUnknownCache(int start, int end)
 {
 	float* buf = getBuffer();
 
 	if(start == 0)
-		std::memset(buf, 0, (end + 1) * m_count * sizeof(float));
+	{
+		for(int i = 0; i < end; i++)
+			memcpy(buf + i * m_count, buf + end * m_count, m_count * sizeof(float));
+	}
 	else
 	{
 		// TODO: maybe first instead of zero order interpolation?

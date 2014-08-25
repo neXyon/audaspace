@@ -61,7 +61,7 @@ void SequenceHandle::update(float position, float frame, float fps)
 	if(m_handle.get())
 	{
 		std::lock_guard<ILockable> lock(*m_entry);
-		if(position >= m_entry->m_end && m_entry->m_end >= 0)
+		if(position >= m_entry->m_end)
 			m_handle->pause();
 		else if(position >= m_entry->m_begin)
 			m_handle->resume();
@@ -134,7 +134,7 @@ void SequenceHandle::seek(float position)
 	if(m_handle.get())
 	{
 		std::lock_guard<ILockable> lock(*m_entry);
-		if(position >= m_entry->m_end && m_entry->m_end >= 0)
+		if(position >= m_entry->m_end)
 		{
 			m_handle->pause();
 			return;

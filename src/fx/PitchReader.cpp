@@ -37,6 +37,8 @@ float PitchReader::getPitch() const
 
 void PitchReader::setPitch(float pitch)
 {
+	if(pitch <= 0)
+		pitch = 1.0f;
 	m_pitch = pitch;
 }
 

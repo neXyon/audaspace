@@ -74,6 +74,14 @@ public:
 	AnimateableProperty(int count = 1);
 
 	/**
+	 * Creates a new animateable property.
+	 * \param count The count of floats for a single property.
+	 * \param value The value that the property should get initialized with.
+	 *   All count floats will be initialized to the same value.
+	 */
+	AnimateableProperty(int count, float value);
+
+	/**
 	 * Destroys the animateable property.
 	 */
 	~AnimateableProperty();
