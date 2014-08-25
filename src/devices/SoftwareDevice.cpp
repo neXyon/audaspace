@@ -414,9 +414,8 @@ bool SoftwareDevice::SoftwareHandle::setPitch(float pitch)
 {
 	if(!m_status)
 		return false;
-	if(pitch <= 0)
-		pitch = 1.0f;
-	m_user_pitch = pitch;
+	if(pitch > 0.0f)
+		m_user_pitch = pitch;
 	return true;
 }
 

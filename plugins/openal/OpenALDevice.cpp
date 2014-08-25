@@ -342,7 +342,8 @@ bool OpenALDevice::OpenALHandle::setVolume(float volume)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_GAIN, volume);
+	if(volume >= 0.0f)
+		alSourcef(m_source, AL_GAIN, volume);
 
 	return true;
 }
@@ -374,7 +375,8 @@ bool OpenALDevice::OpenALHandle::setPitch(float pitch)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_PITCH, pitch);
+	if(pitch > 0.0f)
+		alSourcef(m_source, AL_PITCH, pitch);
 
 	return true;
 }
@@ -578,7 +580,8 @@ bool OpenALDevice::OpenALHandle::setVolumeMaximum(float volume)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_MAX_GAIN, volume);
+	if(volume >= 0.0f && volume <= 1.0f)
+		alSourcef(m_source, AL_MAX_GAIN, volume);
 
 	return true;
 }
@@ -610,7 +613,8 @@ bool OpenALDevice::OpenALHandle::setVolumeMinimum(float volume)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_MIN_GAIN, volume);
+	if(volume >= 0.0f && volume <= 1.0f)
+		alSourcef(m_source, AL_MIN_GAIN, volume);
 
 	return true;
 }
@@ -642,7 +646,8 @@ bool OpenALDevice::OpenALHandle::setDistanceMaximum(float distance)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_MAX_DISTANCE, distance);
+	if(distance >= 0.0f)
+		alSourcef(m_source, AL_MAX_DISTANCE, distance);
 
 	return true;
 }
@@ -674,7 +679,8 @@ bool OpenALDevice::OpenALHandle::setDistanceReference(float distance)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_REFERENCE_DISTANCE, distance);
+	if(distance >= 0.0f)
+		alSourcef(m_source, AL_REFERENCE_DISTANCE, distance);
 
 	return true;
 }
@@ -706,7 +712,8 @@ bool OpenALDevice::OpenALHandle::setAttenuation(float factor)
 	if(!m_status)
 		return false;
 
-	alSourcef(m_source, AL_ROLLOFF_FACTOR, factor);
+	if(factor >= 0.0f)
+		alSourcef(m_source, AL_ROLLOFF_FACTOR, factor);
 
 	return true;
 }
@@ -802,6 +809,7 @@ bool OpenALDevice::OpenALHandle::setConeVolumeOuter(float volume)
 	if(!m_status)
 		return false;
 
+	if(volume >= 0.0f && volume <= 1.0f)
 	alSourcef(m_source, AL_CONE_OUTER_GAIN, volume);
 
 	return true;
@@ -1240,6 +1248,9 @@ float OpenALDevice::getVolume() const
 
 void OpenALDevice::setVolume(float volume)
 {
+	if(volume < 0.0f)
+		return;
+
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	alListenerf(AL_GAIN, volume);
