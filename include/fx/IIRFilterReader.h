@@ -49,13 +49,11 @@ public:
 	 * \param b The input filter coefficients.
 	 * \param a The output filter coefficients.
 	 */
-	IIRFilterReader(std::shared_ptr<IReader> reader, const std::vector<float>& b,
-						const std::vector<float>& a);
+	IIRFilterReader(std::shared_ptr<IReader> reader, const std::vector<float>& b, const std::vector<float>& a);
 
 	virtual sample_t filter();
 
-	void setCoefficients(const std::vector<float>& b,
-						 const std::vector<float>& a);
+	void setCoefficients(const std::vector<float>& b, const std::vector<float>& a);
 };
 
 AUD_NAMESPACE_END

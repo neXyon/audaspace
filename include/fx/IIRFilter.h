@@ -49,8 +49,7 @@ public:
 	 * \param b The input filter coefficients.
 	 * \param a The output filter coefficients.
 	 */
-	IIRFilter(std::shared_ptr<ISound> sound, std::vector<float> b,
-						 std::vector<float> a);
+	IIRFilter(std::shared_ptr<ISound> sound, const std::vector<float>& b, const std::vector<float>& a);
 
 	virtual std::shared_ptr<IReader> createReader();
 };
