@@ -14,6 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
+#include "generator/Sine.h"
 #include "file/File.h"
 #include "util/StreamBuffer.h"
 #include "fx/Delay.h"
@@ -38,19 +39,13 @@ using namespace aud;
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Sound.h"
 
-AUD_Sound *AUD_load(const char *filename)
-{
-	assert(filename);
-	return new AUD_Sound(new File(filename));
-}
-
-AUD_Sound *AUD_loadBuffer(unsigned char *buffer, int size)
+AUD_Sound *AUD_Sound_bufferFile(unsigned char *buffer, int size)
 {
 	assert(buffer);
 	return new AUD_Sound(new File(buffer, size));
 }
 
-AUD_Sound *AUD_bufferSound(AUD_Sound *sound)
+AUD_Sound *AUD_Sound_cache(AUD_Sound *sound)
 {
 	assert(sound);
 
@@ -64,25 +59,18 @@ AUD_Sound *AUD_bufferSound(AUD_Sound *sound)
 	}
 }
 
-AUD_Sound *AUD_monoSound(AUD_Sound *sound)
+AUD_Sound *AUD_Sound_file(const char *filename)
 {
-	assert(sound);
-
-	try
-	{
-		DeviceSpecs specs;
-		specs.channels = CHANNELS_MONO;
-		specs.rate = RATE_INVALID;
-		specs.format = FORMAT_INVALID;
-		return new AUD_Sound(new ChannelMapper(*sound, specs));
-	}
-	catch(Exception&)
-	{
-		return NULL;
-	}
+	assert(filename);
+	return new AUD_Sound(new File(filename));
 }
 
-AUD_Sound *AUD_delaySound(AUD_Sound *sound, float delay)
+AUD_Sound *AUD_Sound_sine(float frequency, SampleRate rate)
+{
+	return new AUD_Sound(new Sine(frequency, rate));
+}
+
+AUD_Sound *AUD_Sound_delay(AUD_Sound *sound, float delay)
 {
 	assert(sound);
 
@@ -96,7 +84,7 @@ AUD_Sound *AUD_delaySound(AUD_Sound *sound, float delay)
 	}
 }
 
-AUD_Sound *AUD_limitSound(AUD_Sound *sound, float start, float end)
+AUD_Sound *AUD_Sound_limit(AUD_Sound *sound, float start, float end)
 {
 	assert(sound);
 
@@ -110,21 +98,7 @@ AUD_Sound *AUD_limitSound(AUD_Sound *sound, float start, float end)
 	}
 }
 
-AUD_Sound *AUD_pingpongSound(AUD_Sound *sound)
-{
-	assert(sound);
-
-	try
-	{
-		return new AUD_Sound(new PingPong(*sound));
-	}
-	catch(Exception&)
-	{
-		return NULL;
-	}
-}
-
-AUD_Sound *AUD_loopSound(AUD_Sound *sound)
+AUD_Sound *AUD_Sound_loop(AUD_Sound *sound)
 {
 	assert(sound);
 
@@ -138,13 +112,45 @@ AUD_Sound *AUD_loopSound(AUD_Sound *sound)
 	}
 }
 
-AUD_Sound *AUD_squareSound(AUD_Sound *sound)
+AUD_Sound *AUD_Sound_rechannel(AUD_Sound *sound, AUD_Channels channels)
+{
+	assert(sound);
+
+	try
+	{
+		DeviceSpecs specs;
+		specs.channels = static_cast<Channels>(channels);
+		specs.rate = RATE_INVALID;
+		specs.format = FORMAT_INVALID;
+		return new AUD_Sound(new ChannelMapper(*sound, specs));
+	}
+	catch(Exception&)
+	{
+		return NULL;
+	}
+}
+
+AUD_Sound *AUD_Sound_square(AUD_Sound *sound)
 {
 	assert(sound);
 
 	try
 	{
 		return new AUD_Sound(new Square(*sound));
+	}
+	catch(Exception&)
+	{
+		return NULL;
+	}
+}
+
+AUD_Sound *AUD_Sound_pingpong(AUD_Sound *sound)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new PingPong(*sound));
 	}
 	catch(Exception&)
 	{

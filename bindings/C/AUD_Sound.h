@@ -23,33 +23,34 @@ extern "C" {
 #endif
 
 /**
- * Loads a sound file.
- * \param filename The filename of the sound file.
- * \return A handle of the sound file.
- */
-extern AUD_Sound *AUD_load(const char *filename);
-
-/**
- * Loads a sound file.
+ * Loads a sound file from a memory buffer.
  * \param buffer The buffer which contains the sound file.
  * \param size The size of the buffer.
  * \return A handle of the sound file.
  */
-extern AUD_Sound *AUD_loadBuffer(unsigned char *buffer, int size);
+extern AUD_Sound *AUD_Sound_bufferFile(unsigned char *buffer, int size);
 
 /**
- * Buffers a sound.
- * \param sound The sound to buffer.
- * \return A handle of the sound buffer.
+ * Caches a sound into a memory buffer.
+ * \param sound The sound to cache.
+ * \return A handle of the cached sound.
  */
-extern AUD_Sound *AUD_bufferSound(AUD_Sound *sound);
+extern AUD_Sound *AUD_Sound_cache(AUD_Sound *sound);
 
 /**
- * Rechannels the sound to be mono.
- * \param sound The sound to rechannel.
- * \return The mono sound.
+ * Loads a sound file.
+ * \param filename The filename of the sound file.
+ * \return A handle of the sound file.
  */
-extern AUD_Sound *AUD_monoSound(AUD_Sound *sound);
+extern AUD_Sound *AUD_Sound_file(const char *filename);
+
+/**
+ * Creates a sine sound.
+ * \param frequency The frequency of the generated sine sound.
+ * \param rate The sample rate of the sine sound.
+ * \return A handle of the sound file.
+ */
+extern AUD_Sound *AUD_Sound_sine(float frequency, aud::SampleRate rate);
 
 /**
  * Delays a sound.
@@ -57,7 +58,7 @@ extern AUD_Sound *AUD_monoSound(AUD_Sound *sound);
  * \param delay The delay in seconds.
  * \return A handle of the delayed sound.
  */
-extern AUD_Sound *AUD_delaySound(AUD_Sound *sound, float delay);
+extern AUD_Sound *AUD_Sound_delay(AUD_Sound *sound, float delay);
 
 /**
  * Limits a sound.
@@ -66,28 +67,36 @@ extern AUD_Sound *AUD_delaySound(AUD_Sound *sound, float delay);
  * \param end The stop time in seconds.
  * \return A handle of the limited sound.
  */
-extern AUD_Sound *AUD_limitSound(AUD_Sound *sound, float start, float end);
-
-/**
- * Ping pongs a sound.
- * \param sound The sound to ping pong.
- * \return A handle of the ping pong sound.
- */
-extern AUD_Sound *AUD_pingpongSound(AUD_Sound *sound);
+extern AUD_Sound *AUD_Sound_limit(AUD_Sound *sound, float start, float end);
 
 /**
  * Loops a sound.
  * \param sound The sound to loop.
  * \return A handle of the looped sound.
  */
-extern AUD_Sound *AUD_loopSound(AUD_Sound *sound);
+extern AUD_Sound *AUD_Sound_loop(AUD_Sound *sound);
+
+/**
+ * Rechannels the sound.
+ * \param sound The sound to rechannel.
+ * \param channels The new channel configuration.
+ * \return The rechanneled sound.
+ */
+extern AUD_Sound *AUD_Sound_rechannel(AUD_Sound *sound, AUD_Channels channels);
 
 /**
  * Rectifies a sound.
  * \param sound The sound to rectify.
  * \return A handle of the rectified sound.
  */
-extern AUD_Sound *AUD_squareSound(AUD_Sound *sound);
+extern AUD_Sound *AUD_Sound_square(AUD_Sound *sound);
+
+/**
+ * Ping pongs a sound.
+ * \param sound The sound to ping pong.
+ * \return A handle of the ping pong sound.
+ */
+extern AUD_Sound *AUD_Sound_pingpong(AUD_Sound *sound);
 
 /**
  * Unloads a sound of any type.
