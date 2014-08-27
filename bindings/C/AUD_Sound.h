@@ -61,6 +61,44 @@ extern AUD_Sound *AUD_Sound_sine(float frequency, aud::SampleRate rate);
 extern AUD_Sound *AUD_Sound_delay(AUD_Sound *sound, float delay);
 
 /**
+ * Fade in a sound.
+ * \param sound The sound to be fade in.
+ * \param start The time when the fading should start in seconds.
+ * \param length The duration of the fade in seconds.
+ * \return A handle of the faded sound.
+ */
+extern AUD_Sound *AUD_Sound_fadein(AUD_Sound *sound, float start, float length);
+
+/**
+ * Fade out a sound.
+ * \param sound The sound to be fade out.
+ * \param start The time when the fading should start in seconds.
+ * \param length The duration of the fade in seconds.
+ * \return A handle of the faded sound.
+ */
+extern AUD_Sound *AUD_Sound_fadeout(AUD_Sound *sound, float start, float length);
+
+/**
+ * Filter a sound.
+ * \param sound The sound to be filtered.
+ * \param b The nominator filter coefficients, may be NULL.
+ * \param b_length The length of the b array.
+ * \param a The denominator filter coefficients, may be NULL.
+ * \param a_length The length of the a array.
+ * \return A handle of the filtered sound.
+ */
+extern AUD_Sound *AUD_Sound_filter(AUD_Sound *sound, float* b, int b_length, float* a, int a_length);
+
+/**
+ * Highpass filters a sound.
+ * \param sound The sound to filter.
+ * \param frequency The filter cut-off frequency.
+ * \param Q The filter quality. If usunsure which value to use, pass 1.0f.
+ * \return A handle of the filtered sound.
+ */
+extern AUD_Sound *AUD_Sound_highpass(AUD_Sound *sound, float frequency, float Q);
+
+/**
  * Limits a sound.
  * \param sound The sound to limit.
  * \param start The start time in seconds.
@@ -77,6 +115,23 @@ extern AUD_Sound *AUD_Sound_limit(AUD_Sound *sound, float start, float end);
 extern AUD_Sound *AUD_Sound_loop(AUD_Sound *sound);
 
 /**
+ * Lowpass filters a sound.
+ * \param sound The sound to filter.
+ * \param frequency The filter cut-off frequency.
+ * \param Q The filter quality. If usunsure which value to use, pass 1.0f.
+ * \return A handle of the filtered sound.
+ */
+extern AUD_Sound *AUD_Sound_lowpass(AUD_Sound *sound, float frequency, float Q);
+
+/**
+ * Changes the pitch of a sound.
+ * \param sound The sound to change.
+ * \param factor The factor to change the pitch with.
+ * \return A handle of the pitched sound.
+ */
+extern AUD_Sound *AUD_Sound_pitch(AUD_Sound *sound, float factor);
+
+/**
  * Rechannels the sound.
  * \param sound The sound to rechannel.
  * \param channels The new channel configuration.
@@ -85,11 +140,42 @@ extern AUD_Sound *AUD_Sound_loop(AUD_Sound *sound);
 extern AUD_Sound *AUD_Sound_rechannel(AUD_Sound *sound, AUD_Channels channels);
 
 /**
+ * Reverses a sound. Make sure the sound source can be reversed.
+ * \param sound The sound to reverse.
+ * \return A handle of the reversed sound.
+ */
+extern AUD_Sound *AUD_Sound_reverse(AUD_Sound *sound);
+
+/**
  * Rectifies a sound.
  * \param sound The sound to rectify.
  * \return A handle of the rectified sound.
  */
 extern AUD_Sound *AUD_Sound_square(AUD_Sound *sound);
+
+/**
+ * Changes the volume of a sound.
+ * \param sound The sound to change.
+ * \param volume The new volume of the sound. Should be in the range 0 to 1. Use higher values with caution.
+ * \return A handle of the amplified sound.
+ */
+extern AUD_Sound *AUD_Sound_volume(AUD_Sound *sound, float volume);
+
+/**
+ * Joins two sound, which means playing them one after the other.
+ * \param first The first sound.
+ * \param second The second sound.
+ * \return A handle of the joined sound.
+ */
+extern AUD_Sound *AUD_Sound_join(AUD_Sound* first, AUD_Sound* second);
+
+/**
+ * Mixes two sound, which means superposing the sound samples.
+ * \param first The first sound.
+ * \param second The second sound.
+ * \return A handle of the mixed sound.
+ */
+extern AUD_Sound *AUD_Sound_mix(AUD_Sound* first, AUD_Sound* second);
 
 /**
  * Ping pongs a sound.

@@ -19,16 +19,22 @@
 #include "util/StreamBuffer.h"
 #include "fx/Delay.h"
 #include "fx/Fader.h"
+#include "fx/Highpass.h"
+#include "fx/IIRFilter.h"
 #include "fx/Limiter.h"
-#include "sequence/PingPong.h"
 #include "fx/Loop.h"
+#include "fx/Lowpass.h"
+#include "fx/Pitch.h"
+#include "fx/Reverse.h"
+#include "fx/Square.h"
+#include "fx/Volume.h"
+#include "sequence/Double.h"
+#include "sequence/Superpose.h"
+#include "sequence/PingPong.h"
 #include "fx/Envelope.h"
 #include "respec/LinearResample.h"
-#include "fx/Lowpass.h"
-#include "fx/Highpass.h"
 #include "fx/Accumulator.h"
 #include "fx/Sum.h"
-#include "fx/Square.h"
 #include "respec/ChannelMapper.h"
 #include "util/Buffer.h"
 #include "Exception.h"
@@ -85,6 +91,77 @@ AUD_Sound *AUD_Sound_delay(AUD_Sound *sound, float delay)
 	}
 }
 
+AUD_Sound *AUD_Sound_fadein(AUD_Sound *sound, float start, float length)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Fader(*sound, FADE_IN, start, length));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound *AUD_Sound_fadeout(AUD_Sound *sound, float start, float length)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Fader(*sound, FADE_OUT, start, length));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound *AUD_Sound_filter(AUD_Sound *sound, float *b, int b_length, float *a, int a_length)
+{
+	assert(sound);
+
+	try
+	{
+		std::vector<float> a_coeff, b_coeff;
+
+		if(b)
+			for(int i = 0; i < b_length; i++)
+				b_coeff.push_back(b[i]);
+
+		if(a)
+		{
+			for(int i = 0; i < a_length; i++)
+				a_coeff.push_back(a[i]);
+
+			if(*a == 0.0f)
+				a_coeff[0] = 1.0f;
+		}
+
+		return new AUD_Sound(new IIRFilter(*sound, b_coeff, a_coeff));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound *AUD_Sound_highpass(AUD_Sound *sound, float frequency, float Q)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Highpass(*sound, frequency, Q));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
 AUD_Sound *AUD_Sound_limit(AUD_Sound *sound, float start, float end)
 {
 	assert(sound);
@@ -113,6 +190,34 @@ AUD_Sound *AUD_Sound_loop(AUD_Sound *sound)
 	}
 }
 
+AUD_Sound *AUD_Sound_lowpass(AUD_Sound *sound, float frequency, float Q)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Lowpass(*sound, frequency, Q));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound *AUD_Sound_pitch(AUD_Sound *sound, float factor)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Pitch(*sound, factor));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
 AUD_Sound *AUD_Sound_rechannel(AUD_Sound *sound, AUD_Channels channels)
 {
 	assert(sound);
@@ -131,6 +236,20 @@ AUD_Sound *AUD_Sound_rechannel(AUD_Sound *sound, AUD_Channels channels)
 	}
 }
 
+AUD_Sound *AUD_Sound_reverse(AUD_Sound *sound)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Reverse(*sound));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
 AUD_Sound *AUD_Sound_square(AUD_Sound *sound)
 {
 	assert(sound);
@@ -138,6 +257,50 @@ AUD_Sound *AUD_Sound_square(AUD_Sound *sound)
 	try
 	{
 		return new AUD_Sound(new Square(*sound));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound *AUD_Sound_volume(AUD_Sound *sound, float volume)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Volume(*sound, volume));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound* AUD_Sound_join(AUD_Sound* first, AUD_Sound* second)
+{
+	assert(first);
+	assert(second);
+
+	try
+	{
+		return new AUD_Sound(new Double(*first, *second));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound* AUD_Sound_mix(AUD_Sound* first, AUD_Sound* second)
+{
+	assert(first);
+	assert(second);
+
+	try
+	{
+		return new AUD_Sound(new Superpose(*first, *second));
 	}
 	catch(Exception&)
 	{
