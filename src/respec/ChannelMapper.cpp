@@ -21,8 +21,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-ChannelMapper::ChannelMapper(std::shared_ptr<ISound> sound,
-												   DeviceSpecs specs) :
+ChannelMapper::ChannelMapper(std::shared_ptr<ISound> sound, DeviceSpecs specs) :
 		SpecsChanger(sound, specs)
 {
 }

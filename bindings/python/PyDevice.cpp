@@ -740,8 +740,7 @@ static PyTypeObject DeviceType = {
 	Device_new,                /* tp_new */
 };
 
-PyObject *
-Device_empty()
+PyObject* Device_empty()
 {
 	return DeviceType.tp_alloc(&DeviceType, 0);
 }

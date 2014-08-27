@@ -945,14 +945,12 @@ static PyTypeObject SoundType = {
 	Sound_new,                 /* tp_new */
 };
 
-PyObject *
-Sound_empty()
+PyObject* Sound_empty()
 {
 	return SoundType.tp_alloc(&SoundType, 0);
 }
 
-Sound*
-checkSound(PyObject *sound)
+Sound* checkSound(PyObject *sound)
 {
 	if(!PyObject_TypeCheck(sound, &SoundType))
 	{
