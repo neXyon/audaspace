@@ -38,7 +38,7 @@ using namespace aud;
 // ====================================================================
 
 extern PyObject *AUDError;
-PyObject *AUDError = NULL;
+PyObject *AUDError = nullptr;
 
 // ====================================================================
 
@@ -119,7 +119,7 @@ PyObject* AUD_getPythonSound(void* sound)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void* AUD_getSoundFromPython(PyObject* object)
@@ -127,7 +127,7 @@ void* AUD_getSoundFromPython(PyObject* object)
 	Sound* sound = checkSound(object);
 
 	if(!sound)
-		return NULL;
+		return nullptr;
 
 	return new std::shared_ptr<ISound>(*reinterpret_cast<std::shared_ptr<ISound>*>(sound->sound));
 }

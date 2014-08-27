@@ -40,7 +40,7 @@ AUD_Handle *AUD_play(AUD_Sound *sound, int keep)
 	catch(Exception&)
 	{
 	}
-	return NULL;
+	return nullptr;
 }
 
 void AUD_stopAll()
@@ -150,7 +150,7 @@ AUD_Handle *AUD_playDevice(AUD_Device *device, AUD_Sound *sound, float seek)
 	catch(Exception&)
 	{
 	}
-	return NULL;
+	return nullptr;
 }
 
 int AUD_setDeviceVolume(AUD_Device *device, float volume)
@@ -193,7 +193,7 @@ AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

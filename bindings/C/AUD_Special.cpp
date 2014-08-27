@@ -146,7 +146,7 @@ float *AUD_readSoundBuffer(const char *filename, float low, float high,
 		reader = sound->createReader();
 
 		if(!reader.get())
-			return NULL;
+			return nullptr;
 
 		int len;
 		bool eos;
@@ -160,7 +160,7 @@ float *AUD_readSoundBuffer(const char *filename, float low, float high,
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	float * result = (float *)malloc(position * sizeof(float));
@@ -197,7 +197,7 @@ AUD_Handle *AUD_pauseAfter(AUD_Handle *handle, float seconds)
 	{
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 int AUD_readSound(AUD_Sound *sound, float *buffer, int length, int samples_per_second)
@@ -279,7 +279,7 @@ const char *AUD_mixdown(AUD_Sound *sound, unsigned int start, unsigned int lengt
 		std::shared_ptr<IWriter> writer = FileWriter::createWriter(filename, convCToDSpec(specs), static_cast<Container>(format), static_cast<Codec>(codec), bitrate);
 		FileWriter::writeReader(reader, writer, length, buffersize);
 
-		return NULL;
+		return nullptr;
 	}
 	catch(Exception& e)
 	{
@@ -325,7 +325,7 @@ const char *AUD_mixdown_per_channel(AUD_Sound *sound, unsigned int start, unsign
 		reader->seek(start);
 		FileWriter::writeReader(reader, writers, length, buffersize);
 
-		return NULL;
+		return nullptr;
 	}
 	catch(Exception& e)
 	{
@@ -353,7 +353,7 @@ AUD_Device *AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound *sequencer, f
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

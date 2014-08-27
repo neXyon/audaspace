@@ -18,6 +18,7 @@
 #include "file/File.h"
 #include "util/StreamBuffer.h"
 #include "fx/Delay.h"
+#include "fx/Fader.h"
 #include "fx/Limiter.h"
 #include "sequence/PingPong.h"
 #include "fx/Loop.h"
@@ -55,7 +56,7 @@ AUD_Sound *AUD_Sound_cache(AUD_Sound *sound)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -80,7 +81,7 @@ AUD_Sound *AUD_Sound_delay(AUD_Sound *sound, float delay)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -94,7 +95,7 @@ AUD_Sound *AUD_Sound_limit(AUD_Sound *sound, float start, float end)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -108,7 +109,7 @@ AUD_Sound *AUD_Sound_loop(AUD_Sound *sound)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -126,7 +127,7 @@ AUD_Sound *AUD_Sound_rechannel(AUD_Sound *sound, AUD_Channels channels)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -140,7 +141,7 @@ AUD_Sound *AUD_Sound_square(AUD_Sound *sound)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -154,7 +155,7 @@ AUD_Sound *AUD_Sound_pingpong(AUD_Sound *sound)
 	}
 	catch(Exception&)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
