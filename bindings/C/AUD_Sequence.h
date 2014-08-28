@@ -22,7 +22,7 @@
 extern "C" {
 #endif
 
-/// Possible animatable properties for Sequencer Factories and Entries.
+/// Possible animatable properties for Sequence Factories and Entries.
 typedef enum
 {
 	AUD_AP_VOLUME,
@@ -38,46 +38,128 @@ typedef enum
  * \param muted Whether the scene is muted.
  * \return The new sound scene.
  */
-extern AUD_Sound* AUD_createSequencer(float fps, int muted);
+extern AUD_Sound* AUD_Sequence_create(float fps, int muted);
 
 /**
  * Deletes a sound scene.
- * \param sequencer The sound scene.
+ * \param sequence The sound scene.
  */
-extern void AUD_destroySequencer(AUD_Sound* sequencer);
-
-/**
- * Sets the muting state of the scene.
- * \param sequencer The sound scene.
- * \param muted Whether the scene is muted.
- */
-extern void AUD_setSequencerMuted(AUD_Sound* sequencer, int muted);
-
-/**
- * Sets the scene's FPS.
- * \param sequencer The sound scene.
- * \param fps The new FPS.
- */
-extern void AUD_setSequencerFPS(AUD_Sound* sequencer, float fps);
+extern void AUD_Sequence_free(AUD_Sound* sequence);
 
 /**
  * Adds a new entry to the scene.
- * \param sequencer The sound scene.
+ * \param sequence The sound scene.
  * \param sound The sound this entry should play.
  * \param begin The start time.
  * \param end The end time or a negative value if determined by the sound.
  * \param skip How much seconds should be skipped at the beginning.
  * \return The entry added.
  */
-extern AUD_SEntry* AUD_addSequence(AUD_Sound* sequencer, AUD_Sound* sound,
-								   float begin, float end, float skip);
+extern AUD_SEntry* AUD_Sequence_addEntry(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip);
 
 /**
  * Removes an entry from the scene.
- * \param sequencer The sound scene.
+ * \param sequence The sound scene.
  * \param entry The entry to remove.
  */
-extern void AUD_removeSequence(AUD_Sound* sequencer, AUD_SEntry* entry);
+extern void AUD_Sequence_removeEntry(AUD_Sound* sequence, AUD_SEntry* entry);
+
+/**
+ * Writes animation data to a sequenced entry.
+ * \param sequence The sound scene.
+ * \param type The type of animation data.
+ * \param frame The frame this data is for.
+ * \param data The data to write.
+ * \param animated Whether the attribute is animated.
+ */
+extern void AUD_Sequence_setAnimationData(AUD_Sound* sequence, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
+
+/**
+ * Retrieves the distance model of a sequence.
+ * param sequence The sequence to get the distance model from.
+ * return The distance model of the sequence.
+ */
+extern AUD_DistanceModel AUD_Sequence_getDistanceModel(AUD_Sound* sequence);
+
+/**
+ * Sets the distance model of a sequence.
+ * param sequence The sequence to set the distance model from.
+ * param value The new distance model to set.
+ */
+extern void AUD_Sequence_setDistanceModel(AUD_Sound* sequence, AUD_DistanceModel value);
+
+/**
+ * Retrieves the doppler factor of a sequence.
+ * param sequence The sequence to get the doppler factor from.
+ * return The doppler factor of the sequence.
+ */
+extern float AUD_Sequence_getDopplerFactor(AUD_Sound* sequence);
+
+/**
+ * Sets the doppler factor of a sequence.
+ * param sequence The sequence to set the doppler factor from.
+ * param value The new doppler factor to set.
+ */
+extern void AUD_Sequence_setDopplerFactor(AUD_Sound* sequence, float value);
+
+/**
+ * Retrieves the fps of a sequence.
+ * param sequence The sequence to get the fps from.
+ * return The fps of the sequence.
+ */
+extern float AUD_Sequence_getFPS(AUD_Sound* sequence);
+
+/**
+ * Sets the fps of a sequence.
+ * param sequence The sequence to set the fps from.
+ * param value The new fps to set.
+ */
+extern void AUD_Sequence_setFPS(AUD_Sound* sequence, float value);
+
+/**
+ * Retrieves the muted of a sequence.
+ * param sequence The sequence to get the muted from.
+ * return The muted of the sequence.
+ */
+extern int AUD_Sequence_getMuted(AUD_Sound* sequence);
+
+/**
+ * Sets the muted of a sequence.
+ * param sequence The sequence to set the muted from.
+ * param value The new muted to set.
+ */
+extern void AUD_Sequence_setMuted(AUD_Sound* sequence, int value);
+
+/**
+ * Retrieves the specs of a sequence.
+ * param sequence The sequence to get the specs from.
+ * return The specs of the sequence.
+ */
+extern AUD_Specs AUD_Sequence_getSpecs(AUD_Sound* sequence);
+
+/**
+ * Sets the specs of a sequence.
+ * param sequence The sequence to set the specs from.
+ * param value The new specs to set.
+ */
+extern void AUD_Sequence_setSpecs(AUD_Sound* sequence, AUD_Specs value);
+
+/**
+ * Retrieves the speed of sound of a sequence.
+ * param sequence The sequence to get the speed of sound from.
+ * return The speed of sound of the sequence.
+ */
+extern float AUD_Sequence_getSpeedOfSound(AUD_Sound* sequence);
+
+/**
+ * Sets the speed of sound of a sequence.
+ * param sequence The sequence to set the speed of sound from.
+ * param value The new speed of sound to set.
+ */
+extern void AUD_Sequence_setSpeedOfSound(AUD_Sound* sequence, float value);
+
+
+
 
 /**
  * Moves the entry.
@@ -122,16 +204,6 @@ extern void AUD_updateSequenceSound(AUD_SEntry* entry, AUD_Sound* sound);
 extern void AUD_setSequenceAnimData(AUD_SEntry* entry, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 
 /**
- * Writes animation data to a sequenced entry.
- * \param sequencer The sound scene.
- * \param type The type of animation data.
- * \param frame The frame this data is for.
- * \param data The data to write.
- * \param animated Whether the attribute is animated.
- */
-extern void AUD_setSequencerAnimData(AUD_Sound* sequencer, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
-
-/**
  * Updates all non-animated parameters of the entry.
  * \param entry The sequenced entry.
  * \param volume_max The maximum volume.
@@ -146,30 +218,6 @@ extern void AUD_setSequencerAnimData(AUD_Sound* sequencer, AUD_AnimateableProper
 extern void AUD_updateSequenceData(AUD_SEntry* entry, float volume_max, float volume_min,
 								   float distance_max, float distance_reference, float attenuation,
 								   float cone_angle_outer, float cone_angle_inner, float cone_volume_outer);
-
-/**
- * Updates all non-animated parameters of the entry.
- * \param sequencer The sound scene.
- * \param speed_of_sound The speed of sound for doppler calculation.
- * \param factor The doppler factor to control the effect's strength.
- * \param model The distance model for distance calculation.
- */
-extern void AUD_updateSequencerData(AUD_Sound* sequencer, float speed_of_sound,
-									float factor, AUD_DistanceModel model);
-
-/**
- * Sets the audio output specification of the sound scene to the specs of the
- * current playback device.
- * \param sequencer The sound scene.
- */
-extern void AUD_setSequencerDeviceSpecs(AUD_Sound* sequencer);
-
-/**
- * Sets the audio output specification of the sound scene.
- * \param sequencer The sound scene.
- * \param specs The new specification.
- */
-extern void AUD_setSequencerSpecs(AUD_Sound* sequencer, AUD_Specs specs);
 
 #ifdef __cplusplus
 }
