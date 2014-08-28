@@ -25,9 +25,19 @@ Sequence::Sequence(Specs specs, float fps, bool muted)
 	m_sequence = std::shared_ptr<SequenceData>(new SequenceData(specs, fps, muted));
 }
 
+Specs Sequence::getSpecs()
+{
+	return m_sequence->getSpecs();
+}
+
 void Sequence::setSpecs(Specs specs)
 {
 	m_sequence->setSpecs(specs);
+}
+
+float Sequence::getFPS() const
+{
+	return m_sequence->getFPS();
 }
 
 void Sequence::setFPS(float fps)

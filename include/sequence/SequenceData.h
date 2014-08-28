@@ -104,10 +104,22 @@ public:
 	virtual void unlock();
 
 	/**
+	 * Retrieves the audio output specification.
+	 * \return The specification.
+	 */
+	Specs getSpecs();
+
+	/**
 	 * Sets the audio output specification.
 	 * \param specs The new specification.
 	 */
 	void setSpecs(Specs specs);
+
+	/**
+	 * Retrieves the scene's FPS.
+	 * \return The scene's FPS.
+	 */
+	float getFPS() const;
 
 	/**
 	 * Sets the scene's FPS.

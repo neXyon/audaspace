@@ -56,12 +56,24 @@ void SequenceData::unlock()
 	m_mutex.unlock();
 }
 
+Specs SequenceData::getSpecs()
+{
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
+	return m_specs;
+}
+
 void SequenceData::setSpecs(Specs specs)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
 	m_specs = specs;
 	m_status++;
+}
+
+float SequenceData::getFPS() const
+{
+	return m_fps;
 }
 
 void SequenceData::setFPS(float fps)
