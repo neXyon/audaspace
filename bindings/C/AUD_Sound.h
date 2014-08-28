@@ -188,14 +188,14 @@ extern AUD_Sound* AUD_Sound_pingpong(AUD_Sound* sound);
  * Unloads a sound of any type.
  * \param sound The handle of the sound.
  */
-extern void AUD_unload(AUD_Sound* sound);
+extern void AUD_Sound_free(AUD_Sound* sound);
 
 /**
  * Copies a sound.
  * \param sound Sound to copy.
  * \return Copied sound.
  */
-extern AUD_Sound* AUD_copy(AUD_Sound* sound);
+extern AUD_Sound* AUD_Sound_copy(AUD_Sound* sound);
 
 #ifdef __cplusplus
 }

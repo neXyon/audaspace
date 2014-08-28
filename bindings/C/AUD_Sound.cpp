@@ -322,13 +322,13 @@ AUD_Sound* AUD_Sound_pingpong(AUD_Sound* sound)
 	}
 }
 
-void AUD_unload(AUD_Sound* sound)
+void AUD_Sound_free(AUD_Sound* sound)
 {
 	assert(sound);
 	delete sound;
 }
 
-AUD_Sound* AUD_copy(AUD_Sound* sound)
+AUD_Sound* AUD_Sound_copy(AUD_Sound* sound)
 {
 	return new std::shared_ptr<ISound>(*sound);
 }
