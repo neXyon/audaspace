@@ -32,189 +32,276 @@ typedef enum
 } AUD_Status;
 
 /**
- * Sets a remaining loop count of a looping sound that currently plays.
- * \param handle The playback handle.
- * \param loops The count of remaining loops, -1 for infinity.
- * \return Whether the handle is valid.
- */
-extern int AUD_setLoop(AUD_Handle *handle, int loops);
-
-/**
  * Pauses a played back sound.
  * \param handle The handle to the sound.
  * \return Whether the handle has been playing or not.
  */
-extern int AUD_pause(AUD_Handle *handle);
+extern int AUD_Handle_pause(AUD_Handle *handle);
 
 /**
  * Resumes a paused sound.
  * \param handle The handle to the sound.
  * \return Whether the handle has been paused or not.
  */
-extern int AUD_resume(AUD_Handle *handle);
+extern int AUD_Handle_resume(AUD_Handle *handle);
 
 /**
  * Stops a playing or paused sound.
  * \param handle The handle to the sound.
  * \return Whether the handle has been valid or not.
  */
-extern int AUD_stop(AUD_Handle *handle);
+extern int AUD_Handle_stop(AUD_Handle *handle);
 
 /**
- * Sets the end behaviour of a playing or paused sound.
- * \param handle The handle to the sound.
- * \param keep When keep is true the sound source will not be deleted but set to
- *             paused when its end has been reached.
- * \return Whether the handle has been valid or not.
+ * Retrieves the attenuation of a handle.
+ * param handle The handle to get the attenuation from.
+ * return The attenuation of the handle.
  */
-extern int AUD_setKeep(AUD_Handle *handle, int keep);
+extern float AUD_Handle_getAttenuation(AUD_Handle* handle);
 
 /**
- * Seeks a playing or paused sound.
- * \param handle The handle to the sound.
- * \param seekTo From where the sound file should be played back in seconds.
- * \return Whether the handle has been valid or not.
+ * Sets the attenuation of a handle.
+ * param handle The handle to set the attenuation from.
+ * param value The new attenuation to set.
  */
-extern int AUD_seek(AUD_Handle *handle, float seekTo);
+extern int AUD_Handle_setAttenuation(AUD_Handle* handle, float value);
 
 /**
- * Retrieves the playback position of a handle.
- * \param handle The handle to the sound.
- * \return The current playback position in seconds or 0.0 if the handle is
- *         invalid.
+ * Retrieves the cone angle inner of a handle.
+ * param handle The handle to get the cone angle inner from.
+ * return The cone angle inner of the handle.
  */
-extern float AUD_getPosition(AUD_Handle *handle);
+extern float AUD_Handle_getConeAngleInner(AUD_Handle* handle);
 
 /**
- * Returns the status of a playing, paused or stopped sound.
- * \param handle The handle to the sound.
- * \return The status of the sound behind the handle.
+ * Sets the cone angle inner of a handle.
+ * param handle The handle to set the cone angle inner from.
+ * param value The new cone angle inner to set.
  */
-extern AUD_Status AUD_getStatus(AUD_Handle *handle);
+extern int AUD_Handle_setConeAngleInner(AUD_Handle* handle, float value);
 
 /**
- * Sets the location of a source.
- * \param handle The handle of the source.
- * \param location The new location.
- * \return Whether the action succeeded.
+ * Retrieves the cone angle outer of a handle.
+ * param handle The handle to get the cone angle outer from.
+ * return The cone angle outer of the handle.
  */
-extern int AUD_setSourceLocation(AUD_Handle *handle, const float location[3]);
+extern float AUD_Handle_getConeAngleOuter(AUD_Handle* handle);
 
 /**
- * Sets the velocity of a source.
- * \param handle The handle of the source.
- * \param velocity The new velocity.
- * \return Whether the action succeeded.
+ * Sets the cone angle outer of a handle.
+ * param handle The handle to set the cone angle outer from.
+ * param value The new cone angle outer to set.
  */
-extern int AUD_setSourceVelocity(AUD_Handle *handle, const float velocity[3]);
+extern int AUD_Handle_setConeAngleOuter(AUD_Handle* handle, float value);
 
 /**
- * Sets the orientation of a source.
- * \param handle The handle of the source.
- * \param orientation The new orientation as quaternion.
- * \return Whether the action succeeded.
+ * Retrieves the cone volume outer of a handle.
+ * param handle The handle to get the cone volume outer from.
+ * return The cone volume outer of the handle.
  */
-extern int AUD_setSourceOrientation(AUD_Handle *handle, const float orientation[4]);
+extern float AUD_Handle_getConeVolumeOuter(AUD_Handle* handle);
 
 /**
- * Sets whether the source location, velocity and orientation are relative
- * to the listener.
- * \param handle The handle of the source.
- * \param relative Whether the source is relative.
- * \return Whether the action succeeded.
+ * Sets the cone volume outer of a handle.
+ * param handle The handle to set the cone volume outer from.
+ * param value The new cone volume outer to set.
  */
-extern int AUD_setRelative(AUD_Handle *handle, int relative);
+extern int AUD_Handle_setConeVolumeOuter(AUD_Handle* handle, float value);
 
 /**
- * Sets the maximum volume of a source.
- * \param handle The handle of the source.
- * \param volume The new maximum volume.
- * \return Whether the action succeeded.
+ * Retrieves the distance maximum of a handle.
+ * param handle The handle to get the distance maximum from.
+ * return The distance maximum of the handle.
  */
-extern int AUD_setVolumeMaximum(AUD_Handle *handle, float volume);
+extern float AUD_Handle_getDistanceMaximum(AUD_Handle* handle);
 
 /**
- * Sets the minimum volume of a source.
- * \param handle The handle of the source.
- * \param volume The new minimum volume.
- * \return Whether the action succeeded.
+ * Sets the distance maximum of a handle.
+ * param handle The handle to set the distance maximum from.
+ * param value The new distance maximum to set.
  */
-extern int AUD_setVolumeMinimum(AUD_Handle *handle, float volume);
+extern int AUD_Handle_setDistanceMaximum(AUD_Handle* handle, float value);
 
 /**
- * Sets the maximum distance of a source.
- * If a source is further away from the reader than this distance, the
- * volume will automatically be set to 0.
- * \param handle The handle of the source.
- * \param distance The new maximum distance.
- * \return Whether the action succeeded.
+ * Retrieves the distance reference of a handle.
+ * param handle The handle to get the distance reference from.
+ * return The distance reference of the handle.
  */
-extern int AUD_setDistanceMaximum(AUD_Handle *handle, float distance);
+extern float AUD_Handle_getDistanceReference(AUD_Handle* handle);
 
 /**
- * Sets the reference distance of a source.
- * \param handle The handle of the source.
- * \param distance The new reference distance.
- * \return Whether the action succeeded.
+ * Sets the distance reference of a handle.
+ * param handle The handle to set the distance reference from.
+ * param value The new distance reference to set.
  */
-extern int AUD_setDistanceReference(AUD_Handle *handle, float distance);
+extern int AUD_Handle_setDistanceReference(AUD_Handle* handle, float value);
 
 /**
- * Sets the attenuation of a source.
- * This value is used for distance calculation.
- * \param handle The handle of the source.
- * \param factor The new attenuation.
- * \return Whether the action succeeded.
+ * Retrieves the keep of a handle.
+ * param handle The handle to get the keep from.
+ * return The keep of the handle.
  */
-extern int AUD_setAttenuation(AUD_Handle *handle, float factor);
+extern int AUD_Handle_doesKeep(AUD_Handle* handle);
 
 /**
- * Sets the outer angle of the cone of a source.
- * \param handle The handle of the source.
- * \param angle The new outer angle of the cone.
- * \return Whether the action succeeded.
+ * Sets the keep of a handle.
+ * param handle The handle to set the keep from.
+ * param value The new keep to set.
  */
-extern int AUD_setConeAngleOuter(AUD_Handle *handle, float angle);
+extern int AUD_Handle_setKeep(AUD_Handle* handle, int value);
 
 /**
- * Sets the inner angle of the cone of a source.
- * \param handle The handle of the source.
- * \param angle The new inner angle of the cone.
- * \return Whether the action succeeded.
+ * Retrieves the location of a handle.
+ * param handle The handle to get the location from.
+ * return The location of the handle.
  */
-extern int AUD_setConeAngleInner(AUD_Handle *handle, float angle);
+extern int AUD_Handle_getLocation(AUD_Handle* handle, float value[3]);
 
 /**
- * Sets the outer volume of the cone of a source.
- * The volume between inner and outer angle is interpolated between inner
- * volume and this value.
- * \param handle The handle of the source.
- * \param volume The new outer volume of the cone.
- * \return Whether the action succeeded.
+ * Sets the location of a handle.
+ * param handle The handle to set the location from.
+ * param value The new location to set.
  */
-extern int AUD_setConeVolumeOuter(AUD_Handle *handle, float volume);
+extern int AUD_Handle_setLocation(AUD_Handle* handle, const float value[3]);
 
 /**
- * Sets the volume of a played back sound.
- * \param handle The handle to the sound.
- * \param volume The new volume, must be between 0.0 and 1.0.
- * \return Whether the action succeeded.
+ * Retrieves the loop count of a handle.
+ * param handle The handle to get the loop count from.
+ * return The loop count of the handle.
  */
-extern int AUD_setSoundVolume(AUD_Handle *handle, float volume);
+extern int AUD_Handle_getLoopCount(AUD_Handle* handle);
 
 /**
- * Sets the pitch of a played back sound.
- * \param handle The handle to the sound.
- * \param pitch The new pitch.
- * \return Whether the action succeeded.
+ * Sets the loop count of a handle.
+ * param handle The handle to set the loop count from.
+ * param value The new loop count to set.
  */
-extern int AUD_setSoundPitch(AUD_Handle *handle, float pitch);
+extern int AUD_Handle_setLoopCount(AUD_Handle* handle, int value);
+
+/**
+ * Retrieves the orientation of a handle.
+ * param handle The handle to get the orientation from.
+ * return The orientation of the handle.
+ */
+extern int AUD_Handle_getOrientation(AUD_Handle* handle, float value[4]);
+
+/**
+ * Sets the orientation of a handle.
+ * param handle The handle to set the orientation from.
+ * param value The new orientation to set.
+ */
+extern int AUD_Handle_setOrientation(AUD_Handle* handle, const float value[4]);
+
+/**
+ * Retrieves the pitch of a handle.
+ * param handle The handle to get the pitch from.
+ * return The pitch of the handle.
+ */
+extern float AUD_Handle_getPitch(AUD_Handle* handle);
+
+/**
+ * Sets the pitch of a handle.
+ * param handle The handle to set the pitch from.
+ * param value The new pitch to set.
+ */
+extern int AUD_Handle_setPitch(AUD_Handle* handle, float value);
+
+/**
+ * Retrieves the position of a handle.
+ * param handle The handle to get the position from.
+ * return The position of the handle.
+ */
+extern float AUD_Handle_getPosition(AUD_Handle* handle);
+
+/**
+ * Sets the position of a handle.
+ * param handle The handle to set the position from.
+ * param value The new position to set.
+ */
+extern int AUD_Handle_setPosition(AUD_Handle* handle, float value);
+
+/**
+ * Retrieves the relative of a handle.
+ * param handle The handle to get the relative from.
+ * return The relative of the handle.
+ */
+extern int AUD_Handle_isRelative(AUD_Handle* handle);
+
+/**
+ * Sets the relative of a handle.
+ * param handle The handle to set the relative from.
+ * param value The new relative to set.
+ */
+extern int AUD_Handle_setRelative(AUD_Handle* handle, int value);
+
+/**
+ * Retrieves the status of a handle.
+ * param handle The handle to get the status from.
+ * return The status of the handle.
+ */
+extern AUD_Status AUD_Handle_getStatus(AUD_Handle* handle);
+
+/**
+ * Retrieves the velocity of a handle.
+ * param handle The handle to get the velocity from.
+ * return The velocity of the handle.
+ */
+extern int AUD_Handle_getVelocity(AUD_Handle* handle, const float value[3]);
+
+/**
+ * Sets the velocity of a handle.
+ * param handle The handle to set the velocity from.
+ * param value The new velocity to set.
+ */
+extern int AUD_Handle_setVelocity(AUD_Handle* handle, float value[3]);
+
+/**
+ * Retrieves the volume of a handle.
+ * param handle The handle to get the volume from.
+ * return The volume of the handle.
+ */
+extern float AUD_Handle_getVolume(AUD_Handle* handle);
+
+/**
+ * Sets the volume of a handle.
+ * param handle The handle to set the volume from.
+ * param value The new volume to set.
+ */
+extern int AUD_Handle_setVolume(AUD_Handle* handle, float value);
+
+/**
+ * Retrieves the volume maximum of a handle.
+ * param handle The handle to get the volume maximum from.
+ * return The volume maximum of the handle.
+ */
+extern float AUD_Handle_getVolumeMaximum(AUD_Handle* handle);
+
+/**
+ * Sets the volume maximum of a handle.
+ * param handle The handle to set the volume maximum from.
+ * param value The new volume maximum to set.
+ */
+extern int AUD_Handle_setVolumeMaximum(AUD_Handle* handle, float value);
+
+/**
+ * Retrieves the volume minimum of a handle.
+ * param handle The handle to get the volume minimum from.
+ * return The volume minimum of the handle.
+ */
+extern float AUD_Handle_getVolumeMinimum(AUD_Handle* handle);
+
+/**
+ * Sets the volume minimum of a handle.
+ * param handle The handle to set the volume minimum from.
+ * param value The new volume minimum to set.
+ */
+extern int AUD_Handle_setVolumeMinimum(AUD_Handle* handle, float value);
 
 /**
  * Frees a handle.
  * \param channel Handle to free.
  */
-extern void AUD_freeHandle(AUD_Handle *channel);
+extern void AUD_Handle_free(AUD_Handle *channel);
 
 #ifdef __cplusplus
 }
