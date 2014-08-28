@@ -26,12 +26,20 @@ using namespace aud;
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Device.h"
 
-AUD_Handle *AUD_play(AUD_Sound *sound, int keep)
+void AUD_Device_lock(AUD_Device* device)
+{
+	auto dev = device ? *device : DeviceManager::getDevice();
+	dev->lock();
+}
+
+AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound *sound, int keep)
 {
 	assert(sound);
+	auto dev = device ? *device : DeviceManager::getDevice();
+
 	try
 	{
-		AUD_Handle handle = DeviceManager::getDevice()->play(*sound, keep);
+		AUD_Handle handle = dev->play(*sound, keep);
 		if(handle.get())
 		{
 			return new AUD_Handle(handle);
@@ -43,130 +51,131 @@ AUD_Handle *AUD_play(AUD_Sound *sound, int keep)
 	return nullptr;
 }
 
-void AUD_stopAll()
+void AUD_Device_stopAll(AUD_Device* device)
 {
-	DeviceManager::getDevice()->stopAll();
+	auto dev = device ? *device : DeviceManager::getDevice();
+	dev->stopAll();
 }
 
-int AUD_setListenerLocation(const float location[3])
+void AUD_Device_unlock(AUD_Device* device)
 {
-	auto device = DeviceManager::get3DDevice();
-	if(device)
-	{
-		Vector3 v(location[0], location[1], location[2]);
-		device->setListenerLocation(v);
-		return true;
-	}
-
-	return false;
+	auto dev = device ? *device : DeviceManager::getDevice();
+	dev->unlock();
 }
 
-int AUD_setListenerVelocity(const float velocity[3])
+AUD_Channels AUD_Device_getChannels(AUD_Device* device)
 {
-	auto device = DeviceManager::get3DDevice();
-	if(device)
-	{
-		Vector3 v(velocity[0], velocity[1], velocity[2]);
-		device->setListenerVelocity(v);
-		return true;
-	}
-
-	return false;
+	auto dev = device ? *device : DeviceManager::getDevice();
+	return static_cast<AUD_Channels>(dev->getSpecs().channels);
 }
 
-int AUD_setListenerOrientation(const float orientation[4])
+AUD_DistanceModel AUD_Device_getDistanceModel(AUD_Device* device)
 {
-	auto device = DeviceManager::get3DDevice();
-	if(device)
-	{
-		Quaternion q(orientation[3], orientation[0], orientation[1], orientation[2]);
-		device->setListenerOrientation(q);
-		return true;
-	}
-
-	return false;
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	return static_cast<AUD_DistanceModel>(dev->getDistanceModel());
 }
 
-int AUD_setSpeedOfSound(float speed)
+void AUD_Device_setDistanceModel(AUD_Device* device, AUD_DistanceModel value)
 {
-	auto device = DeviceManager::get3DDevice();
-	if(device)
-	{
-		device->setSpeedOfSound(speed);
-		return true;
-	}
-
-	return false;
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	dev->setDistanceModel(static_cast<DistanceModel>(value));
 }
 
-int AUD_setDopplerFactor(float factor)
+float AUD_Device_getDopplerFactor(AUD_Device* device)
 {
-	auto device = DeviceManager::get3DDevice();
-	if(device)
-	{
-		device->setDopplerFactor(factor);
-		return true;
-	}
-
-	return false;
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	return dev->getDopplerFactor();
 }
 
-int AUD_setDistanceModel(AUD_DistanceModel model)
+void AUD_Device_setDopplerFactor(AUD_Device* device, float value)
 {
-	auto device = DeviceManager::get3DDevice();
-	if(device)
-	{
-		device->setDistanceModel(static_cast<DistanceModel>(model));
-		return true;
-	}
-
-	return false;
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	dev->setDopplerFactor(value);
 }
 
-void AUD_lock()
+AUD_SampleFormat AUD_Device_getFormat(AUD_Device* device)
 {
-	DeviceManager::getDevice()->lock();
+	auto dev = device ? *device : DeviceManager::getDevice();
+	return static_cast<AUD_SampleFormat>(dev->getSpecs().format);
 }
 
-void AUD_unlock()
+void AUD_Device_getListenerLocation(AUD_Device* device, float value[3])
 {
-	DeviceManager::getDevice()->unlock();
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	Vector3 v = dev->getListenerLocation();
+	value[0] = v.x();
+	value[1] = v.y();
+	value[2] = v.z();
 }
 
-AUD_Handle *AUD_playDevice(AUD_Device *device, AUD_Sound *sound, float seek)
+void AUD_Device_setListenerLocation(AUD_Device* device, const float value[3])
 {
-	assert(device);
-	assert(sound);
-
-	try
-	{
-		AUD_Handle handle = (*device)->play(*sound);
-		if(handle.get())
-		{
-			handle->seek(seek);
-			return new AUD_Handle(handle);
-		}
-	}
-	catch(Exception&)
-	{
-	}
-	return nullptr;
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	Vector3 v(value[0], value[1], value[2]);
+	dev->setListenerLocation(v);
 }
 
-int AUD_setDeviceVolume(AUD_Device *device, float volume)
+void AUD_Device_getListenerOrientation(AUD_Device* device, float value[4])
 {
-	assert(device);
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	Quaternion v = dev->getListenerOrientation();
+	value[0] = v.x();
+	value[1] = v.y();
+	value[2] = v.z();
+	value[3] = v.w();
+}
 
-	try
-	{
-		(*device)->setVolume(volume);
-		return true;
-	}
-	catch(Exception&)
-	{
-	}
+void AUD_Device_setListenerOrientation(AUD_Device* device, const float value[4])
+{
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	Quaternion v(value[3], value[0], value[1], value[2]);
+	dev->setListenerOrientation(v);
+}
 
-	return false;
+void AUD_Device_getListenerVelocity(AUD_Device* device, float value[3])
+{
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	Vector3 v = dev->getListenerVelocity();
+	value[0] = v.x();
+	value[1] = v.y();
+	value[2] = v.z();
+}
+
+void AUD_Device_setListenerVelocity(AUD_Device* device, const float value[3])
+{
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	Vector3 v(value[0], value[1], value[2]);
+	dev->setListenerVelocity(v);
+}
+
+double AUD_Device_getRate(AUD_Device* device)
+{
+	auto dev = device ? *device : DeviceManager::getDevice();
+	return dev->getSpecs().rate;
+}
+
+float AUD_Device_getSpeedOfSound(AUD_Device* device)
+{
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	return dev->getSpeedOfSound();
+}
+
+void AUD_Device_setSpeedOfSound(AUD_Device* device, float value)
+{
+	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
+	dev->setSpeedOfSound(value);
+}
+
+float AUD_Device_getVolume(AUD_Device* device)
+{
+	auto dev = device ? *device : DeviceManager::getDevice();
+	return dev->getVolume();
+}
+
+void AUD_Device_setVolume(AUD_Device* device, float value)
+{
+	auto dev = device ? *device : DeviceManager::getDevice();
+	dev->setVolume(value);
 }
 
 static inline aud::Specs convCToSpec(AUD_Specs specs)

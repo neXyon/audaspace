@@ -37,81 +37,147 @@ typedef enum
 typedef void (*AUD_syncFunction)(void*, int, float);
 
 /**
+ * Locks the playback device.
+ */
+extern void AUD_Device_lock(AUD_Device* device);
+
+/**
  * Plays back a sound file.
  * \param sound The handle of the sound file.
  * \param keep When keep is true the sound source will not be deleted but set to
  *             paused when its end has been reached.
  * \return A handle to the played back sound.
  */
-extern AUD_Handle *AUD_play(AUD_Sound *sound, int keep);
-
-extern void AUD_stopAll(void);
+extern AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound* sound, int keep);
 
 /**
- * Sets the listener location.
- * \param location The new location.
+ * Stops all sounds playing.
  */
-extern int AUD_setListenerLocation(const float location[3]);
-
-/**
- * Sets the listener velocity.
- * \param velocity The new velocity.
- */
-extern int AUD_setListenerVelocity(const float velocity[3]);
-
-/**
- * Sets the listener orientation.
- * \param orientation The new orientation as quaternion.
- */
-extern int AUD_setListenerOrientation(const float orientation[4]);
-
-/**
- * Sets the speed of sound.
- * This value is needed for doppler effect calculation.
- * \param speed The new speed of sound.
- */
-extern int AUD_setSpeedOfSound(float speed);
-
-/**
- * Sets the doppler factor.
- * This value is a scaling factor for the velocity vectors of sources and
- * listener which is used while calculating the doppler effect.
- * \param factor The new doppler factor.
- */
-extern int AUD_setDopplerFactor(float factor);
-
-/**
- * Sets the distance model.
- * \param model distance model.
- */
-extern int AUD_setDistanceModel(AUD_DistanceModel model);
-
-/**
- * Locks the playback device.
- */
-extern void AUD_lock(void);
+extern void AUD_Device_stopAll(AUD_Device* device);
 
 /**
  * Unlocks the device.
  */
-extern void AUD_unlock(void);
+extern void AUD_Device_unlock(AUD_Device* device);
 
 /**
- * Sets the main volume of a device.
- * \param device The device.
- * \param volume The new volume, must be between 0.0 and 1.0.
- * \return Whether the action succeeded.
+ * Retrieves the channels of a device.
+ * param device The device to get the channels from.
+ * return The channels of the device.
  */
-extern int AUD_setDeviceVolume(AUD_Device *device, float volume);
+extern AUD_Channels AUD_Device_getChannels(AUD_Device* device);
 
 /**
- * Plays back a sound file through a read device.
- * \param device The read device.
- * \param sound The handle of the sound file.
- * \param seek The position where the sound should be seeked to.
- * \return A handle to the played back sound.
+ * Retrieves the distance model of a device.
+ * param device The device to get the distance model from.
+ * return The distance model of the device.
  */
-extern AUD_Handle *AUD_playDevice(AUD_Device *device, AUD_Sound *sound, float seek);
+extern AUD_DistanceModel AUD_Device_getDistanceModel(AUD_Device* device);
+
+/**
+ * Sets the distance model of a device.
+ * param device The device to set the distance model from.
+ * param value The new distance model to set.
+ */
+extern void AUD_Device_setDistanceModel(AUD_Device* device, AUD_DistanceModel value);
+
+/**
+ * Retrieves the doppler factor of a device.
+ * param device The device to get the doppler factor from.
+ * return The doppler factor of the device.
+ */
+extern float AUD_Device_getDopplerFactor(AUD_Device* device);
+
+/**
+ * Sets the doppler factor of a device.
+ * param device The device to set the doppler factor from.
+ * param value The new doppler factor to set.
+ */
+extern void AUD_Device_setDopplerFactor(AUD_Device* device, float value);
+
+/**
+ * Retrieves the format of a device.
+ * param device The device to get the format from.
+ * return The format of the device.
+ */
+extern AUD_SampleFormat AUD_Device_getFormat(AUD_Device* device);
+
+/**
+ * Retrieves the listener location of a device.
+ * param device The device to get the listener location from.
+ * return The listener location of the device.
+ */
+extern void AUD_Device_getListenerLocation(AUD_Device* device, float value[3]);
+
+/**
+ * Sets the listener location of a device.
+ * param device The device to set the listener location from.
+ * param value The new listener location to set.
+ */
+extern void AUD_Device_setListenerLocation(AUD_Device* device, const float value[3]);
+
+/**
+ * Retrieves the listener orientation of a device.
+ * param device The device to get the listener orientation from.
+ * return The listener orientation of the device.
+ */
+extern void AUD_Device_getListenerOrientation(AUD_Device* device, float value[4]);
+
+/**
+ * Sets the listener orientation of a device.
+ * param device The device to set the listener orientation from.
+ * param value The new listener orientation to set.
+ */
+extern void AUD_Device_setListenerOrientation(AUD_Device* device, const float value[4]);
+
+/**
+ * Retrieves the listener velocity of a device.
+ * param device The device to get the listener velocity from.
+ * return The listener velocity of the device.
+ */
+extern void AUD_Device_getListenerVelocity(AUD_Device* device, float value[3]);
+
+/**
+ * Sets the listener velocity of a device.
+ * param device The device to set the listener velocity from.
+ * param value The new listener velocity to set.
+ */
+extern void AUD_Device_setListenerVelocity(AUD_Device* device, const float value[3]);
+
+/**
+ * Retrieves the rate of a device.
+ * param device The device to get the rate from.
+ * return The rate of the device.
+ */
+extern double AUD_Device_getRate(AUD_Device* device);
+
+/**
+ * Retrieves the speed of sound of a device.
+ * param device The device to get the speed of sound from.
+ * return The speed of sound of the device.
+ */
+extern float AUD_Device_getSpeedOfSound(AUD_Device* device);
+
+/**
+ * Sets the speed of sound of a device.
+ * param device The device to set the speed of sound from.
+ * param value The new speed of sound to set.
+ */
+extern void AUD_Device_setSpeedOfSound(AUD_Device* device, float value);
+
+/**
+ * Retrieves the volume of a device.
+ * param device The device to get the volume from.
+ * return The volume of the device.
+ */
+extern float AUD_Device_getVolume(AUD_Device* device);
+
+/**
+ * Sets the volume of a device.
+ * param device The device to set the volume from.
+ * param value The new volume to set.
+ */
+extern void AUD_Device_setVolume(AUD_Device* device, float value);
 
 /**
  * Opens a read device, with which audio data can be read.
