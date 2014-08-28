@@ -83,7 +83,7 @@ void JackDevice::updateRingBuffers()
 	}
 }
 
-int JackDevice::jack_mix(jack_nframes_t length, void *data)
+int JackDevice::jack_mix(jack_nframes_t length, void* data)
 {
 	JackDevice* device = (JackDevice*)data;
 	unsigned int i;
@@ -155,7 +155,7 @@ int JackDevice::jack_sync(jack_transport_state_t state, jack_position_t* pos, vo
 	return 0;
 }
 
-void JackDevice::jack_shutdown(void *data)
+void JackDevice::jack_shutdown(void* data)
 {
 	JackDevice* device = (JackDevice*)data;
 	device->m_valid = false;

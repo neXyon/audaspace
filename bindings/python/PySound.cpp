@@ -40,7 +40,7 @@
 
 using namespace aud;
 
-extern PyObject *AUDError;
+extern PyObject* AUDError;
 
 static void
 Sound_dealloc(Sound* self)
@@ -51,14 +51,14 @@ Sound_dealloc(Sound* self)
 }
 
 static PyObject *
-Sound_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+Sound_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
-	Sound *self;
+	Sound* self;
 
 	self = (Sound*)type->tp_alloc(type, 0);
 	if(self != nullptr)
 	{
-		static const char *kwlist[] = {"filename", nullptr};
+		static const char* kwlist[] = {"filename", nullptr};
 		const char* filename = nullptr;
 
 		if(!PyArg_ParseTupleAndKeywords(args, kwds, "s:Sound", const_cast<char**>(kwlist), &filename))
@@ -94,7 +94,7 @@ PyDoc_STRVAR(M_aud_Sound_sine_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_sine(PyTypeObject* type, PyObject *args)
+Sound_sine(PyTypeObject* type, PyObject* args)
 {
 	float frequency;
 	double rate = 44100;
@@ -102,7 +102,7 @@ Sound_sine(PyTypeObject* type, PyObject *args)
 	if(!PyArg_ParseTuple(args, "f|d:sine", &frequency, &rate))
 		return nullptr;
 
-	Sound *self;
+	Sound* self;
 
 	self = (Sound*)type->tp_alloc(type, 0);
 	if(self != nullptr)
@@ -134,14 +134,14 @@ PyDoc_STRVAR(M_aud_Sound_file_doc,
 			 "playback of that sound.");
 
 static PyObject *
-Sound_file(PyTypeObject* type, PyObject *args)
+Sound_file(PyTypeObject* type, PyObject* args)
 {
 	const char* filename = nullptr;
 
 	if(!PyArg_ParseTuple(args, "s:file", &filename))
 		return nullptr;
 
-	Sound *self;
+	Sound* self;
 
 	self = (Sound*)type->tp_alloc(type, 0);
 	if(self != nullptr)
@@ -173,7 +173,7 @@ PyDoc_STRVAR(M_aud_Sound_lowpass_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_lowpass(Sound* self, PyObject *args)
+Sound_lowpass(Sound* self, PyObject* args)
 {
 	float frequency;
 	float Q = 0.5;
@@ -182,7 +182,7 @@ Sound_lowpass(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -212,7 +212,7 @@ PyDoc_STRVAR(M_aud_Sound_delay_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_delay(Sound* self, PyObject *args)
+Sound_delay(Sound* self, PyObject* args)
 {
 	float delay;
 
@@ -220,7 +220,7 @@ Sound_delay(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -250,7 +250,7 @@ PyDoc_STRVAR(M_aud_Sound_join_doc,
 			 "(channels and samplerate).");
 
 static PyObject *
-Sound_join(Sound* self, PyObject *object)
+Sound_join(Sound* self, PyObject* object)
 {
 	PyTypeObject* type = Py_TYPE(self);
 
@@ -260,8 +260,8 @@ Sound_join(Sound* self, PyObject *object)
 		return nullptr;
 	}
 
-	Sound *parent;
-	Sound *child = (Sound*)object;
+	Sound* parent;
+	Sound* child = (Sound*)object;
 
 	parent = (Sound*)type->tp_alloc(type, 0);
 	if(parent != nullptr)
@@ -293,7 +293,7 @@ PyDoc_STRVAR(M_aud_Sound_highpass_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_highpass(Sound* self, PyObject *args)
+Sound_highpass(Sound* self, PyObject* args)
 {
 	float frequency;
 	float Q = 0.5;
@@ -302,7 +302,7 @@ Sound_highpass(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -332,7 +332,7 @@ PyDoc_STRVAR(M_aud_Sound_limit_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_limit(Sound* self, PyObject *args)
+Sound_limit(Sound* self, PyObject* args)
 {
 	float start, end;
 
@@ -340,7 +340,7 @@ Sound_limit(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -373,7 +373,7 @@ PyDoc_STRVAR(M_aud_Sound_pitch_doc,
 			 ":attr:`Handle.pitch` instead.");
 
 static PyObject *
-Sound_pitch(Sound* self, PyObject *args)
+Sound_pitch(Sound* self, PyObject* args)
 {
 	float factor;
 
@@ -381,7 +381,7 @@ Sound_pitch(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -412,7 +412,7 @@ PyDoc_STRVAR(M_aud_Sound_volume_doc,
 			 ":attr:`Handle.volume` instead.");
 
 static PyObject *
-Sound_volume(Sound* self, PyObject *args)
+Sound_volume(Sound* self, PyObject* args)
 {
 	float volume;
 
@@ -420,7 +420,7 @@ Sound_volume(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -452,7 +452,7 @@ PyDoc_STRVAR(M_aud_Sound_fadein_doc,
 			 ".. note:: Before the fade starts it plays silence.");
 
 static PyObject *
-Sound_fadein(Sound* self, PyObject *args)
+Sound_fadein(Sound* self, PyObject* args)
 {
 	float start, length;
 
@@ -460,7 +460,7 @@ Sound_fadein(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -493,7 +493,7 @@ PyDoc_STRVAR(M_aud_Sound_fadeout_doc,
 			 "the length of the sound is not altered.");
 
 static PyObject *
-Sound_fadeout(Sound* self, PyObject *args)
+Sound_fadeout(Sound* self, PyObject* args)
 {
 	float start, length;
 
@@ -501,7 +501,7 @@ Sound_fadeout(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -532,7 +532,7 @@ PyDoc_STRVAR(M_aud_Sound_loop_doc,
 			 ":attr:`Handle.loop_count` instead.");
 
 static PyObject *
-Sound_loop(Sound* self, PyObject *args)
+Sound_loop(Sound* self, PyObject* args)
 {
 	int loop;
 
@@ -540,7 +540,7 @@ Sound_loop(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -570,7 +570,7 @@ PyDoc_STRVAR(M_aud_Sound_mix_doc,
 			 "(channels and samplerate).");
 
 static PyObject *
-Sound_mix(Sound* self, PyObject *object)
+Sound_mix(Sound* self, PyObject* object)
 {
 	PyTypeObject* type = Py_TYPE(self);
 
@@ -580,8 +580,8 @@ Sound_mix(Sound* self, PyObject *object)
 		return nullptr;
 	}
 
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
-	Sound *child = (Sound*)object;
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* child = (Sound*)object;
 
 	if(parent != nullptr)
 	{
@@ -611,7 +611,7 @@ static PyObject *
 Sound_pingpong(Sound* self)
 {
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -647,7 +647,7 @@ static PyObject *
 Sound_reverse(Sound* self)
 {
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -682,7 +682,7 @@ static PyObject *
 Sound_buffer(Sound* self)
 {
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -713,7 +713,7 @@ PyDoc_STRVAR(M_aud_Sound_square_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_square(Sound* self, PyObject *args)
+Sound_square(Sound* self, PyObject* args)
 {
 	float threshold = 0;
 
@@ -721,7 +721,7 @@ Sound_square(Sound* self, PyObject *args)
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -757,10 +757,10 @@ PyDoc_STRVAR(M_aud_Sound_filter_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_filter(Sound* self, PyObject *args)
+Sound_filter(Sound* self, PyObject* args)
 {
-	PyObject *py_b;
-	PyObject *py_a = nullptr;
+	PyObject* py_b;
+	PyObject* py_a = nullptr;
 	Py_ssize_t py_a_len;
 	Py_ssize_t py_b_len;
 
@@ -783,7 +783,7 @@ Sound_filter(Sound* self, PyObject *args)
 	}
 
 	std::vector<float> a, b;
-	PyObject *py_value;
+	PyObject* py_value;
 	float value;
 
 	for(Py_ssize_t i = 0; i < py_b_len; i++)
@@ -821,7 +821,7 @@ Sound_filter(Sound* self, PyObject *args)
 		a.push_back(1);
 
 	PyTypeObject* type = Py_TYPE(self);
-	Sound *parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
 	if(parent != nullptr)
 	{
@@ -950,7 +950,7 @@ PyObject* Sound_empty()
 	return SoundType.tp_alloc(&SoundType, 0);
 }
 
-Sound* checkSound(PyObject *sound)
+Sound* checkSound(PyObject* sound)
 {
 	if(!PyObject_TypeCheck(sound, &SoundType))
 	{
@@ -968,7 +968,7 @@ bool initializeSound()
 }
 
 
-void addSoundToModule(PyObject *module)
+void addSoundToModule(PyObject* module)
 {
 	Py_INCREF(&SoundType);
 	PyModule_AddObject(module, "Sound", (PyObject *)&SoundType);

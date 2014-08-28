@@ -38,27 +38,27 @@ typedef enum
  * \param muted Whether the scene is muted.
  * \return The new sound scene.
  */
-extern AUD_Sound *AUD_createSequencer(float fps, int muted);
+extern AUD_Sound* AUD_createSequencer(float fps, int muted);
 
 /**
  * Deletes a sound scene.
  * \param sequencer The sound scene.
  */
-extern void AUD_destroySequencer(AUD_Sound *sequencer);
+extern void AUD_destroySequencer(AUD_Sound* sequencer);
 
 /**
  * Sets the muting state of the scene.
  * \param sequencer The sound scene.
  * \param muted Whether the scene is muted.
  */
-extern void AUD_setSequencerMuted(AUD_Sound *sequencer, int muted);
+extern void AUD_setSequencerMuted(AUD_Sound* sequencer, int muted);
 
 /**
  * Sets the scene's FPS.
  * \param sequencer The sound scene.
  * \param fps The new FPS.
  */
-extern void AUD_setSequencerFPS(AUD_Sound *sequencer, float fps);
+extern void AUD_setSequencerFPS(AUD_Sound* sequencer, float fps);
 
 /**
  * Adds a new entry to the scene.
@@ -69,7 +69,7 @@ extern void AUD_setSequencerFPS(AUD_Sound *sequencer, float fps);
  * \param skip How much seconds should be skipped at the beginning.
  * \return The entry added.
  */
-extern AUD_SEntry *AUD_addSequence(AUD_Sound *sequencer, AUD_Sound *sound,
+extern AUD_SEntry* AUD_addSequence(AUD_Sound* sequencer, AUD_Sound* sound,
 								   float begin, float end, float skip);
 
 /**
@@ -77,7 +77,7 @@ extern AUD_SEntry *AUD_addSequence(AUD_Sound *sequencer, AUD_Sound *sound,
  * \param sequencer The sound scene.
  * \param entry The entry to remove.
  */
-extern void AUD_removeSequence(AUD_Sound *sequencer, AUD_SEntry *entry);
+extern void AUD_removeSequence(AUD_Sound* sequencer, AUD_SEntry* entry);
 
 /**
  * Moves the entry.
@@ -86,14 +86,14 @@ extern void AUD_removeSequence(AUD_Sound *sequencer, AUD_SEntry *entry);
  * \param end The new end time or a negative value if unknown.
  * \param skip How many seconds to skip at the beginning.
  */
-extern void AUD_moveSequence(AUD_SEntry *entry, float begin, float end, float skip);
+extern void AUD_moveSequence(AUD_SEntry* entry, float begin, float end, float skip);
 
 /**
  * Sets the muting state of the entry.
  * \param entry The sequenced entry.
  * \param mute Whether the entry should be muted or not.
  */
-extern void AUD_muteSequence(AUD_SEntry *entry, char mute);
+extern void AUD_muteSequence(AUD_SEntry* entry, char mute);
 
 /**
  * Sets whether the entrie's location, velocity and orientation are relative
@@ -102,14 +102,14 @@ extern void AUD_muteSequence(AUD_SEntry *entry, char mute);
  * \param relative Whether the source is relative.
  * \return Whether the action succeeded.
  */
-extern void AUD_setRelativeSequence(AUD_SEntry *entry, char relative);
+extern void AUD_setRelativeSequence(AUD_SEntry* entry, char relative);
 
 /**
  * Sets the sound of the entry.
  * \param entry The sequenced entry.
  * \param sound The new sound.
  */
-extern void AUD_updateSequenceSound(AUD_SEntry *entry, AUD_Sound *sound);
+extern void AUD_updateSequenceSound(AUD_SEntry* entry, AUD_Sound* sound);
 
 /**
  * Writes animation data to a sequenced entry.
@@ -119,7 +119,7 @@ extern void AUD_updateSequenceSound(AUD_SEntry *entry, AUD_Sound *sound);
  * \param data The data to write.
  * \param animated Whether the attribute is animated.
  */
-extern void AUD_setSequenceAnimData(AUD_SEntry *entry, AUD_AnimateablePropertyType type, int frame, float *data, char animated);
+extern void AUD_setSequenceAnimData(AUD_SEntry* entry, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 
 /**
  * Writes animation data to a sequenced entry.
@@ -129,7 +129,7 @@ extern void AUD_setSequenceAnimData(AUD_SEntry *entry, AUD_AnimateablePropertyTy
  * \param data The data to write.
  * \param animated Whether the attribute is animated.
  */
-extern void AUD_setSequencerAnimData(AUD_Sound *sequencer, AUD_AnimateablePropertyType type, int frame, float *data, char animated);
+extern void AUD_setSequencerAnimData(AUD_Sound* sequencer, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 
 /**
  * Updates all non-animated parameters of the entry.
@@ -143,7 +143,7 @@ extern void AUD_setSequencerAnimData(AUD_Sound *sequencer, AUD_AnimateableProper
  * \param cone_angle_inner The inner cone opening angle.
  * \param cone_volume_outer The volume outside the outer cone.
  */
-extern void AUD_updateSequenceData(AUD_SEntry *entry, float volume_max, float volume_min,
+extern void AUD_updateSequenceData(AUD_SEntry* entry, float volume_max, float volume_min,
 								   float distance_max, float distance_reference, float attenuation,
 								   float cone_angle_outer, float cone_angle_inner, float cone_volume_outer);
 
@@ -154,7 +154,7 @@ extern void AUD_updateSequenceData(AUD_SEntry *entry, float volume_max, float vo
  * \param factor The doppler factor to control the effect's strength.
  * \param model The distance model for distance calculation.
  */
-extern void AUD_updateSequencerData(AUD_Sound *sequencer, float speed_of_sound,
+extern void AUD_updateSequencerData(AUD_Sound* sequencer, float speed_of_sound,
 									float factor, AUD_DistanceModel model);
 
 /**
@@ -162,14 +162,14 @@ extern void AUD_updateSequencerData(AUD_Sound *sequencer, float speed_of_sound,
  * current playback device.
  * \param sequencer The sound scene.
  */
-extern void AUD_setSequencerDeviceSpecs(AUD_Sound *sequencer);
+extern void AUD_setSequencerDeviceSpecs(AUD_Sound* sequencer);
 
 /**
  * Sets the audio output specification of the sound scene.
  * \param sequencer The sound scene.
  * \param specs The new specification.
  */
-extern void AUD_setSequencerSpecs(AUD_Sound *sequencer, AUD_Specs specs);
+extern void AUD_setSequencerSpecs(AUD_Sound* sequencer, AUD_Specs specs);
 
 #ifdef __cplusplus
 }

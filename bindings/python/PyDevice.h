@@ -25,8 +25,8 @@ typedef struct {
 	Reference_IDevice* device;
 } Device;
 
-extern PyObject *Device_empty();
-extern Device *checkDevice(PyObject *device);
+extern PyObject* Device_empty();
+extern Device* checkDevice(PyObject* device);
 
 bool initializeDevice();
 void addDeviceToModule(PyObject* module);

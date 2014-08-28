@@ -20,7 +20,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-JackSynchronizer::JackSynchronizer(JackDevice *device) :
+JackSynchronizer::JackSynchronizer(JackDevice* device) :
 	m_device(device)
 {
 }

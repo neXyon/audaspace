@@ -115,7 +115,7 @@ void FFMPEGReader::init()
 	m_codecCtx = m_formatCtx->streams[m_stream]->codec;
 
 	// get a decoder and open it
-	AVCodec *aCodec = avcodec_find_decoder(m_codecCtx->codec_id);
+	AVCodec* aCodec = avcodec_find_decoder(m_codecCtx->codec_id);
 	if(!aCodec)
 		AUD_THROW(FileException, "File couldn't be read, no decoder found with ffmpeg.");
 

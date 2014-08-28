@@ -24,19 +24,19 @@ using namespace aud;
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Handle.h"
 
-int AUD_Handle_pause(AUD_Handle *handle)
+int AUD_Handle_pause(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->pause();
 }
 
-int AUD_Handle_resume(AUD_Handle *handle)
+int AUD_Handle_resume(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->resume();
 }
 
-int AUD_Handle_stop(AUD_Handle *handle)
+int AUD_Handle_stop(AUD_Handle* handle)
 {
 	assert(handle);
 	int result = (*handle)->stop();
@@ -378,7 +378,7 @@ int AUD_Handle_setVolumeMinimum(AUD_Handle* handle, float value)
 	return false;
 }
 
-void AUD_Handle_free(AUD_Handle *handle)
+void AUD_Handle_free(AUD_Handle* handle)
 {
 	delete handle;
 }

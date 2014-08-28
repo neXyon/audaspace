@@ -22,14 +22,14 @@
 
 AUD_NAMESPACE_BEGIN
 
-sf_count_t SndFileReader::vio_get_filelen(void *user_data)
+sf_count_t SndFileReader::vio_get_filelen(void* user_data)
 {
 	SndFileReader* reader = (SndFileReader*)user_data;
 	return reader->m_membuffer->getSize();
 }
 
 sf_count_t SndFileReader::vio_seek(sf_count_t offset, int whence,
-									   void *user_data)
+									   void* user_data)
 {
 	SndFileReader* reader = (SndFileReader*)user_data;
 
@@ -49,8 +49,8 @@ sf_count_t SndFileReader::vio_seek(sf_count_t offset, int whence,
 	return reader->m_memoffset;
 }
 
-sf_count_t SndFileReader::vio_read(void *ptr, sf_count_t count,
-									   void *user_data)
+sf_count_t SndFileReader::vio_read(void* ptr, sf_count_t count,
+									   void* user_data)
 {
 	SndFileReader* reader = (SndFileReader*)user_data;
 
@@ -64,7 +64,7 @@ sf_count_t SndFileReader::vio_read(void *ptr, sf_count_t count,
 	return count;
 }
 
-sf_count_t SndFileReader::vio_tell(void *user_data)
+sf_count_t SndFileReader::vio_tell(void* user_data)
 {
 	SndFileReader* reader = (SndFileReader*)user_data;
 

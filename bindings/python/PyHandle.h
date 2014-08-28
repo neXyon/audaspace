@@ -25,7 +25,7 @@ typedef struct {
 	Reference_IHandle* handle;
 } Handle;
 
-extern PyObject *Handle_empty();
+extern PyObject* Handle_empty();
 
 bool initializeHandle();
 void addHandleToModule(PyObject* module);

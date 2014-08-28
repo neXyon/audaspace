@@ -36,21 +36,21 @@ typedef enum
  * \param handle The handle to the sound.
  * \return Whether the handle has been playing or not.
  */
-extern int AUD_Handle_pause(AUD_Handle *handle);
+extern int AUD_Handle_pause(AUD_Handle* handle);
 
 /**
  * Resumes a paused sound.
  * \param handle The handle to the sound.
  * \return Whether the handle has been paused or not.
  */
-extern int AUD_Handle_resume(AUD_Handle *handle);
+extern int AUD_Handle_resume(AUD_Handle* handle);
 
 /**
  * Stops a playing or paused sound.
  * \param handle The handle to the sound.
  * \return Whether the handle has been valid or not.
  */
-extern int AUD_Handle_stop(AUD_Handle *handle);
+extern int AUD_Handle_stop(AUD_Handle* handle);
 
 /**
  * Retrieves the attenuation of a handle.
@@ -301,7 +301,7 @@ extern int AUD_Handle_setVolumeMinimum(AUD_Handle* handle, float value);
  * Frees a handle.
  * \param channel Handle to free.
  */
-extern void AUD_Handle_free(AUD_Handle *channel);
+extern void AUD_Handle_free(AUD_Handle* channel);
 
 #ifdef __cplusplus
 }

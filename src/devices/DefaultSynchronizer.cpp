@@ -37,7 +37,7 @@ void DefaultSynchronizer::stop()
 {
 }
 
-void DefaultSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, void *data)
+void DefaultSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, void* data)
 {
 }
 

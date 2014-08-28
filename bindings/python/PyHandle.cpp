@@ -26,7 +26,7 @@
 
 using namespace aud;
 
-extern PyObject *AUDError;
+extern PyObject* AUDError;
 static const char* device_not_3d_error = "Device is not a 3D device!";
 
 static void
@@ -44,7 +44,7 @@ PyDoc_STRVAR(M_aud_Handle_pause_doc,
 			 ":rtype: bool");
 
 static PyObject *
-Handle_pause(Handle *self)
+Handle_pause(Handle* self)
 {
 	try
 	{
@@ -64,7 +64,7 @@ PyDoc_STRVAR(M_aud_Handle_resume_doc,
 			 ":rtype: bool");
 
 static PyObject *
-Handle_resume(Handle *self)
+Handle_resume(Handle* self)
 {
 	try
 	{
@@ -85,7 +85,7 @@ PyDoc_STRVAR(M_aud_Handle_stop_doc,
 			 ".. note:: This makes the handle invalid.");
 
 static PyObject *
-Handle_stop(Handle *self)
+Handle_stop(Handle* self)
 {
 	try
 	{
@@ -115,7 +115,7 @@ PyDoc_STRVAR(M_aud_Handle_position_doc,
 			 "The playback position of the sound in seconds.");
 
 static PyObject *
-Handle_get_position(Handle *self, void* nothing)
+Handle_get_position(Handle* self, void* nothing)
 {
 	try
 	{
@@ -129,7 +129,7 @@ Handle_get_position(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_position(Handle *self, PyObject *args, void* nothing)
+Handle_set_position(Handle* self, PyObject* args, void* nothing)
 {
 	float position;
 
@@ -160,7 +160,7 @@ PyDoc_STRVAR(M_aud_Handle_keep_doc,
 			 "destroyed.");
 
 static PyObject *
-Handle_get_keep(Handle *self, void* nothing)
+Handle_get_keep(Handle* self, void* nothing)
 {
 	try
 	{
@@ -174,7 +174,7 @@ Handle_get_keep(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_keep(Handle *self, PyObject *args, void* nothing)
+Handle_set_keep(Handle* self, PyObject* args, void* nothing)
 {
 	if(!PyBool_Check(args))
 	{
@@ -202,7 +202,7 @@ PyDoc_STRVAR(M_aud_Handle_status_doc,
 			 "Whether the sound is playing, paused or stopped (=invalid).");
 
 static PyObject *
-Handle_get_status(Handle *self, void* nothing)
+Handle_get_status(Handle* self, void* nothing)
 {
 	try
 	{
@@ -219,7 +219,7 @@ PyDoc_STRVAR(M_aud_Handle_volume_doc,
 			 "The volume of the sound.");
 
 static PyObject *
-Handle_get_volume(Handle *self, void* nothing)
+Handle_get_volume(Handle* self, void* nothing)
 {
 	try
 	{
@@ -233,7 +233,7 @@ Handle_get_volume(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_volume(Handle *self, PyObject *args, void* nothing)
+Handle_set_volume(Handle* self, PyObject* args, void* nothing)
 {
 	float volume;
 
@@ -258,7 +258,7 @@ PyDoc_STRVAR(M_aud_Handle_pitch_doc,
 			 "The pitch of the sound.");
 
 static PyObject *
-Handle_get_pitch(Handle *self, void* nothing)
+Handle_get_pitch(Handle* self, void* nothing)
 {
 	try
 	{
@@ -272,7 +272,7 @@ Handle_get_pitch(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_pitch(Handle *self, PyObject *args, void* nothing)
+Handle_set_pitch(Handle* self, PyObject* args, void* nothing)
 {
 	float pitch;
 
@@ -297,7 +297,7 @@ PyDoc_STRVAR(M_aud_Handle_loop_count_doc,
 			 "The (remaining) loop count of the sound. A negative value indicates infinity.");
 
 static PyObject *
-Handle_get_loop_count(Handle *self, void* nothing)
+Handle_get_loop_count(Handle* self, void* nothing)
 {
 	try
 	{
@@ -311,7 +311,7 @@ Handle_get_loop_count(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_loop_count(Handle *self, PyObject *args, void* nothing)
+Handle_set_loop_count(Handle* self, PyObject* args, void* nothing)
 {
 	int loops;
 
@@ -336,7 +336,7 @@ PyDoc_STRVAR(M_aud_Handle_location_doc,
 			 "The source's location in 3D space, a 3D tuple of floats.");
 
 static PyObject *
-Handle_get_location(Handle *self, void* nothing)
+Handle_get_location(Handle* self, void* nothing)
 {
 	try
 	{
@@ -360,7 +360,7 @@ Handle_get_location(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_location(Handle *self, PyObject *args, void* nothing)
+Handle_set_location(Handle* self, PyObject* args, void* nothing)
 {
 	float x, y, z;
 
@@ -392,7 +392,7 @@ PyDoc_STRVAR(M_aud_Handle_velocity_doc,
 			 "The source's velocity in 3D space, a 3D tuple of floats.");
 
 static PyObject *
-Handle_get_velocity(Handle *self, void* nothing)
+Handle_get_velocity(Handle* self, void* nothing)
 {
 	try
 	{
@@ -416,7 +416,7 @@ Handle_get_velocity(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_velocity(Handle *self, PyObject *args, void* nothing)
+Handle_set_velocity(Handle* self, PyObject* args, void* nothing)
 {
 	float x, y, z;
 
@@ -448,7 +448,7 @@ PyDoc_STRVAR(M_aud_Handle_orientation_doc,
 			 "The source's orientation in 3D space as quaternion, a 4 float tuple.");
 
 static PyObject *
-Handle_get_orientation(Handle *self, void* nothing)
+Handle_get_orientation(Handle* self, void* nothing)
 {
 	try
 	{
@@ -472,7 +472,7 @@ Handle_get_orientation(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_orientation(Handle *self, PyObject *args, void* nothing)
+Handle_set_orientation(Handle* self, PyObject* args, void* nothing)
 {
 	float w, x, y, z;
 
@@ -504,7 +504,7 @@ PyDoc_STRVAR(M_aud_Handle_relative_doc,
 			 "Whether the source's location, velocity and orientation is relative or absolute to the listener.");
 
 static PyObject *
-Handle_get_relative(Handle *self, void* nothing)
+Handle_get_relative(Handle* self, void* nothing)
 {
 	try
 	{
@@ -527,7 +527,7 @@ Handle_get_relative(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_relative(Handle *self, PyObject *args, void* nothing)
+Handle_set_relative(Handle* self, PyObject* args, void* nothing)
 {
 	if(!PyBool_Check(args))
 	{
@@ -562,7 +562,7 @@ PyDoc_STRVAR(M_aud_Handle_volume_minimum_doc,
 			 ".. seealso:: :attr:`Device.distance_model`");
 
 static PyObject *
-Handle_get_volume_minimum(Handle *self, void* nothing)
+Handle_get_volume_minimum(Handle* self, void* nothing)
 {
 	try
 	{
@@ -585,7 +585,7 @@ Handle_get_volume_minimum(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_volume_minimum(Handle *self, PyObject *args, void* nothing)
+Handle_set_volume_minimum(Handle* self, PyObject* args, void* nothing)
 {
 	float volume;
 
@@ -617,7 +617,7 @@ PyDoc_STRVAR(M_aud_Handle_volume_maximum_doc,
 			 ".. seealso:: :attr:`Device.distance_model`");
 
 static PyObject *
-Handle_get_volume_maximum(Handle *self, void* nothing)
+Handle_get_volume_maximum(Handle* self, void* nothing)
 {
 	try
 	{
@@ -640,7 +640,7 @@ Handle_get_volume_maximum(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_volume_maximum(Handle *self, PyObject *args, void* nothing)
+Handle_set_volume_maximum(Handle* self, PyObject* args, void* nothing)
 {
 	float volume;
 
@@ -673,7 +673,7 @@ PyDoc_STRVAR(M_aud_Handle_distance_reference_doc,
 			 ".. seealso:: :attr:`Device.distance_model`");
 
 static PyObject *
-Handle_get_distance_reference(Handle *self, void* nothing)
+Handle_get_distance_reference(Handle* self, void* nothing)
 {
 	try
 	{
@@ -696,7 +696,7 @@ Handle_get_distance_reference(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_distance_reference(Handle *self, PyObject *args, void* nothing)
+Handle_set_distance_reference(Handle* self, PyObject* args, void* nothing)
 {
 	float distance;
 
@@ -729,7 +729,7 @@ PyDoc_STRVAR(M_aud_Handle_distance_maximum_doc,
 			 ".. seealso:: :attr:`Device.distance_model`");
 
 static PyObject *
-Handle_get_distance_maximum(Handle *self, void* nothing)
+Handle_get_distance_maximum(Handle* self, void* nothing)
 {
 	try
 	{
@@ -752,7 +752,7 @@ Handle_get_distance_maximum(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_distance_maximum(Handle *self, PyObject *args, void* nothing)
+Handle_set_distance_maximum(Handle* self, PyObject* args, void* nothing)
 {
 	float distance;
 
@@ -785,7 +785,7 @@ PyDoc_STRVAR(M_aud_Handle_attenuation_doc,
 			 ".. seealso:: :attr:`Device.distance_model`");
 
 static PyObject *
-Handle_get_attenuation(Handle *self, void* nothing)
+Handle_get_attenuation(Handle* self, void* nothing)
 {
 	try
 	{
@@ -808,7 +808,7 @@ Handle_get_attenuation(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_attenuation(Handle *self, PyObject *args, void* nothing)
+Handle_set_attenuation(Handle* self, PyObject* args, void* nothing)
 {
 	float factor;
 
@@ -846,7 +846,7 @@ PyDoc_STRVAR(M_aud_Handle_cone_angle_inner_doc,
 			 "between the volume will be interpolated linearly.");
 
 static PyObject *
-Handle_get_cone_angle_inner(Handle *self, void* nothing)
+Handle_get_cone_angle_inner(Handle* self, void* nothing)
 {
 	try
 	{
@@ -869,7 +869,7 @@ Handle_get_cone_angle_inner(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_cone_angle_inner(Handle *self, PyObject *args, void* nothing)
+Handle_set_cone_angle_inner(Handle* self, PyObject* args, void* nothing)
 {
 	float angle;
 
@@ -901,7 +901,7 @@ PyDoc_STRVAR(M_aud_Handle_cone_angle_outer_doc,
 			 ".. seealso:: :attr:`cone_angle_inner`");
 
 static PyObject *
-Handle_get_cone_angle_outer(Handle *self, void* nothing)
+Handle_get_cone_angle_outer(Handle* self, void* nothing)
 {
 	try
 	{
@@ -924,7 +924,7 @@ Handle_get_cone_angle_outer(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_cone_angle_outer(Handle *self, PyObject *args, void* nothing)
+Handle_set_cone_angle_outer(Handle* self, PyObject* args, void* nothing)
 {
 	float angle;
 
@@ -956,7 +956,7 @@ PyDoc_STRVAR(M_aud_Handle_cone_volume_outer_doc,
 			 ".. seealso:: :attr:`cone_angle_inner`");
 
 static PyObject *
-Handle_get_cone_volume_outer(Handle *self, void* nothing)
+Handle_get_cone_volume_outer(Handle* self, void* nothing)
 {
 	try
 	{
@@ -979,7 +979,7 @@ Handle_get_cone_volume_outer(Handle *self, void* nothing)
 }
 
 static int
-Handle_set_cone_volume_outer(Handle *self, PyObject *args, void* nothing)
+Handle_set_cone_volume_outer(Handle* self, PyObject* args, void* nothing)
 {
 	float volume;
 
@@ -1105,7 +1105,7 @@ bool initializeHandle()
 }
 
 
-void addHandleToModule(PyObject *module)
+void addHandleToModule(PyObject* module)
 {
 	Py_INCREF(&HandleType);
 	PyModule_AddObject(module, "Handle", (PyObject *)&HandleType);

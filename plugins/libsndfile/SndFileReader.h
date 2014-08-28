@@ -26,7 +26,7 @@ AUD_NAMESPACE_BEGIN
 
 class Buffer;
 
-typedef sf_count_t (*sf_read_f)(SNDFILE *sndfile, void *ptr, sf_count_t frames);
+typedef sf_count_t (*sf_read_f)(SNDFILE* sndfile, void* ptr, sf_count_t frames);
 
 /**
  * This class reads a sound file via libsndfile.
@@ -75,10 +75,10 @@ private:
 	int m_memoffset;
 
 	// Functions for libsndfile virtual IO functionality
-	static sf_count_t vio_get_filelen(void *user_data);
-	static sf_count_t vio_seek(sf_count_t offset, int whence, void *user_data);
-	static sf_count_t vio_read(void *ptr, sf_count_t count, void *user_data);
-	static sf_count_t vio_tell(void *user_data);
+	static sf_count_t vio_get_filelen(void* user_data);
+	static sf_count_t vio_seek(sf_count_t offset, int whence, void* user_data);
+	static sf_count_t vio_read(void* ptr, sf_count_t count, void* user_data);
+	static sf_count_t vio_tell(void* user_data);
 
 	// delete copy constructor and operator=
 	SndFileReader(const SndFileReader&) = delete;

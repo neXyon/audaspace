@@ -27,17 +27,17 @@ extern "C" {
  * \param sound The sound to get the info about.
  * \return The AUD_SoundInfo structure with filled in data.
  */
-extern AUD_SoundInfo AUD_getInfo(AUD_Sound *sound);
+extern AUD_SoundInfo AUD_getInfo(AUD_Sound* sound);
 
 /**
  * Reads a sound file into a newly created float buffer.
  * The sound is therefore bandpassed, rectified and resampled.
  */
-extern float *AUD_readSoundBuffer(const char *filename, float low, float high,
+extern float* AUD_readSoundBuffer(const char* filename, float low, float high,
 								  float attack, float release, float threshold,
 								  int accumulate, int additive, int square,
 								  float sthreshold, double samplerate,
-								  int *length);
+								  int* length);
 
 /**
  * Pauses a playing sound after a specific amount of time.
@@ -45,7 +45,7 @@ extern float *AUD_readSoundBuffer(const char *filename, float low, float high,
  * \param seconds The time in seconds.
  * \return The silence handle.
  */
-extern AUD_Handle *AUD_pauseAfter(AUD_Handle *handle, float seconds);
+extern AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds);
 
 /**
  * Reads a sound into a buffer for drawing at a specific sampling rate.
@@ -55,7 +55,7 @@ extern AUD_Handle *AUD_pauseAfter(AUD_Handle *handle, float seconds);
  * \param samples_per_second How many samples to read per second of the sound.
  * \return How many samples really have been read. Always <= length.
  */
-extern int AUD_readSound(AUD_Sound *sound, float *buffer, int length, int samples_per_second);
+extern int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second);
 
 /**
  * Mixes a sound down into a file.
@@ -70,8 +70,8 @@ extern int AUD_readSound(AUD_Sound *sound, float *buffer, int length, int sample
  * \param bitrate The bitrate for encoding.
  * \return An error message or NULL in case of success.
  */
-extern const char *AUD_mixdown(AUD_Sound *sound, unsigned int start, unsigned int length,
-							   unsigned int buffersize, const char *filename,
+extern const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int length,
+							   unsigned int buffersize, const char* filename,
 							   AUD_DeviceSpecs specs, AUD_Container format,
 							   AUD_Codec codec, unsigned int bitrate);
 
@@ -88,8 +88,8 @@ extern const char *AUD_mixdown(AUD_Sound *sound, unsigned int start, unsigned in
  * \param bitrate The bitrate for encoding.
  * \return An error message or NULL in case of success.
  */
-extern const char *AUD_mixdown_per_channel(AUD_Sound *sound, unsigned int start, unsigned int length,
-										   unsigned int buffersize, const char *filename,
+extern const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsigned int length,
+										   unsigned int buffersize, const char* filename,
 										   AUD_DeviceSpecs specs, AUD_Container format,
 										   AUD_Codec codec, unsigned int bitrate);
 
@@ -101,17 +101,17 @@ extern const char *AUD_mixdown_per_channel(AUD_Sound *sound, unsigned int start,
  * \param start The start time of the mixdown in the sound scene.
  * \return The read device for the mixdown.
  */
-extern AUD_Device *AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound *sequencer, float volume, float start);
+extern AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start);
 
 /**
  * Initializes audio rutines (FFMPEG/Jack if it is enabled).
  */
-extern void AUD_initOnce(void);
+extern void AUD_initOnce();
 
 /**
  * Unitinitializes an audio routines.
  */
-extern void AUD_exitOnce(void);
+extern void AUD_exitOnce();
 
 /**
  * Initializes an audio device.
@@ -125,7 +125,7 @@ extern int AUD_init(const char* device, const char* name, AUD_DeviceSpecs specs,
 /**
  * Unitinitializes an audio device.
  */
-extern void AUD_exit(void);
+extern void AUD_exit();
 
 #ifdef __cplusplus
 }

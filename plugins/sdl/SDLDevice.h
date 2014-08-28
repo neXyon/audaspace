@@ -34,7 +34,7 @@ private:
 	 * \param buffer The target buffer.
 	 * \param length The length in bytes to be filled.
 	 */
-	static void SDL_mix(void *data, Uint8* buffer, int length);
+	static void SDL_mix(void* data, Uint8* buffer, int length);
 
 	// delete copy constructor and operator=
 	SDLDevice(const SDLDevice&) = delete;

@@ -37,8 +37,8 @@ using namespace aud;
 
 // ====================================================================
 
-extern PyObject *AUDError;
-PyObject *AUDError = nullptr;
+extern PyObject* AUDError;
+PyObject* AUDError = nullptr;
 
 // ====================================================================
 
@@ -55,9 +55,9 @@ static struct PyModuleDef audmodule = {
 };
 
 PyMODINIT_FUNC
-PyInit_aud(void)
+PyInit_aud()
 {
-	PyObject *module;
+	PyObject* module;
 
 	PluginManager::loadPlugins();
 
@@ -111,7 +111,7 @@ PyObject* AUD_getPythonSound(void* sound)
 {
 	if(sound)
 	{
-		Sound *object = (Sound*) Sound_empty();
+		Sound* object = (Sound*) Sound_empty();
 		if(object)
 		{
 			object->sound = new std::shared_ptr<ISound>(*reinterpret_cast<std::shared_ptr<ISound>*>(sound));

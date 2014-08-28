@@ -25,8 +25,8 @@ typedef struct {
 	Reference_ISound* sound;
 } Sound;
 
-extern PyObject *Sound_empty();
-extern Sound *checkSound(PyObject *sound);
+extern PyObject* Sound_empty();
+extern Sound* checkSound(PyObject* sound);
 
 bool initializeSound();
 void addSoundToModule(PyObject* module);

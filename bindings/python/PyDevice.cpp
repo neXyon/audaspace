@@ -29,7 +29,7 @@
 
 using namespace aud;
 
-extern PyObject *AUDError;
+extern PyObject* AUDError;
 static const char* device_not_3d_error = "Device is not a 3D device!";
 
 // ====================================================================
@@ -43,11 +43,11 @@ Device_dealloc(Device* self)
 }
 
 static PyObject *
-Device_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+Device_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
-	Device *self;
+	Device* self;
 
-	static const char *kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", nullptr};
+	static const char* kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", nullptr};
 	const char* device;
 	double rate = RATE_44100;
 	int channels = CHANNELS_STEREO;
@@ -118,14 +118,14 @@ PyDoc_STRVAR(M_aud_Device_play_doc,
 			 ":rtype: :class:`Handle`");
 
 static PyObject *
-Device_play(Device *self, PyObject *args, PyObject *kwds)
+Device_play(Device* self, PyObject* args, PyObject* kwds)
 {
-	PyObject *object;
-	PyObject *keepo = nullptr;
+	PyObject* object;
+	PyObject* keepo = nullptr;
 
 	bool keep = false;
 
-	static const char *kwlist[] = {"sound", "keep", nullptr};
+	static const char* kwlist[] = {"sound", "keep", nullptr};
 
 	if(!PyArg_ParseTupleAndKeywords(args, kwds, "O|O:play", const_cast<char**>(kwlist), &object, &keepo))
 		return nullptr;
@@ -149,7 +149,7 @@ Device_play(Device *self, PyObject *args, PyObject *kwds)
 		keep = keepo == Py_True;
 	}
 
-	Handle *handle;
+	Handle* handle;
 
 	handle = (Handle*)Handle_empty();
 	if(handle != nullptr)
@@ -174,7 +174,7 @@ PyDoc_STRVAR(M_aud_Device_stopAll_doc,
 			 "Stops all playing and paused sounds.");
 
 static PyObject *
-Device_stopAll(Device *self)
+Device_stopAll(Device* self)
 {
 	try
 	{
@@ -200,7 +200,7 @@ PyDoc_STRVAR(M_aud_Device_lock_doc,
 			 "as short as possible to avoid clicks.");
 
 static PyObject *
-Device_lock(Device *self)
+Device_lock(Device* self)
 {
 	try
 	{
@@ -220,7 +220,7 @@ PyDoc_STRVAR(M_aud_Device_unlock_doc,
 			 "details.");
 
 static PyObject *
-Device_unlock(Device *self)
+Device_unlock(Device* self)
 {
 	try
 	{
@@ -254,7 +254,7 @@ PyDoc_STRVAR(M_aud_Device_rate_doc,
 			 "The sampling rate of the device in Hz.");
 
 static PyObject *
-Device_get_rate(Device *self, void* nothing)
+Device_get_rate(Device* self, void* nothing)
 {
 	try
 	{
@@ -272,7 +272,7 @@ PyDoc_STRVAR(M_aud_Device_format_doc,
 			 "The native sample format of the device.");
 
 static PyObject *
-Device_get_format(Device *self, void* nothing)
+Device_get_format(Device* self, void* nothing)
 {
 	try
 	{
@@ -290,7 +290,7 @@ PyDoc_STRVAR(M_aud_Device_channels_doc,
 			 "The channel count of the device.");
 
 static PyObject *
-Device_get_channels(Device *self, void* nothing)
+Device_get_channels(Device* self, void* nothing)
 {
 	try
 	{
@@ -308,7 +308,7 @@ PyDoc_STRVAR(M_aud_Device_volume_doc,
 			 "The overall volume of the device.");
 
 static PyObject *
-Device_get_volume(Device *self, void* nothing)
+Device_get_volume(Device* self, void* nothing)
 {
 	try
 	{
@@ -322,7 +322,7 @@ Device_get_volume(Device *self, void* nothing)
 }
 
 static int
-Device_set_volume(Device *self, PyObject *args, void* nothing)
+Device_set_volume(Device* self, PyObject* args, void* nothing)
 {
 	float volume;
 
@@ -345,7 +345,7 @@ PyDoc_STRVAR(M_aud_Device_listener_location_doc,
 			 "The listeners's location in 3D space, a 3D tuple of floats.");
 
 static PyObject *
-Device_get_listener_location(Device *self, void* nothing)
+Device_get_listener_location(Device* self, void* nothing)
 {
 	try
 	{
@@ -369,7 +369,7 @@ Device_get_listener_location(Device *self, void* nothing)
 }
 
 static int
-Device_set_listener_location(Device *self, PyObject *args, void* nothing)
+Device_set_listener_location(Device* self, PyObject* args, void* nothing)
 {
 	float x, y, z;
 
@@ -400,7 +400,7 @@ PyDoc_STRVAR(M_aud_Device_listener_velocity_doc,
 			 "The listener's velocity in 3D space, a 3D tuple of floats.");
 
 static PyObject *
-Device_get_listener_velocity(Device *self, void* nothing)
+Device_get_listener_velocity(Device* self, void* nothing)
 {
 	try
 	{
@@ -424,7 +424,7 @@ Device_get_listener_velocity(Device *self, void* nothing)
 }
 
 static int
-Device_set_listener_velocity(Device *self, PyObject *args, void* nothing)
+Device_set_listener_velocity(Device* self, PyObject* args, void* nothing)
 {
 	float x, y, z;
 
@@ -455,7 +455,7 @@ PyDoc_STRVAR(M_aud_Device_listener_orientation_doc,
 			 "The listener's orientation in 3D space as quaternion, a 4 float tuple.");
 
 static PyObject *
-Device_get_listener_orientation(Device *self, void* nothing)
+Device_get_listener_orientation(Device* self, void* nothing)
 {
 	try
 	{
@@ -479,7 +479,7 @@ Device_get_listener_orientation(Device *self, void* nothing)
 }
 
 static int
-Device_set_listener_orientation(Device *self, PyObject *args, void* nothing)
+Device_set_listener_orientation(Device* self, PyObject* args, void* nothing)
 {
 	float w, x, y, z;
 
@@ -511,7 +511,7 @@ PyDoc_STRVAR(M_aud_Device_speed_of_sound_doc,
 			 "The speed of sound in air is typically 343 m/s.");
 
 static PyObject *
-Device_get_speed_of_sound(Device *self, void* nothing)
+Device_get_speed_of_sound(Device* self, void* nothing)
 {
 	try
 	{
@@ -534,7 +534,7 @@ Device_get_speed_of_sound(Device *self, void* nothing)
 }
 
 static int
-Device_set_speed_of_sound(Device *self, PyObject *args, void* nothing)
+Device_set_speed_of_sound(Device* self, PyObject* args, void* nothing)
 {
 	float speed;
 
@@ -567,7 +567,7 @@ PyDoc_STRVAR(M_aud_Device_doppler_factor_doc,
 			 "the effect as it raises the velocity.");
 
 static PyObject *
-Device_get_doppler_factor(Device *self, void* nothing)
+Device_get_doppler_factor(Device* self, void* nothing)
 {
 	try
 	{
@@ -590,7 +590,7 @@ Device_get_doppler_factor(Device *self, void* nothing)
 }
 
 static int
-Device_set_doppler_factor(Device *self, PyObject *args, void* nothing)
+Device_set_doppler_factor(Device* self, PyObject* args, void* nothing)
 {
 	float factor;
 
@@ -621,7 +621,7 @@ PyDoc_STRVAR(M_aud_Device_distance_model_doc,
 			 ".. seealso:: http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm#_Toc199835864");
 
 static PyObject *
-Device_get_distance_model(Device *self, void* nothing)
+Device_get_distance_model(Device* self, void* nothing)
 {
 	try
 	{
@@ -644,7 +644,7 @@ Device_get_distance_model(Device *self, void* nothing)
 }
 
 static int
-Device_set_distance_model(Device *self, PyObject *args, void* nothing)
+Device_set_distance_model(Device* self, PyObject* args, void* nothing)
 {
 	int model;
 
@@ -746,7 +746,7 @@ PyObject* Device_empty()
 }
 
 
-Device *checkDevice(PyObject *device)
+Device* checkDevice(PyObject* device)
 {
 	if(!PyObject_TypeCheck(device, &DeviceType))
 	{
@@ -764,7 +764,7 @@ bool initializeDevice()
 }
 
 
-void addDeviceToModule(PyObject *module)
+void addDeviceToModule(PyObject* module)
 {
 	Py_INCREF(&DeviceType);
 	PyModule_AddObject(module, "Device", (PyObject *)&DeviceType);

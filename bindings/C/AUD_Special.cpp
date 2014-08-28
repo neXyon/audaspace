@@ -78,7 +78,7 @@ static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
 	return s;
 }
 
-AUD_SoundInfo AUD_getInfo(AUD_Sound *sound)
+AUD_SoundInfo AUD_getInfo(AUD_Sound* sound)
 {
 	assert(sound);
 
@@ -104,10 +104,10 @@ AUD_SoundInfo AUD_getInfo(AUD_Sound *sound)
 	return info;
 }
 
-float *AUD_readSoundBuffer(const char *filename, float low, float high,
+float* AUD_readSoundBuffer(const char* filename, float low, float high,
 						   float attack, float release, float threshold,
 						   int accumulate, int additive, int square,
-						   float sthreshold, double samplerate, int *length)
+						   float sthreshold, double samplerate, int* length)
 {
 	Buffer buffer;
 	DeviceSpecs specs;
@@ -169,13 +169,13 @@ float *AUD_readSoundBuffer(const char *filename, float low, float high,
 	return result;
 }
 
-static void pauseSound(AUD_Handle *handle)
+static void pauseSound(AUD_Handle* handle)
 {
 	assert(handle);
 	(*handle)->pause();
 }
 
-AUD_Handle *AUD_pauseAfter(AUD_Handle *handle, float seconds)
+AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds)
 {
 	std::shared_ptr<ISound> silence = std::shared_ptr<ISound>(new Silence);
 	std::shared_ptr<ISound> limiter = std::shared_ptr<ISound>(new Limiter(silence, 0, seconds));
@@ -200,10 +200,10 @@ AUD_Handle *AUD_pauseAfter(AUD_Handle *handle, float seconds)
 	return nullptr;
 }
 
-int AUD_readSound(AUD_Sound *sound, float *buffer, int length, int samples_per_second)
+int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second)
 {
 	DeviceSpecs specs;
-	float *buf;
+	float* buf;
 	Buffer aBuffer;
 
 	specs.rate = RATE_INVALID;
@@ -267,11 +267,11 @@ int AUD_readSound(AUD_Sound *sound, float *buffer, int length, int samples_per_s
 	return length;
 }
 
-const char *AUD_mixdown(AUD_Sound *sound, unsigned int start, unsigned int length, unsigned int buffersize, const char *filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
+const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int length, unsigned int buffersize, const char* filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
 {
 	try
 	{
-		Sequence *f = dynamic_cast<Sequence *>(sound->get());
+		Sequence* f = dynamic_cast<Sequence *>(sound->get());
 
 		f->setSpecs(convCToSpec(specs.specs));
 		std::shared_ptr<IReader> reader = f->createQualityReader();
@@ -287,11 +287,11 @@ const char *AUD_mixdown(AUD_Sound *sound, unsigned int start, unsigned int lengt
 	}
 }
 
-const char *AUD_mixdown_per_channel(AUD_Sound *sound, unsigned int start, unsigned int length, unsigned int buffersize, const char *filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
+const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsigned int length, unsigned int buffersize, const char* filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
 {
 	try
 	{
-		Sequence *f = dynamic_cast<Sequence *>(sound->get());
+		Sequence* f = dynamic_cast<Sequence *>(sound->get());
 
 		f->setSpecs(convCToSpec(specs.specs));
 
@@ -333,11 +333,11 @@ const char *AUD_mixdown_per_channel(AUD_Sound *sound, unsigned int start, unsign
 	}
 }
 
-AUD_Device *AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound *sequencer, float volume, float start)
+AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start)
 {
 	try
 	{
-		ReadDevice *device = new ReadDevice(convCToDSpec(specs));
+		ReadDevice* device = new ReadDevice(convCToDSpec(specs));
 		device->setQuality(true);
 		device->setVolume(volume);
 
@@ -367,7 +367,7 @@ void AUD_exitOnce()
 {
 }
 
-int AUD_init(const char *device, const char *name, AUD_DeviceSpecs specs, int buffersize)
+int AUD_init(const char* device, const char* name, AUD_DeviceSpecs specs, int buffersize)
 {
 	try
 	{

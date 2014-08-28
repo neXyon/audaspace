@@ -69,7 +69,7 @@ void ADSRReader::nextState(ADSRState state)
 	}
 }
 
-void ADSRReader::read(int & length, bool &eos, sample_t *buffer)
+void ADSRReader::read(int & length, bool &eos, sample_t* buffer)
 {
 	Specs specs = m_reader->getSpecs();
 	m_reader->read(length, eos, buffer);

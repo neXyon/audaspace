@@ -184,7 +184,7 @@ extern void AUD_Device_setVolume(AUD_Device* device, float value);
  * \param specs The specification of the audio data.
  * \return A device handle.
  */
-extern AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs);
+extern AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs);
 
 /**
  * Reads the next samples into the supplied buffer.
@@ -195,27 +195,27 @@ extern AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs);
  *         played back currently, in that case the buffer is filled with
  *         silence.
  */
-extern int AUD_readDevice(AUD_Device *device, unsigned char *buffer, int length);
+extern int AUD_readDevice(AUD_Device* device, unsigned char* buffer, int length);
 
 /**
  * Closes a read device.
  * \param device The read device.
  */
-extern void AUD_closeReadDevice(AUD_Device *device);
+extern void AUD_closeReadDevice(AUD_Device* device);
 
 /**
  * Seeks sequenced sound scene playback.
  * \param handle Playback handle.
  * \param time Time in seconds to seek to.
  */
-extern void AUD_seekSynchronizer(AUD_Handle *handle, float time);
+extern void AUD_seekSynchronizer(AUD_Handle* handle, float time);
 
 /**
  * Returns the current sound scene playback time.
  * \param handle Playback handle.
  * \return The playback time in seconds.
  */
-extern float AUD_getSynchronizerPosition(AUD_Handle *handle);
+extern float AUD_getSynchronizerPosition(AUD_Handle* handle);
 
 /**
  * Starts the playback of jack transport if possible.
@@ -232,7 +232,7 @@ extern void AUD_stopSynchronizer();
  * \param function The callback function.
  * \param data The data parameter for the callback.
  */
-extern void AUD_setSynchronizerCallback(AUD_syncFunction function, void *data);
+extern void AUD_setSynchronizerCallback(AUD_syncFunction function, void* data);
 
 /**
  * Returns whether jack transport is currently playing.

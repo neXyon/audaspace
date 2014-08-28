@@ -32,7 +32,7 @@ void AUD_Device_lock(AUD_Device* device)
 	dev->lock();
 }
 
-AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound *sound, int keep)
+AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound* sound, int keep)
 {
 	assert(sound);
 	auto dev = device ? *device : DeviceManager::getDevice();
@@ -194,7 +194,7 @@ static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
 	return s;
 }
 
-AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs)
+AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs)
 {
 	try
 	{
@@ -206,7 +206,7 @@ AUD_Device *AUD_openReadDevice(AUD_DeviceSpecs specs)
 	}
 }
 
-int AUD_readDevice(AUD_Device *device, unsigned char *buffer, int length)
+int AUD_readDevice(AUD_Device* device, unsigned char* buffer, int length)
 {
 	assert(device);
 	assert(buffer);
@@ -225,7 +225,7 @@ int AUD_readDevice(AUD_Device *device, unsigned char *buffer, int length)
 	}
 }
 
-void AUD_closeReadDevice(AUD_Device *device)
+void AUD_closeReadDevice(AUD_Device* device)
 {
 	assert(device);
 
@@ -238,14 +238,14 @@ void AUD_closeReadDevice(AUD_Device *device)
 	}
 }
 
-void AUD_seekSynchronizer(AUD_Handle *handle, float time)
+void AUD_seekSynchronizer(AUD_Handle* handle, float time)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
 		synchronizer->seek(*reinterpret_cast<std::shared_ptr<IHandle>*>(handle), time);
 }
 
-float AUD_getSynchronizerPosition(AUD_Handle *handle)
+float AUD_getSynchronizerPosition(AUD_Handle* handle)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
@@ -267,7 +267,7 @@ void AUD_stopSynchronizer()
 		synchronizer->stop();
 }
 
-void AUD_setSynchronizerCallback(AUD_syncFunction function, void *data)
+void AUD_setSynchronizerCallback(AUD_syncFunction function, void* data)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)

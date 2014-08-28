@@ -70,7 +70,7 @@ private:
 	 * Invalidates the jack device.
 	 * \param data The jack device that gets invalidet by jack.
 	 */
-	static void jack_shutdown(void *data);
+	static void jack_shutdown(void* data);
 
 	/**
 	 * Mixes the next bytes into the buffer.
@@ -78,7 +78,7 @@ private:
 	 * \param data A pointer to the jack device.
 	 * \return 0 what shows success.
 	 */
-	static int jack_mix(jack_nframes_t length, void *data);
+	static int jack_mix(jack_nframes_t length, void* data);
 
 	static int jack_sync(jack_transport_state_t state, jack_position_t* pos, void* data);
 

@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 PyMODINIT_FUNC
-PyInit_aud(void);
+PyInit_aud();
 
 /**
  * Retrieves the python factory of a sound.

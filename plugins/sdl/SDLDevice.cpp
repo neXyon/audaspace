@@ -22,7 +22,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-void SDLDevice::SDL_mix(void *data, Uint8* buffer, int length)
+void SDLDevice::SDL_mix(void* data, Uint8* buffer, int length)
 {
 	SDLDevice* device = (SDLDevice*)data;
 

@@ -75,7 +75,7 @@ public:
 	virtual int getLength() const;
 	virtual int getPosition() const;
 	virtual Specs getSpecs() const;
-	virtual void read(int & length, bool &eos, sample_t *buffer);
+	virtual void read(int & length, bool &eos, sample_t* buffer);
 };
 
 AUD_NAMESPACE_END
