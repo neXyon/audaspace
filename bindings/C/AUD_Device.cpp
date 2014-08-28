@@ -225,7 +225,7 @@ int AUD_readDevice(AUD_Device* device, unsigned char* buffer, int length)
 	}
 }
 
-void AUD_closeReadDevice(AUD_Device* device)
+void AUD_Device_free(AUD_Device* device)
 {
 	assert(device);
 

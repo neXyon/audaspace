@@ -198,10 +198,10 @@ extern AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs);
 extern int AUD_readDevice(AUD_Device* device, unsigned char* buffer, int length);
 
 /**
- * Closes a read device.
- * \param device The read device.
+ * Closes a device. Handle becomes invalid afterwards.
+ * \param device The device to close.
  */
-extern void AUD_closeReadDevice(AUD_Device* device);
+extern void AUD_Device_free(AUD_Device* device);
 
 /**
  * Seeks sequenced sound scene playback.
