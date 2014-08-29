@@ -137,7 +137,7 @@ public:
 	 * Retrieves the muting state of the scene.
 	 * \return Whether the scene is muted.
 	 */
-	bool getMute() const;
+	bool isMuted() const;
 
 	/**
 	 * Retrieves the speed of sound.

@@ -67,6 +67,12 @@ void SequenceEntry::unlock()
 	m_mutex.unlock();
 }
 
+std::shared_ptr<ISound> SequenceEntry::getSound()
+{
+	std::lock_guard<std::recursive_mutex> lock(m_mutex);
+	return m_sound;
+}
+
 void SequenceEntry::setSound(std::shared_ptr<ISound> sound)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -89,6 +95,11 @@ void SequenceEntry::move(float begin, float end, float skip)
 		m_end = end;
 		m_pos_status++;
 	}
+}
+
+bool SequenceEntry::isMuted()
+{
+	return m_muted;
 }
 
 void SequenceEntry::mute(bool mute)

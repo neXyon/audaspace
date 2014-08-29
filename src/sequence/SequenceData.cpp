@@ -90,7 +90,7 @@ void SequenceData::mute(bool muted)
 	m_muted = muted;
 }
 
-bool SequenceData::getMute() const
+bool SequenceData::isMuted() const
 {
 	return m_muted;
 }

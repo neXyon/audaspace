@@ -132,6 +132,12 @@ public:
 	virtual void unlock();
 
 	/**
+	 * Retrieves the sound of the entry.
+	 * \return The sound.
+	 */
+	std::shared_ptr<ISound> getSound();
+
+	/**
 	 * Sets the sound of the entry.
 	 * \param sound The new sound.
 	 */
@@ -144,6 +150,12 @@ public:
 	 * \param skip How many seconds to skip at the beginning.
 	 */
 	void move(float begin, float end, float skip);
+
+	/**
+	 * Retrieves the muting state of the entry.
+	 * \return Whether the entry should is muted or not.
+	 */
+	bool isMuted();
 
 	/**
 	 * Sets the muting state of the entry.

@@ -50,9 +50,9 @@ void Sequence::mute(bool muted)
 	m_sequence->mute(muted);
 }
 
-bool Sequence::getMute() const
+bool Sequence::isMuted() const
 {
-	return m_sequence->getMute();
+	return m_sequence->isMuted();
 }
 
 float Sequence::getSpeedOfSound() const
