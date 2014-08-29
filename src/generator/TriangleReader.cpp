@@ -24,8 +24,7 @@ TriangleReader::TriangleReader(float frequency, SampleRate sampleRate) :
 	m_frequency(frequency),
 	m_position(0),
 	m_sampleRate(sampleRate),
-	m_sample(0),
-	m_up(true)
+	m_sample(0.5f)
 {
 }
 
@@ -42,7 +41,7 @@ bool TriangleReader::isSeekable() const
 void TriangleReader::seek(int position)
 {
 	m_position = position;
-	m_sample = std::fabs(std::fabs(std::fmod((m_position - 1) * m_frequency / (float)m_sampleRate, 1))*2-1)*2-1;
+	m_sample = std::fmod(m_position * m_frequency / (float)m_sampleRate + 1.5f, 2.0f) - 1.0f;
 }
 
 int TriangleReader::getLength() const
@@ -66,24 +65,15 @@ Specs TriangleReader::getSpecs() const
 void TriangleReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	float k = 2.0 * m_frequency / m_sampleRate;
-	if(!m_up)
-		k = -k;
 
 	for(int i = 0; i < length; i++)
 	{
-		m_sample = m_sample + k;
+		m_sample += k;
 
-		if(std::fabs(m_sample) > 1.0f)
-		{
-			if(m_sample > 0.0f)
-				m_sample = 2 - m_sample;
-			else
-				m_sample = -2 - m_sample;
-			m_up = !m_up;
-			k = -k;
-		}
+		if(m_sample >= 1.0f)
+			m_sample -= std::floor(m_sample) + 1.0f;
 
-		buffer[i] = m_sample;
+		buffer[i] = std::fabs(m_sample) * 2.0f - 1.0f;
 	}
 
 	m_position += length;

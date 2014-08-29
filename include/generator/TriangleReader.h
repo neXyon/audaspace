@@ -21,7 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * This class is used for sine tone playback.
+ * This class is used for sawtooth tone playback.
  * The output format is in the 16 bit format and stereo, the sample rate can be
  * specified.
  * As the two channels both play the same the output could also be mono, but
@@ -45,11 +45,6 @@ private:
 	 * The value of the current sample.
 	 */
 	float m_sample;
-
-	/**
-	 * Whether the wave goes up or down at the moment.
-	 */
-	bool m_up;
 
 	/**
 	 * The sample rate for the output.
