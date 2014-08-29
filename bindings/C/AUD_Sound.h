@@ -83,12 +83,45 @@ extern AUD_Sound* AUD_Sound_square(float frequency, aud::SampleRate rate);
 extern AUD_Sound* AUD_Sound_triangle(float frequency, aud::SampleRate rate);
 
 /**
+ * Accumulates a sound by summing over positive input differences thus generating a monotonic sigal.
+ * If additivity is set to true negative input differences get added too, but positive ones with a factor of two.
+ * Note that with additivity the signal is not monotonic anymore.
+ * \param sound The sound to accumulate.
+ * \param additive Whether the accumulation should be additive or not.
+ * \return A handle of the accumulated sound.
+ */
+extern AUD_Sound* AUD_Sound_accumulate(AUD_Sound* sound, int additive);
+
+/**
+ * Attack-Decay-Sustain-Release envelopes the volume of a sound.
+ * Note: there is currently no way to trigger the release with this API.
+ * \param sound The sound to filter.
+ * \param attack The attack time in seconds.
+ * \param decay The decay time in seconds.
+ * \param sustain The sustain level.
+ * \param release The release time in seconds.
+ * \return A handle of the filtered sound.
+ */
+extern AUD_Sound* AUD_Sound_ADSR(AUD_Sound* sound, float attack, float decay, float sustain, float release);
+
+/**
  * Delays a sound.
  * \param sound The sound to dealy.
  * \param delay The delay in seconds.
  * \return A handle of the delayed sound.
  */
 extern AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay);
+
+/**
+ * Envelopes a sound.
+ * \param sound The sound to envelope.
+ * \param attack The attack time in seconds.
+ * \param release The release time in seconds.
+ * \param threshold The general threshold value.
+ * \param arthreshold The attack/release threshold value.
+ * \return A handle of the enveloped sound.
+ */
+extern AUD_Sound* AUD_Sound_envelope(AUD_Sound* sound, float attack, float release, float threshold, float arthreshold);
 
 /**
  * Fade in a sound.
@@ -175,6 +208,13 @@ extern AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels);
  * \return A handle of the reversed sound.
  */
 extern AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound);
+
+/**
+ * Sums the samples of a sound.
+ * \param sound The sound to sum.
+ * \return A handle of the summed sound.
+ */
+extern AUD_Sound* AUD_Sound_sum(AUD_Sound* sound);
 
 /**
  * Turns a sound into a square wave by thresholding.

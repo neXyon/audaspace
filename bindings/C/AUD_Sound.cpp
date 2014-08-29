@@ -21,7 +21,10 @@
 #include "generator/Triangle.h"
 #include "file/File.h"
 #include "util/StreamBuffer.h"
+#include "fx/Accumulator.h"
+#include "fx/ADSR.h"
 #include "fx/Delay.h"
+#include "fx/Envelope.h"
 #include "fx/Fader.h"
 #include "fx/Highpass.h"
 #include "fx/IIRFilter.h"
@@ -30,15 +33,13 @@
 #include "fx/Lowpass.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
+#include "fx/Sum.h"
 #include "fx/Threshold.h"
 #include "fx/Volume.h"
 #include "sequence/Double.h"
 #include "sequence/Superpose.h"
 #include "sequence/PingPong.h"
-#include "fx/Envelope.h"
 #include "respec/LinearResample.h"
-#include "fx/Accumulator.h"
-#include "fx/Sum.h"
 #include "respec/ChannelMapper.h"
 #include "util/Buffer.h"
 #include "Exception.h"
@@ -101,6 +102,34 @@ AUD_Sound* AUD_Sound_triangle(float frequency, SampleRate rate)
 	return new AUD_Sound(new Triangle(frequency, rate));
 }
 
+AUD_Sound* AUD_Sound_accumulate(AUD_Sound* sound, int additive)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Accumulator(*sound, additive));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound* AUD_Sound_ADSR(AUD_Sound* sound, float attack, float decay, float sustain, float release)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new ADSR(*sound, attack, decay, sustain, release));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
 AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay)
 {
 	assert(sound);
@@ -108,6 +137,20 @@ AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay)
 	try
 	{
 		return new AUD_Sound(new Delay(*sound, delay));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound* AUD_Sound_envelope(AUD_Sound* sound, float attack, float release, float threshold, float arthreshold)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Envelope(*sound, attack, release, threshold, arthreshold));
 	}
 	catch(Exception&)
 	{
@@ -267,6 +310,20 @@ AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound)
 	try
 	{
 		return new AUD_Sound(new Reverse(*sound));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_Sound* AUD_Sound_sum(AUD_Sound* sound)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Sum(*sound));
 	}
 	catch(Exception&)
 	{
