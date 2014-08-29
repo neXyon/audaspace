@@ -23,9 +23,9 @@ AUD_NAMESPACE_BEGIN
 class CallbackIIRFilterReader;
 
 /**
- * This sound Transforms any signal to a square signal.
+ * This sound Transforms any signal to a square signal by thresholding.
  */
-class Square : public Effect
+class Threshold : public Effect
 {
 private:
 	/**
@@ -34,16 +34,16 @@ private:
 	const float m_threshold;
 
 	// delete copy constructor and operator=
-	Square(const Square&) = delete;
-	Square& operator=(const Square&) = delete;
+	Threshold(const Threshold&) = delete;
+	Threshold& operator=(const Threshold&) = delete;
 
 public:
 	/**
-	 * Creates a new square sound.
+	 * Creates a new threshold sound.
 	 * \param sound The input sound.
 	 * \param threshold The threshold.
 	 */
-	Square(std::shared_ptr<ISound> sound, float threshold = 0.0f);
+	Threshold(std::shared_ptr<ISound> sound, float threshold = 0.0f);
 
 	/**
 	 * Returns the threshold.
@@ -52,8 +52,8 @@ public:
 
 	virtual std::shared_ptr<IReader> createReader();
 
-	static sample_t squareFilter(CallbackIIRFilterReader* reader, float* threshold);
-	static void endSquareFilter(float* threshold);
+	static sample_t thresholdFilter(CallbackIIRFilterReader* reader, float* threshold);
+	static void endThresholdFilter(float* threshold);
 };
 
 AUD_NAMESPACE_END

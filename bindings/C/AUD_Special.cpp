@@ -22,7 +22,7 @@
 #include "fx/Highpass.h"
 #include "fx/Envelope.h"
 #include "respec/LinearResample.h"
-#include "fx/Square.h"
+#include "fx/Threshold.h"
 #include "fx/Accumulator.h"
 #include "fx/Sum.h"
 #include "generator/Silence.h"
@@ -136,7 +136,7 @@ float* AUD_readSoundBuffer(const char* filename, float low, float high,
 		sound = std::shared_ptr<ISound>(new LinearResample(sound, specs));
 
 		if(square)
-			sound = std::shared_ptr<ISound>(new Square(sound, sthreshold));
+			sound = std::shared_ptr<ISound>(new Threshold(sound, sthreshold));
 
 		if(accumulate)
 			sound = std::shared_ptr<ISound>(new Accumulator(sound, additive));

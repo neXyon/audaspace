@@ -29,7 +29,7 @@
 #include "sequence/PingPong.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
-#include "fx/Square.h"
+#include "fx/Threshold.h"
 #include "fx/Volume.h"
 #include "fx/IIRFilter.h"
 #include "util/StreamBuffer.h"
@@ -701,9 +701,9 @@ Sound_buffer(Sound* self)
 	return (PyObject *)parent;
 }
 
-PyDoc_STRVAR(M_aud_Sound_square_doc,
-			 "square(threshold = 0)\n\n"
-			 "Makes a square wave out of an audio wave by setting all samples "
+PyDoc_STRVAR(M_aud_Sound_threshold_doc,
+			 "threshold(threshold = 0)\n\n"
+			 "Makes a threshold wave out of an audio wave by setting all samples "
 			 "with a amplitude >= threshold to 1, all <= -threshold to -1 and "
 			 "all between to 0.\n\n"
 			 ":arg threshold: Threshold value over which an amplitude counts "
@@ -713,11 +713,11 @@ PyDoc_STRVAR(M_aud_Sound_square_doc,
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_square(Sound* self, PyObject* args)
+Sound_threshold(Sound* self, PyObject* args)
 {
 	float threshold = 0;
 
-	if(!PyArg_ParseTuple(args, "|f:square", &threshold))
+	if(!PyArg_ParseTuple(args, "|f:threshold", &threshold))
 		return nullptr;
 
 	PyTypeObject* type = Py_TYPE(self);
@@ -727,7 +727,7 @@ Sound_square(Sound* self, PyObject* args)
 	{
 		try
 		{
-			parent->sound = new std::shared_ptr<ISound>(new Square(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), threshold));
+			parent->sound = new std::shared_ptr<ISound>(new Threshold(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), threshold));
 		}
 		catch(Exception& e)
 		{
@@ -889,8 +889,8 @@ static PyMethodDef Sound_methods[] = {
 	{"buffer", (PyCFunction)Sound_buffer, METH_NOARGS,
 	 M_aud_Sound_buffer_doc
 	},
-	{"square", (PyCFunction)Sound_square, METH_VARARGS,
-	 M_aud_Sound_square_doc
+	{"threshold", (PyCFunction)Sound_threshold, METH_VARARGS,
+	 M_aud_Sound_threshold_doc
 	},
 	{"filter", (PyCFunction)Sound_filter, METH_VARARGS,
 	 M_aud_Sound_filter_doc

@@ -14,12 +14,12 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/Square.h"
+#include "fx/Threshold.h"
 #include "fx/CallbackIIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN
 
-sample_t Square::squareFilter(CallbackIIRFilterReader* reader, float* threshold)
+sample_t Threshold::thresholdFilter(CallbackIIRFilterReader* reader, float* threshold)
 {
 	float in = reader->x(0);
 	if(in >= *threshold)
@@ -30,25 +30,25 @@ sample_t Square::squareFilter(CallbackIIRFilterReader* reader, float* threshold)
 		return 0;
 }
 
-void Square::endSquareFilter(float* threshold)
+void Threshold::endThresholdFilter(float* threshold)
 {
 	delete threshold;
 }
 
-Square::Square(std::shared_ptr<ISound> sound, float threshold) :
+Threshold::Threshold(std::shared_ptr<ISound> sound, float threshold) :
 		Effect(sound),
 		m_threshold(threshold)
 {
 }
 
-float Square::getThreshold() const
+float Threshold::getThreshold() const
 {
 	return m_threshold;
 }
 
-std::shared_ptr<IReader> Square::createReader()
+std::shared_ptr<IReader> Threshold::createReader()
 {
-	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(getReader(), 1, 0, doFilterIIR(squareFilter), endFilterIIR(endSquareFilter), new float(m_threshold)));
+	return std::shared_ptr<IReader>(new CallbackIIRFilterReader(getReader(), 1, 0, doFilterIIR(thresholdFilter), endFilterIIR(endThresholdFilter), new float(m_threshold)));
 }
 
 AUD_NAMESPACE_END

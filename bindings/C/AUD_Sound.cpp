@@ -26,7 +26,7 @@
 #include "fx/Lowpass.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
-#include "fx/Square.h"
+#include "fx/Threshold.h"
 #include "fx/Volume.h"
 #include "sequence/Double.h"
 #include "sequence/Superpose.h"
@@ -250,13 +250,13 @@ AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound)
 	}
 }
 
-AUD_Sound* AUD_Sound_square(AUD_Sound* sound)
+AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound)
 {
 	assert(sound);
 
 	try
 	{
-		return new AUD_Sound(new Square(*sound));
+		return new AUD_Sound(new Threshold(*sound));
 	}
 	catch(Exception&)
 	{

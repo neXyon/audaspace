@@ -48,7 +48,7 @@ extern AUD_Sound* AUD_Sound_file(const char* filename);
  * Creates a sine sound.
  * \param frequency The frequency of the generated sine sound.
  * \param rate The sample rate of the sine sound.
- * \return A handle of the sound file.
+ * \return A handle of the sound.
  */
 extern AUD_Sound* AUD_Sound_sine(float frequency, aud::SampleRate rate);
 
@@ -147,11 +147,11 @@ extern AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels);
 extern AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound);
 
 /**
- * Rectifies a sound.
- * \param sound The sound to rectify.
- * \return A handle of the rectified sound.
+ * Turns a sound into a square wave by thresholding.
+ * \param sound The sound to threshold.
+ * \return A handle of the thresholded sound.
  */
-extern AUD_Sound* AUD_Sound_square(AUD_Sound* sound);
+extern AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound);
 
 /**
  * Changes the volume of a sound.
