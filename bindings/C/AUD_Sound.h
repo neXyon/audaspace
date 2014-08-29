@@ -45,12 +45,42 @@ extern AUD_Sound* AUD_Sound_cache(AUD_Sound* sound);
 extern AUD_Sound* AUD_Sound_file(const char* filename);
 
 /**
+ * Creates a sawtooth sound.
+ * \param frequency The frequency of the generated sawtooth sound.
+ * \param rate The sample rate of the sawtooth sound.
+ * \return A handle of the sound.
+ */
+extern AUD_Sound* AUD_Sound_sawtooth(float frequency, aud::SampleRate rate);
+
+/**
+ * Creates a quiet sound.
+ * \return A handle of the sound.
+ */
+extern AUD_Sound* AUD_Sound_silence();
+
+/**
  * Creates a sine sound.
  * \param frequency The frequency of the generated sine sound.
  * \param rate The sample rate of the sine sound.
  * \return A handle of the sound.
  */
 extern AUD_Sound* AUD_Sound_sine(float frequency, aud::SampleRate rate);
+
+/**
+ * Creates a square sound.
+ * \param frequency The frequency of the generated square sound.
+ * \param rate The sample rate of the square sound.
+ * \return A handle of the sound.
+ */
+extern AUD_Sound* AUD_Sound_square(float frequency, aud::SampleRate rate);
+
+/**
+ * Creates a triangle sound.
+ * \param frequency The frequency of the generated triangle sound.
+ * \param rate The sample rate of the triangle sound.
+ * \return A handle of the sound.
+ */
+extern AUD_Sound* AUD_Sound_triangle(float frequency, aud::SampleRate rate);
 
 /**
  * Delays a sound.

@@ -14,7 +14,11 @@
  * limitations under the License.
  ******************************************************************************/
 
+#include "generator/Sawtooth.h"
 #include "generator/Sine.h"
+#include "generator/Silence.h"
+#include "generator/Square.h"
+#include "generator/Triangle.h"
 #include "file/File.h"
 #include "util/StreamBuffer.h"
 #include "fx/Delay.h"
@@ -72,9 +76,29 @@ AUD_Sound* AUD_Sound_file(const char* filename)
 	return new AUD_Sound(new File(filename));
 }
 
+AUD_Sound* AUD_Sound_sawtooth(float frequency, SampleRate rate)
+{
+	return new AUD_Sound(new Sawtooth(frequency, rate));
+}
+
+AUD_Sound*AUD_Sound_silence()
+{
+	return new AUD_Sound(new Silence());
+}
+
 AUD_Sound* AUD_Sound_sine(float frequency, SampleRate rate)
 {
 	return new AUD_Sound(new Sine(frequency, rate));
+}
+
+AUD_Sound* AUD_Sound_square(float frequency, SampleRate rate)
+{
+	return new AUD_Sound(new Square(frequency, rate));
+}
+
+AUD_Sound* AUD_Sound_triangle(float frequency, SampleRate rate)
+{
+	return new AUD_Sound(new Triangle(frequency, rate));
 }
 
 AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay)
