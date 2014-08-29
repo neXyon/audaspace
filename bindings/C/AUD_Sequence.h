@@ -55,14 +55,14 @@ extern void AUD_Sequence_free(AUD_Sound* sequence);
  * \param skip How much seconds should be skipped at the beginning.
  * \return The entry added.
  */
-extern AUD_SEntry* AUD_Sequence_addEntry(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip);
+extern AUD_SequenceEntry* AUD_Sequence_addEntry(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip);
 
 /**
  * Removes an entry from the scene.
  * \param sequence The sound scene.
  * \param entry The entry to remove.
  */
-extern void AUD_Sequence_removeEntry(AUD_Sound* sequence, AUD_SEntry* entry);
+extern void AUD_Sequence_removeEntry(AUD_Sound* sequence, AUD_SequenceEntry* entry);
 
 /**
  * Writes animation data to a sequenced entry.
@@ -121,7 +121,7 @@ extern void AUD_Sequence_setFPS(AUD_Sound* sequence, float value);
  * param sequence The sequence to get the muted from.
  * return The muted of the sequence.
  */
-extern int AUD_Sequence_getMuted(AUD_Sound* sequence);
+extern int AUD_Sequence_isMuted(AUD_Sound* sequence);
 
 /**
  * Sets the muted of a sequence.
@@ -160,7 +160,6 @@ extern void AUD_Sequence_setSpeedOfSound(AUD_Sound* sequence, float value);
 
 
 
-
 /**
  * Moves the entry.
  * \param entry The sequenced entry.
@@ -168,30 +167,7 @@ extern void AUD_Sequence_setSpeedOfSound(AUD_Sound* sequence, float value);
  * \param end The new end time or a negative value if unknown.
  * \param skip How many seconds to skip at the beginning.
  */
-extern void AUD_moveSequence(AUD_SEntry* entry, float begin, float end, float skip);
-
-/**
- * Sets the muting state of the entry.
- * \param entry The sequenced entry.
- * \param mute Whether the entry should be muted or not.
- */
-extern void AUD_muteSequence(AUD_SEntry* entry, char mute);
-
-/**
- * Sets whether the entrie's location, velocity and orientation are relative
- * to the listener.
- * \param entry The sequenced entry.
- * \param relative Whether the source is relative.
- * \return Whether the action succeeded.
- */
-extern void AUD_setRelativeSequence(AUD_SEntry* entry, char relative);
-
-/**
- * Sets the sound of the entry.
- * \param entry The sequenced entry.
- * \param sound The new sound.
- */
-extern void AUD_updateSequenceSound(AUD_SEntry* entry, AUD_Sound* sound);
+extern void AUD_SequenceEntry_move(AUD_SequenceEntry* entry, float begin, float end, float skip);
 
 /**
  * Writes animation data to a sequenced entry.
@@ -201,23 +177,161 @@ extern void AUD_updateSequenceSound(AUD_SEntry* entry, AUD_Sound* sound);
  * \param data The data to write.
  * \param animated Whether the attribute is animated.
  */
-extern void AUD_setSequenceAnimData(AUD_SEntry* entry, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
+extern void AUD_SequenceEntry_setAnimationData(AUD_SequenceEntry* entry, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 
 /**
- * Updates all non-animated parameters of the entry.
- * \param entry The sequenced entry.
- * \param volume_max The maximum volume.
- * \param volume_min The minimum volume.
- * \param distance_max The maximum distance.
- * \param distance_reference The reference distance.
- * \param attenuation The attenuation.
- * \param cone_angle_outer The outer cone opening angle.
- * \param cone_angle_inner The inner cone opening angle.
- * \param cone_volume_outer The volume outside the outer cone.
+ * Retrieves the attenuation of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the attenuation from.
+ * return The attenuation of the sequence_entry.
  */
-extern void AUD_updateSequenceData(AUD_SEntry* entry, float volume_max, float volume_min,
-								   float distance_max, float distance_reference, float attenuation,
-								   float cone_angle_outer, float cone_angle_inner, float cone_volume_outer);
+extern float AUD_SequenceEntry_getAttenuation(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the attenuation of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the attenuation from.
+ * param value The new attenuation to set.
+ */
+extern void AUD_SequenceEntry_setAttenuation(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the cone angle inner of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the cone angle inner from.
+ * return The cone angle inner of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getConeAngleInner(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the cone angle inner of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the cone angle inner from.
+ * param value The new cone angle inner to set.
+ */
+extern void AUD_SequenceEntry_setConeAngleInner(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the cone angle outer of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the cone angle outer from.
+ * return The cone angle outer of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getConeAngleOuter(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the cone angle outer of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the cone angle outer from.
+ * param value The new cone angle outer to set.
+ */
+extern void AUD_SequenceEntry_setConeAngleOuter(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the cone volume outer of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the cone volume outer from.
+ * return The cone volume outer of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getConeVolumeOuter(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the cone volume outer of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the cone volume outer from.
+ * param value The new cone volume outer to set.
+ */
+extern void AUD_SequenceEntry_setConeVolumeOuter(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the distance maximum of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the distance maximum from.
+ * return The distance maximum of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getDistanceMaximum(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the distance maximum of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the distance maximum from.
+ * param value The new distance maximum to set.
+ */
+extern void AUD_SequenceEntry_setDistanceMaximum(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the distance reference of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the distance reference from.
+ * return The distance reference of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getDistanceReference(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the distance reference of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the distance reference from.
+ * param value The new distance reference to set.
+ */
+extern void AUD_SequenceEntry_setDistanceReference(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the muted of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the muted from.
+ * return The muted of the sequence_entry.
+ */
+extern int AUD_SequenceEntry_isMuted(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the muted of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the muted from.
+ * param value The new muted to set.
+ */
+extern void AUD_SequenceEntry_setMuted(AUD_SequenceEntry* sequence_entry, int value);
+
+/**
+ * Retrieves the relative of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the relative from.
+ * return The relative of the sequence_entry.
+ */
+extern int AUD_SequenceEntry_isRelative(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the relative of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the relative from.
+ * param value The new relative to set.
+ */
+extern void AUD_SequenceEntry_setRelative(AUD_SequenceEntry* sequence_entry, int value);
+
+/**
+ * Retrieves the sound of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the sound from.
+ * return The sound of the sequence_entry.
+ */
+extern AUD_Sound* AUD_SequenceEntry_getSound(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the sound of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the sound from.
+ * param value The new sound to set.
+ */
+extern void AUD_SequenceEntry_setSound(AUD_SequenceEntry* sequence_entry, AUD_Sound* value);
+
+/**
+ * Retrieves the volume maximum of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the volume maximum from.
+ * return The volume maximum of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getVolumeMaximum(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the volume maximum of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the volume maximum from.
+ * param value The new volume maximum to set.
+ */
+extern void AUD_SequenceEntry_setVolumeMaximum(AUD_SequenceEntry* sequence_entry, float value);
+
+/**
+ * Retrieves the volume minimum of a sequence_entry.
+ * param sequence_entry The sequence_entry to get the volume minimum from.
+ * return The volume minimum of the sequence_entry.
+ */
+extern float AUD_SequenceEntry_getVolumeMinimum(AUD_SequenceEntry* sequence_entry);
+
+/**
+ * Sets the volume minimum of a sequence_entry.
+ * param sequence_entry The sequence_entry to set the volume minimum from.
+ * param value The new volume minimum to set.
+ */
+extern void AUD_SequenceEntry_setVolumeMinimum(AUD_SequenceEntry* sequence_entry, float value);
 
 #ifdef __cplusplus
 }

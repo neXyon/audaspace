@@ -25,12 +25,12 @@
 typedef std::shared_ptr<aud::ISound> AUD_Sound;
 typedef std::shared_ptr<aud::IHandle> AUD_Handle;
 typedef std::shared_ptr<aud::IDevice> AUD_Device;
-typedef std::shared_ptr<aud::SequenceEntry> AUD_SEntry;
+typedef std::shared_ptr<aud::SequenceEntry> AUD_SequenceEntry;
 #else
 typedef void AUD_Sound;
 typedef void AUD_Handle;
 typedef void AUD_Device;
-typedef void AUD_SEntry;
+typedef void AUD_SequenceEntry;
 #endif
 
 /// Container formats for writers.
