@@ -241,6 +241,9 @@ if(${BUILD_DEMOS})
 	add_executable(audaconvert demos/audaconvert.cpp)
 	target_link_libraries(audaconvert audaspace)
 
+	add_executable(signalgen demos/signalgen.cpp)
+	target_link_libraries(signalgen audaspace)
+
 	add_executable(audaremap demos/audaremap.cpp)
 	target_link_libraries(audaremap audaspace)
 
