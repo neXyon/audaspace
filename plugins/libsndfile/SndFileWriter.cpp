@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 
 SndFileWriter::SndFileWriter(std::string filename, DeviceSpecs specs,
 									 Container format, Codec codec, unsigned int bitrate) :
-	m_specs(specs)
+	m_position(0), m_specs(specs)
 {
 	SF_INFO sfinfo;
 
