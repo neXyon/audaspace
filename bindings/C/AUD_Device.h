@@ -184,7 +184,7 @@ extern void AUD_Device_setVolume(AUD_Device* device, float value);
  * \param specs The specification of the audio data.
  * \return A device handle.
  */
-extern AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs);
+extern AUD_Device* AUD_Device_open(AUD_DeviceSpecs specs);
 
 /**
  * Reads the next samples into the supplied buffer.
@@ -195,7 +195,7 @@ extern AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs);
  *         played back currently, in that case the buffer is filled with
  *         silence.
  */
-extern int AUD_readDevice(AUD_Device* device, unsigned char* buffer, int length);
+extern int AUD_Device_read(AUD_Device* device, unsigned char* buffer, int length);
 
 /**
  * Closes a device. Handle becomes invalid afterwards.

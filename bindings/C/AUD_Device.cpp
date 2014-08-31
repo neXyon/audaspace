@@ -194,7 +194,7 @@ static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
 	return s;
 }
 
-AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs)
+AUD_Device* AUD_Device_open(AUD_DeviceSpecs specs)
 {
 	try
 	{
@@ -206,7 +206,7 @@ AUD_Device* AUD_openReadDevice(AUD_DeviceSpecs specs)
 	}
 }
 
-int AUD_readDevice(AUD_Device* device, unsigned char* buffer, int length)
+int AUD_Device_read(AUD_Device* device, unsigned char* buffer, int length)
 {
 	assert(device);
 	assert(buffer);
