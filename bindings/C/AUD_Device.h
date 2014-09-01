@@ -37,6 +37,19 @@ typedef enum
 typedef void (*AUD_syncFunction)(void*, int, float);
 
 /**
+ * Opens a new sound device.
+ * \param type       The name of the device.
+ *                   Can be NULL to open the default device with default settings or return the handle to the already opened one.
+ *                   Can be "" to open the a default factory device with given settings.
+ *                   Can be "read" to open a readable device.
+ * \param specs      Specification of the device parameters.
+ * \param buffersize Size of the mixing buffer.
+ * \param name       Custom name of the device.
+ * \return A handle to the opened device or NULL on failure.
+ */
+extern AUD_Device* AUD_Device_open(const char* type, AUD_DeviceSpecs specs, int buffersize, const char* name);
+
+/**
  * Locks the playback device.
  */
 extern void AUD_Device_lock(AUD_Device* device);
@@ -180,15 +193,8 @@ extern float AUD_Device_getVolume(AUD_Device* device);
 extern void AUD_Device_setVolume(AUD_Device* device, float value);
 
 /**
- * Opens a read device, with which audio data can be read.
- * \param specs The specification of the audio data.
- * \return A device handle.
- */
-extern AUD_Device* AUD_Device_open(AUD_DeviceSpecs specs);
-
-/**
  * Reads the next samples into the supplied buffer.
- * \param device The read device.
+ * \param device The readable device.
  * \param buffer The target buffer.
  * \param length The length in samples to be filled.
  * \return True if the reading succeeded, false if there are no sounds

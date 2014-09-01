@@ -16,6 +16,7 @@
 
 #include "devices/DeviceManager.h"
 #include "devices/I3DDevice.h"
+#include "devices/IDeviceFactory.h"
 #include "devices/ReadDevice.h"
 #include "Exception.h"
 
@@ -25,6 +26,75 @@ using namespace aud;
 
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Device.h"
+
+static inline aud::Specs convCToSpec(AUD_Specs specs)
+{
+	aud::Specs s;
+	s.channels = static_cast<Channels>(specs.channels);
+	s.rate = static_cast<SampleRate>(specs.rate);
+	return s;
+}
+
+static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
+{
+	aud::DeviceSpecs s;
+	s.specs = convCToSpec(specs.specs);
+	s.format = static_cast<SampleFormat>(specs.format);
+	return s;
+}
+
+AUD_Device* AUD_Device_open(const char* type, AUD_DeviceSpecs specs, int buffersize, const char* name)
+{
+	DeviceSpecs dspecs = convCToDSpec(specs);
+
+	if(dspecs.channels == CHANNELS_INVALID)
+		dspecs.channels = CHANNELS_STEREO;
+	if(dspecs.format == FORMAT_INVALID)
+		dspecs.format = FORMAT_FLOAT32;
+	if(dspecs.rate == RATE_INVALID)
+		dspecs.rate = RATE_48000;
+	if(buffersize < 128)
+		buffersize = AUD_DEFAULT_BUFFER_SIZE;
+	if(name == nullptr)
+		name = "";
+
+	try
+	{
+		if(!type)
+		{
+			auto device = DeviceManager::getDevice();
+			if(!device)
+			{
+				DeviceManager::openDefaultDevice();
+				device = DeviceManager::getDevice();
+			}
+			return new AUD_Device(device);
+		}
+
+		if(type == std::string("read"))
+		{
+			return new AUD_Device(new ReadDevice(dspecs));
+		}
+
+		std::shared_ptr<IDeviceFactory> factory;
+		if(!*type)
+			factory = DeviceManager::getDefaultDeviceFactory();
+		else
+			factory = DeviceManager::getDeviceFactory(type);
+
+		if(factory)
+		{
+			factory->setName(name);
+			factory->setSpecs(dspecs);
+			factory->setBufferSize(buffersize);
+			return new AUD_Device(factory->openDevice());
+		}
+	}
+	catch(Exception&)
+	{
+	}
+	return nullptr;
+}
 
 void AUD_Device_lock(AUD_Device* device)
 {
@@ -178,34 +248,6 @@ void AUD_Device_setVolume(AUD_Device* device, float value)
 	dev->setVolume(value);
 }
 
-static inline aud::Specs convCToSpec(AUD_Specs specs)
-{
-	aud::Specs s;
-	s.channels = static_cast<Channels>(specs.channels);
-	s.rate = static_cast<SampleRate>(specs.rate);
-	return s;
-}
-
-static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
-{
-	aud::DeviceSpecs s;
-	s.specs = convCToSpec(specs.specs);
-	s.format = static_cast<SampleFormat>(specs.format);
-	return s;
-}
-
-AUD_Device* AUD_Device_open(AUD_DeviceSpecs specs)
-{
-	try
-	{
-		return new AUD_Device(new ReadDevice(convCToDSpec(specs)));
-	}
-	catch(Exception&)
-	{
-		return nullptr;
-	}
-}
-
 int AUD_Device_read(AUD_Device* device, unsigned char* buffer, int length)
 {
 	assert(device);
@@ -281,4 +323,3 @@ int AUD_isSynchronizerPlaying()
 		return synchronizer->isPlaying();
 	return false;
 }
-
