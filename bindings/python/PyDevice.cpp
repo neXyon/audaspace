@@ -48,14 +48,14 @@ Device_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	Device* self;
 
 	static const char* kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", nullptr};
-	const char* device;
+	const char* device = nullptr;
 	double rate = RATE_44100;
 	int channels = CHANNELS_STEREO;
 	int format = FORMAT_FLOAT32;
 	int buffersize = AUD_DEFAULT_BUFFER_SIZE;
 	const char* name = "";
 
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "s|diiis:Device", const_cast<char**>(kwlist),
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "|sdiiis:Device", const_cast<char**>(kwlist),
 									&device, &rate, &channels, &format, &buffersize, &name))
 		return nullptr;
 
@@ -78,14 +78,31 @@ Device_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 		try
 		{
-			auto factory = DeviceManager::getDeviceFactory(device);
-
-			if(factory)
+			if(!device)
 			{
-				factory->setName(name);
-				factory->setSpecs(specs);
-				factory->setBufferSize(buffersize);
-				self->device = new std::shared_ptr<IDevice>(factory->openDevice());
+				auto dev = DeviceManager::getDevice();
+				if(!dev)
+				{
+					DeviceManager::openDefaultDevice();
+					dev = DeviceManager::getDevice();
+				}
+				self->device = new std::shared_ptr<IDevice>(dev);
+			}
+			else
+			{
+				std::shared_ptr<IDeviceFactory> factory;
+				if(!*device)
+					factory = DeviceManager::getDefaultDeviceFactory();
+				else
+					factory = DeviceManager::getDeviceFactory(device);
+
+				if(factory)
+				{
+					factory->setName(name);
+					factory->setSpecs(specs);
+					factory->setBufferSize(buffersize);
+					self->device = new std::shared_ptr<IDevice>(factory->openDevice());
+				}
 			}
 		}
 		catch(Exception& e)
