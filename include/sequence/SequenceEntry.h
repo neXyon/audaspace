@@ -178,21 +178,6 @@ public:
 	AnimateableProperty* getAnimProperty(AnimateablePropertyType type);
 
 	/**
-	 * Updates all non-animated parameters of the entry.
-	 * \param volume_max The maximum volume.
-	 * \param volume_min The minimum volume.
-	 * \param distance_max The maximum distance.
-	 * \param distance_reference The reference distance.
-	 * \param attenuation The attenuation.
-	 * \param cone_angle_outer The outer cone opening angle.
-	 * \param cone_angle_inner The inner cone opening angle.
-	 * \param cone_volume_outer The volume outside the outer cone.
-	 */
-	void updateAll(float volume_max, float volume_min, float distance_max,
-				   float distance_reference, float attenuation, float cone_angle_outer,
-				   float cone_angle_inner, float cone_volume_outer);
-
-	/**
 	 * Checks whether the source location, velocity and orientation are relative
 	 * to the listener.
 	 * \return Whether the source is relative.

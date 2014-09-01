@@ -133,61 +133,6 @@ AnimateableProperty* SequenceEntry::getAnimProperty(AnimateablePropertyType type
 	}
 }
 
-void SequenceEntry::updateAll(float volume_max, float volume_min, float distance_max,
-								   float distance_reference, float attenuation, float cone_angle_outer,
-								   float cone_angle_inner, float cone_volume_outer)
-{
-	std::lock_guard<std::recursive_mutex> lock(m_mutex);
-
-	if(volume_max != m_volume_max)
-	{
-		m_volume_max = volume_max;
-		m_status++;
-	}
-
-	if(volume_min != m_volume_min)
-	{
-		m_volume_min = volume_min;
-		m_status++;
-	}
-
-	if(distance_max != m_distance_max)
-	{
-		m_distance_max = distance_max;
-		m_status++;
-	}
-
-	if(distance_reference != m_distance_reference)
-	{
-		m_distance_reference = distance_reference;
-		m_status++;
-	}
-
-	if(attenuation != m_attenuation)
-	{
-		m_attenuation = attenuation;
-		m_status++;
-	}
-
-	if(cone_angle_outer != m_cone_angle_outer)
-	{
-		m_cone_angle_outer = cone_angle_outer;
-		m_status++;
-	}
-
-	if(cone_angle_inner != m_cone_angle_inner)
-	{
-		m_cone_angle_inner = cone_angle_inner;
-		m_status++;
-	}
-
-	if(cone_volume_outer != m_cone_volume_outer)
-	{
-		m_cone_volume_outer = cone_volume_outer;
-		m_status++;
-	}
-}
-
 bool SequenceEntry::isRelative()
 {
 	return m_relative;
