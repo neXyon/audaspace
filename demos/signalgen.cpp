@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 		{&sine, "sine"},
 		{&square, "square"},
 		{&triangle, "triangle"},
-		{NULL, ""}
+		{nullptr, ""}
 	};
 
 	std::shared_ptr<IReader> reader;
