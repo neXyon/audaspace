@@ -55,14 +55,14 @@ extern void AUD_Sequence_free(AUD_Sound* sequence);
  * \param skip How much seconds should be skipped at the beginning.
  * \return The entry added.
  */
-extern AUD_SequenceEntry* AUD_Sequence_addEntry(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip);
+extern AUD_SequenceEntry* AUD_Sequence_add(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip);
 
 /**
  * Removes an entry from the scene.
  * \param sequence The sound scene.
  * \param entry The entry to remove.
  */
-extern void AUD_Sequence_removeEntry(AUD_Sound* sequence, AUD_SequenceEntry* entry);
+extern void AUD_Sequence_remove(AUD_Sound* sequence, AUD_SequenceEntry* entry);
 
 /**
  * Writes animation data to a sequenced entry.

@@ -41,14 +41,14 @@ void AUD_Sequence_free(AUD_Sound* sequence)
 	delete sequence;
 }
 
-AUD_SequenceEntry* AUD_Sequence_addEntry(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip)
+AUD_SequenceEntry* AUD_Sequence_add(AUD_Sound* sequence, AUD_Sound* sound, float begin, float end, float skip)
 {
 	if(!sound)
 		return new AUD_SequenceEntry(((Sequence *)sequence->get())->add(AUD_Sound(), begin, end, skip));
 	return new AUD_SequenceEntry(((Sequence *)sequence->get())->add(*sound, begin, end, skip));
 }
 
-void AUD_Sequence_removeEntry(AUD_Sound* sequence, AUD_SequenceEntry* entry)
+void AUD_Sequence_remove(AUD_Sound* sequence, AUD_SequenceEntry* entry)
 {
 	dynamic_cast<Sequence *>(sequence->get())->remove(*entry);
 	delete entry;
