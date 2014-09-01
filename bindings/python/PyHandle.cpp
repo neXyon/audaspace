@@ -343,7 +343,7 @@ Handle_get_location(Handle* self, void* nothing)
 		I3DHandle* handle = dynamic_cast<I3DHandle*>(reinterpret_cast<std::shared_ptr<IHandle>*>(self->handle)->get());
 		if(handle)
 		{
-			Vector3 v = handle->getSourceLocation();
+			Vector3 v = handle->getLocation();
 			return Py_BuildValue("(fff)", v.x(), v.y(), v.z());
 		}
 		else
@@ -373,7 +373,7 @@ Handle_set_location(Handle* self, PyObject* args, void* nothing)
 		if(handle)
 		{
 			Vector3 location(x, y, z);
-			if(handle->setSourceLocation(location))
+			if(handle->setLocation(location))
 				return 0;
 			PyErr_SetString(AUDError, "Location couldn't be set!");
 		}
@@ -399,7 +399,7 @@ Handle_get_velocity(Handle* self, void* nothing)
 		I3DHandle* handle = dynamic_cast<I3DHandle*>(reinterpret_cast<std::shared_ptr<IHandle>*>(self->handle)->get());
 		if(handle)
 		{
-			Vector3 v = handle->getSourceVelocity();
+			Vector3 v = handle->getVelocity();
 			return Py_BuildValue("(fff)", v.x(), v.y(), v.z());
 		}
 		else
@@ -429,7 +429,7 @@ Handle_set_velocity(Handle* self, PyObject* args, void* nothing)
 		if(handle)
 		{
 			Vector3 velocity(x, y, z);
-			if(handle->setSourceVelocity(velocity))
+			if(handle->setVelocity(velocity))
 				return 0;
 			PyErr_SetString(AUDError, "Couldn't set the velocity!");
 		}
@@ -455,7 +455,7 @@ Handle_get_orientation(Handle* self, void* nothing)
 		I3DHandle* handle = dynamic_cast<I3DHandle*>(reinterpret_cast<std::shared_ptr<IHandle>*>(self->handle)->get());
 		if(handle)
 		{
-			Quaternion o = handle->getSourceOrientation();
+			Quaternion o = handle->getOrientation();
 			return Py_BuildValue("(ffff)", o.w(), o.x(), o.y(), o.z());
 		}
 		else
@@ -485,7 +485,7 @@ Handle_set_orientation(Handle* self, PyObject* args, void* nothing)
 		if(handle)
 		{
 			Quaternion orientation(w, x, y, z);
-			if(handle->setSourceOrientation(orientation))
+			if(handle->setOrientation(orientation))
 				return 0;
 			PyErr_SetString(AUDError, "Couldn't set the orientation!");
 		}

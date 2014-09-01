@@ -461,7 +461,7 @@ bool SoftwareDevice::SoftwareHandle::setStopCallback(stopCallback callback, void
 /******************** SoftwareHandle 3DHandle Code ************************/
 /******************************************************************************/
 
-Vector3 SoftwareDevice::SoftwareHandle::getSourceLocation()
+Vector3 SoftwareDevice::SoftwareHandle::getLocation()
 {
 	if(!m_status)
 		return Vector3();
@@ -469,7 +469,7 @@ Vector3 SoftwareDevice::SoftwareHandle::getSourceLocation()
 	return m_location;
 }
 
-bool SoftwareDevice::SoftwareHandle::setSourceLocation(const Vector3& location)
+bool SoftwareDevice::SoftwareHandle::setLocation(const Vector3& location)
 {
 	if(!m_status)
 		return false;
@@ -479,7 +479,7 @@ bool SoftwareDevice::SoftwareHandle::setSourceLocation(const Vector3& location)
 	return true;
 }
 
-Vector3 SoftwareDevice::SoftwareHandle::getSourceVelocity()
+Vector3 SoftwareDevice::SoftwareHandle::getVelocity()
 {
 	if(!m_status)
 		return Vector3();
@@ -487,7 +487,7 @@ Vector3 SoftwareDevice::SoftwareHandle::getSourceVelocity()
 	return m_velocity;
 }
 
-bool SoftwareDevice::SoftwareHandle::setSourceVelocity(const Vector3& velocity)
+bool SoftwareDevice::SoftwareHandle::setVelocity(const Vector3& velocity)
 {
 	if(!m_status)
 		return false;
@@ -497,7 +497,7 @@ bool SoftwareDevice::SoftwareHandle::setSourceVelocity(const Vector3& velocity)
 	return true;
 }
 
-Quaternion SoftwareDevice::SoftwareHandle::getSourceOrientation()
+Quaternion SoftwareDevice::SoftwareHandle::getOrientation()
 {
 	if(!m_status)
 		return Quaternion();
@@ -505,7 +505,7 @@ Quaternion SoftwareDevice::SoftwareHandle::getSourceOrientation()
 	return m_orientation;
 }
 
-bool SoftwareDevice::SoftwareHandle::setSourceOrientation(const Quaternion& orientation)
+bool SoftwareDevice::SoftwareHandle::setOrientation(const Quaternion& orientation)
 {
 	if(!m_status)
 		return false;

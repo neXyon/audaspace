@@ -32,43 +32,43 @@ public:
 	virtual ~I3DHandle() {}
 
 	/**
-	 * Retrieves the location of a source.
+	 * Retrieves the location of the source.
 	 * \return The location.
 	 */
-	virtual Vector3 getSourceLocation()=0;
+	virtual Vector3 getLocation()=0;
 
 	/**
-	 * Sets the location of a source.
+	 * Sets the location of the source.
 	 * \param location The new location.
 	 * \return Whether the action succeeded.
 	 */
-	virtual bool setSourceLocation(const Vector3& location)=0;
+	virtual bool setLocation(const Vector3& location)=0;
 
 	/**
-	 * Retrieves the velocity of a source.
+	 * Retrieves the velocity of the source.
 	 * \return The velocity.
 	 */
-	virtual Vector3 getSourceVelocity()=0;
+	virtual Vector3 getVelocity()=0;
 
 	/**
-	 * Sets the velocity of a source.
+	 * Sets the velocity of the source.
 	 * \param velocity The new velocity.
 	 * \return Whether the action succeeded.
 	 */
-	virtual bool setSourceVelocity(const Vector3& velocity)=0;
+	virtual bool setVelocity(const Vector3& velocity)=0;
 
 	/**
-	 * Retrieves the orientation of a source.
+	 * Retrieves the orientation of the source.
 	 * \return The orientation as quaternion.
 	 */
-	virtual Quaternion getSourceOrientation()=0;
+	virtual Quaternion getOrientation()=0;
 
 	/**
-	 * Sets the orientation of a source.
+	 * Sets the orientation of the source.
 	 * \param orientation The new orientation as quaternion.
 	 * \return Whether the action succeeded.
 	 */
-	virtual bool setSourceOrientation(const Quaternion& orientation)=0;
+	virtual bool setOrientation(const Quaternion& orientation)=0;
 
 
 	/**

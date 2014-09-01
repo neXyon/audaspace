@@ -121,12 +121,12 @@ private:
 		virtual bool setLoopCount(int count);
 		virtual bool setStopCallback(stopCallback callback = 0, void* data = 0);
 
-		virtual Vector3 getSourceLocation();
-		virtual bool setSourceLocation(const Vector3& location);
-		virtual Vector3 getSourceVelocity();
-		virtual bool setSourceVelocity(const Vector3& velocity);
-		virtual Quaternion getSourceOrientation();
-		virtual bool setSourceOrientation(const Quaternion& orientation);
+		virtual Vector3 getLocation();
+		virtual bool setLocation(const Vector3& location);
+		virtual Vector3 getVelocity();
+		virtual bool setVelocity(const Vector3& velocity);
+		virtual Quaternion getOrientation();
+		virtual bool setOrientation(const Quaternion& orientation);
 		virtual bool isRelative();
 		virtual bool setRelative(bool relative);
 		virtual float getVolumeMaximum();

@@ -421,7 +421,7 @@ bool OpenALDevice::OpenALHandle::setStopCallback(stopCallback callback, void* da
 /********************* OpenALHandle 3DHandle Code *************************/
 /******************************************************************************/
 
-Vector3 OpenALDevice::OpenALHandle::getSourceLocation()
+Vector3 OpenALDevice::OpenALHandle::getLocation()
 {
 	Vector3 result = Vector3(0, 0, 0);
 
@@ -441,7 +441,7 @@ Vector3 OpenALDevice::OpenALHandle::getSourceLocation()
 	return result;
 }
 
-bool OpenALDevice::OpenALHandle::setSourceLocation(const Vector3& location)
+bool OpenALDevice::OpenALHandle::setLocation(const Vector3& location)
 {
 	if(!m_status)
 		return false;
@@ -456,7 +456,7 @@ bool OpenALDevice::OpenALHandle::setSourceLocation(const Vector3& location)
 	return true;
 }
 
-Vector3 OpenALDevice::OpenALHandle::getSourceVelocity()
+Vector3 OpenALDevice::OpenALHandle::getVelocity()
 {
 	Vector3 result = Vector3(0, 0, 0);
 
@@ -476,7 +476,7 @@ Vector3 OpenALDevice::OpenALHandle::getSourceVelocity()
 	return result;
 }
 
-bool OpenALDevice::OpenALHandle::setSourceVelocity(const Vector3& velocity)
+bool OpenALDevice::OpenALHandle::setVelocity(const Vector3& velocity)
 {
 	if(!m_status)
 		return false;
@@ -491,12 +491,12 @@ bool OpenALDevice::OpenALHandle::setSourceVelocity(const Vector3& velocity)
 	return true;
 }
 
-Quaternion OpenALDevice::OpenALHandle::getSourceOrientation()
+Quaternion OpenALDevice::OpenALHandle::getOrientation()
 {
 	return m_orientation;
 }
 
-bool OpenALDevice::OpenALHandle::setSourceOrientation(const Quaternion& orientation)
+bool OpenALDevice::OpenALHandle::setOrientation(const Quaternion& orientation)
 {
 	ALfloat direction[3];
 	direction[0] = -2 * (orientation.w() * orientation.y() +

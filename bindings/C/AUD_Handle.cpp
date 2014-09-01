@@ -183,7 +183,7 @@ int AUD_Handle_getLocation(AUD_Handle* handle, float value[3])
 
 	if(h.get())
 	{
-		Vector3 v = h->getSourceLocation();
+		Vector3 v = h->getLocation();
 		value[0] = v.x();
 		value[1] = v.y();
 		value[2] = v.z();
@@ -200,7 +200,7 @@ int AUD_Handle_setLocation(AUD_Handle* handle, const float value[3])
 	if(h.get())
 	{
 		Vector3 v = Vector3(value[0], value[1], value[2]);
-		return h->setSourceLocation(v);
+		return h->setLocation(v);
 	}
 	return false;
 }
@@ -224,7 +224,7 @@ int AUD_Handle_getOrientation(AUD_Handle* handle, float value[4])
 
 	if(h.get())
 	{
-		Quaternion v = h->getSourceOrientation();
+		Quaternion v = h->getOrientation();
 		value[0] = v.x();
 		value[1] = v.y();
 		value[2] = v.z();
@@ -242,7 +242,7 @@ int AUD_Handle_setOrientation(AUD_Handle* handle, const float value[4])
 	if(h.get())
 	{
 		Quaternion v(value[3], value[0], value[1], value[2]);
-		return h->setSourceOrientation(v);
+		return h->setOrientation(v);
 	}
 	return false;
 }
@@ -304,7 +304,7 @@ int AUD_Handle_getVelocity(AUD_Handle* handle, float value[3])
 
 	if(h.get())
 	{
-		Vector3 v = h->getSourceVelocity();
+		Vector3 v = h->getVelocity();
 		value[0] = v.x();
 		value[1] = v.y();
 		value[2] = v.z();
@@ -321,7 +321,7 @@ int AUD_Handle_setVelocity(AUD_Handle* handle, const float value[3])
 	if(h.get())
 	{
 		Vector3 v = Vector3(value[0], value[1], value[2]);
-		return h->setSourceVelocity(v);
+		return h->setVelocity(v);
 	}
 	return false;
 }

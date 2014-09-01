@@ -117,12 +117,12 @@ void SequenceHandle::update(float position, float frame, float fps)
 		Quaternion q;
 
 		m_entry->m_orientation.read(frame, q.get());
-		m_3dhandle->setSourceOrientation(q);
+		m_3dhandle->setOrientation(q);
 		m_entry->m_location.read(frame, v.get());
-		m_3dhandle->setSourceLocation(v);
+		m_3dhandle->setLocation(v);
 		m_entry->m_location.read(frame + 1, v2.get());
 		v2 -= v;
-		m_3dhandle->setSourceVelocity(v2 * fps);
+		m_3dhandle->setVelocity(v2 * fps);
 
 		if(m_entry->m_muted)
 			m_handle->setVolume(0);
