@@ -331,13 +331,13 @@ AUD_Sound* AUD_Sound_sum(AUD_Sound* sound)
 	}
 }
 
-AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound)
+AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound, float threshold)
 {
 	assert(sound);
 
 	try
 	{
-		return new AUD_Sound(new Threshold(*sound));
+		return new AUD_Sound(new Threshold(*sound, threshold));
 	}
 	catch(Exception&)
 	{

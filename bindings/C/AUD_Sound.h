@@ -220,9 +220,10 @@ extern AUD_Sound* AUD_Sound_sum(AUD_Sound* sound);
 /**
  * Turns a sound into a square wave by thresholding.
  * \param sound The sound to threshold.
+ * \param threshold Threshold value over which an amplitude counts non-zero.
  * \return A handle of the thresholded sound.
  */
-extern AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound);
+extern AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound, float threshold);
 
 /**
  * Changes the volume of a sound.
