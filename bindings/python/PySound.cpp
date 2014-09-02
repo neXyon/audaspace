@@ -16,23 +16,32 @@
 
 #include "PySound.h"
 
-#include "generator/Sine.h"
-#include "file/File.h"
 #include "Exception.h"
-#include "fx/Lowpass.h"
+#include "file/File.h"
+#include "util/StreamBuffer.h"
+#include "generator/Sawtooth.h"
+#include "generator/Silence.h"
+#include "generator/Sine.h"
+#include "generator/Square.h"
+#include "generator/Triangle.h"
+#include "fx/Accumulator.h"
+#include "fx/ADSR.h"
 #include "fx/Delay.h"
-#include "sequence/Double.h"
+#include "fx/Envelope.h"
 #include "fx/Fader.h"
 #include "fx/Highpass.h"
+#include "fx/IIRFilter.h"
 #include "fx/Limiter.h"
 #include "fx/Loop.h"
-#include "sequence/PingPong.h"
+#include "fx/Lowpass.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
+#include "fx/Sum.h"
 #include "fx/Threshold.h"
 #include "fx/Volume.h"
-#include "fx/IIRFilter.h"
-#include "util/StreamBuffer.h"
+#include "respec/ChannelMapper.h"
+#include "sequence/Double.h"
+#include "sequence/PingPong.h"
 #include "sequence/Superpose.h"
 
 
@@ -156,6 +165,75 @@ Sound_file(PyTypeObject* type, PyObject* args)
 	return (PyObject *)self;
 }
 
+PyDoc_STRVAR(M_aud_Sound_sawtooth_doc,
+			 "sawtooth(frequency, rate=44100)\n\n"
+			 "Creates a sawtooth sound which plays a sawtooth wave.\n\n"
+			 ":arg frequency: The frequency of the sawtooth wave in Hz.\n"
+			 ":type frequency: float\n"
+			 ":arg rate: The sampling rate in Hz. It's recommended to set this "
+			 "value to the playback device's samling rate to avoid resamping.\n"
+			 ":type rate: int\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_sawtooth(PyTypeObject* type, PyObject* args)
+{
+	float frequency;
+	double rate = 44100;
+
+	if(!PyArg_ParseTuple(args, "f|d:sawtooth", &frequency, &rate))
+		return nullptr;
+
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<ISound>(new Sawtooth(frequency, (SampleRate)rate));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
+PyDoc_STRVAR(M_aud_Sound_silence_doc,
+			 "silence()\n\n"
+			 "Creates a silence sound which plays simple silence.\n\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_silence(PyTypeObject* type)
+{
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<ISound>(new Silence());
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
 PyDoc_STRVAR(M_aud_Sound_sine_doc,
 			 "sine(frequency, rate=44100)\n\n"
 			 "Creates a sine sound which plays a sine wave.\n\n"
@@ -196,6 +274,179 @@ Sound_sine(PyTypeObject* type, PyObject* args)
 	return (PyObject *)self;
 }
 
+PyDoc_STRVAR(M_aud_Sound_square_doc,
+			 "square(frequency, rate=44100)\n\n"
+			 "Creates a square sound which plays a square wave.\n\n"
+			 ":arg frequency: The frequency of the square wave in Hz.\n"
+			 ":type frequency: float\n"
+			 ":arg rate: The sampling rate in Hz. It's recommended to set this "
+			 "value to the playback device's samling rate to avoid resamping.\n"
+			 ":type rate: int\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_square(PyTypeObject* type, PyObject* args)
+{
+	float frequency;
+	double rate = 44100;
+
+	if(!PyArg_ParseTuple(args, "f|d:square", &frequency, &rate))
+		return nullptr;
+
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<ISound>(new Square(frequency, (SampleRate)rate));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
+PyDoc_STRVAR(M_aud_Sound_triangle_doc,
+			 "triangle(frequency, rate=44100)\n\n"
+			 "Creates a triangle sound which plays a triangle wave.\n\n"
+			 ":arg frequency: The frequency of the triangle wave in Hz.\n"
+			 ":type frequency: float\n"
+			 ":arg rate: The sampling rate in Hz. It's recommended to set this "
+			 "value to the playback device's samling rate to avoid resamping.\n"
+			 ":type rate: int\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_triangle(PyTypeObject* type, PyObject* args)
+{
+	float frequency;
+	double rate = 44100;
+
+	if(!PyArg_ParseTuple(args, "f|d:triangle", &frequency, &rate))
+		return nullptr;
+
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<ISound>(new Triangle(frequency, (SampleRate)rate));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
+PyDoc_STRVAR(M_aud_Sound_accumulate_doc,
+			 "accumulate(additive=False)\n\n"
+			 "Accumulates a sound by summing over positive input differences thus generating a monotonic sigal. "
+			 "If additivity is set to true negative input differences get added too, but positive ones with a factor of two. "
+			 "Note that with additivity the signal is not monotonic anymore.\n\n"
+			 ":arg additive: Whether the accumulation should be additive or not.\n"
+			 ":type time: bool\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_accumulate(Sound* self, PyObject* args)
+{
+	bool additive = false;
+	PyObject* additiveo;
+
+	if(!PyArg_ParseTuple(args, "|O:accumulate", &additiveo))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		if(additiveo != nullptr)
+		{
+			if(!PyBool_Check(additiveo))
+			{
+				PyErr_SetString(PyExc_TypeError, "additive is not a boolean!");
+				return nullptr;
+			}
+
+			additive = additiveo == Py_True;
+		}
+
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Accumulator(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), additive));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_ADSR_doc,
+			 "ADSR(attack,decay,sustain,release)\n\n"
+			 "Attack-Decay-Sustain-Release envelopes the volume of a sound. "
+			 "Note: there is currently no way to trigger the release with this API.\n\n"
+			 ":arg attack: The attack time in seconds.\n"
+			 ":type attack: float\n"
+			 ":arg decay: The decay time in seconds.\n"
+			 ":type decay: float\n"
+			 ":arg sustain: The sustain level.\n"
+			 ":type sustain: float\n"
+			 ":arg release: The release level.\n"
+			 ":type release: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_ADSR(Sound* self, PyObject* args)
+{
+	float attack, decay, sustain, release;
+
+	if(!PyArg_ParseTuple(args, "ffff:ADSR", &attack, &decay, &sustain, &release))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new ADSR(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), attack, decay, sustain, release));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
 PyDoc_STRVAR(M_aud_Sound_delay_doc,
 			 "delay(time)\n\n"
 			 "Delays by playing adding silence in front of the other sound's "
@@ -222,6 +473,49 @@ Sound_delay(Sound* self, PyObject* args)
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Delay(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), delay));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_envelope_doc,
+			 "envelope(attack, release, threshold, arthreshold)\n\n"
+			 "Delays by playing adding silence in front of the other sound's "
+			 "data.\n\n"
+			 ":arg attack: The attack factor.\n"
+			 ":type attack: float\n"
+			 ":arg release: The release factor.\n"
+			 ":type release: float\n"
+			 ":arg threshold: The general threshold value.\n"
+			 ":type threshold: float\n"
+			 ":arg arthreshold: The attack/release threshold value.\n"
+			 ":type arthreshold: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_envelope(Sound* self, PyObject* args)
+{
+	float attack, release, threshold, arthreshold;
+
+	if(!PyArg_ParseTuple(args, "ffff:envelope", &attack, &release, &threshold, &arthreshold))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Envelope(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), attack, release, threshold, arthreshold));
 		}
 		catch(Exception& e)
 		{
@@ -613,6 +907,46 @@ Sound_pitch(Sound* self, PyObject* args)
 	return (PyObject *)parent;
 }
 
+PyDoc_STRVAR(M_aud_Sound_rechannel_doc,
+			 "rechannel(channels)\n\n"
+			 "Rechannels the sound.\n\n"
+			 ":arg channels: The new channel configuration.\n"
+			 ":type channels: int\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_rechannel(Sound* self, PyObject* args)
+{
+	int channels;
+
+	if(!PyArg_ParseTuple(args, "i:rechannel", &channels))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			DeviceSpecs specs;
+			specs.channels = static_cast<Channels>(channels);
+			specs.rate = RATE_INVALID;
+			specs.format = FORMAT_INVALID;
+			parent->sound = new std::shared_ptr<ISound>(new ChannelMapper(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), specs));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
 PyDoc_STRVAR(M_aud_Sound_reverse_doc,
 			 "reverse()\n\n"
 			 "Plays a sound reversed.\n\n"
@@ -637,6 +971,35 @@ Sound_reverse(Sound* self)
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Reverse(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_sum_doc,
+			 "sum()\n\n"
+			 "Sums the samples of a sound.\n\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_sum(Sound* self)
+{
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Sum(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
 		}
 		catch(Exception& e)
 		{
@@ -847,11 +1210,32 @@ static PyMethodDef Sound_methods[] = {
 	{"file", (PyCFunction)Sound_file, METH_VARARGS | METH_CLASS,
 	 M_aud_Sound_file_doc
 	},
+	{"sawtooth", (PyCFunction)Sound_sawtooth, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_sawtooth_doc
+	},
+	{"silence", (PyCFunction)Sound_silence, METH_NOARGS | METH_CLASS,
+	 M_aud_Sound_silence_doc
+	},
 	{"sine", (PyCFunction)Sound_sine, METH_VARARGS | METH_CLASS,
 	 M_aud_Sound_sine_doc
 	},
+	{"square", (PyCFunction)Sound_square, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_square_doc
+	},
+	{"triangle", (PyCFunction)Sound_triangle, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_triangle_doc
+	},
+	{"accumulate", (PyCFunction)Sound_accumulate, METH_VARARGS,
+	 M_aud_Sound_accumulate_doc
+	},
+	{"ADSR", (PyCFunction)Sound_ADSR, METH_VARARGS,
+	 M_aud_Sound_ADSR_doc
+	},
 	{"delay", (PyCFunction)Sound_delay, METH_VARARGS,
 	 M_aud_Sound_delay_doc
+	},
+	{"envelope", (PyCFunction)Sound_envelope, METH_VARARGS,
+	 M_aud_Sound_envelope_doc
 	},
 	{"fadein", (PyCFunction)Sound_fadein, METH_VARARGS,
 	 M_aud_Sound_fadein_doc
@@ -877,8 +1261,14 @@ static PyMethodDef Sound_methods[] = {
 	{"pitch", (PyCFunction)Sound_pitch, METH_VARARGS,
 	 M_aud_Sound_pitch_doc
 	},
+	{"rechannel", (PyCFunction)Sound_rechannel, METH_VARARGS,
+	 M_aud_Sound_rechannel_doc
+	},
 	{"reverse", (PyCFunction)Sound_reverse, METH_NOARGS,
 	 M_aud_Sound_reverse_doc
+	},
+	{"sum", (PyCFunction)Sound_sum, METH_NOARGS,
+	 M_aud_Sound_sum_doc
 	},
 	{"threshold", (PyCFunction)Sound_threshold, METH_VARARGS,
 	 M_aud_Sound_threshold_doc
