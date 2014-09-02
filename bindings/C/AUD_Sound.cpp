@@ -243,13 +243,13 @@ AUD_Sound* AUD_Sound_limit(AUD_Sound* sound, float start, float end)
 	}
 }
 
-AUD_Sound* AUD_Sound_loop(AUD_Sound* sound)
+AUD_Sound* AUD_Sound_loop(AUD_Sound* sound, int count)
 {
 	assert(sound);
 
 	try
 	{
-		return new AUD_Sound(new Loop(*sound));
+		return new AUD_Sound(new Loop(*sound, count));
 	}
 	catch(Exception&)
 	{

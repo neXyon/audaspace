@@ -115,8 +115,8 @@ extern AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay);
 /**
  * Envelopes a sound.
  * \param sound The sound to envelope.
- * \param attack The attack time in seconds.
- * \param release The release time in seconds.
+ * \param attack The attack factor.
+ * \param release The release factor.
  * \param threshold The general threshold value.
  * \param arthreshold The attack/release threshold value.
  * \return A handle of the enveloped sound.
@@ -173,9 +173,10 @@ extern AUD_Sound* AUD_Sound_limit(AUD_Sound* sound, float start, float end);
 /**
  * Loops a sound.
  * \param sound The sound to loop.
+ * \param count How often the sound should be looped. Negative values mean endlessly.
  * \return A handle of the looped sound.
  */
-extern AUD_Sound* AUD_Sound_loop(AUD_Sound* sound);
+extern AUD_Sound* AUD_Sound_loop(AUD_Sound* sound, int count);
 
 /**
  * Lowpass filters a sound.
