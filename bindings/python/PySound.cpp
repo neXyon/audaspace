@@ -82,44 +82,39 @@ Sound_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	return (PyObject *)self;
 }
 
-PyDoc_STRVAR(M_aud_Sound_sine_doc,
-			 "sine(frequency, rate=44100)\n\n"
-			 "Creates a sine sound which plays a sine wave.\n\n"
-			 ":arg frequency: The frequency of the sine wave in Hz.\n"
-			 ":type frequency: float\n"
-			 ":arg rate: The sampling rate in Hz. It's recommended to set this "
-			 "value to the playback device's samling rate to avoid resamping.\n"
-			 ":type rate: int\n"
+PyDoc_STRVAR(M_aud_Sound_cache_doc,
+			 "cache()\n\n"
+			 "Caches a sound into RAM.\n"
+			 "This saves CPU usage needed for decoding and file access if the "
+			 "underlying sound reads from a file on the harddisk, but it "
+			 "consumes a lot of memory.\n\n"
 			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: Only known-length factories can be buffered.\n\n"
+			 ".. warning:: Raw PCM data needs a lot of space, only buffer "
+			 "short factories.");
 
 static PyObject *
-Sound_sine(PyTypeObject* type, PyObject* args)
+Sound_cache(Sound* self)
 {
-	float frequency;
-	double rate = 44100;
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
-	if(!PyArg_ParseTuple(args, "f|d:sine", &frequency, &rate))
-		return nullptr;
-
-	Sound* self;
-
-	self = (Sound*)type->tp_alloc(type, 0);
-	if(self != nullptr)
+	if(parent != nullptr)
 	{
 		try
 		{
-			self->sound = new std::shared_ptr<ISound>(new Sine(frequency, (SampleRate)rate));
+			parent->sound = new std::shared_ptr<ISound>(new StreamBuffer(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
 		}
 		catch(Exception& e)
 		{
-			Py_DECREF(self);
+			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
 
-	return (PyObject *)self;
+	return (PyObject *)parent;
 }
 
 PyDoc_STRVAR(M_aud_Sound_file_doc,
@@ -161,44 +156,44 @@ Sound_file(PyTypeObject* type, PyObject* args)
 	return (PyObject *)self;
 }
 
-PyDoc_STRVAR(M_aud_Sound_lowpass_doc,
-			 "lowpass(frequency, Q=0.5)\n\n"
-			 "Creates a second order lowpass filter based on the transfer "
-			 "function H(s) = 1 / (s^2 + s/Q + 1)\n\n"
-			 ":arg frequency: The cut off trequency of the lowpass.\n"
+PyDoc_STRVAR(M_aud_Sound_sine_doc,
+			 "sine(frequency, rate=44100)\n\n"
+			 "Creates a sine sound which plays a sine wave.\n\n"
+			 ":arg frequency: The frequency of the sine wave in Hz.\n"
 			 ":type frequency: float\n"
-			 ":arg Q: Q factor of the lowpass.\n"
-			 ":type Q: float\n"
+			 ":arg rate: The sampling rate in Hz. It's recommended to set this "
+			 "value to the playback device's samling rate to avoid resamping.\n"
+			 ":type rate: int\n"
 			 ":return: The created :class:`Sound` object.\n"
 			 ":rtype: :class:`Sound`");
 
 static PyObject *
-Sound_lowpass(Sound* self, PyObject* args)
+Sound_sine(PyTypeObject* type, PyObject* args)
 {
 	float frequency;
-	float Q = 0.5;
+	double rate = 44100;
 
-	if(!PyArg_ParseTuple(args, "f|f:lowpass", &frequency, &Q))
+	if(!PyArg_ParseTuple(args, "f|d:sine", &frequency, &rate))
 		return nullptr;
 
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* self;
 
-	if(parent != nullptr)
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
 	{
 		try
 		{
-			parent->sound = new std::shared_ptr<ISound>(new Lowpass(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), frequency, Q));
+			self->sound = new std::shared_ptr<ISound>(new Sine(frequency, (SampleRate)rate));
 		}
 		catch(Exception& e)
 		{
-			Py_DECREF(parent);
+			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.what());
 			return nullptr;
 		}
 	}
 
-	return (PyObject *)parent;
+	return (PyObject *)self;
 }
 
 PyDoc_STRVAR(M_aud_Sound_delay_doc,
@@ -227,206 +222,6 @@ Sound_delay(Sound* self, PyObject* args)
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Delay(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), delay));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_join_doc,
-			 "join(sound)\n\n"
-			 "Plays two factories in sequence.\n\n"
-			 ":arg sound: The sound to play second.\n"
-			 ":type sound: :class:`Sound`\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: The two factories have to have the same specifications "
-			 "(channels and samplerate).");
-
-static PyObject *
-Sound_join(Sound* self, PyObject* object)
-{
-	PyTypeObject* type = Py_TYPE(self);
-
-	if(!PyObject_TypeCheck(object, type))
-	{
-		PyErr_SetString(PyExc_TypeError, "Object has to be of type Sound!");
-		return nullptr;
-	}
-
-	Sound* parent;
-	Sound* child = (Sound*)object;
-
-	parent = (Sound*)type->tp_alloc(type, 0);
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Double(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ISound>*>(child->sound)));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_highpass_doc,
-			 "highpass(frequency, Q=0.5)\n\n"
-			 "Creates a second order highpass filter based on the transfer "
-			 "function H(s) = s^2 / (s^2 + s/Q + 1)\n\n"
-			 ":arg frequency: The cut off trequency of the highpass.\n"
-			 ":type frequency: float\n"
-			 ":arg Q: Q factor of the lowpass.\n"
-			 ":type Q: float\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
-
-static PyObject *
-Sound_highpass(Sound* self, PyObject* args)
-{
-	float frequency;
-	float Q = 0.5;
-
-	if(!PyArg_ParseTuple(args, "f|f:highpass", &frequency, &Q))
-		return nullptr;
-
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Highpass(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), frequency, Q));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_limit_doc,
-			 "limit(start, end)\n\n"
-			 "Limits a sound within a specific start and end time.\n\n"
-			 ":arg start: Start time in seconds.\n"
-			 ":type start: float\n"
-			 ":arg end: End time in seconds.\n"
-			 ":type end: float\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
-
-static PyObject *
-Sound_limit(Sound* self, PyObject* args)
-{
-	float start, end;
-
-	if(!PyArg_ParseTuple(args, "ff:limit", &start, &end))
-		return nullptr;
-
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Limiter(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), start, end));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_pitch_doc,
-			 "pitch(factor)\n\n"
-			 "Changes the pitch of a sound with a specific factor.\n\n"
-			 ":arg factor: The factor to change the pitch with.\n"
-			 ":type factor: float\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: This is done by changing the sample rate of the "
-			 "underlying sound, which has to be an integer, so the factor "
-			 "value rounded and the factor may not be 100 % accurate.\n\n"
-			 ".. note:: This is a filter function, you might consider using "
-			 ":attr:`Handle.pitch` instead.");
-
-static PyObject *
-Sound_pitch(Sound* self, PyObject* args)
-{
-	float factor;
-
-	if(!PyArg_ParseTuple(args, "f:pitch", &factor))
-		return nullptr;
-
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Pitch(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), factor));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_volume_doc,
-			 "volume(volume)\n\n"
-			 "Changes the volume of a sound.\n\n"
-			 ":arg volume: The new volume..\n"
-			 ":type volume: float\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: Should be in the range [0, 1] to avoid clipping.\n\n"
-			 ".. note:: This is a filter function, you might consider using "
-			 ":attr:`Handle.volume` instead.");
-
-static PyObject *
-Sound_volume(Sound* self, PyObject* args)
-{
-	float volume;
-
-	if(!PyArg_ParseTuple(args, "f:volume", &volume))
-		return nullptr;
-
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Volume(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), volume));
 		}
 		catch(Exception& e)
 		{
@@ -508,226 +303,6 @@ Sound_fadeout(Sound* self, PyObject* args)
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new Fader(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), FADE_OUT, start, length));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_loop_doc,
-			 "loop(count)\n\n"
-			 "Loops a sound.\n\n"
-			 ":arg count: How often the sound should be looped. "
-			 "Negative values mean endlessly.\n"
-			 ":type count: integer\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: This is a filter function, you might consider using "
-			 ":attr:`Handle.loop_count` instead.");
-
-static PyObject *
-Sound_loop(Sound* self, PyObject* args)
-{
-	int loop;
-
-	if(!PyArg_ParseTuple(args, "i:loop", &loop))
-		return nullptr;
-
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Loop(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), loop));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_mix_doc,
-			 "mix(sound)\n\n"
-			 "Mixes two factories.\n\n"
-			 ":arg sound: The sound to mix over the other.\n"
-			 ":type sound: :class:`Sound`\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: The two factories have to have the same specifications "
-			 "(channels and samplerate).");
-
-static PyObject *
-Sound_mix(Sound* self, PyObject* object)
-{
-	PyTypeObject* type = Py_TYPE(self);
-
-	if(!PyObject_TypeCheck(object, type))
-	{
-		PyErr_SetString(PyExc_TypeError, "Object is not of type Sound!");
-		return nullptr;
-	}
-
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-	Sound* child = (Sound*)object;
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Superpose(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ISound>*>(child->sound)));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_pingpong_doc,
-			 "pingpong()\n\n"
-			 "Plays a sound forward and then backward.\n"
-			 "This is like joining a sound with its reverse.\n\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
-
-static PyObject *
-Sound_pingpong(Sound* self)
-{
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new PingPong(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_reverse_doc,
-			 "reverse()\n\n"
-			 "Plays a sound reversed.\n\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: The sound has to have a finite length and has to be "
-			 "seekable. It's recommended to use this only with factories	 with "
-			 "fast and accurate seeking, which is not true for encoded audio "
-			 "files, such ones should be buffered using :meth:`buffer` before "
-			 "being played reversed.\n\n"
-			 ".. warning:: If seeking is not accurate in the underlying sound "
-			 "you'll likely hear skips/jumps/cracks.");
-
-static PyObject *
-Sound_reverse(Sound* self)
-{
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Reverse(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_buffer_doc,
-			 "buffer()\n\n"
-			 "Buffers a sound into RAM.\n"
-			 "This saves CPU usage needed for decoding and file access if the "
-			 "underlying sound reads from a file on the harddisk, but it "
-			 "consumes a lot of memory.\n\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`\n\n"
-			 ".. note:: Only known-length factories can be buffered.\n\n"
-			 ".. warning:: Raw PCM data needs a lot of space, only buffer "
-			 "short factories.");
-
-static PyObject *
-Sound_buffer(Sound* self)
-{
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new StreamBuffer(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(parent);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)parent;
-}
-
-PyDoc_STRVAR(M_aud_Sound_threshold_doc,
-			 "threshold(threshold = 0)\n\n"
-			 "Makes a threshold wave out of an audio wave by setting all samples "
-			 "with a amplitude >= threshold to 1, all <= -threshold to -1 and "
-			 "all between to 0.\n\n"
-			 ":arg threshold: Threshold value over which an amplitude counts "
-			 "non-zero.\n"
-			 ":type threshold: float\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
-
-static PyObject *
-Sound_threshold(Sound* self, PyObject* args)
-{
-	float threshold = 0;
-
-	if(!PyArg_ParseTuple(args, "|f:threshold", &threshold))
-		return nullptr;
-
-	PyTypeObject* type = Py_TYPE(self);
-	Sound* parent = (Sound*)type->tp_alloc(type, 0);
-
-	if(parent != nullptr)
-	{
-		try
-		{
-			parent->sound = new std::shared_ptr<ISound>(new Threshold(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), threshold));
 		}
 		catch(Exception& e)
 		{
@@ -840,33 +415,443 @@ Sound_filter(Sound* self, PyObject* args)
 	return (PyObject *)parent;
 }
 
+PyDoc_STRVAR(M_aud_Sound_highpass_doc,
+			 "highpass(frequency, Q=0.5)\n\n"
+			 "Creates a second order highpass filter based on the transfer "
+			 "function H(s) = s^2 / (s^2 + s/Q + 1)\n\n"
+			 ":arg frequency: The cut off trequency of the highpass.\n"
+			 ":type frequency: float\n"
+			 ":arg Q: Q factor of the lowpass.\n"
+			 ":type Q: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_highpass(Sound* self, PyObject* args)
+{
+	float frequency;
+	float Q = 0.5;
+
+	if(!PyArg_ParseTuple(args, "f|f:highpass", &frequency, &Q))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Highpass(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), frequency, Q));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_limit_doc,
+			 "limit(start, end)\n\n"
+			 "Limits a sound within a specific start and end time.\n\n"
+			 ":arg start: Start time in seconds.\n"
+			 ":type start: float\n"
+			 ":arg end: End time in seconds.\n"
+			 ":type end: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_limit(Sound* self, PyObject* args)
+{
+	float start, end;
+
+	if(!PyArg_ParseTuple(args, "ff:limit", &start, &end))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Limiter(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), start, end));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_loop_doc,
+			 "loop(count)\n\n"
+			 "Loops a sound.\n\n"
+			 ":arg count: How often the sound should be looped. "
+			 "Negative values mean endlessly.\n"
+			 ":type count: integer\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: This is a filter function, you might consider using "
+			 ":attr:`Handle.loop_count` instead.");
+
+static PyObject *
+Sound_loop(Sound* self, PyObject* args)
+{
+	int loop;
+
+	if(!PyArg_ParseTuple(args, "i:loop", &loop))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Loop(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), loop));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_lowpass_doc,
+			 "lowpass(frequency, Q=0.5)\n\n"
+			 "Creates a second order lowpass filter based on the transfer "
+			 "function H(s) = 1 / (s^2 + s/Q + 1)\n\n"
+			 ":arg frequency: The cut off trequency of the lowpass.\n"
+			 ":type frequency: float\n"
+			 ":arg Q: Q factor of the lowpass.\n"
+			 ":type Q: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_lowpass(Sound* self, PyObject* args)
+{
+	float frequency;
+	float Q = 0.5;
+
+	if(!PyArg_ParseTuple(args, "f|f:lowpass", &frequency, &Q))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Lowpass(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), frequency, Q));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_pitch_doc,
+			 "pitch(factor)\n\n"
+			 "Changes the pitch of a sound with a specific factor.\n\n"
+			 ":arg factor: The factor to change the pitch with.\n"
+			 ":type factor: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: This is done by changing the sample rate of the "
+			 "underlying sound, which has to be an integer, so the factor "
+			 "value rounded and the factor may not be 100 % accurate.\n\n"
+			 ".. note:: This is a filter function, you might consider using "
+			 ":attr:`Handle.pitch` instead.");
+
+static PyObject *
+Sound_pitch(Sound* self, PyObject* args)
+{
+	float factor;
+
+	if(!PyArg_ParseTuple(args, "f:pitch", &factor))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Pitch(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), factor));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_reverse_doc,
+			 "reverse()\n\n"
+			 "Plays a sound reversed.\n\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: The sound has to have a finite length and has to be "
+			 "seekable. It's recommended to use this only with factories	 with "
+			 "fast and accurate seeking, which is not true for encoded audio "
+			 "files, such ones should be buffered using :meth:`cache` before "
+			 "being played reversed.\n\n"
+			 ".. warning:: If seeking is not accurate in the underlying sound "
+			 "you'll likely hear skips/jumps/cracks.");
+
+static PyObject *
+Sound_reverse(Sound* self)
+{
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Reverse(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_threshold_doc,
+			 "threshold(threshold = 0)\n\n"
+			 "Makes a threshold wave out of an audio wave by setting all samples "
+			 "with a amplitude >= threshold to 1, all <= -threshold to -1 and "
+			 "all between to 0.\n\n"
+			 ":arg threshold: Threshold value over which an amplitude counts "
+			 "non-zero.\n"
+			 ":type threshold: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_threshold(Sound* self, PyObject* args)
+{
+	float threshold = 0;
+
+	if(!PyArg_ParseTuple(args, "|f:threshold", &threshold))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Threshold(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), threshold));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_volume_doc,
+			 "volume(volume)\n\n"
+			 "Changes the volume of a sound.\n\n"
+			 ":arg volume: The new volume..\n"
+			 ":type volume: float\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: Should be in the range [0, 1] to avoid clipping.\n\n"
+			 ".. note:: This is a filter function, you might consider using "
+			 ":attr:`Handle.volume` instead.");
+
+static PyObject *
+Sound_volume(Sound* self, PyObject* args)
+{
+	float volume;
+
+	if(!PyArg_ParseTuple(args, "f:volume", &volume))
+		return nullptr;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Volume(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), volume));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_join_doc,
+			 "join(sound)\n\n"
+			 "Plays two factories in sequence.\n\n"
+			 ":arg sound: The sound to play second.\n"
+			 ":type sound: :class:`Sound`\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: The two factories have to have the same specifications "
+			 "(channels and samplerate).");
+
+static PyObject *
+Sound_join(Sound* self, PyObject* object)
+{
+	PyTypeObject* type = Py_TYPE(self);
+
+	if(!PyObject_TypeCheck(object, type))
+	{
+		PyErr_SetString(PyExc_TypeError, "Object has to be of type Sound!");
+		return nullptr;
+	}
+
+	Sound* parent;
+	Sound* child = (Sound*)object;
+
+	parent = (Sound*)type->tp_alloc(type, 0);
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Double(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ISound>*>(child->sound)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_mix_doc,
+			 "mix(sound)\n\n"
+			 "Mixes two factories.\n\n"
+			 ":arg sound: The sound to mix over the other.\n"
+			 ":type sound: :class:`Sound`\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`\n\n"
+			 ".. note:: The two factories have to have the same specifications "
+			 "(channels and samplerate).");
+
+static PyObject *
+Sound_mix(Sound* self, PyObject* object)
+{
+	PyTypeObject* type = Py_TYPE(self);
+
+	if(!PyObject_TypeCheck(object, type))
+	{
+		PyErr_SetString(PyExc_TypeError, "Object is not of type Sound!");
+		return nullptr;
+	}
+
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+	Sound* child = (Sound*)object;
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new Superpose(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ISound>*>(child->sound)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_pingpong_doc,
+			 "pingpong()\n\n"
+			 "Plays a sound forward and then backward.\n"
+			 "This is like joining a sound with its reverse.\n\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_pingpong(Sound* self)
+{
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new PingPong(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
 static PyMethodDef Sound_methods[] = {
-	{"sine", (PyCFunction)Sound_sine, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_sine_doc
+	{"cache", (PyCFunction)Sound_cache, METH_NOARGS,
+	 M_aud_Sound_cache_doc
 	},
 	{"file", (PyCFunction)Sound_file, METH_VARARGS | METH_CLASS,
 	 M_aud_Sound_file_doc
 	},
-	{"lowpass", (PyCFunction)Sound_lowpass, METH_VARARGS,
-	 M_aud_Sound_lowpass_doc
+	{"sine", (PyCFunction)Sound_sine, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_sine_doc
 	},
 	{"delay", (PyCFunction)Sound_delay, METH_VARARGS,
 	 M_aud_Sound_delay_doc
-	},
-	{"join", (PyCFunction)Sound_join, METH_O,
-	 M_aud_Sound_join_doc
-	},
-	{"highpass", (PyCFunction)Sound_highpass, METH_VARARGS,
-	 M_aud_Sound_highpass_doc
-	},
-	{"limit", (PyCFunction)Sound_limit, METH_VARARGS,
-	 M_aud_Sound_limit_doc
-	},
-	{"pitch", (PyCFunction)Sound_pitch, METH_VARARGS,
-	 M_aud_Sound_pitch_doc
-	},
-	{"volume", (PyCFunction)Sound_volume, METH_VARARGS,
-	 M_aud_Sound_volume_doc
 	},
 	{"fadein", (PyCFunction)Sound_fadein, METH_VARARGS,
 	 M_aud_Sound_fadein_doc
@@ -874,26 +859,41 @@ static PyMethodDef Sound_methods[] = {
 	{"fadeout", (PyCFunction)Sound_fadeout, METH_VARARGS,
 	 M_aud_Sound_fadeout_doc
 	},
+	{"filter", (PyCFunction)Sound_filter, METH_VARARGS,
+	 M_aud_Sound_filter_doc
+	},
+	{"highpass", (PyCFunction)Sound_highpass, METH_VARARGS,
+	 M_aud_Sound_highpass_doc
+	},
+	{"limit", (PyCFunction)Sound_limit, METH_VARARGS,
+	 M_aud_Sound_limit_doc
+	},
 	{"loop", (PyCFunction)Sound_loop, METH_VARARGS,
 	 M_aud_Sound_loop_doc
+	},
+	{"lowpass", (PyCFunction)Sound_lowpass, METH_VARARGS,
+	 M_aud_Sound_lowpass_doc
+	},
+	{"pitch", (PyCFunction)Sound_pitch, METH_VARARGS,
+	 M_aud_Sound_pitch_doc
+	},
+	{"reverse", (PyCFunction)Sound_reverse, METH_NOARGS,
+	 M_aud_Sound_reverse_doc
+	},
+	{"threshold", (PyCFunction)Sound_threshold, METH_VARARGS,
+	 M_aud_Sound_threshold_doc
+	},
+	{"volume", (PyCFunction)Sound_volume, METH_VARARGS,
+	 M_aud_Sound_volume_doc
+	},
+	{"join", (PyCFunction)Sound_join, METH_O,
+	 M_aud_Sound_join_doc
 	},
 	{"mix", (PyCFunction)Sound_mix, METH_O,
 	 M_aud_Sound_mix_doc
 	},
 	{"pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
 	 M_aud_Sound_pingpong_doc
-	},
-	{"reverse", (PyCFunction)Sound_reverse, METH_NOARGS,
-	 M_aud_Sound_reverse_doc
-	},
-	{"buffer", (PyCFunction)Sound_buffer, METH_NOARGS,
-	 M_aud_Sound_buffer_doc
-	},
-	{"threshold", (PyCFunction)Sound_threshold, METH_VARARGS,
-	 M_aud_Sound_threshold_doc
-	},
-	{"filter", (PyCFunction)Sound_filter, METH_VARARGS,
-	 M_aud_Sound_filter_doc
 	},
 	{nullptr}  /* Sentinel */
 };
