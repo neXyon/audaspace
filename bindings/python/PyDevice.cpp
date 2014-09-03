@@ -123,6 +123,32 @@ Device_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	return (PyObject *)self;
 }
 
+PyDoc_STRVAR(M_aud_Device_lock_doc,
+			 "lock()\n\n"
+			 "Locks the device so that it's guaranteed, that no samples are "
+			 "read from the streams until :meth:`unlock` is called.\n"
+			 "This is useful if you want to do start/stop/pause/resume some "
+			 "sounds at the same time.\n\n"
+			 ".. note:: The device has to be unlocked as often as locked to be "
+			 "able to continue playback.\n\n"
+			 ".. warning:: Make sure the time between locking and unlocking is "
+			 "as short as possible to avoid clicks.");
+
+static PyObject *
+Device_lock(Device* self)
+{
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->lock();
+		Py_RETURN_NONE;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
 PyDoc_STRVAR(M_aud_Device_play_doc,
 			 "play(sound, keep=False)\n\n"
 			 "Plays a sound.\n\n"
@@ -205,32 +231,6 @@ Device_stopAll(Device* self)
 	}
 }
 
-PyDoc_STRVAR(M_aud_Device_lock_doc,
-			 "lock()\n\n"
-			 "Locks the device so that it's guaranteed, that no samples are "
-			 "read from the streams until :meth:`unlock` is called.\n"
-			 "This is useful if you want to do start/stop/pause/resume some "
-			 "sounds at the same time.\n\n"
-			 ".. note:: The device has to be unlocked as often as locked to be "
-			 "able to continue playback.\n\n"
-			 ".. warning:: Make sure the time between locking and unlocking is "
-			 "as short as possible to avoid clicks.");
-
-static PyObject *
-Device_lock(Device* self)
-{
-	try
-	{
-		(*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->lock();
-		Py_RETURN_NONE;
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-}
-
 PyDoc_STRVAR(M_aud_Device_unlock_doc,
 			 "unlock()\n\n"
 			 "Unlocks the device after a lock call, see :meth:`lock` for "
@@ -252,56 +252,20 @@ Device_unlock(Device* self)
 }
 
 static PyMethodDef Device_methods[] = {
+	{"lock", (PyCFunction)Device_lock, METH_NOARGS,
+	 M_aud_Device_lock_doc
+	},
 	{"play", (PyCFunction)Device_play, METH_VARARGS | METH_KEYWORDS,
 	 M_aud_Device_play_doc
 	},
 	{"stopAll", (PyCFunction)Device_stopAll, METH_NOARGS,
 	 M_aud_Device_stopAll_doc
 	},
-	{"lock", (PyCFunction)Device_lock, METH_NOARGS,
-	 M_aud_Device_lock_doc
-	},
 	{"unlock", (PyCFunction)Device_unlock, METH_NOARGS,
 	 M_aud_Device_unlock_doc
 	},
 	{nullptr}  /* Sentinel */
 };
-
-PyDoc_STRVAR(M_aud_Device_rate_doc,
-			 "The sampling rate of the device in Hz.");
-
-static PyObject *
-Device_get_rate(Device* self, void* nothing)
-{
-	try
-	{
-		DeviceSpecs specs = (*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->getSpecs();
-		return Py_BuildValue("d", specs.rate);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-}
-
-PyDoc_STRVAR(M_aud_Device_format_doc,
-			 "The native sample format of the device.");
-
-static PyObject *
-Device_get_format(Device* self, void* nothing)
-{
-	try
-	{
-		DeviceSpecs specs = (*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->getSpecs();
-		return Py_BuildValue("i", specs.format);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-}
 
 PyDoc_STRVAR(M_aud_Device_channels_doc,
 			 "The channel count of the device.");
@@ -321,221 +285,19 @@ Device_get_channels(Device* self, void* nothing)
 	}
 }
 
-PyDoc_STRVAR(M_aud_Device_volume_doc,
-			 "The overall volume of the device.");
+PyDoc_STRVAR(M_aud_Device_distance_model_doc,
+			 "The distance model of the device.\n\n"
+			 ".. seealso:: http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm#_Toc199835864");
 
 static PyObject *
-Device_get_volume(Device* self, void* nothing)
-{
-	try
-	{
-		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->getVolume());
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-}
-
-static int
-Device_set_volume(Device* self, PyObject* args, void* nothing)
-{
-	float volume;
-
-	if(!PyArg_Parse(args, "f:volume", &volume))
-		return -1;
-
-	try
-	{
-		(*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->setVolume(volume);
-		return 0;
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return -1;
-	}
-}
-
-PyDoc_STRVAR(M_aud_Device_listener_location_doc,
-			 "The listeners's location in 3D space, a 3D tuple of floats.");
-
-static PyObject *
-Device_get_listener_location(Device* self, void* nothing)
+Device_get_distance_model(Device* self, void* nothing)
 {
 	try
 	{
 		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
 		if(device)
 		{
-			Vector3 v = device->getListenerLocation();
-			return Py_BuildValue("(fff)", v.x(), v.y(), v.z());
-		}
-		else
-		{
-			PyErr_SetString(AUDError, device_not_3d_error);
-		}
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-	}
-
-	return nullptr;
-}
-
-static int
-Device_set_listener_location(Device* self, PyObject* args, void* nothing)
-{
-	float x, y, z;
-
-	if(!PyArg_Parse(args, "(fff):listener_location", &x, &y, &z))
-		return -1;
-
-	try
-	{
-		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
-		if(device)
-		{
-			Vector3 location(x, y, z);
-			device->setListenerLocation(location);
-			return 0;
-		}
-		else
-			PyErr_SetString(AUDError, device_not_3d_error);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-	}
-
-	return -1;
-}
-
-PyDoc_STRVAR(M_aud_Device_listener_velocity_doc,
-			 "The listener's velocity in 3D space, a 3D tuple of floats.");
-
-static PyObject *
-Device_get_listener_velocity(Device* self, void* nothing)
-{
-	try
-	{
-		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
-		if(device)
-		{
-			Vector3 v = device->getListenerVelocity();
-			return Py_BuildValue("(fff)", v.x(), v.y(), v.z());
-		}
-		else
-		{
-			PyErr_SetString(AUDError, device_not_3d_error);
-		}
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-	}
-
-	return nullptr;
-}
-
-static int
-Device_set_listener_velocity(Device* self, PyObject* args, void* nothing)
-{
-	float x, y, z;
-
-	if(!PyArg_Parse(args, "(fff):listener_velocity", &x, &y, &z))
-		return -1;
-
-	try
-	{
-		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
-		if(device)
-		{
-			Vector3 velocity(x, y, z);
-			device->setListenerVelocity(velocity);
-			return 0;
-		}
-		else
-			PyErr_SetString(AUDError, device_not_3d_error);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-	}
-
-	return -1;
-}
-
-PyDoc_STRVAR(M_aud_Device_listener_orientation_doc,
-			 "The listener's orientation in 3D space as quaternion, a 4 float tuple.");
-
-static PyObject *
-Device_get_listener_orientation(Device* self, void* nothing)
-{
-	try
-	{
-		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
-		if(device)
-		{
-			Quaternion o = device->getListenerOrientation();
-			return Py_BuildValue("(ffff)", o.w(), o.x(), o.y(), o.z());
-		}
-		else
-		{
-			PyErr_SetString(AUDError, device_not_3d_error);
-		}
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-	}
-
-	return nullptr;
-}
-
-static int
-Device_set_listener_orientation(Device* self, PyObject* args, void* nothing)
-{
-	float w, x, y, z;
-
-	if(!PyArg_Parse(args, "(ffff):listener_orientation", &w, &x, &y, &z))
-		return -1;
-
-	try
-	{
-		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
-		if(device)
-		{
-			Quaternion orientation(w, x, y, z);
-			device->setListenerOrientation(orientation);
-			return 0;
-		}
-		else
-			PyErr_SetString(AUDError, device_not_3d_error);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-	}
-
-	return -1;
-}
-
-PyDoc_STRVAR(M_aud_Device_speed_of_sound_doc,
-			 "The speed of sound of the device.\n"
-			 "The speed of sound in air is typically 343 m/s.");
-
-static PyObject *
-Device_get_speed_of_sound(Device* self, void* nothing)
-{
-	try
-	{
-		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
-		if(device)
-		{
-			return Py_BuildValue("f", device->getSpeedOfSound());
+			return Py_BuildValue("i", int(device->getDistanceModel()));
 		}
 		else
 		{
@@ -551,11 +313,11 @@ Device_get_speed_of_sound(Device* self, void* nothing)
 }
 
 static int
-Device_set_speed_of_sound(Device* self, PyObject* args, void* nothing)
+Device_set_distance_model(Device* self, PyObject* args, void* nothing)
 {
-	float speed;
+	int model;
 
-	if(!PyArg_Parse(args, "f:speed_of_sound", &speed))
+	if(!PyArg_Parse(args, "i:distance_model", &model))
 		return -1;
 
 	try
@@ -563,7 +325,7 @@ Device_set_speed_of_sound(Device* self, PyObject* args, void* nothing)
 		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
 		if(device)
 		{
-			device->setSpeedOfSound(speed);
+			device->setDistanceModel(DistanceModel(model));
 			return 0;
 		}
 		else
@@ -633,19 +395,220 @@ Device_set_doppler_factor(Device* self, PyObject* args, void* nothing)
 	return -1;
 }
 
-PyDoc_STRVAR(M_aud_Device_distance_model_doc,
-			 "The distance model of the device.\n\n"
-			 ".. seealso:: http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm#_Toc199835864");
+PyDoc_STRVAR(M_aud_Device_format_doc,
+			 "The native sample format of the device.");
 
 static PyObject *
-Device_get_distance_model(Device* self, void* nothing)
+Device_get_format(Device* self, void* nothing)
+{
+	try
+	{
+		DeviceSpecs specs = (*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->getSpecs();
+		return Py_BuildValue("i", specs.format);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Device_listener_location_doc,
+			 "The listeners's location in 3D space, a 3D tuple of floats.");
+
+static PyObject *
+Device_get_listener_location(Device* self, void* nothing)
 {
 	try
 	{
 		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
 		if(device)
 		{
-			return Py_BuildValue("i", int(device->getDistanceModel()));
+			Vector3 v = device->getListenerLocation();
+			return Py_BuildValue("(fff)", v.x(), v.y(), v.z());
+		}
+		else
+		{
+			PyErr_SetString(AUDError, device_not_3d_error);
+		}
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return nullptr;
+}
+
+static int
+Device_set_listener_location(Device* self, PyObject* args, void* nothing)
+{
+	float x, y, z;
+
+	if(!PyArg_Parse(args, "(fff):listener_location", &x, &y, &z))
+		return -1;
+
+	try
+	{
+		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
+		if(device)
+		{
+			Vector3 location(x, y, z);
+			device->setListenerLocation(location);
+			return 0;
+		}
+		else
+			PyErr_SetString(AUDError, device_not_3d_error);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return -1;
+}
+
+PyDoc_STRVAR(M_aud_Device_listener_orientation_doc,
+			 "The listener's orientation in 3D space as quaternion, a 4 float tuple.");
+
+static PyObject *
+Device_get_listener_orientation(Device* self, void* nothing)
+{
+	try
+	{
+		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
+		if(device)
+		{
+			Quaternion o = device->getListenerOrientation();
+			return Py_BuildValue("(ffff)", o.w(), o.x(), o.y(), o.z());
+		}
+		else
+		{
+			PyErr_SetString(AUDError, device_not_3d_error);
+		}
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return nullptr;
+}
+
+static int
+Device_set_listener_orientation(Device* self, PyObject* args, void* nothing)
+{
+	float w, x, y, z;
+
+	if(!PyArg_Parse(args, "(ffff):listener_orientation", &w, &x, &y, &z))
+		return -1;
+
+	try
+	{
+		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
+		if(device)
+		{
+			Quaternion orientation(w, x, y, z);
+			device->setListenerOrientation(orientation);
+			return 0;
+		}
+		else
+			PyErr_SetString(AUDError, device_not_3d_error);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return -1;
+}
+
+PyDoc_STRVAR(M_aud_Device_listener_velocity_doc,
+			 "The listener's velocity in 3D space, a 3D tuple of floats.");
+
+static PyObject *
+Device_get_listener_velocity(Device* self, void* nothing)
+{
+	try
+	{
+		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
+		if(device)
+		{
+			Vector3 v = device->getListenerVelocity();
+			return Py_BuildValue("(fff)", v.x(), v.y(), v.z());
+		}
+		else
+		{
+			PyErr_SetString(AUDError, device_not_3d_error);
+		}
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return nullptr;
+}
+
+static int
+Device_set_listener_velocity(Device* self, PyObject* args, void* nothing)
+{
+	float x, y, z;
+
+	if(!PyArg_Parse(args, "(fff):listener_velocity", &x, &y, &z))
+		return -1;
+
+	try
+	{
+		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
+		if(device)
+		{
+			Vector3 velocity(x, y, z);
+			device->setListenerVelocity(velocity);
+			return 0;
+		}
+		else
+			PyErr_SetString(AUDError, device_not_3d_error);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return -1;
+}
+
+PyDoc_STRVAR(M_aud_Device_rate_doc,
+			 "The sampling rate of the device in Hz.");
+
+static PyObject *
+Device_get_rate(Device* self, void* nothing)
+{
+	try
+	{
+		DeviceSpecs specs = (*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->getSpecs();
+		return Py_BuildValue("d", specs.rate);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Device_speed_of_sound_doc,
+			 "The speed of sound of the device.\n"
+			 "The speed of sound in air is typically 343 m/s.");
+
+static PyObject *
+Device_get_speed_of_sound(Device* self, void* nothing)
+{
+	try
+	{
+		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
+		if(device)
+		{
+			return Py_BuildValue("f", device->getSpeedOfSound());
 		}
 		else
 		{
@@ -661,11 +624,11 @@ Device_get_distance_model(Device* self, void* nothing)
 }
 
 static int
-Device_set_distance_model(Device* self, PyObject* args, void* nothing)
+Device_set_speed_of_sound(Device* self, PyObject* args, void* nothing)
 {
-	int model;
+	float speed;
 
-	if(!PyArg_Parse(args, "i:distance_model", &model))
+	if(!PyArg_Parse(args, "f:speed_of_sound", &speed))
 		return -1;
 
 	try
@@ -673,7 +636,7 @@ Device_set_distance_model(Device* self, PyObject* args, void* nothing)
 		I3DDevice* device = dynamic_cast<I3DDevice*>(reinterpret_cast<std::shared_ptr<IDevice>*>(self->device)->get());
 		if(device)
 		{
-			device->setDistanceModel(DistanceModel(model));
+			device->setSpeedOfSound(speed);
 			return 0;
 		}
 		else
@@ -687,27 +650,64 @@ Device_set_distance_model(Device* self, PyObject* args, void* nothing)
 	return -1;
 }
 
+PyDoc_STRVAR(M_aud_Device_volume_doc,
+			 "The overall volume of the device.");
+
+static PyObject *
+Device_get_volume(Device* self, void* nothing)
+{
+	try
+	{
+		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->getVolume());
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Device_set_volume(Device* self, PyObject* args, void* nothing)
+{
+	float volume;
+
+	if(!PyArg_Parse(args, "f:volume", &volume))
+		return -1;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<IDevice>*>(self->device))->setVolume(volume);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
 static PyGetSetDef Device_properties[] = {
-	{(char*)"rate", (getter)Device_get_rate, nullptr,
-	 M_aud_Device_rate_doc, nullptr },
-	{(char*)"format", (getter)Device_get_format, nullptr,
-	 M_aud_Device_format_doc, nullptr },
 	{(char*)"channels", (getter)Device_get_channels, nullptr,
 	 M_aud_Device_channels_doc, nullptr },
-	{(char*)"volume", (getter)Device_get_volume, (setter)Device_set_volume,
-	 M_aud_Device_volume_doc, nullptr },
-	{(char*)"listener_location", (getter)Device_get_listener_location, (setter)Device_set_listener_location,
-	 M_aud_Device_listener_location_doc, nullptr },
-	{(char*)"listener_velocity", (getter)Device_get_listener_velocity, (setter)Device_set_listener_velocity,
-	 M_aud_Device_listener_velocity_doc, nullptr },
-	{(char*)"listener_orientation", (getter)Device_get_listener_orientation, (setter)Device_set_listener_orientation,
-	 M_aud_Device_listener_orientation_doc, nullptr },
-	{(char*)"speed_of_sound", (getter)Device_get_speed_of_sound, (setter)Device_set_speed_of_sound,
-	 M_aud_Device_speed_of_sound_doc, nullptr },
-	{(char*)"doppler_factor", (getter)Device_get_doppler_factor, (setter)Device_set_doppler_factor,
-	 M_aud_Device_doppler_factor_doc, nullptr },
 	{(char*)"distance_model", (getter)Device_get_distance_model, (setter)Device_set_distance_model,
 	 M_aud_Device_distance_model_doc, nullptr },
+	{(char*)"doppler_factor", (getter)Device_get_doppler_factor, (setter)Device_set_doppler_factor,
+	 M_aud_Device_doppler_factor_doc, nullptr },
+	{(char*)"format", (getter)Device_get_format, nullptr,
+	 M_aud_Device_format_doc, nullptr },
+	{(char*)"listener_location", (getter)Device_get_listener_location, (setter)Device_set_listener_location,
+	 M_aud_Device_listener_location_doc, nullptr },
+	{(char*)"listener_orientation", (getter)Device_get_listener_orientation, (setter)Device_set_listener_orientation,
+	 M_aud_Device_listener_orientation_doc, nullptr },
+	{(char*)"listener_velocity", (getter)Device_get_listener_velocity, (setter)Device_set_listener_velocity,
+	 M_aud_Device_listener_velocity_doc, nullptr },
+	{(char*)"rate", (getter)Device_get_rate, nullptr,
+	 M_aud_Device_rate_doc, nullptr },
+	{(char*)"speed_of_sound", (getter)Device_get_speed_of_sound, (setter)Device_set_speed_of_sound,
+	 M_aud_Device_speed_of_sound_doc, nullptr },
+	{(char*)"volume", (getter)Device_get_volume, (setter)Device_set_volume,
+	 M_aud_Device_volume_doc, nullptr },
 	{nullptr}  /* Sentinel */
 };
 
