@@ -1099,6 +1099,18 @@ PyObject* Handle_empty()
 }
 
 
+Handle*checkHandle(PyObject* handle)
+{
+	if(!PyObject_TypeCheck(handle, &HandleType))
+	{
+		PyErr_SetString(PyExc_TypeError, "Object is not of type Handle!");
+		return nullptr;
+	}
+
+	return (Handle*)handle;
+}
+
+
 bool initializeHandle()
 {
 	return PyType_Ready(&HandleType) >= 0;
@@ -1110,3 +1122,5 @@ void addHandleToModule(PyObject* module)
 	Py_INCREF(&HandleType);
 	PyModule_AddObject(module, "Handle", (PyObject *)&HandleType);
 }
+
+
