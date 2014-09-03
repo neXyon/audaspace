@@ -176,10 +176,7 @@ Device_play(Device* self, PyObject* args, PyObject* kwds)
 	Sound* sound = checkSound(object);
 
 	if(!sound)
-	{
-		PyErr_SetString(PyExc_TypeError, "Object is not of type Sound!");
 		return nullptr;
-	}
 
 	if(keepo != nullptr)
 	{
