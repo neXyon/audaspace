@@ -87,6 +87,12 @@ public:
 	~AnimateableProperty();
 
 	/**
+	 * Returns the count of floats for a single property.
+	 * \return The count of floats stored per frame.
+	 */
+	int getCount() const;
+
+	/**
 	 * Writes the properties value and marks it non-animated.
 	 * \param data The new value.
 	 */

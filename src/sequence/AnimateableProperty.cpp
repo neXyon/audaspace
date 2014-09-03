@@ -58,6 +58,11 @@ AnimateableProperty::~AnimateableProperty()
 {
 }
 
+int AnimateableProperty::getCount() const
+{
+	return m_count;
+}
+
 void AnimateableProperty::write(const float* data)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
