@@ -11,7 +11,7 @@ audaspace = Extension('aud',
                     library_dirs = ['.'],
                     language = 'c++',
                     extra_compile_args = ['-std=c++11'],
-                    sources = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp']])
+                    sources = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp']])
 
 setup (name = 'audaspace',
        version = '0.1',
@@ -20,5 +20,5 @@ setup (name = 'audaspace',
        author_email = 'nexyon@gmail.com',
        url = 'https://github.com/neXyon/audaspace',
        ext_modules = [audaspace],
-       headers = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h']])
+       headers = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h']])
 

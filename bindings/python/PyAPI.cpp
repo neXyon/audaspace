@@ -18,6 +18,8 @@
 #include "PySound.h"
 #include "PyHandle.h"
 #include "PyDevice.h"
+#include "PySequenceEntry.h"
+#include "PySequence.h"
 
 #include "respec/Specification.h"
 #include "devices/IHandle.h"
@@ -70,6 +72,12 @@ PyInit_aud()
 	if(!initializeHandle())
 		return nullptr;
 
+	if(!initializeSequenceEntry())
+		return nullptr;
+
+	if(!initializeSequence())
+		return nullptr;
+
 	module = PyModule_Create(&audmodule);
 	if(module == nullptr)
 		return nullptr;
@@ -77,6 +85,8 @@ PyInit_aud()
 	addSoundToModule(module);
 	addHandleToModule(module);
 	addDeviceToModule(module);
+	addSequenceEntryToModule(module);
+	addSequenceToModule(module);
 
 	AUDError = PyErr_NewException("aud.error", nullptr, nullptr);
 	Py_INCREF(AUDError);
