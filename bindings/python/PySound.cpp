@@ -1294,7 +1294,7 @@ PyDoc_STRVAR(M_aud_Sound_doc,
 			 "because they create reader objects internally that are used for "
 			 "playback.");
 
-static PyTypeObject SoundType = {
+PyTypeObject SoundType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.Sound",               /* tp_name */
 	sizeof(Sound),             /* tp_basicsize */

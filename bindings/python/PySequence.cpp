@@ -100,6 +100,8 @@ static PyGetSetDef Sequence_properties[] = {
 PyDoc_STRVAR(M_aud_Sequence_doc,
 			 "This sound represents sequenced entries to play a sound scene.");
 
+extern PyTypeObject SoundType;
+
 static PyTypeObject SequenceType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.Sequence",              /* tp_name */
@@ -131,7 +133,7 @@ static PyTypeObject SequenceType = {
 	Sequence_methods,            /* tp_methods */
 	0,                           /* tp_members */
 	Sequence_properties,         /* tp_getset */
-	0,                           /* tp_base */
+	&SoundType,                  /* tp_base */
 	0,                           /* tp_dict */
 	0,                           /* tp_descr_get */
 	0,                           /* tp_descr_set */
