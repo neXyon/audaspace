@@ -65,7 +65,7 @@ extern AUD_SequenceEntry* AUD_Sequence_add(AUD_Sound* sequence, AUD_Sound* sound
 extern void AUD_Sequence_remove(AUD_Sound* sequence, AUD_SequenceEntry* entry);
 
 /**
- * Writes animation data to a sequenced entry.
+ * Writes animation data to a sequence.
  * \param sequence The sound scene.
  * \param type The type of animation data.
  * \param frame The frame this data is for.
