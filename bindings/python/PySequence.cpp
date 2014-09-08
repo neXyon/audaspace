@@ -17,13 +17,19 @@
 #include "PySequence.h"
 
 #include "PySound.h"
+#include "PySequenceEntry.h"
 
+#include "sequence/AnimateableProperty.h"
 #include "sequence/Sequence.h"
 #include "Exception.h"
 
+#include <vector>
 #include <structmember.h>
 
 using aud::Exception;
+using aud::ISound;
+using aud::AnimateableProperty;
+using aud::AnimateablePropertyType;
 
 extern PyObject* AUDError;
 
@@ -89,7 +95,187 @@ Sequence_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	return (PyObject *)self;
 }
 
+PyDoc_STRVAR(M_aud_Sequence_add_doc,
+			 "add()\n\n"
+			 "Adds a new entry to the scene.\n"
+			 ":arg sound: The sound this entry should play.\n"
+			 ":type sound: :class:`Sound`\n"
+			 ":arg begin: The start time.\n"
+			 ":type begin: float\n"
+			 ":arg end: The end time or a negative value if determined by the sound.\n"
+			 ":type end: float\n"
+			 ":arg skip: How much seconds should be skipped at the beginning.\n"
+			 ":type skip: float\n"
+			 ":return: The entry added.\n"
+			 ":rtype: :class:`SequenceEntry`");
+
+static PyObject *
+Sequence_add(Sequence* self, PyObject* args, PyObject* kwds)
+{
+	PyObject* object;
+	float begin;
+	float end = -1.0f;
+	float skip = 0.0f;
+
+	static const char* kwlist[] = {"sound", "begin", "end", "skip", nullptr};
+
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Of|ff:add", const_cast<char**>(kwlist), &object, &begin, &end, &skip))
+		return nullptr;
+
+	Sound* sound = checkSound(object);
+
+	if(!sound)
+		return nullptr;
+
+	SequenceEntry* entry;
+
+	entry = (SequenceEntry*)SequenceEntry_empty();
+	if(entry != nullptr)
+	{
+		try
+		{
+			entry->entry = new std::shared_ptr<aud::SequenceEntry>((*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->add(*reinterpret_cast<std::shared_ptr<ISound>*>(sound->sound), begin, end, skip));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(entry);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)entry;
+}
+
+PyDoc_STRVAR(M_aud_Sequence_remove_doc,
+			 "reomve()\n\n"
+			 "Adds a new entry to the scene.\n"
+			 ":arg entry: The entry to remove.\n"
+			 ":type entry: :class:`SequenceEntry`\n");
+
+static PyObject *
+Sequence_remove(Sequence* self, PyObject* args)
+{
+	PyObject* object;
+
+	if(!PyArg_ParseTuple(args, "O:remove", &object))
+		return nullptr;
+
+	SequenceEntry* entry = checkSequenceEntry(object);
+
+	if(!entry)
+		return nullptr;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->remove(*reinterpret_cast<std::shared_ptr<aud::SequenceEntry>*>(entry->entry));
+		Py_RETURN_NONE;
+	}
+	catch(Exception& e)
+	{
+		Py_DECREF(entry);
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sequence_setAnimationData_doc,
+			 "setAnimationData()\n\n"
+			 "Writes animation data to a sequence.\n\n"
+			 ":arg type: The type of animation data.\n"
+			 ":type type: int\n"
+			 ":arg frame: The frame this data is for.\n"
+			 ":type frame: int\n"
+			 ":arg data: The data to write.\n"
+			 ":type data: sequence of float\n"
+			 ":arg animated: Whether the attribute is animated.\n"
+			 ":type animated: bool");
+
+static PyObject *
+Sequence_setAnimationData(Sequence* self, PyObject* args)
+{
+	int type, frame;
+	PyObject* py_data;
+	Py_ssize_t py_data_len;
+	PyObject* animatedo;
+	bool animated;
+
+	if(!PyArg_ParseTuple(args, "iiOO:setAnimationData", &type, &frame, &py_data, &animatedo))
+		return nullptr;
+
+	if(!PySequence_Check(py_data))
+	{
+		PyErr_SetString(PyExc_TypeError, "Parameter is not a sequence!");
+		return nullptr;
+	}
+
+	py_data_len= PySequence_Size(py_data);
+
+	std::vector<float> data;
+	data.resize(py_data_len);
+
+	PyObject* py_value;
+	float value;
+
+	for(Py_ssize_t i = 0; i < py_data_len; i++)
+	{
+		py_value = PySequence_GetItem(py_data, i);
+		value= (float)PyFloat_AsDouble(py_value);
+		Py_DECREF(py_value);
+
+		if (value == -1.0f && PyErr_Occurred()) {
+			return nullptr;
+		}
+
+		data.push_back(value);
+	}
+
+	if(!PyBool_Check(animatedo))
+	{
+		PyErr_SetString(PyExc_TypeError, "animated is not a boolean!");
+		return nullptr;
+	}
+
+	animated = animatedo == Py_True;
+
+	try
+	{
+		AnimateableProperty* prop = (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getAnimProperty(static_cast<AnimateablePropertyType>(type));
+
+		if(prop->getCount() != py_data_len)
+		{
+			PyErr_SetString(PyExc_ValueError, "the amount of floats doesn't fit the animated property");
+			return nullptr;
+		}
+
+		if(animated)
+		{
+			if(frame >= 0)
+				prop->write(&data[0], frame, 1);
+		}
+		else
+		{
+			prop->write(&data[0]);
+		}
+		Py_RETURN_NONE;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
 static PyMethodDef Sequence_methods[] = {
+	{"add", (PyCFunction)Sequence_add, METH_VARARGS | METH_KEYWORDS,
+	 M_aud_Sequence_add_doc
+	},
+	{"remove", (PyCFunction)Sequence_remove, METH_VARARGS,
+	 M_aud_Sequence_remove_doc
+	},
+	{"setAnimationData", (PyCFunction)Sequence_setAnimationData, METH_VARARGS,
+	 M_aud_Sequence_setAnimationData_doc
+	},
 	{nullptr}  /* Sentinel */
 };
 
