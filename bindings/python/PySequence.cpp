@@ -26,10 +26,13 @@
 #include <vector>
 #include <structmember.h>
 
+using aud::Channels;
+using aud::DistanceModel;
 using aud::Exception;
 using aud::ISound;
 using aud::AnimateableProperty;
 using aud::AnimateablePropertyType;
+using aud::Specs;
 
 extern PyObject* AUDError;
 
@@ -279,7 +282,299 @@ static PyMethodDef Sequence_methods[] = {
 	{nullptr}  /* Sentinel */
 };
 
+PyDoc_STRVAR(M_aud_Sequence_channels_doc,
+			 "The channel count of the sequence.");
+
+static PyObject *
+Sequence_get_channels(Sequence* self, void* nothing)
+{
+	try
+	{
+		Specs specs = (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getSpecs();
+		return Py_BuildValue("i", specs.channels);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_channels(Sequence* self, PyObject* args, void* nothing)
+{
+	int channels;
+
+	if(!PyArg_Parse(args, "i:channels", &channels))
+		return -1;
+
+	try
+	{
+		std::shared_ptr<aud::Sequence> sequence = *reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence);
+		Specs specs = sequence->getSpecs();
+		specs.channels = static_cast<Channels>(channels);
+		sequence->setSpecs(specs);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sequence_distance_model_doc,
+			 "The distance model of the sequence.\n\n"
+			 ".. seealso:: http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm#_Toc199835864");
+
+static PyObject *
+Sequence_get_distance_model(Sequence* self, void* nothing)
+{
+	try
+	{
+		return Py_BuildValue("i", (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getDistanceModel());
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_distance_model(Sequence* self, PyObject* args, void* nothing)
+{
+	int distance_model;
+
+	if(!PyArg_Parse(args, "i:distance_model", &distance_model))
+		return -1;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->setDistanceModel(static_cast<DistanceModel>(distance_model));
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sequence_doppler_factor_doc,
+			 "The doppler factor of the sequence.\n"
+			 "This factor is a scaling factor for the velocity vectors in "
+			 "doppler calculation. So a value bigger than 1 will exaggerate "
+			 "the effect as it raises the velocity.");
+
+static PyObject *
+Sequence_get_doppler_factor(Sequence* self, void* nothing)
+{
+	try
+	{
+		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getDopplerFactor());
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_doppler_factor(Sequence* self, PyObject* args, void* nothing)
+{
+	float factor;
+
+	if(!PyArg_Parse(args, "f:doppler_factor", &factor))
+		return -1;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->setDopplerFactor(factor);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sequence_fps_doc,
+			 "The listeners's location in 3D space, a 3D tuple of floats.");
+
+static PyObject *
+Sequence_get_fps(Sequence* self, void* nothing)
+{
+	try
+	{
+		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getFPS());
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_fps(Sequence* self, PyObject* args, void* nothing)
+{
+	float fps;
+
+	if(!PyArg_Parse(args, "f:fps", &fps))
+		return -1;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->setFPS(fps);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sequence_muted_doc,
+			 "Whether the whole sequence is muted.\n");
+
+static PyObject *
+Sequence_get_muted(Sequence* self, void* nothing)
+{
+	try
+	{
+		std::shared_ptr<aud::Sequence>* sequence = reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence);
+		return PyBool_FromLong((long)(*sequence)->isMuted());
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_muted(Sequence* self, PyObject* args, void* nothing)
+{
+	if(!PyBool_Check(args))
+	{
+		PyErr_SetString(PyExc_TypeError, "muted is not a boolean!");
+		return -1;
+	}
+
+	bool muted = args == Py_True;
+
+	try
+	{
+		std::shared_ptr<aud::Sequence>* sequence = reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence);
+		(*sequence)->mute(muted);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return -1;
+}
+
+PyDoc_STRVAR(M_aud_Sequence_rate_doc,
+			 "The sampling rate of the sequence in Hz.");
+
+static PyObject *
+Sequence_get_rate(Sequence* self, void* nothing)
+{
+	try
+	{
+		Specs specs = (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getSpecs();
+		return Py_BuildValue("d", specs.rate);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_rate(Sequence* self, PyObject* args, void* nothing)
+{
+	double rate;
+
+	if(!PyArg_Parse(args, "d:rate", &rate))
+		return -1;
+
+	try
+	{
+		std::shared_ptr<aud::Sequence> sequence = *reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence);
+		Specs specs = sequence->getSpecs();
+		specs.rate = rate;
+		sequence->setSpecs(specs);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sequence_speed_of_sound_doc,
+			 "The speed of sound of the sequence.\n"
+			 "The speed of sound in air is typically 343 m/s.");
+
+static PyObject *
+Sequence_get_speed_of_sound(Sequence* self, void* nothing)
+{
+	try
+	{
+		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->getSpeedOfSound());
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static int
+Sequence_set_speed_of_sound(Sequence* self, PyObject* args, void* nothing)
+{
+	float speed;
+
+	if(!PyArg_Parse(args, "f:speed_of_sound", &speed))
+		return -1;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::Sequence>*>(self->sequence))->setSpeedOfSound(speed);
+		return 0;
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return -1;
+	}
+}
+
 static PyGetSetDef Sequence_properties[] = {
+	{(char*)"channels", (getter)Sequence_get_channels, (setter)Sequence_set_channels,
+	 M_aud_Sequence_channels_doc, nullptr },
+	{(char*)"distance_model", (getter)Sequence_get_distance_model, (setter)Sequence_set_distance_model,
+	 M_aud_Sequence_distance_model_doc, nullptr },
+	{(char*)"doppler_factor", (getter)Sequence_get_doppler_factor, (setter)Sequence_set_doppler_factor,
+	 M_aud_Sequence_doppler_factor_doc, nullptr },
+	{(char*)"fps", (getter)Sequence_get_fps, (setter)Sequence_set_fps,
+	 M_aud_Sequence_fps_doc, nullptr },
+	{(char*)"muted", (getter)Sequence_get_muted, (setter)Sequence_set_muted,
+	 M_aud_Sequence_muted_doc, nullptr },
+	{(char*)"rate", (getter)Sequence_get_rate, (setter)Sequence_set_rate,
+	 M_aud_Sequence_rate_doc, nullptr },
+	{(char*)"speed_of_sound", (getter)Sequence_get_speed_of_sound, (setter)Sequence_set_speed_of_sound,
+	 M_aud_Sequence_speed_of_sound_doc, nullptr },
 	{nullptr}  /* Sentinel */
 };
 
