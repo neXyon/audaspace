@@ -47,7 +47,7 @@ PyObject* AUDError = nullptr;
 // ====================================================================
 
 PyDoc_STRVAR(M_aud_doc,
-			 "This module provides access to the audaspace audio library.");
+			 "Audaspace (pronounced \"outer space\") is a high level audio library.");
 
 static struct PyModuleDef audmodule = {
 	PyModuleDef_HEAD_INIT,
