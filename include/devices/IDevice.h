@@ -29,6 +29,7 @@ class ISound;
 class ISynchronizer;
 
 /**
+ * @interface IDevice
  * This class represents an output device for sound sources.
  * Output devices may be several backends such as plattform independand like
  * SDL or OpenAL or plattform specific like DirectSound, but they may also be

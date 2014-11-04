@@ -23,6 +23,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
+ * @interface IDynamicIIRFilterCalculator
  * This interface calculates dynamic filter coefficients which depend on the
  * sampling rate for DynamicIIRFilterReaders.
  */

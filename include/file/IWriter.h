@@ -16,6 +16,11 @@
 
 #pragma once
 
+/**
+ * @file IWriter.h
+ * Defines the interface as well as Container and Codec types.
+ */
+
 #include "respec/Specification.h"
 
 AUD_NAMESPACE_BEGIN
@@ -48,6 +53,7 @@ enum Codec
 };
 
 /**
+ * @interface IWriter
  * This class represents a sound sink where audio data can be written to.
  */
 class IWriter

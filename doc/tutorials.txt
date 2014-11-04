@@ -1,0 +1,54 @@
+/**
+
+@page tutorials Demos and Tutorials
+
+Here you can find a description of the demo application delivered with the audaspace source distribution.
+
+The demos/ folder in the root folder of the source tree contains simple demo applications that show the functionality of audaspace.
+
+Tutorials
+=========
+
+audaplay
+--------
+
+This demo application is a simple audio file player that accepts a single filename as a parameter. The target of this tutorial is to teach basic library principles and specifically device setup and audio file playback. The sample uses quite some C++11 features which are expected to be known, such as lambda functions and condition variables.
+
+signalgen
+---------
+
+The signalgen application stores different signals in audio files. Apart from sounds read from files, sounds can also be generated from several basic signal generators such as @ref Sine or @ref Triangle waves. This tutorial shows how those signals can be generated and also how audio files can be written using an @ref IWriter.
+
+Outlook
+-------
+
+Capabilities not covered in the tutorials include:
+
+- 3D Audio
+- Buffering
+- Effects and Filters
+- Sequencing
+- Readers
+- Audio Stream Specification (Channels, Sample Rate and Sample Format)
+- Plugin Development
+
+Other Demos
+===========
+
+audaconvert
+-----------
+
+Merging the abilities to read from sound files and write new ones audaconvert converts an audio file from one to another audio format.
+
+audaremap
+---------
+
+The audaremap program expects an input file and the amount of desired output channels as parameters and shows the resulting default channel mapping that would be done by audaspace.
+
+openaldevices
+-------------
+
+This demo application directly uses the OpenAL plugin to list all available OpenAL devices.
+
+*/
+

@@ -16,11 +16,20 @@
 
 #pragma once
 
+/**
+ * @file I3DDevice.h
+ * Defines the interface as well as the different distance models.
+ */
+
 #include "util/Math3D.h"
 
 AUD_NAMESPACE_BEGIN
 
-/// Possible distance models for the 3D device.
+/**
+ * Possible distance models for the 3D device.
+ *
+ * The distance models supported are the same as documented in the [OpenAL Specification](http://openal.org/).
+ */
 enum DistanceModel
 {
 	DISTANCE_MODEL_INVALID = 0,
@@ -33,6 +42,7 @@ enum DistanceModel
 };
 
 /**
+ * @interface I3DDevice
  * This class represents an output device for 3D sound.
  */
 class I3DDevice

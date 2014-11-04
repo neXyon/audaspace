@@ -16,6 +16,11 @@
 
 #pragma once
 
+/**
+ * @file FaderReader.h
+ * Defines the class as well as the two fading types.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

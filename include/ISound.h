@@ -25,6 +25,7 @@ AUD_NAMESPACE_BEGIN
 class IReader;
 
 /**
+ * @interface ISound
  * This class represents a type of sound source and saves the necessary values
  * for it. It is able to create a reader that is actually usable for playback
  * of the respective sound source through the factory method createReader.

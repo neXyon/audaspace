@@ -16,6 +16,11 @@
 
 #pragma once
 
+/**
+ * @file Specification.h
+ * Defines all important macros and basic data structures for stream format descriptions.
+ */
+
 #include "Audaspace.h"
 
 /// The size of a format in bytes.

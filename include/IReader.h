@@ -21,6 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
+ * @interface IReader
  * This class represents a sound source as stream or as buffer which can be read
  * for example by another reader, a device or whatever.
  */

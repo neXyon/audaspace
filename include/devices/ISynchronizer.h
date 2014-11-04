@@ -25,6 +25,7 @@ AUD_NAMESPACE_BEGIN
 class IHandle;
 
 /**
+ * @interface ISynchronizer
  * This class enables global synchronization of several audio applications if supported.
  * Jack for example supports synchronization through Jack Transport.
  */

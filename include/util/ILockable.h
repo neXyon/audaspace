@@ -21,6 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
+ * @interface ILockable
  * This class provides an interface for lockable objects.
  */
 class ILockable

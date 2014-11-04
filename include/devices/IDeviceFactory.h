@@ -23,6 +23,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
+ * @interface IDeviceFactory
  * This interface opens output device.
  */
 class IDeviceFactory

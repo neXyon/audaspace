@@ -16,6 +16,11 @@
 
 #pragma once
 
+/**
+ * @file IHandle.h
+ * Defines the interface as well as possible states of the handle.
+ */
+
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN
@@ -32,6 +37,7 @@ enum Status
 typedef void (*stopCallback)(void*);
 
 /**
+ * @interface IHandle
  * This class represents a playback handles for specific devices.
  */
 class IHandle

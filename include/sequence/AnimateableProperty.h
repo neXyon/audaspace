@@ -16,6 +16,11 @@
 
 #pragma once
 
+/**
+ * @file AnimateableProperty.h
+ * Defines the class as well as existing property types.
+ */
+
 #include "util/Buffer.h"
 #include "util/ILockable.h"
 

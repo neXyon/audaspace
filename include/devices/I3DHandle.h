@@ -21,6 +21,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
+ * @interface I3DHandle
  * This class represents a playback handle for 3D sources.
  */
 class I3DHandle
