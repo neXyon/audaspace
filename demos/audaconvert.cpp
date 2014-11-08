@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 		return 4;
 	}
 
-	PluginManager::loadPlugins(".");
+	PluginManager::loadPlugins("");
 
 	File file(infile);
 	std::shared_ptr<IReader> reader;

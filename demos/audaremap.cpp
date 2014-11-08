@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 		return 3;
 	}
 
-	PluginManager::loadPlugins(".");
+	PluginManager::loadPlugins("");
 
 	File file(infile);
 	std::shared_ptr<ChannelMapperReader> reader;

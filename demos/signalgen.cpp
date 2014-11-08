@@ -21,7 +21,7 @@
 #include "generator/Sine.h"
 #include "generator/Square.h"
 #include "generator/Triangle.h"
-#include "fx/LimiterReader.h"
+#include "fx/Limiter.h"
 #include "Exception.h"
 #include "IReader.h"
 
@@ -32,28 +32,26 @@ using namespace aud;
 
 int main(int argc, char* argv[])
 {
-	PluginManager::loadPlugins(".");
+	PluginManager::loadPlugins("");
 
 	SampleRate sampleRate = RATE_48000;
 	float frequency = 1.0f;
 	float duration = 1.0f;
 
-	Sawtooth sawtooth(frequency, sampleRate);
-	Silence silence;
-	Sine sine(frequency, sampleRate);
-	Square square(frequency, sampleRate);
-	Triangle triangle(frequency, sampleRate);
+	auto sawtooth = std::shared_ptr<ISound>(new Sawtooth(frequency, sampleRate));
+	auto silence = std::shared_ptr<ISound>(new Silence);
+	auto sine = std::shared_ptr<ISound>(new Sine(frequency, sampleRate));
+	auto square = std::shared_ptr<ISound>(new Square(frequency, sampleRate));
+	auto triangle = std::shared_ptr<ISound>(new Triangle(frequency, sampleRate));
 
-	struct { ISound* sound; std::string name; } generators[] = {
-		{&sawtooth, "sawtooth"},
-		{&silence, "silence"},
-		{&sine, "sine"},
-		{&square, "square"},
-		{&triangle, "triangle"},
+	struct { std::shared_ptr<ISound> sound; std::string name; } generators[] = {
+		{sawtooth, "sawtooth"},
+		{silence, "silence"},
+		{sine, "sine"},
+		{square, "square"},
+		{triangle, "triangle"},
 		{nullptr, ""}
 	};
-
-	std::shared_ptr<IReader> reader;
 
 	DeviceSpecs specs;
 	specs.channels = CHANNELS_MONO;
@@ -62,15 +60,11 @@ int main(int argc, char* argv[])
 
 	for(int i = 0; generators[i].sound; i++)
 	{
-		reader = generators[i].sound->createReader();
-
-		reader = std::shared_ptr<IReader>(new LimiterReader(reader, 0, duration));
+		auto reader = Limiter(generators[i].sound, 0, duration).createReader();
 
 		auto writer = FileWriter::createWriter(generators[i].name + ".wav", specs, CONTAINER_WAV, CODEC_PCM, 0);
 
 		FileWriter::writeReader(reader, writer, 0, AUD_DEFAULT_BUFFER_SIZE);
-
-		writer.reset();
 	}
 
 	return 0;

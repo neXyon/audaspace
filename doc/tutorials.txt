@@ -2,7 +2,7 @@
 
 @page tutorials Demos and Tutorials
 
-Here you can find a description of the demo application delivered with the audaspace source distribution.
+Here you can find a description of the demo applications delivered with the audaspace source distribution.
 
 The demos/ folder in the root folder of the source tree contains simple demo applications that show the functionality of audaspace.
 
@@ -14,23 +14,152 @@ audaplay
 
 This demo application is a simple audio file player that accepts a single filename as a parameter. The target of this tutorial is to teach basic library principles and specifically device setup and audio file playback. The sample uses quite some C++11 features which are expected to be known, such as lambda functions and condition variables.
 
+### Plugins ###
+
+Let's start: Audaspace needs external libraries to read from sound files and to play back to speakers or anywhere else. The latter is called a device and implements the IDevice interface. Audaspace can be built without any external libraries, but then you actually cannot really do much with it, except you directly want to read the samples for generated signals. Usually all external libraries are implemented as plugins, but you can also build audaspace with directly linking the external libraries to it. The first important line in our source code is
+
+    PluginManager::loadPlugins("");
+
+which loads all plugins from the default plugin location which can be configured when audaspace is built. The empty string can be replaced by a path to a directory in which case the PluginManager will load all plugins it can find in this directory.
+
+### Samples ###
+
+To understand the next lines we have to talk about samples briefly. Any sound you can hear is an oscillation of the medium that sound travels in, which usually is air. To discribe this osciallation mathematically, the amplitude of it is defined as a function of time. In the digital world it is not possible to store an analog function with the limited memory we have. So to get a digital signal we sample this amplitude function, which means we store the current value of the amplitude at a specific rate. This sample rate could for example be 44100 Hz as it is used for audio CDs, which means that 44100 amplitude values per second are stored on the CD. As we usually have more than just one speaker, we usually have to store more than just one oscillation and the amount of how many we store is called channels. The most common speaker configuration is stereo, which means that there are two channels. Last but not least we have to choose a data type to store the sample. Audaspace internally always works with 32 bit floating point values, so whenever you don't know what to choose, FORMAT_FLOAT32 is the sample format to use. Let's come back to our audio CD example one last time. An average CD stores about 650 MB which is 681574400 bytes. The default sample format is a 16 bit integer, so for one second of music we need to store 44100 Hz * 2 byte * 2 channels = 176400 bytes. Dividing the size by this value we find that we can store 3863.8 seconds = 64.4 minutes, approximately an hour of uncompressed music. This is the reason why in the past so many albums had about 20 three-minute-long songs.
+
+As audaspace usually works with a 32 bit floating point sample format, this information is usually known implicitly and thus the Specs structure only stores the channels and sample rate. The DeviceSpecs struct additionally also saves the sample format. Our plan now is to find out which specification the sound we want to play has, so that we can open an output device with the same specification. It is worth to note though, that this is not necessary, in case of different specifications audaspace automatically converts as necessary and most devices usually don't even work with all possible specifications.
+
+    DeviceSpecs specs;
+    specs.format = FORMAT_FLOAT32;
+
+### Sounds and Readers ###
+
+The next concept we have to understand is the difference between a sound which implements the ISound interface and a reader which implements the IReader interface. A sound is a general description of some samples that can be played back or read, but you can't really read samples from sounds, that's what readers are for. The sounds are used to create these reader objects which then provide actual samples. In programming terms you can compare this concept to object oriented programming where sounds equal classes and readers equal objects or instances of their classes. The sound is basically just a factory to create readers and in older versions of audaspace it was exactly called that. The question however is, what this is needed for. Imagine a computer game, where you can shoot aliens with your laser gun. You are shooting your gun and this plays a nice zish sound. Now if you shoot rapidly in a row you could play the sound, rewind it and play again. But what if your friend also shoots his gun at the same time, or the gun is so fast that the next shot is fired before the sound of the first shot is over? That's what the sounds are for, so that you can easily play the same sound multiple times and possibly at the same time.
+
+The File sound simply reads a sound file and internally uses whatever loaded plugin can read the actual file. To find the specification of the sample data in this file, we need to create the reader which we usually don't have to by ourselves. In most cases you only have to deal with sounds and they can be directly passed to devices for playback, where the device then uses it to create a reader. For our specific purpose we need the reader though, but this is just one single additional step and we can later give the reader directly to the device to be played back.
+
+    File file(argv[1]);
+    std::shared_ptr<IReader> reader;
+
+    try
+    {
+    	reader = file.createReader();
+    }
+    catch(Exception& e)
+    {
+    	std::cerr << "Error opening file " << argv[1] << " - " << e.getMessage() << std::endl;
+    	return 2;
+    }
+
+    specs.specs = reader->getSpecs();
+
+### RAII and Exceptions ###
+
+Audaspace is built on the RAII principle and thus makes heavy use of the C++11 shared_ptr class. Usually it is quite cumbersome to write shared_ptr in front of everything and that is where another handy C++11 feature comes in: auto. Also note the use of exceptions which are the standard error mechanism for audaspace, compared to many other libraries that use error values on return for example.
+
+### Devices ###
+
+To open the output device we use the DeviceManager class which handles all devices that get registered by the different plugins. Each of the devices has a priority that might depend on different factors such as the operating system or running sound servers and the @ref DeviceManager::getDefaultDeviceFactory() method returns the factory for the device with the highest priority. As you can see the factory pattern is again used, this time with the reason that there are lots of different properties that can be set during opening a device, such as the specification or name of the device and you might only want to set a few and leave the rest as defaults.
+
+    auto factory = DeviceManager::getDefaultDeviceFactory();
+    factory->setSpecs(specs);
+    auto device = factory->openDevice();
+
+### Info and Playback ###
+
+The next two lines simply print the duration of the sound file to the terminal. The getLength() function of the IReader interface returns the length in sample count, so to get the number in seconds, we have to divide it by the sample rate. Note also that not all file plugins can determine the precise length of the stored audio data and thus this value might be inaccurate or simply wrong. A negative value also means that the length is unknown or could actually be infinite such as for streams for example.
+
+    auto duration = std::chrono::seconds(reader->getLength()) / specs.rate;
+    std::cout << "Estimated duration: " << duration.count() << " seconds" << std::endl;
+
+The next step is to play back the sound. As playback always happens in a separate thread, the application would quit right after playback and we would not be able to hear much of our sound file. For this reason we use a condition variable and a callback function that is executed when the sound file finished playing. It is important to realize at this point, that thread safety is of utter importance when using audaspace. Single calls to output devices are usually thread safe, but for example passing a reader to the device for playback and then messing with the reader object separately can result in an undefined state and the application crashing. To prevent this and to enable certain actions to happen at the same time, such as pausing multiple sounds at the same time, all devices can be locked and subsequently unlocked again.
+
+    std::condition_variable condition;
+    std::mutex mutex;
+    std::unique_lock<std::mutex> lock(mutex);
+
+    auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all();};
+
+The last but not least interface to be discussed is IHandle. Every time you play something back at an output device you get a handle which then can be used to modify the playback behavior such as pausing, resuming and stopping, but also changing the volume for example. We use it to set the stop callback, our lambda function that notifies the condition variable. To make sure that the sound hasn't finished playing before we set the stop callback of the handle, we lock the device as mentioned above. If we wouldn't do that it is possible that the sound file stops playing too fast and the handle would be invalid before we can set the stop callback and subsequently it would never get called and the program would hang in a race condition.
+
+    device->lock();
+    auto handle = device->play(reader);
+    handle->setStopCallback(release, &condition);
+    device->unlock();
+
+    condition.wait(lock);
+
+This is it, we built a sound file player using quite some features of audaspace. Of course it could have been implemented a little shorter not caring about the specification, but it's a nice feature to have and allows for some important details to be explained.
+
 signalgen
 ---------
 
 The signalgen application stores different signals in audio files. Apart from sounds read from files, sounds can also be generated from several basic signal generators such as @ref Sine or @ref Triangle waves. This tutorial shows how those signals can be generated and also how audio files can be written using an @ref IWriter.
 
+### Signal Generators ###
+
+After loading plugins as we are already used to, we initialize some variables. The duration is the length of the audio generated in seconds. We already covered the sample rate and now we will discuss the frequency in relation to it. The frequency of the sound basically determines the pitch, or how low or high it will sound. Human ears are usually capable of hearing sounds between 20 and 20000 Hz. The higher limit will drop with age, so while you still might be able to hear 20 kHz when you're 20, you most likely won't when you are 30 or older already. Try to find your limit by changing the frequency and listening to the sine.wav output file, I recommend starting with 13 kHz and going up by 1 kHz each time. For the lower limit of 20 Hz, you most likely need a subwoofer to hear the sound, but even if you have one, you might not hear it as your player might not route the audio to it. The original value of 1 Hz is of course out of the audible range and is there so that you can look at the waves easily with a program like audacity for example.
+
+    SampleRate sampleRate = RATE_48000;
+    float frequency = 1.0f;
+    float duration = 1.0f;
+
+The connection to the sample rate is that according to Shannon's theorem you should not have frequencies above half of the sample rate. If you do you will get something that is called aliasing and means that the frequencies that are too high, will get transformed to lower frequencies. With a sample rate of 48000 Hz, we have a limit of 24000 Hz, which allows us to use all frequencies in the audible range. The additional 4000 Hz allow lowpass filters that are usually used when recording audio, to filter out higher frequencies. Real lowpass filters can't simply remove everything above a specific frequency and keep everything below as it is, that's why a specific bandwidth (equals frequency range) is needed to go from unfiltered to filtered out frequencies. If you want to hear the effect of aliasing try running the samples comparing the frequencies 750, 47250 and 48750.
+
+    auto sawtooth = std::shared_ptr<ISound>(new Sawtooth(frequency, sampleRate));
+    auto silence = std::shared_ptr<ISound>(new Silence);
+    auto sine = std::shared_ptr<ISound>(new Sine(frequency, sampleRate));
+    auto square = std::shared_ptr<ISound>(new Square(frequency, sampleRate));
+    auto triangle = std::shared_ptr<ISound>(new Triangle(frequency, sampleRate));
+
+These next five lines create our signal generator sounds. Except for silence all need the frequency and sample rate. Silence is just that and of course doesn't need any of these values. You should try the standard frequency of 440 Hz and listen to the sounds to hear the difference. A sine signal is the most pure sound, but if you listen to it, it will sound unnatural and a bit boring. This is due to the fact that in nature plain sine sounds don't exist, all sounds are a superposition of multiple sine sounds and in music those sounds usually consist of a fundamental frequency and harmonics/overtones which have frequencies that are multiples of the fundamental frequency. The composition of those harmonics then determines how the color of the sound is and this has a big influence on why a piano sounds different from a guitar even when they play the same note. The other three signals are exactly that, they have harmonics that make them sound different and more interesting than a plain sine. The square wave sounds like the music from Nintendo's original GameBoy, very retro. The sawtooth sounds harsh and is often used in electronic or techno music. Lastly the triangle has the most pleasing and natural sound and is therefore often used as a base trying to synthesize the sound of real instruments for example.
+
+To be able to loop over all generators we create a null-terminated array that contains the sounds and their names.
+
+    struct { std::shared_ptr<ISound> sound; std::string name; } generators[] = {
+        {sawtooth, "sawtooth"},
+        {silence, "silence"},
+        {sine, "sine"},
+        {square, "square"},
+        {triangle, "triangle"},
+        {nullptr, ""}
+    };
+
+The output file format should of course have the same sample rate as the input and as we don't have multiple channels or spatiality we set the channel count to mono, which means that we have only a single channel. While audaspace uses 32 bit floating-point samples for the internal processing, the most common format for audio files is 16 bit integer. You can try different formats such as FORMAT_U8, FORMAT_S24 and FORMAT_FLOAT32 instead of FORMAT_S16 and try to hear a difference. With FORMAT_U8 you should be able to hear a difference most easily, while the other formats might sound the same if you're not very audiphile, but again the difference might depend a lot on your speakers as well.
+
+    DeviceSpecs specs;
+    specs.channels = CHANNELS_MONO;
+    specs.rate = sampleRate;
+    specs.format = FORMAT_S16;
+
+In the loop we limit the generated signal which by default is infinitely long to a signal from 0 to duration which if you didn't change the duration value is one second. The Limiter is some kind of sound effect or filter and there exist many more in audaspace, have a look through the list (where is the list? TODO). The method createReader() is used to create an reader like in the first tutorial.
+
+    auto reader = Limiter(generators[i].sound, 0, duration).createReader();
+
+### Writer ###
+
+To write the audio data to an output file we can get a writer with the static method FileWriter::createWriter(), which expects a filename, the specification, a container, a codec and a desired bit rate. Filename and specification should be clear, but what is a container and a codec? The container format is basically the file format used and containers often can also store video and subtitles for example. The matroska container for example is a very versatile container and can store lots of different data streams. The codec then is the format in which the actual audio data stream is stored or put differently how it is compressed. PCM meaning pulse code modulation means that the samples will be stored uncompressed/raw as they are. It is important to know that not all container and codec combinations are possible, so make sure that the combination you use is supported. A typical combination might be the ogg container plus either vorbis, flac or opus codec. The wav container actually supports some different codecs, but in practice is used for uncompressed PCM data and most programs can't read a wav file with a different codec. Some names might even be used for container and codec, such as mp3 for example. The last parameter of the function is the bit rate and is used for compressing codecs to determine how high the compression should be. Setting the bit rate is always a trade off between file size and audio quality. For the uncompressed PCM samples that we store in this example, the bit rate doesn't matter, so we simply set it to zero.
+
+    auto writer = FileWriter::createWriter(generators[i].name + ".wav", specs, CONTAINER_WAV, CODEC_PCM, 0);
+
+### %Buffer Architecture ###
+
+The next step is to read the audio data from the reader and hand it over to the writer. Audaspace has a top-down architecture for sound buffers, that means that when you read from a reader, you don't get a buffer with the audio, but you have to supply a buffer which the reader will then write into. This buffer can then simply be given to the writer. Luckily we don't need to do this by ourselves. The static method FileWriter::writeReader() does exactly that and a little more, like clamping the output, which means making sure there are no samples out of the amplitude range. Next to the reader and writer, the method also needs a length and a buffer size as parameters. The length in this case needs to be samples instead of seconds, but as we already limited the sound, we can simply pass 0 so that the method reads until the end of the stream. Based on our duration and specification we could calculate the required size of the buffer so that all data fits into the buffer with one read, but the method will read as often as necessary to reach the end of the stream, so we can also simply use AUD_DEFAULT_BUFFER_SIZE.
+
+    FileWriter::writeReader(reader, writer, 0, AUD_DEFAULT_BUFFER_SIZE);
+
+That's it!
+
 Outlook
 -------
 
-Capabilities not covered in the tutorials include:
+The previous two tutorials covered the most important and basic principles of audaspace. For more details about what you can do with the presented interfaces you should have a closer look at the documentation of each interaface. Of course there is a lot more that you can do! Features that are not covered in the tutorials (yet) include:
 
-- 3D Audio
-- Buffering
-- Effects and Filters
-- Sequencing
-- Readers
-- Audio Stream Specification (Channels, Sample Rate and Sample Format)
-- Plugin Development
+- __3D Audio__: Check out I3DDevice and I3DHandle, all devices that audaspace has at the moment are 3D capable.
+- __Buffering__: If you have small sounds that get played back often, it is wise to store them uncompressed in memory. Check out the StreamBuffer class.
+- __Effects and Filters__: There are lots of effects and filters that you can use in audaspace and with a little digital signal processing knowledge you can even add your own.
+- __Sequencing__: Next to simple sequencing classes like Double and Superpose, audaspace also has a more complex Sequence class that even allows sound animations.
+- __Changing Specification__: With classes such as the ChannelMapper, JOSResample or Converter you can change the specification of audio streams by yourself, doing rechanneling, resampling and reformatting.
+- __Plugin Development__: You can extend audaspace to support more output devices, file formats or other functions by writing your own plugins.
 
 Other Demos
 ===========
@@ -38,7 +167,7 @@ Other Demos
 audaconvert
 -----------
 
-Merging the abilities to read from sound files and write new ones audaconvert converts an audio file from one to another audio format.
+Merging the abilities to read from sound files and write new ones, audaconvert converts an audio file from one to another audio format.
 
 audaremap
 ---------

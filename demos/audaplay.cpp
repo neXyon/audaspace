@@ -38,13 +38,14 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	PluginManager::loadPlugins(".");
+	PluginManager::loadPlugins("");
 
 	DeviceSpecs specs;
 	specs.format = FORMAT_FLOAT32;
-	std::shared_ptr<IReader> reader;
 
 	File file(argv[1]);
+	std::shared_ptr<IReader> reader;
+
 	try
 	{
 		reader = file.createReader();
@@ -55,10 +56,6 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
-	std::condition_variable condition;
-	std::mutex mutex;
-	std::unique_lock<std::mutex> lock(mutex);
-
 	specs.specs = reader->getSpecs();
 
 	auto factory = DeviceManager::getDefaultDeviceFactory();
@@ -67,6 +64,10 @@ int main(int argc, char* argv[])
 
 	auto duration = std::chrono::seconds(reader->getLength()) / specs.rate;
 	std::cout << "Estimated duration: " << duration.count() << " seconds" << std::endl;
+
+	std::condition_variable condition;
+	std::mutex mutex;
+	std::unique_lock<std::mutex> lock(mutex);
 
 	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all();};
 
