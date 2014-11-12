@@ -50,7 +50,7 @@ extern AUD_Sound* AUD_Sound_file(const char* filename);
  * \param rate The sample rate of the sawtooth sound.
  * \return A handle of the sound.
  */
-extern AUD_Sound* AUD_Sound_sawtooth(float frequency, aud::SampleRate rate);
+extern AUD_Sound* AUD_Sound_sawtooth(float frequency, AUD_SampleRate rate);
 
 /**
  * Creates a quiet sound.
@@ -64,7 +64,7 @@ extern AUD_Sound* AUD_Sound_silence();
  * \param rate The sample rate of the sine sound.
  * \return A handle of the sound.
  */
-extern AUD_Sound* AUD_Sound_sine(float frequency, aud::SampleRate rate);
+extern AUD_Sound* AUD_Sound_sine(float frequency, AUD_SampleRate rate);
 
 /**
  * Creates a square sound.
@@ -72,7 +72,7 @@ extern AUD_Sound* AUD_Sound_sine(float frequency, aud::SampleRate rate);
  * \param rate The sample rate of the square sound.
  * \return A handle of the sound.
  */
-extern AUD_Sound* AUD_Sound_square(float frequency, aud::SampleRate rate);
+extern AUD_Sound* AUD_Sound_square(float frequency, AUD_SampleRate rate);
 
 /**
  * Creates a triangle sound.
@@ -80,7 +80,7 @@ extern AUD_Sound* AUD_Sound_square(float frequency, aud::SampleRate rate);
  * \param rate The sample rate of the triangle sound.
  * \return A handle of the sound.
  */
-extern AUD_Sound* AUD_Sound_triangle(float frequency, aud::SampleRate rate);
+extern AUD_Sound* AUD_Sound_triangle(float frequency, AUD_SampleRate rate);
 
 /**
  * Accumulates a sound by summing over positive input differences thus generating a monotonic sigal.
