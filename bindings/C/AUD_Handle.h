@@ -246,14 +246,14 @@ extern AUD_Status AUD_Handle_getStatus(AUD_Handle* handle);
  * param handle The handle to get the velocity from.
  * return The velocity of the handle.
  */
-extern int AUD_Handle_getVelocity(AUD_Handle* handle, const float value[3]);
+extern int AUD_Handle_getVelocity(AUD_Handle* handle, float value[3]);
 
 /**
  * Sets the velocity of a handle.
  * param handle The handle to set the velocity from.
  * param value The new velocity to set.
  */
-extern int AUD_Handle_setVelocity(AUD_Handle* handle, float value[3]);
+extern int AUD_Handle_setVelocity(AUD_Handle* handle, const float value[3]);
 
 /**
  * Retrieves the volume of a handle.

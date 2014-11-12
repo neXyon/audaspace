@@ -367,7 +367,7 @@ void AUD_exitOnce()
 {
 }
 
-int AUD_init(const char* device, const char* name, AUD_DeviceSpecs specs, int buffersize)
+AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, const char* name)
 {
 	try
 	{
@@ -378,18 +378,20 @@ int AUD_init(const char* device, const char* name, AUD_DeviceSpecs specs, int bu
 			factory->setName(name);
 			factory->setBufferSize(buffersize);
 			factory->setSpecs(convCToDSpec(specs));
-			DeviceManager::setDevice(factory->openDevice());
+			auto device = factory->openDevice();
+			DeviceManager::setDevice(device);
 
-			return true;
+			return new AUD_Device(device);
 		}
 	}
 	catch(Exception&)
 	{
 	}
-	return false;
+	return nullptr;
 }
 
-void AUD_exit()
+void AUD_exit(AUD_Device* device)
 {
+	delete device;
 	DeviceManager::releaseDevice();
 }

@@ -120,12 +120,12 @@ extern void AUD_exitOnce();
  * \param buffersize The buffersize for the device.
  * \return Whether the device has been initialized.
  */
-extern int AUD_init(const char* device, const char* name, AUD_DeviceSpecs specs, int buffersize);
+extern AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, const char* name);
 
 /**
  * Unitinitializes an audio device.
  */
-extern void AUD_exit();
+extern void AUD_exit(AUD_Device* device);
 
 #ifdef __cplusplus
 }
