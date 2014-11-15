@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Sequence.h
+ * @ingroup sequence
+ * The Sequence class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 #include "devices/I3DDevice.h"

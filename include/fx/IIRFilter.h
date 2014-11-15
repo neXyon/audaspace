@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IIRFilter.h
+ * @ingroup fx
+ * The IIRFilter class.
+ */
+
 #include "fx/Effect.h"
 
 #include <vector>

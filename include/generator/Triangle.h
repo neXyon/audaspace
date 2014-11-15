@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Triangle.h
+ * @ingroup generator
+ * The Triangle class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 

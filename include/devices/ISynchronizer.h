@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ISynchronizer.h
+ * @ingroup devices
+ * The ISynchronizer interface.
+ */
+
 #include "Audaspace.h"
 
 #include <memory>

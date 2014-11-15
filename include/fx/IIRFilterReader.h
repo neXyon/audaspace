@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IIRFilterReader.h
+ * @ingroup fx
+ * The IIRFilterReader class.
+ */
+
 #include "fx/BaseIIRFilterReader.h"
 
 #include <vector>

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Sawtooth.h
+ * @ingroup generator
+ * The Sawtooth class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 

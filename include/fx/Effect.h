@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Effect.h
+ * @ingroup fx
+ * The Effect class.
+ */
+
 #include "ISound.h"
 
 AUD_NAMESPACE_BEGIN

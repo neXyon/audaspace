@@ -18,7 +18,8 @@
 
 /**
  * @file FaderReader.h
- * Defines the class as well as the two fading types.
+ * @ingroup fx
+ * Defines the FaderReader class as well as the two fading types.
  */
 
 #include "fx/EffectReader.h"

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SoftwareDevice.h
+ * @ingroup devices
+ * The SoftwareDevice class.
+ */
+
 #include "devices/IDevice.h"
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"

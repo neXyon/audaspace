@@ -18,6 +18,7 @@
 
 /**
  * @file Audaspace.h
+ * @ingroup general
  * The main header file of the library defining the namespace and basic data types.
  */
 

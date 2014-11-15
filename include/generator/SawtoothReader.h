@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SawtoothReader.h
+ * @ingroup generator
+ * The SawtoothReader class.
+ */
+
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

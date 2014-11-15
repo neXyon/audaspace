@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file PingPong.h
+ * @ingroup sequence
+ * The PingPong class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Mixer.h
+ * @ingroup respec
+ * The Mixer class.
+ */
+
 #include "respec/Specification.h"
 #include "respec/ConverterFunctions.h"
 #include "util/Buffer.h"

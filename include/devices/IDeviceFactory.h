@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IDeviceFactory.h
+ * @ingroup devices
+ * The IDeviceFactory interface.
+ */
+
 #include "respec/Specification.h"
 
 #include <memory>

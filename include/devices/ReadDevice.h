@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ReadDevice.h
+ * @ingroup devices
+ * The ReadDevice class.
+ */
+
 #include "devices/SoftwareDevice.h"
 
 AUD_NAMESPACE_BEGIN

@@ -18,7 +18,8 @@
 
 /**
  * @file I3DDevice.h
- * Defines the interface as well as the different distance models.
+ * @ingroup devices
+ * Defines the I3DDevice interface as well as the different distance models.
  */
 
 #include "util/Math3D.h"

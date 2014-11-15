@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file JOSResample.h
+ * @ingroup respec
+ * The JOSResample class.
+ */
+
 #include "respec/SpecsChanger.h"
 
 AUD_NAMESPACE_BEGIN

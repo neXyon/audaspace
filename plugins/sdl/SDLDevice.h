@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SDLDevice.h
+ * @ingroup plugin
+ * The SDLDevice class.
+ */
+
 #include "devices/SoftwareDevice.h"
 
 #include <SDL.h>

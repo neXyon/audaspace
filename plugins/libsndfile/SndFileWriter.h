@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SndFileWriter.h
+ * @ingroup plugin
+ * The SndFileWriter class.
+ */
+
 #include "file/IWriter.h"
 
 #include <string>

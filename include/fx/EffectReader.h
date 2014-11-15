@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file EffectReader.h
+ * @ingroup fx
+ * The EffectReader class.
+ */
+
 #include "IReader.h"
 
 #include <memory>

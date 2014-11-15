@@ -1,5 +1,32 @@
 /**
 
+@defgroup general General
+Classes of general importance.
+
+@defgroup devices Devices
+Input and output from hardware devices.
+
+@defgroup file Files
+Input and output from files.
+
+@defgroup fx Effects
+Effect classes.
+
+@defgroup generator Generators
+Signal generator classes.
+
+@defgroup plugin Plugins
+Plugins and plugin management.
+
+@defgroup respec Respecification
+Rechanneling, resampling and reformatting.
+
+@defgroup sequence Sequencing
+Simple and complex sequencing.
+
+@defgroup util Utilities
+Utilities such as Buffer.
+
 @mainpage Audaspace
 
 Audaspace (pronounced "outer space") is a high level audio library written in C++ with language bindings for Python for example. It started out as the audio engine of the 3D modelling application Blender. It's currently under heavy development to be released as a standalone library.

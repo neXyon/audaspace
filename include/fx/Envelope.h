@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Envelope.h
+ * @ingroup fx
+ * The Envelope class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

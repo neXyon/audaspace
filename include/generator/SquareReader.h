@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SquareReader.h
+ * @ingroup generator
+ * The SquareReader class.
+ */
+
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

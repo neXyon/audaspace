@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Pitch.h
+ * @ingroup fx
+ * The Pitch class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

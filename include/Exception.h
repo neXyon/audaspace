@@ -18,7 +18,8 @@
 
 /**
  * @file Exception.h
- * Defines the class as well as the AUD_THROW macro for easy throwing.
+ * @ingroup general
+ * Defines the Exception class as well as the AUD_THROW macro for easy throwing.
  */
 
 #include "Audaspace.h"

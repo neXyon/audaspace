@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Limiter.h
+ * @ingroup fx
+ * The Limiter class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

@@ -18,6 +18,7 @@
 
 /**
  * @file Specification.h
+ * @ingroup respec
  * Defines all important macros and basic data structures for stream format descriptions.
  */
 

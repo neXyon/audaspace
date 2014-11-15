@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file File.h
+ * @ingroup file
+ * The File class.
+ */
+
 #include "ISound.h"
 
 #include <string>

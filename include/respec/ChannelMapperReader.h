@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ChannelMapperReader.h
+ * @ingroup respec
+ * The ChannelMapperReader class.
+ */
+
 #include "fx/EffectReader.h"
 #include "util/Buffer.h"
 

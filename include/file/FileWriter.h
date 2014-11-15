@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file FileWriter.h
+ * @ingroup file
+ * The FileWriter class.
+ */
+
 #include "respec/Specification.h"
 #include "file/IWriter.h"
 

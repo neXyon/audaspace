@@ -18,7 +18,8 @@
 
 /**
  * @file IWriter.h
- * Defines the interface as well as Container and Codec types.
+ * @ingroup file
+ * Defines the IWriter interface as well as Container and Codec types.
  */
 
 #include "respec/Specification.h"

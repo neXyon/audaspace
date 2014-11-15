@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Sine.h
+ * @ingroup generator
+ * The Sine class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 

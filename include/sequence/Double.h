@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Double.h
+ * @ingroup sequence
+ * The Double class.
+ */
+
 #include "ISound.h"
 
 AUD_NAMESPACE_BEGIN

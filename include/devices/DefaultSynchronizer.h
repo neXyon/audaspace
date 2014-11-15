@@ -16,12 +16,19 @@
 
 #pragma once
 
+/**
+ * @file DefaultSynchronizer.h
+ * @ingroup devices
+ * The DefaultSynchronizer class.
+ */
+
 #include "ISynchronizer.h"
 
 AUD_NAMESPACE_BEGIN
 
 /**
- * This class is a default Synchronizer implementation that doesn't really synchronize.
+ * This class is a default ISynchronizer implementation that actually does no
+ * synchronization and is intended for devices that don't support it.
  */
 class DefaultSynchronizer : public ISynchronizer
 {

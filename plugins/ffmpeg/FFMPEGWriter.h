@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file FFMPEGWriter.h
+ * @ingroup plugin
+ * The FFMPEGWriter class.
+ */
+
 #include "respec/ConverterFunctions.h"
 #include "util/Buffer.h"
 #include "file/IWriter.h"

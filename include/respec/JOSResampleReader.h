@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file JOSResampleReader.h
+ * @ingroup respec
+ * The JOSResampleReader class.
+ */
+
 #include "respec/ResampleReader.h"
 #include "util/Buffer.h"
 

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file FFMPEGReader.h
+ * @ingroup plugin
+ * The FFMPEGReader class.
+ */
+
 #include "respec/ConverterFunctions.h"
 #include "IReader.h"
 #include "util/Buffer.h"

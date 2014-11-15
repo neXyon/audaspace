@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Math3D.h
+ * @ingroup util
+ * Defines the Vector3 and Quaternion classes.
+ */
+
 #include "Audaspace.h"
 
 #include <cmath>

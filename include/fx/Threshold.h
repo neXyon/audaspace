@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Threshold.h
+ * @ingroup fx
+ * The Threshold class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

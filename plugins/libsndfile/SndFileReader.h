@@ -18,6 +18,12 @@
 
 #include "IReader.h"
 
+/**
+ * @file SndFileReader.h
+ * @ingroup plugin
+ * The SndFileReader class.
+ */
+
 #include <string>
 #include <sndfile.h>
 #include <memory>

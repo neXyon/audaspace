@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file TriangleReader.h
+ * @ingroup generator
+ * The TriangleReader class.
+ */
+
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file LinearResampleReader.h
+ * @ingroup respec
+ * The LinearResampleReader class.
+ */
+
 #include "respec/ResampleReader.h"
 #include "util/Buffer.h"
 

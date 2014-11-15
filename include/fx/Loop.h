@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Loop.h
+ * @ingroup fx
+ * The Loop class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

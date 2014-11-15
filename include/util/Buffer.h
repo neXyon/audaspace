@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Buffer.h
+ * @ingroup util
+ * The Buffer class.
+ */
+
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

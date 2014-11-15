@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Square.h
+ * @ingroup generator
+ * The Square class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 

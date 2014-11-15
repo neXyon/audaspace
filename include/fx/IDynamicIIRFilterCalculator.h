@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IDynamicIIRFilterCalculator.h
+ * @ingroup fx
+ * The IDynamicIIRFilterCalculator interface.
+ */
+
 #include "respec/Specification.h"
 
 #include <vector>

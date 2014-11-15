@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ButterworthCalculator.h
+ * @ingroup fx
+ * The ButterworthCalculator class.
+ */
+
 #include "fx/IDynamicIIRFilterCalculator.h"
 
 AUD_NAMESPACE_BEGIN

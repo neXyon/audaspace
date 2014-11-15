@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SineReader.h
+ * @ingroup generator
+ * The SineReader class.
+ */
+
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

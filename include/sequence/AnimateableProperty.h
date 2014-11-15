@@ -18,7 +18,8 @@
 
 /**
  * @file AnimateableProperty.h
- * Defines the class as well as existing property types.
+ * @ingroup sequence
+ * Defines the AnimateableProperty class as well as existing property types.
  */
 
 #include "util/Buffer.h"

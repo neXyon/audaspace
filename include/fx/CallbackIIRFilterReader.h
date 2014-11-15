@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file CallbackIIRFilterReader.h
+ * @ingroup fx
+ * The CallbackIIRFilterReader class.
+ */
+
 #include "fx/BaseIIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN

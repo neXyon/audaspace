@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file FFMPEG.h
+ * @ingroup plugin
+ * The FFMPEG class.
+ */
+
 #include "file/IFileInput.h"
 #include "file/IFileOutput.h"
 

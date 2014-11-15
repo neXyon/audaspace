@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file DoubleReader.h
+ * @ingroup sequence
+ * The DoubleReader class.
+ */
+
 #include "IReader.h"
 
 #include <memory>

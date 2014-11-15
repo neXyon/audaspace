@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ConverterReader.h
+ * @ingroup respec
+ * The ConverterReader class.
+ */
+
 #include "fx/EffectReader.h"
 #include "respec/ConverterFunctions.h"
 #include "util/Buffer.h"

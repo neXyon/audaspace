@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ADSR.h
+ * @ingroup fx
+ * The ADSR class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

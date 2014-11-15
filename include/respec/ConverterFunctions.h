@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ConverterFunctions.h
+ * @ingroup respec
+ * Defines several conversion functions between different sample formats.
+ */
+
 #include "Audaspace.h"
 
 #include <cstring>

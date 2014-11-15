@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file LoopReader.h
+ * @ingroup fx
+ * The LoopReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file HighpassCalculator.h
+ * @ingroup fx
+ * The HighpassCalculator class.
+ */
+
 #include "fx/IDynamicIIRFilterCalculator.h"
 
 AUD_NAMESPACE_BEGIN

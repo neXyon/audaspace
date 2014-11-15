@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ADSRReader.h
+ * @ingroup fx
+ * The ADSRReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

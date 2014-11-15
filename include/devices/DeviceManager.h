@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file DeviceManager.h
+ * @ingroup devices
+ * The DeviceManager class.
+ */
+
 #include "Audaspace.h"
 
 #include <memory>

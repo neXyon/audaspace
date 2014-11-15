@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file NULLDevice.h
+ * @ingroup devices
+ * The NULLDevice class.
+ */
+
 #include "devices/IDevice.h"
 #include "devices/IHandle.h"
 

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file PitchReader.h
+ * @ingroup fx
+ * The PitchReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

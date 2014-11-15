@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SequenceReader.h
+ * @ingroup sequence
+ * The SequenceReader class.
+ */
+
 #include "IReader.h"
 #include "devices/ReadDevice.h"
 

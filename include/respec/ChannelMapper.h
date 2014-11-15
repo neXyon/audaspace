@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ChannelMapper.h
+ * @ingroup respec
+ * The ChannelMapper class.
+ */
+
 #include "respec/SpecsChanger.h"
 
 AUD_NAMESPACE_BEGIN

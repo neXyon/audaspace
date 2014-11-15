@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SilenceReader.h
+ * @ingroup generator
+ * The SilenceReader class.
+ */
+
 #include "IReader.h"
 
 AUD_NAMESPACE_BEGIN

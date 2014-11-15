@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Butterworth.h
+ * @ingroup fx
+ * The Butterworth class.
+ */
+
 #include "fx/DynamicIIRFilter.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Sum.h
+ * @ingroup fx
+ * The Sum class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

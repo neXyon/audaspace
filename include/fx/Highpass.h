@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Highpass.h
+ * @ingroup fx
+ * The Highpass class.
+ */
+
 #include "fx/DynamicIIRFilter.h"
 
 AUD_NAMESPACE_BEGIN

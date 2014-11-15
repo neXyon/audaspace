@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Fader.h
+ * @ingroup fx
+ * The Fader class.
+ */
+
 #include "fx/Effect.h"
 #include "fx/FaderReader.h"
 

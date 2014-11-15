@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ILockable.h
+ * @ingroup util
+ * The ILockable interface.
+ */
+
 #include "Audaspace.h"
 
 AUD_NAMESPACE_BEGIN

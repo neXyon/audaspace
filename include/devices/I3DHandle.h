@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file I3DHandle.h
+ * @ingroup devices
+ * The I3DHandle interface.
+ */
+
 #include "util/Math3D.h"
 
 AUD_NAMESPACE_BEGIN

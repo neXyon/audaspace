@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Volume.h
+ * @ingroup fx
+ * The Volume class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

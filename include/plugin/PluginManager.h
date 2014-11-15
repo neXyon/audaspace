@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file PluginManager.h
+ * @ingroup plugin
+ * The PluginManager class.
+ */
+
 #include "Audaspace.h"
 
 #include <unordered_map>

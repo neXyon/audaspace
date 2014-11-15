@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Accumulator.h
+ * @ingroup fx
+ * The Accumulator class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

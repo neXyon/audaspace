@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SpecsChanger.h
+ * @ingroup respec
+ * The SpecsChanger class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 

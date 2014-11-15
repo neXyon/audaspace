@@ -18,7 +18,8 @@
 
 /**
  * @file IHandle.h
- * Defines the interface as well as possible states of the handle.
+ * @ingroup devices
+ * Defines the IHandle interface as well as possible states of the handle.
  */
 
 #include "Audaspace.h"

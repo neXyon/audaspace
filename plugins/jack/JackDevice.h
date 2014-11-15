@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file JackDevice.h
+ * @ingroup plugin
+ * The JackDevice class.
+ */
+
 #include "JackSynchronizer.h"
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"

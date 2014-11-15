@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IReader.h
+ * @ingroup general
+ * The IReader interface.
+ */
+
 #include "respec/Specification.h"
 
 AUD_NAMESPACE_BEGIN

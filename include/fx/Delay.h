@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Delay.h
+ * @ingroup fx
+ * The Delay class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

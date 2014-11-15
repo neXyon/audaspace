@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SuperposeReader.h
+ * @ingroup sequence
+ * The SuperposeReader class.
+ */
+
 #include "IReader.h"
 #include "util/Buffer.h"
 

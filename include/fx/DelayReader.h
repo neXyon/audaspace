@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file DelayReader.h
+ * @ingroup fx
+ * The DelayReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SndFile.h
+ * @ingroup plugin
+ * The SndFile class.
+ */
+
 #include "file/IFileInput.h"
 #include "file/IFileOutput.h"
 

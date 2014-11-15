@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file BaseIIRFilterReader.h
+ * @ingroup fx
+ * The BaseIIRFilterReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

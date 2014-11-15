@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Reverse.h
+ * @ingroup fx
+ * The Reverse class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

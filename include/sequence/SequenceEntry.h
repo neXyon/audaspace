@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SequenceEntry.h
+ * @ingroup sequence
+ * The SequenceEntry class.
+ */
+
 #include "sequence/AnimateableProperty.h"
 #include "util/ILockable.h"
 

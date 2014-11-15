@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file JackSynchronizer.h
+ * @ingroup plugin
+ * The JackSynchronizer class.
+ */
+
 #include "devices/ISynchronizer.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file OpenALDevice.h
+ * @ingroup plugin
+ * The OpenALDevice class.
+ */
+
 #include "devices/IDevice.h"
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"

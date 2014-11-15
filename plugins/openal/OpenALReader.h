@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file OpenALReader.h
+ * @ingroup plugin
+ * The OpenALReader class.
+ */
+
 #include "IReader.h"
 
 #include <AL/alc.h>

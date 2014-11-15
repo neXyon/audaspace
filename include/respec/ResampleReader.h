@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ResampleReader.h
+ * @ingroup respec
+ * The ResampleReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

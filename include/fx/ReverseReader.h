@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ReverseReader.h
+ * @ingroup fx
+ * The ReverseReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file SequenceData.h
+ * @ingroup sequence
+ * The SequenceData class.
+ */
+
 #include "respec/Specification.h"
 #include "sequence/AnimateableProperty.h"
 #include "devices/I3DDevice.h"

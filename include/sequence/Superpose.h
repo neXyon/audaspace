@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Superpose.h
+ * @ingroup sequence
+ * The Superpose class.
+ */
+
 #include "ISound.h"
 
 AUD_NAMESPACE_BEGIN

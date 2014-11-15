@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file StreamBuffer.h
+ * @ingroup util
+ * The StreamBuffer class.
+ */
+
 #include "ISound.h"
 #include "respec/Specification.h"
 

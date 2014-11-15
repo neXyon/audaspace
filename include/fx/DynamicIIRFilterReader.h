@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file DynamicIIRFilterReader.h
+ * @ingroup fx
+ * The DynamicIIRFilterReader class.
+ */
+
 #include "fx/IIRFilterReader.h"
 
 AUD_NAMESPACE_BEGIN

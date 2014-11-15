@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Silence.h
+ * @ingroup generator
+ * The Silence class.
+ */
+
 #include "ISound.h"
 
 AUD_NAMESPACE_BEGIN

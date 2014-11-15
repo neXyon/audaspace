@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file Converter.h
+ * @ingroup respec
+ * The Converter class.
+ */
+
 #include "respec/SpecsChanger.h"
 
 AUD_NAMESPACE_BEGIN

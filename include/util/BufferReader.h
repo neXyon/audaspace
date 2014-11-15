@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file BufferReader.h
+ * @ingroup util
+ * The BufferReader class.
+ */
+
 #include "IReader.h"
 
 #include <memory>

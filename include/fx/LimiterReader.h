@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file LimiterReader.h
+ * @ingroup fx
+ * The LimiterReader class.
+ */
+
 #include "fx/EffectReader.h"
 
 AUD_NAMESPACE_BEGIN

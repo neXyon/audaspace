@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file DynamicIIRFilter.h
+ * @ingroup fx
+ * The DynamicIIRFilter class.
+ */
+
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN

@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IFileInput.h
+ * @ingroup file
+ * The IFileInput interface.
+ */
+
 #include "Audaspace.h"
 
 #include <memory>

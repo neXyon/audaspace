@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IDevice.h
+ * @ingroup devices
+ * The IDevice interface.
+ */
+
 #include "respec/Specification.h"
 #include "util/ILockable.h"
 

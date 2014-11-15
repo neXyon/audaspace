@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file IFileOutput.h
+ * @ingroup file
+ * The IFileOutput interface.
+ */
+
 #include "file/IWriter.h"
 #include "respec/Specification.h"
 

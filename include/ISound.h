@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file ISound.h
+ * @ingroup general
+ * The ISound interface.
+ */
+
 #include "Audaspace.h"
 
 #include <memory>

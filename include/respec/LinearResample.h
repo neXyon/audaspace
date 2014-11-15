@@ -16,6 +16,12 @@
 
 #pragma once
 
+/**
+ * @file LinearResample.h
+ * @ingroup respec
+ * The LinearResample class.
+ */
+
 #include "respec/SpecsChanger.h"
 
 AUD_NAMESPACE_BEGIN
