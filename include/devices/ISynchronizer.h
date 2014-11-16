@@ -45,11 +45,41 @@ public:
 
 	typedef void (*syncFunction)(void*, int, float);
 
+	/**
+	 * Sets the playback position of a handle and the synchronizer to a specific time.
+	 * @param handle The handle that should be synchronized/seeked.
+	 * @param time The absolute time to synchronize to.
+	 */
 	virtual void seek(std::shared_ptr<IHandle> handle, float time) = 0;
+
+	/**
+	 * Retrieves the position of the synchronizer.
+	 * @param handle The handle which is synchronized.
+	 * @return The position in seconds.
+	 */
 	virtual float getPosition(std::shared_ptr<IHandle> handle) = 0;
+
+	/**
+	 * Starts the synchronizer playback.
+	 */
 	virtual void play() = 0;
+
+	/**
+	 * Stops the synchronizer playback.
+	 */
 	virtual void stop() = 0;
+
+	/**
+	 * Sets the callback function that is called when a synchronization event happens.
+	 * @param function The function to be called.
+	 * @param data User data to be passed to the callback.
+	 */
 	virtual void setSyncCallback(syncFunction function, void* data) = 0;
+
+	/**
+	 * Retrieves whether the synchronizer is playing back.
+	 * @return Whether the synchronizer plays back.
+	 */
 	virtual int isPlaying() = 0;
 };
 

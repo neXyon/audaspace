@@ -44,7 +44,10 @@ enum DistanceModel
 
 /**
  * @interface I3DDevice
- * This class represents an output device for 3D sound.
+ * The I3DDevice interface represents an output device for 3D sound.
+ *
+ * The interface has been modelled after the OpenAL 1.1 API,
+ * see the [OpenAL Specification](http://openal.org/) for lots of details.
  */
 class I3DDevice
 {
@@ -58,6 +61,8 @@ public:
 	/**
 	 * Sets the listener location.
 	 * \param location The new location.
+	 * \note The location is not updated with the velocity and
+	 *       remains constant until the next call of this method.
 	 */
 	virtual void setListenerLocation(const Vector3& location)=0;
 
@@ -70,6 +75,8 @@ public:
 	/**
 	 * Sets the listener velocity.
 	 * \param velocity The new velocity.
+	 * \note This velocity does not change the position of the listener
+	 *       over time, it is simply used for the calculation of the doppler effect.
 	 */
 	virtual void setListenerVelocity(const Vector3& velocity)=0;
 
@@ -82,6 +89,9 @@ public:
 	/**
 	 * Sets the listener orientation.
 	 * \param orientation The new orientation as quaternion.
+	 * \note The coordinate system used is right handed and the listener
+	 * by default is oriented looking in the negative z direction with the
+	 * positive y axis as up direction.
 	 */
 	virtual void setListenerOrientation(const Quaternion& orientation)=0;
 

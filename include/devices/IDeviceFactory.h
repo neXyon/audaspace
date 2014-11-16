@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 
 /**
  * @interface IDeviceFactory
- * This interface opens output device.
+ * The IDeviceFactory interface opens an output device.
  */
 class IDeviceFactory
 {
@@ -43,6 +43,7 @@ public:
 
 	/**
 	 * Returns the priority of the device to be the default device for a system.
+	 * The higher the priority the more likely it is for this device to be used as the default device.
 	 * \return Priority to be the default device.
 	 */
 	virtual int getPriority()=0;

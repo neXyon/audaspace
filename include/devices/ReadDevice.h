@@ -33,7 +33,7 @@ class ReadDevice : public SoftwareDevice
 {
 private:
 	/**
-	 * Whether the device currently.
+	 * Whether the device is currently playing back.
 	 */
 	bool m_playing;
 

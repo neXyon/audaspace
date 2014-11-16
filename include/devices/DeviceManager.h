@@ -35,6 +35,9 @@ class I3DDevice;
 
 /**
  * This class manages all device plugins and maintains a device if asked to do so.
+ *
+ * This enables applications to access their output device without having to carry
+ * it through the whole application.
  */
 class DeviceManager
 {
@@ -49,16 +52,70 @@ private:
 	DeviceManager() = delete;
 
 public:
+	/**
+	 * Registers a device factory.
+	 *
+	 * This method is mostly used by plugin developers to add their device implementation
+	 * for general use by the library end users.
+	 * @param name A representative name for the device.
+	 * @param factory The factory that creates the device.
+	 */
 	static void registerDevice(std::string name, std::shared_ptr<IDeviceFactory> factory);
+
+	/**
+	 * Returns the factory for a specific device.
+	 * @param name The representative name of the device.
+	 * @return The factory if it was found, or nullptr otherwise.
+	 */
 	static std::shared_ptr<IDeviceFactory> getDeviceFactory(std::string name);
+
+	/**
+	 * Returns the default device based on the priorities of the registered factories.
+	 * @return The default device or nullptr if no factory has been registered.
+	 */
 	static std::shared_ptr<IDeviceFactory> getDefaultDeviceFactory();
 
+
+	/**
+	 * Sets a device that should be handled by the manager.
+	 *
+	 * If a device is currently being handled it will be released.
+	 * @param device The device the manager should take care of.
+	 */
 	static void setDevice(std::shared_ptr<IDevice> device);
+
+	/**
+	 * Opens a device which will then be handled by the manager.
+	 *
+	 * If a device is currently being handled it will be released.
+	 * @param name The representative name of the device.
+	 */
 	static void openDevice(std::string name);
+
+	/**
+	 * Opens the default device which will then be handled by the manager.
+	 *
+	 * The device to open is selected based on the priority of the registered factories.
+	 * If a device is currently being handled it will be released.
+	 */
 	static void openDefaultDevice();
+
+	/**
+	 * Releases the currently handled device.
+	 */
 	static void releaseDevice();
 
+	/**
+	 * Returns the currently handled device.
+	 * @return The handled device or nullptr if no device has been registered.
+	 */
 	static std::shared_ptr<IDevice> getDevice();
+
+	/**
+	 * Returns the currently handled 3D device.
+	 * @return The handled device or nullptr if no device has been registered
+	 *         or the registered device is not an I3DDevice.
+	 */
 	static std::shared_ptr<I3DDevice> get3DDevice();
 };
 

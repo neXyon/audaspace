@@ -31,6 +31,7 @@ class IReader;
 
 /**
  * This device plays nothing.
+ * It is similar to the linux device /dev/null.
  */
 class NULLDevice : public IDevice
 {

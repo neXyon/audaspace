@@ -39,7 +39,7 @@ typedef void (*stopCallback)(void*);
 
 /**
  * @interface IHandle
- * This class represents a playback handles for specific devices.
+ * The IHandle interface represents a playback handles of a specific device.
  */
 class IHandle
 {

@@ -40,7 +40,8 @@ class ResampleReader;
 class ChannelMapperReader;
 
 /**
- * This device plays is a generic device with software mixing.
+ * The software device is a generic device with software mixing.
+ * It is a base class for all software mixing classes.
  * Classes implementing this have to:
  *  - Implement the playing function.
  *  - Prepare the m_specs, m_mixer variables.

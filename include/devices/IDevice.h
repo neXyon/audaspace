@@ -36,9 +36,9 @@ class ISynchronizer;
 
 /**
  * @interface IDevice
- * This class represents an output device for sound sources.
+ * The IDevice interface represents an output device for sound sources.
  * Output devices may be several backends such as plattform independand like
- * SDL or OpenAL or plattform specific like DirectSound, but they may also be
+ * SDL or OpenAL or plattform specific like ALSA, but they may also be
  * files, RAM buffers or other types of streams.
  * \warning Thread safety must be insured so that no reader is beeing called
  *          twice at the same time.
@@ -113,6 +113,11 @@ public:
 	 */
 	virtual void setVolume(float volume)=0;
 
+	/**
+	 * Retrieves the synchronizer for this device, which enables accurate synchronization
+	 * between audio playback and video playback for example.
+	 * @return The synchronizer which will be the DefaultSynchronizer if synchonization is not supported.
+	 */
 	virtual ISynchronizer* getSynchronizer()=0;
 };
 
