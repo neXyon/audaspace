@@ -25,7 +25,10 @@
 /// The default playback buffer size of a device.
 #define AUD_DEFAULT_BUFFER_SIZE 1024
 
+/// Opens the audaspace namespace aud.
 #define AUD_NAMESPACE_BEGIN namespace aud {
+
+/// Closes the audaspace namespace aud.
 #define AUD_NAMESPACE_END }
 
 AUD_NAMESPACE_BEGIN

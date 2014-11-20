@@ -32,7 +32,8 @@ AUD_NAMESPACE_BEGIN
 class Buffer;
 
 /**
- * This sound tries to read a sound file via all available file readers.
+ * The File sound tries to read a sound file via all available file inputs
+ * that have been registered in the FileManager class.
  */
 class File : public ISound
 {
@@ -54,12 +55,14 @@ private:
 public:
 	/**
 	 * Creates a new sound.
+	 * The file is read from the file system using the given path.
 	 * \param filename The sound file path.
 	 */
 	File(std::string filename);
 
 	/**
 	 * Creates a new sound.
+	 * The file is read from memory using the supplied buffer.
 	 * \param buffer The buffer to read from.
 	 * \param size The size of the buffer.
 	 */

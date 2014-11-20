@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
 
 /**
  * @interface IFileOutput
- * This class represents a file output plugin that can write files.
+ * The IFileOutput interface represents a file output plugin that can write files.
  */
 class IFileOutput
 {

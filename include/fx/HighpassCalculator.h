@@ -26,6 +26,10 @@
 
 AUD_NAMESPACE_BEGIN
 
+/**
+ * The HighpassCalculator class calculates high pass filter coefficients for a
+ * dynamic DynamicIIRFilter.
+ */
 class HighpassCalculator : public IDynamicIIRFilterCalculator
 {
 private:
@@ -44,6 +48,11 @@ private:
 	HighpassCalculator& operator=(const HighpassCalculator&) = delete;
 
 public:
+	/**
+	 * Creates a HighpassCalculator object.
+	 * @param frequency The cutoff frequency.
+	 * @param Q The Q factor of the filter. If unsure, use 1.0 as default.
+	 */
 	HighpassCalculator(float frequency, float Q);
 
 	virtual void recalculateCoefficients(SampleRate rate, std::vector<float> &b, std::vector<float> &a);

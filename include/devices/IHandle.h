@@ -35,6 +35,10 @@ enum Status
 	STATUS_STOPPED				/// Sound is stopped but kept in the device.
 };
 
+/**
+ * The stopCallback is called when a handle reaches the end of the stream and
+ * thus gets stopped. A user defined pointer is supplied to the callback.
+ */
 typedef void (*stopCallback)(void*);
 
 /**

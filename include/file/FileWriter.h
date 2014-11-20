@@ -34,7 +34,7 @@ AUD_NAMESPACE_BEGIN
 class IReader;
 
 /**
- * This class is able to create IWriter classes as well as write reads to them.
+ * The FileWriter class is able to create IWriter classes as well as write readers to them.
  */
 class FileWriter
 {

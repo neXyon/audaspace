@@ -33,7 +33,8 @@ class Buffer;
 
 /**
  * @interface IFileInput
- * This class represents a file input plugin that can create file input readers from filenames or buffers.
+ * The IFileInput interface represents a file input plugin that can create file
+ * input readers from filenames or buffers.
  */
 class IFileInput
 {

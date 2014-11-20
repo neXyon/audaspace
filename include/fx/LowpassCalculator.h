@@ -26,6 +26,10 @@
 
 AUD_NAMESPACE_BEGIN
 
+/**
+ * The LowpassCalculator class calculates low pass filter coefficients for a
+ * dynamic DynamicIIRFilter.
+ */
 class LowpassCalculator : public IDynamicIIRFilterCalculator
 {
 private:
@@ -44,6 +48,11 @@ private:
 	LowpassCalculator& operator=(const LowpassCalculator&) = delete;
 
 public:
+	/**
+	 * Creates a LowpassCalculator object.
+	 * @param frequency The cutoff frequency.
+	 * @param Q The Q factor of the filter. If unsure, use 1.0 as default.
+	 */
 	LowpassCalculator(float frequency, float Q);
 
 	virtual void recalculateCoefficients(SampleRate rate, std::vector<float> &b, std::vector<float> &a);

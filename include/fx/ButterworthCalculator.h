@@ -26,6 +26,10 @@
 
 AUD_NAMESPACE_BEGIN
 
+/**
+ * The ButterworthCalculator class calculates fourth order Butterworth low pass
+ * filter coefficients for a dynamic DynamicIIRFilter.
+ */
 class ButterworthCalculator : public IDynamicIIRFilterCalculator
 {
 private:
@@ -39,6 +43,10 @@ private:
 	ButterworthCalculator& operator=(const ButterworthCalculator&) = delete;
 
 public:
+	/**
+	 * Creates a ButterworthCalculator object.
+	 * @param frequency The cutoff frequency.
+	 */
 	ButterworthCalculator(float frequency);
 
 	virtual void recalculateCoefficients(SampleRate rate, std::vector<float> &b, std::vector<float> &a);

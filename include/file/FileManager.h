@@ -36,7 +36,7 @@ class IReader;
 class Buffer;
 
 /**
- * This class manages all file input and output plugins.
+ * The FileManager manages all file input and output plugins.
  */
 class FileManager
 {
@@ -50,11 +50,45 @@ private:
 	FileManager() = delete;
 
 public:
+	/**
+	 * Registers a file input used to create an IReader to read from a file.
+	 * @param input The IFileInput to register.
+	 */
 	static void registerInput(std::shared_ptr<IFileInput> input);
+
+	/**
+	 * Registers a file output used to create an IWriter to write to a file.
+	 * @param output The IFileOutput to register.
+	 */
 	static void registerOutput(std::shared_ptr<IFileOutput> output);
 
+	/**
+	 * Creates a file reader for the given filename if a registed IFileInput is able to read it.
+	 * @param filename The path to the file.
+	 * @return The reader created.
+	 * @exception Exception If no file input can read the file an exception is thrown.
+	 */
 	static std::shared_ptr<IReader> createReader(std::string filename);
+
+	/**
+	 * Creates a file reader for the given buffer if a registed IFileInput is able to read it.
+	 * @param buffer The buffer to read the file from.
+	 * @return The reader created.
+	 * @exception Exception If no file input can read the file an exception is thrown.
+	 */
 	static std::shared_ptr<IReader> createReader(std::shared_ptr<Buffer> buffer);
+
+	/**
+	 * Creates a file writer that writes a sound to the given file path.
+	 * Existing files will be overwritten.
+	 * @param filename The file path to write to.
+	 * @param specs The output specification.
+	 * @param format The container format for the file.
+	 * @param codec The codec used inside the container.
+	 * @param bitrate The bitrate to write with.
+	 * @return A writer that creates the file.
+	 * @exception Exception If no file output can write the file with the given specification an exception is thrown.
+	 */
 	static std::shared_ptr<IWriter> createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate);
 };
 

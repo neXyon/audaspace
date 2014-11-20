@@ -26,6 +26,9 @@
 
 AUD_NAMESPACE_BEGIN
 
+/**
+ * The ADSR effect implements the Attack-Delay-Sustain-Release behaviour of a sound.
+ */
 class ADSR : public Effect
 {
 private:
@@ -54,22 +57,62 @@ private:
 	ADSR& operator=(const ADSR&) = delete;
 
 public:
+	/**
+	 * Creates a new ADSR object.
+	 * @param sound The sound to apply this effect to.
+	 * @param attack The attack time in seconds.
+	 * @param decay The decay time in seconds.
+	 * @param sustain The sustain level as linear volume.
+	 * @param release The release time in seconds.
+	 */
 	ADSR(std::shared_ptr<ISound> sound, float attack, float decay, float sustain, float release);
 
+	/**
+	 * Returns the attack time.
+	 * @return The attack time in seconds.
+	 */
 	float getAttack() const;
 
+	/**
+	 * Sets the attack time.
+	 * @param attack The attack time in seconds.
+	 */
 	void setAttack(float attack);
 
+	/**
+	 * Returns the decay time.
+	 * @return The decay time in seconds.
+	 */
 	float getDecay() const;
 
+	/**
+	 * Sets the decay time.
+	 * @param decay The decay time in seconds.
+	 */
 	void setDecay(float decay);
 
+	/**
+	 * Returns the sustain level.
+	 * @return The sustain level in linear volume.
+	 */
 	float getSustain() const;
 
+	/**
+	 * Sets the sustain level.
+	 * @param sustain The sustain level in linear volume.
+	 */
 	void setSustain(float sustain);
 
+	/**
+	 * Returns the release time.
+	 * @return The release time in seconds.
+	 */
 	float getRelease() const;
 
+	/**
+	 * Sets the release time.
+	 * @param release The release time in seconds.
+	 */
 	void setRelease(float release);
 
 	virtual std::shared_ptr<IReader> createReader();

@@ -28,7 +28,18 @@ AUD_NAMESPACE_BEGIN
 
 class CallbackIIRFilterReader;
 
+/**
+ * The doFilterIIR callback is executed when a new sample of a callback filter
+ * should be calculated. For sample access the CallbackIIRFilterReader is
+ * provided. Furthermore a user defined pointer is also handed to the callback.
+ */
 typedef sample_t (*doFilterIIR)(CallbackIIRFilterReader*, void*);
+
+/**
+ * The endFilterIIR callback is called when the callback filter is not needed
+ * anymore. The goal of this function should be to clean up the data behind the
+ * user supplied pointer which is handed to the callback.
+ */
 typedef void (*endFilterIIR)(void*);
 
 /**

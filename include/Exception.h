@@ -32,40 +32,110 @@
 
 AUD_NAMESPACE_BEGIN
 
-/// Exception structure.
+/**
+ * The Exception class is the general exception base class.
+ */
 class Exception : public std::exception
 {
 protected:
+	/// A message describing the problem.
 	const std::string m_message;
+
+	/// The source code file in which the exception was thrown.
 	const std::string m_file;
+
+	/// The source code line from which the exception was thrown.
 	const int m_line;
+
+	/**
+	 * Creates a new Exception object.
+	 * @param message A message describing the problem.
+	 * @param file The source code file in which the exception was thrown.
+	 * @param line The source code line from which the exception was thrown.
+	 */
 	Exception(std::string message, std::string file, int line);
 public:
+	/**
+	 * Returns the error message.
+	 * @return A C string error message.
+	 */
 	virtual const char* what() const noexcept;
+
+	/**
+	 * Returns the error message plus file and line number for debugging purposes.
+	 * @return The error message including debug information.
+	 */
 	virtual std::string getDebugMessage() const;
 
+	/**
+	 * Returns the error message.
+	 * @return The error message as string.
+	 */
 	const std::string& getMessage() const;
+
+	/**
+	 * Returns the file in which the exception was thrown.
+	 * @return The name of the file in which the exception was thrown.
+	 */
 	const std::string& getFile() const;
+
+	/**
+	 * Returns the line where the exception was originally thrown.
+	 * @return The line of the source file where the exception was generated.
+	 */
 	int getLine() const;
 };
 
+/**
+ * The FileException class is used for error cases in which files cannot
+ * be read or written due to unknown containers or codecs.
+ */
 class FileException : public Exception
 {
 public:
+	/**
+	 * Creates a new FileException object.
+	 * @param message A message describing the problem.
+	 * @param file The source code file in which the exception was thrown.
+	 * @param line The source code line from which the exception was thrown.
+	 */
 	FileException(std::string message, std::string file, int line) :
 		Exception(message, file, line) {}
 };
 
+/**
+ * The DeviceException class is used for error cases in connection with
+ * devices, which usually happens when specific features or requests
+ * cannot be fulfilled by a device, for example when the device is opened.
+ */
 class DeviceException : public Exception
 {
 public:
+	/**
+	 * Creates a new DeviceException object.
+	 * @param message A message describing the problem.
+	 * @param file The source code file in which the exception was thrown.
+	 * @param line The source code line from which the exception was thrown.
+	 */
 	DeviceException(std::string message, std::string file, int line) :
 		Exception(message, file, line) {}
 };
 
+/**
+ * The StateException class is used for error cases of sounds or readers
+ * with illegal states or requirements for states of dependent classes.
+ * It is used for example when an effect reader needs a specific
+ * specification from its input.
+ */
 class StateException : public Exception
 {
 public:
+	/**
+	 * Creates a new StateException object.
+	 * @param message A message describing the problem.
+	 * @param file The source code file in which the exception was thrown.
+	 * @param line The source code line from which the exception was thrown.
+	 */
 	StateException(std::string message, std::string file, int line) :
 		Exception(message, file, line) {}
 };
