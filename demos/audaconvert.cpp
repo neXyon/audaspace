@@ -57,6 +57,8 @@ int main(int argc, char* argv[])
 		container = CONTAINER_OGG;
 	else if(sContainer == "mp3")
 		container = CONTAINER_MP3;
+	else if(sContainer == "wav")
+		container = CONTAINER_WAV;
 
 	if(sCodec == "opus")
 		codec = CODEC_OPUS;
@@ -64,6 +66,8 @@ int main(int argc, char* argv[])
 		codec = CODEC_VORBIS;
 	else if(sCodec == "mp3")
 		codec = CODEC_MP3;
+	else if(sCodec == "pcm")
+		codec = CODEC_PCM;
 
 	if(container == CONTAINER_INVALID)
 	{
