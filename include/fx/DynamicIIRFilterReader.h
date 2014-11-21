@@ -41,9 +41,19 @@ private:
 	std::shared_ptr<IDynamicIIRFilterCalculator> m_calculator;
 
 public:
+	/**
+	 * Creates a new DynamicIIRFilterReader.
+	 * @param reader The reader the filter is applied on.
+	 * @param calculator The IDynamicIIRFilterCalculator that recalculates the filter coefficients.
+	 */
 	DynamicIIRFilterReader(std::shared_ptr<IReader> reader,
 							   std::shared_ptr<IDynamicIIRFilterCalculator> calculator);
 
+	/**
+	 * The function sampleRateChanged is called whenever the sample rate of the
+	 * underlying reader changes and thus updates the filter coefficients.
+	 * @param rate The new sample rate.
+	 */
 	virtual void sampleRateChanged(SampleRate rate);
 };
 

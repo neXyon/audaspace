@@ -59,6 +59,11 @@ public:
 
 	virtual sample_t filter();
 
+	/**
+	 * Sets new filter coefficients.
+	 * @param b The input filter coefficients.
+	 * @param a The output filter coefficients.
+	 */
 	void setCoefficients(const std::vector<float>& b, const std::vector<float>& a);
 };
 

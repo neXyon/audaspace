@@ -85,6 +85,11 @@ protected:
 	 */
 	BaseIIRFilterReader(std::shared_ptr<IReader> reader, int in, int out);
 
+	/**
+	 * Sets the length for the required input and output samples of the IIR filter.
+	 * @param in The amount of past input samples needed, including the current one.
+	 * @param out The amount of past output samples needed.
+	 */
 	void setLengths(int in, int out);
 
 public:

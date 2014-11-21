@@ -64,6 +64,9 @@ public:
 	 */
 	virtual ~SDLDevice();
 
+	/**
+	 * Registers this plugin.
+	 */
 	static void registerPlugin();
 };
 

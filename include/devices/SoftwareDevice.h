@@ -54,6 +54,11 @@ protected:
 	/// Saves the data for playback.
 	class SoftwareHandle : public IHandle, public I3DHandle
 	{
+	private:
+		// delete copy constructor and operator=
+		SoftwareHandle(const SoftwareHandle&) = delete;
+		SoftwareHandle& operator=(const SoftwareHandle&) = delete;
+
 	public:
 		/// The reader source.
 		std::shared_ptr<IReader> m_reader;
@@ -136,11 +141,12 @@ protected:
 		/// Own device.
 		SoftwareDevice* m_device;
 
+		/**
+		 * This method is for internal use only.
+		 * @param keep Whether the sound should be marked stopped or paused.
+		 * @return Whether the action succeeded.
+		 */
 		bool pause(bool keep);
-
-		// delete copy constructor and operator=
-		SoftwareHandle(const SoftwareHandle&) = delete;
-		SoftwareHandle& operator=(const SoftwareHandle&) = delete;
 
 	public:
 		/**
@@ -161,7 +167,7 @@ protected:
 
 		/**
 		 * Sets the audio output specification of the readers.
-		 * \param sepcs The output specification.
+		 * \param specs The output specification.
 		 */
 		void setSpecs(Specs specs);
 
@@ -248,7 +254,7 @@ protected:
 
 	/**
 	 * Sets the audio output specification of the device.
-	 * \param sepcs The output specification.
+	 * \param specs The output specification.
 	 */
 	void setSpecs(Specs specs);
 

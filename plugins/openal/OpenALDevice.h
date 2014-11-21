@@ -244,9 +244,10 @@ public:
 	 * Opens the OpenAL audio device for playback.
 	 * \param specs The wanted audio specification.
 	 * \param buffersize The size of the internal buffer.
+	 * \param name The name of the device to be opened.
 	 * \note The specification really used for opening the device may differ.
 	 * \note The buffersize will be multiplicated by three for this device.
-	 * \exception Exception Thrown if the audio device cannot be opened.
+	 * \exception DeviceException Thrown if the audio device cannot be opened.
 	 */
 	OpenALDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE, std::string name = "");
 
@@ -275,8 +276,15 @@ public:
 	virtual DistanceModel getDistanceModel() const;
 	virtual void setDistanceModel(DistanceModel model);
 
+	/**
+	 * Retrieves a list of available hardware devices to open with OpenAL.
+	 * @return The list of devices to open.
+	 */
 	static std::list<std::string> getDeviceNames();
 
+	/**
+	 * Registers this plugin.
+	 */
 	static void registerPlugin();
 };
 

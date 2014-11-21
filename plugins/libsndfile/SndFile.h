@@ -43,6 +43,9 @@ public:
 	 */
 	SndFile();
 
+	/**
+	 * Registers this plugin.
+	 */
 	static void registerPlugin();
 
 	virtual std::shared_ptr<IReader> createReader(std::string filename);

@@ -38,6 +38,11 @@ class IReader;
  */
 class Mixer
 {
+private:
+	// delete copy constructor and operator=
+	Mixer(const Mixer&) = delete;
+	Mixer& operator=(const Mixer&) = delete;
+
 protected:
 	/**
 	 * The output specification.
@@ -58,10 +63,6 @@ protected:
 	 * Converter function.
 	 */
 	convert_f m_convert;
-
-	// delete copy constructor and operator=
-	Mixer(const Mixer&) = delete;
-	Mixer& operator=(const Mixer&) = delete;
 
 public:
 	/**

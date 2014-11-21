@@ -58,7 +58,20 @@ public:
 
 	virtual std::shared_ptr<IReader> createReader();
 
+	/**
+	 * The thresholdFilter function implements the doFilterIIR callback
+	 * for the callback IIR filter.
+	 * @param reader The CallbackIIRFilterReader that executes the callback.
+	 * @param threshold The threshold value.
+	 * @return The filtered sample.
+	 */
 	static sample_t thresholdFilter(CallbackIIRFilterReader* reader, float* threshold);
+
+	/**
+	 * The endThresholdFilter function implements the endFilterIIR callback
+	 * for the callback IIR filter.
+	 * @param threshold The threshold value.
+	 */
 	static void endThresholdFilter(float* threshold);
 };
 

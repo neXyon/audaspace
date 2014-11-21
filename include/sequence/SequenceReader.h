@@ -73,8 +73,8 @@ private:
 public:
 	/**
 	 * Creates a resampling reader.
-	 * \param reader The reader to mix.
-	 * \param specs The target specification.
+	 * \param sequence The sequence data.
+	 * \param quality Whether a high quality resample should be used for resampling.
 	 */
 	SequenceReader(std::shared_ptr<SequenceData> sequence, bool quality = false);
 

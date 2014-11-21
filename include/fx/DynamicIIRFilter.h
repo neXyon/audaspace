@@ -37,12 +37,14 @@ class IDynamicIIRFilterCalculator;
 class DynamicIIRFilter : public Effect
 {
 protected:
+	/// The IDynamicIIRFilterCalculator that calculates the dynamic filter coefficients.
 	std::shared_ptr<IDynamicIIRFilterCalculator> m_calculator;
 
 public:
 	/**
 	 * Creates a new Dynmic IIR filter sound.
 	 * \param sound The input sound.
+	 * \param calculator The calculator which recalculates the dynamic filter coefficients.
 	 */
 	DynamicIIRFilter(std::shared_ptr<ISound> sound, std::shared_ptr<IDynamicIIRFilterCalculator> calculator);
 

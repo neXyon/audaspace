@@ -61,8 +61,8 @@ private:
 public:
 	/**
 	 * Creates a new reader.
-	 * \param frequency The frequency of the sine wave.
-	 * \param sampleRate The output sample rate.
+	 * \param specs The desired specification of the output samples.
+	 * \param buffersize The buffer size used to read from the device.
 	 */
 	OpenALReader(Specs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE);
 

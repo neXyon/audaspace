@@ -63,6 +63,7 @@ private:
 public:
 	/**
 	 * Creates a new fader reader.
+	 * \param reader The reader that this effect is applied on.
 	 * \param type The fading type.
 	 * \param start The time where fading should start in seconds.
 	 * \param length How long fading should last in seconds.

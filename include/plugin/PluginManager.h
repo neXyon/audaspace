@@ -43,7 +43,17 @@ private:
 	PluginManager() = delete;
 
 public:
+	/**
+	 * Loads a plugin from a file.
+	 * @param path The path to the file.
+	 * @return Whether the file could successfully be loaded.
+	 */
 	static bool loadPlugin(const std::string& path);
+
+	/**
+	 * Loads all plugins found in a folder.
+	 * @param path The path to the folder containing the plugins.
+	 */
 	static void loadPlugins(const std::string& path = "");
 };
 

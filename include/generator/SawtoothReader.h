@@ -69,6 +69,10 @@ public:
 	 */
 	SawtoothReader(float frequency, SampleRate sampleRate);
 
+	/**
+	 * Sets the frequency of the wave.
+	 * @param frequency The new frequency in Hertz.
+	 */
 	void setFrequency(float frequency);
 
 	virtual bool isSeekable() const;

@@ -149,7 +149,24 @@ public:
 	 */
 	virtual ~FFMPEGReader();
 
+	/**
+	 * Reads data to a memory buffer.
+	 * This function is used for avio only.
+	 * @param opaque The FFMPEGReader.
+	 * @param buf The buffer to read to.
+	 * @param buf_size The size of the buffer.
+	 * @return How many bytes have been read.
+	 */
 	static int read_packet(void* opaque, uint8_t* buf, int buf_size);
+
+	/**
+	 * Seeks within data.
+	 * This function is used for avio only.
+	 * @param opaque The FFMPEGReader.
+	 * @param offset The byte offset to seek to.
+	 * @param whence The seeking action.
+	 * @return The current position or the size of the data if requested.
+	 */
 	static int64_t seek_packet(void* opaque, int64_t offset, int whence);
 
 	virtual bool isSeekable() const;

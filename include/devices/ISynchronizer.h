@@ -43,6 +43,12 @@ public:
 	 */
 	virtual ~ISynchronizer() {}
 
+	/**
+	 * The syncFunction is called when a synchronization event happens.
+	 * The function awaits three parameters. The first one is a user defined
+	 * pointer, the second informs about whether playback is on and the third
+	 * is the current playback time in seconds.
+	 */
 	typedef void (*syncFunction)(void*, int, float);
 
 	/**

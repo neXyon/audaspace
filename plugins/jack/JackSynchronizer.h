@@ -34,9 +34,14 @@ class JackDevice;
 class JackSynchronizer : public ISynchronizer
 {
 private:
+	/// The device that is being synchronized.
 	JackDevice* m_device;
 
 public:
+	/**
+	 * Creates a new JackSynchronizer.
+	 * @param device The device that should be synchronized.
+	 */
 	JackSynchronizer(JackDevice* device);
 
 	virtual void seek(std::shared_ptr<IHandle> handle, float time);

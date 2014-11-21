@@ -108,7 +108,6 @@ public:
 
 	/**
 	 * Sets the overall device volume.
-	 * \param handle The sound handle.
 	 * \param volume The overall device volume.
 	 */
 	virtual void setVolume(float volume)=0;

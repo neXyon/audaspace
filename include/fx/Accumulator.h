@@ -57,7 +57,22 @@ public:
 
 	virtual std::shared_ptr<IReader> createReader();
 
+	/**
+	 * The accumulatorFilterAdditive function implements the doFilterIIR callback
+	 * for the additive accumulator filter.
+	 * @param reader The CallbackIIRFilterReader that executes the callback.
+	 * @param useless A user defined pointer that is not needed for this filter.
+	 * @return The filtered sample.
+	 */
 	static sample_t accumulatorFilterAdditive(CallbackIIRFilterReader* reader, void* useless);
+
+	/**
+	 * The accumulatorFilter function implements the doFilterIIR callback
+	 * for the non-additive accumulator filter.
+	 * @param reader The CallbackIIRFilterReader that executes the callback.
+	 * @param useless A user defined pointer that is not needed for this filter.
+	 * @return The filtered sample.
+	 */
 	static sample_t accumulatorFilter(CallbackIIRFilterReader* reader, void* useless);
 };
 

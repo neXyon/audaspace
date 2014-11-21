@@ -27,6 +27,11 @@ SineReader::SineReader(float frequency, SampleRate sampleRate) :
 {
 }
 
+void SineReader::setFrequency(float frequency)
+{
+	m_frequency = frequency;
+}
+
 bool SineReader::isSeekable() const
 {
 	return true;

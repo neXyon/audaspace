@@ -73,7 +73,20 @@ public:
 
 	virtual std::shared_ptr<IReader> createReader();
 
+	/**
+	 * The envelopeFilter function implements the doFilterIIR callback
+	 * for the callback IIR filter.
+	 * @param reader The CallbackIIRFilterReader that executes the callback.
+	 * @param param The envelope parameters.
+	 * @return The filtered sample.
+	 */
 	static sample_t envelopeFilter(CallbackIIRFilterReader* reader, EnvelopeParameters* param);
+
+	/**
+	 * The endEnvelopeFilter function implements the endFilterIIR callback
+	 * for the callback IIR filter.
+	 * @param param The envelope parameters.
+	 */
 	static void endEnvelopeFilter(EnvelopeParameters* param);
 };
 

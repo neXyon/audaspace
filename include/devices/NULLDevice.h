@@ -87,6 +87,9 @@ public:
 	virtual void setVolume(float volume);
 	virtual ISynchronizer* getSynchronizer();
 
+	/**
+	 * Registers this plugin.
+	 */
 	static void registerPlugin();
 };
 

@@ -102,7 +102,7 @@ public:
 	/**
 	 * Creates a channel mapper reader.
 	 * \param reader The reader to map.
-	 * \param mapping The mapping specification as two dimensional float array.
+	 * \param channels The target channel count this reader should map to.
 	 */
 	ChannelMapperReader(std::shared_ptr<IReader> reader, Channels channels);
 

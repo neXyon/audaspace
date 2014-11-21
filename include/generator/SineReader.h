@@ -36,7 +36,7 @@ private:
 	/**
 	 * The frequency of the sine wave.
 	 */
-	const float m_frequency;
+	float m_frequency;
 
 	/**
 	 * The current position in samples.
@@ -59,6 +59,12 @@ public:
 	 * \param sampleRate The output sample rate.
 	 */
 	SineReader(float frequency, SampleRate sampleRate);
+
+	/**
+	 * Sets the frequency of the wave.
+	 * @param frequency The new frequency in Hertz.
+	 */
+	void setFrequency(float frequency);
 
 	virtual bool isSeekable() const;
 	virtual void seek(int position);

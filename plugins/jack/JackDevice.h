@@ -191,6 +191,9 @@ public:
 	 */
 	bool doesPlayback();
 
+	/**
+	 * Registers this plugin.
+	 */
 	static void registerPlugin();
 };
 
