@@ -297,7 +297,7 @@ void JackDevice::seekPlayback(float time)
 		jack_transport_locate(m_client, time * m_specs.rate);
 }
 
-void JackDevice::setSyncCallback(syncFunction sync, void* data)
+void JackDevice::setSyncCallback(ISynchronizer::syncFunction sync, void* data)
 {
 	m_syncFunc = sync;
 	m_syncFuncData = data;

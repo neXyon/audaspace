@@ -34,8 +34,6 @@
 
 AUD_NAMESPACE_BEGIN
 
-typedef void (*syncFunction)(void*, int, float);
-
 /**
  * This device plays back through Jack.
  */
@@ -106,7 +104,7 @@ private:
 	/**
 	 * External syncronisation callback function.
 	 */
-	syncFunction m_syncFunc;
+	ISynchronizer::syncFunction m_syncFunc;
 
 	/**
 	 * Data for the sync function.
@@ -179,7 +177,7 @@ public:
 	 * \param sync The callback function.
 	 * \param data The data for the function.
 	 */
-	void setSyncCallback(syncFunction sync, void* data);
+	void setSyncCallback(ISynchronizer::syncFunction sync, void* data);
 
 	/**
 	 * Retrieves the jack transport playback time.

@@ -32,8 +32,6 @@ AUD_NAMESPACE_BEGIN
 
 class Buffer;
 
-typedef sf_count_t (*sf_read_f)(SNDFILE* sndfile, void* ptr, sf_count_t frames);
-
 /**
  * This class reads a sound file via libsndfile.
  */
