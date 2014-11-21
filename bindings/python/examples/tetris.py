@@ -30,11 +30,9 @@ def parseNotes(notes, bpm, basefreq, rate = 44100,
 		freq = math.pow(2, freq/12)*basefreq
 		length = float(dur)*60/bpm
  
-		snd = aud.Sound.sine(freq, rate)
+		snd = aud.Sound.square(freq, rate)
 		if char == 'p':
 			snd = snd.volume(0)
-		else:
-			snd = snd.square()
 		snd = snd.limit(0, length)
 		snd = snd.fadein(0, fadelength)
 		snd = snd.fadeout(length - fadelength, fadelength)
