@@ -10,6 +10,11 @@ Welcome to audaspace's documentation!
 
 This documentation is valid for both the Python and C API of audaspace. As C is not an object oriented language everything is accessible via functions where the first paramter is always the object. For methods these are named as ``AUD_ClassName_method()`` and properties are accessed via ``AUD_ClassName_property_get/set()``. Python users simply ``import aud`` to access the library.
 
+.. toctree::
+   :maxdepth: 2
+
+   tutorials
+
 Classes:
 
 .. toctree::
