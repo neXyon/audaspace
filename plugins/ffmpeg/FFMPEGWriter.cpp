@@ -65,8 +65,8 @@ void FFMPEGWriter::encode()
 
 	av_init_packet(&packet);
 
-	AVFrame* frame = avcodec_alloc_frame();
-	avcodec_get_frame_defaults(frame);
+	AVFrame* frame = av_frame_alloc();
+	av_frame_unref(frame);
 	int got_packet;
 
 	frame->nb_samples = m_input_samples;
@@ -82,7 +82,7 @@ void FFMPEGWriter::encode()
 
 	if(avcodec_encode_audio2(m_codecCtx, &packet, frame, &got_packet))
 	{
-		avcodec_free_frame(&frame);
+		av_frame_free(&frame);
 		AUD_THROW(FileException, "File couldn't be written, audio encoding failed with ffmpeg.");
 	}
 
@@ -93,13 +93,13 @@ void FFMPEGWriter::encode()
 		if(av_write_frame(m_formatCtx, &packet) < 0)
 		{
 			av_free_packet(&packet);
-			avcodec_free_frame(&frame);
+			av_frame_free(&frame);
 			AUD_THROW(FileException, "Frame couldn't be writen to the file with ffmpeg.");
 		}
 		av_free_packet(&packet);
 	}
 
-	avcodec_free_frame(&frame);
+	av_frame_free(&frame);
 }
 
 void FFMPEGWriter::close()
