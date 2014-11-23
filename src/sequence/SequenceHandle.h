@@ -42,6 +42,9 @@ private:
 	/// The 3D handle in the read device.
 	std::shared_ptr<I3DHandle> m_3dhandle;
 
+	/// Whether the sound is playable.
+	bool m_valid;
+
 	/// The last read status from the entry.
 	int m_status;
 
@@ -57,6 +60,18 @@ private:
 	// delete copy constructor and operator=
 	SequenceHandle(const SequenceHandle&) = delete;
 	SequenceHandle& operator=(const SequenceHandle&) = delete;
+
+	/**
+	 * Starts playing back the handle.
+	 */
+	void start();
+
+	/**
+	 * Updates the handle state depending on position.
+	 * \param position Current playback position in seconds.
+	 * \return Whether sound is playing back.
+	 */
+	bool updatePosition(float position);
 
 public:
 	/**
