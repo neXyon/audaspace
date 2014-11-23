@@ -45,6 +45,8 @@ option(BUILD_DEMOS "Build and install demos" TRUE)
 option(SHARED_LIBRARY "Build Shared Library" TRUE)
 
 option(WITH_C "Build C Module" TRUE)
+option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" FALSE)
+option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" FALSE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
 option(WITH_JACK "Build With Jack" FALSE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
@@ -186,8 +188,6 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages/pkgconfig/audaspace.pc.in ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc DESTINATION "lib${LIB_SUFFIX}/pkgconfig")
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-
 # plugins
 
 if(${PLUGIN_FFMPEG})
@@ -305,3 +305,23 @@ if(${WITH_PYTHON})
 
 	install(CODE "EXECUTE_PROCESS(COMMAND python setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
 endif()
+
+# docs
+
+if(${WITH_DOCS})
+	find_package(Doxygen REQUIRED)
+
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+
+	add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
+endif()
+
+if(${WITH_BINDING_DOCS})
+	find_package(Sphinx REQUIRED)
+
+	set(DOCS_DIR "${CMAKE_CURRENT_BINARY_DIR}/bindings")
+
+	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${DOCS_DIR}" COMMENT "Building C/Python HTML documentation with Sphinx.")
+endif()
+
+
