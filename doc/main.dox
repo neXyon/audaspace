@@ -36,7 +36,7 @@ Audaspace (pronounced "outer space") is a high level audio library written in C+
 Get Started
 -----------
 
-Build and install audaspace by following the @ref setup page. Once audaspace is installed you can follow the @ref tutorials page.
+Build and install audaspace by following the @ref setup page. Once audaspace is installed you can follow the @ref tutorials page or if you want to use audaspace with C or Python, check out the <a href="bindings/index.html"> __Bindings Documentation__ </a>.
 
 Library Concepts
 ----------------
