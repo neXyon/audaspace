@@ -129,6 +129,7 @@ void SequenceHandle::stop()
 	if(m_handle.get())
 		m_handle->stop();
 	m_handle = nullptr;
+	m_3dhandle = nullptr;
 }
 
 void SequenceHandle::update(float position, float frame, float fps)
