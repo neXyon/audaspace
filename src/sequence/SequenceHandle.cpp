@@ -26,56 +26,78 @@ AUD_NAMESPACE_BEGIN
 
 void SequenceHandle::start()
 {
+	// we already tried to start, aborting
 	if(!m_valid)
 		return;
 
+	// in case the sound is playing, we need to stop first
 	stop();
 
 	std::lock_guard<ILockable> lock(*m_entry);
 
+	// let's try playing
 	if(m_entry->m_sound.get())
 	{
 		m_handle = m_device.play(m_entry->m_sound, true);
 		m_3dhandle = std::dynamic_pointer_cast<I3DHandle>(m_handle);
+
+		// after starting we have to set the properties, so let's ensure that
+		m_status--;
 	}
 
-	m_pos_status--;
-	m_status--;
-
+	// if the sound could not be played, we invalidate
 	m_valid = m_handle.get();
 }
 
 bool SequenceHandle::updatePosition(float position)
 {
 	std::lock_guard<ILockable> lock(*m_entry);
-	if(position >= m_entry->m_end)
+
+	if(m_handle.get())
 	{
-		if(position >= m_entry->m_end + KEEP_TIME)
+		// we currently have a handle, let's check where we are
+		if(position >= m_entry->m_end)
 		{
-			if(m_handle.get())
+			if(position >= m_entry->m_end + KEEP_TIME)
+				// far end, stopping
 				stop();
+			else
+			{
+				// close end, just pausing
+				m_handle->pause();
+				return true;
+			}
 		}
-		else if(m_handle.get())
-			m_handle->pause();
-
-		return false;
-	}
-	else if(position >= m_entry->m_begin)
-	{
-		if(m_handle.get())
+		else if(position >= m_entry->m_begin)
+		{
+			// inside, resuming
 			m_handle->resume();
+			return true;
+		}
 		else
-			start();
+		{
+			if(position < m_entry->m_begin - KEEP_TIME)
+				// far beginning, stopping
+				stop();
+			else
+			{
+				// close beginning, just pausing
+				m_handle->pause();
+				return true;
+			}
+		}
 	}
-	else if((position < m_entry->m_begin - KEEP_TIME) && m_handle.get())
+	else
 	{
-		stop();
-		return false;
+		// we don't have a handle, let's start if we should be playing
+		if(position >= m_entry->m_begin && position <= m_entry->m_end)
+		{
+			start();
+			return m_valid;
+		}
 	}
-	else if(m_handle.get())
-		m_handle->pause();
 
-	return true;
+	return false;
 }
 
 SequenceHandle::SequenceHandle(std::shared_ptr<SequenceEntry> entry, ReadDevice& device) :
@@ -111,26 +133,53 @@ void SequenceHandle::stop()
 
 void SequenceHandle::update(float position, float frame, float fps)
 {
-	if(!m_valid)
-		return;
-
-	if(!updatePosition(position))
-		return;
-
-	std::lock_guard<ILockable> lock(*m_entry);
 	if(m_sound_status != m_entry->m_sound_status)
 	{
-		start();
-
+		// if a new sound has been set, it's possible to get valid again!
 		m_sound_status = m_entry->m_sound_status;
+		m_valid = true;
+
+		// stop whatever sound has been playing
+		stop();
+
+		// seek starts and seeks to the correct position
+		if(!seek(position))
+			// no handle, aborting
+			return;
+	}
+	else
+	{
+		if(!m_valid)
+			// invalid, aborting
+			return;
+
+		if(m_handle.get())
+		{
+			// we have a handle, let's update the position
+			if(!updatePosition(position))
+				// lost handle, aborting
+				return;
+		}
+		else
+		{
+			// we don't have a handle, let's see if we can start
+			if(!seek(position))
+				return;
+		}
 	}
 
+	std::lock_guard<ILockable> lock(*m_entry);
 	if(m_pos_status != m_entry->m_pos_status)
 	{
-		seek(position);
-
 		m_pos_status = m_entry->m_pos_status;
+
+		// position changed, need to seek
+		if(!seek(position))
+			// lost handle, aborting
+			return;
 	}
+
+	// so far everything alright and handle is there, let's keep going
 
 	if(m_status != m_entry->m_status)
 	{
@@ -171,13 +220,15 @@ void SequenceHandle::update(float position, float frame, float fps)
 		m_handle->setVolume(0);
 }
 
-void SequenceHandle::seek(float position)
+bool SequenceHandle::seek(float position)
 {
-	if(!m_valid || !m_handle.get())
-		return;
+	if(!m_valid)
+		// sound not valid, aborting
+		return false;
 
 	if(!updatePosition(position))
-		return;
+		// no handle, aborting
+		return false;
 
 	std::lock_guard<ILockable> lock(*m_entry);
 	float seekpos = position - m_entry->m_begin;
@@ -186,10 +237,8 @@ void SequenceHandle::seek(float position)
 	seekpos += m_entry->m_skip;
 	m_handle->setPitch(1.0f);
 	m_handle->seek(seekpos);
-	if(position < m_entry->m_begin)
-		m_handle->pause();
-	else
-		m_handle->resume();
+
+	return true;
 }
 
 AUD_NAMESPACE_END

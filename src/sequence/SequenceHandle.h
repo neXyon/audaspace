@@ -69,7 +69,7 @@ private:
 	/**
 	 * Updates the handle state depending on position.
 	 * \param position Current playback position in seconds.
-	 * \return Whether sound is playing back.
+	 * \return Whether the handle is valid.
 	 */
 	bool updatePosition(float position);
 
@@ -109,8 +109,9 @@ public:
 	/**
 	 * Seeks the handle to a specific time position.
 	 * \param position The time to seek to.
+	 * \return Whether the handle is valid.
 	 */
-	void seek(float position);
+	bool seek(float position);
 };
 
 AUD_NAMESPACE_END
