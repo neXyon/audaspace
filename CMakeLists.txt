@@ -55,6 +55,7 @@ option(WITH_PYTHON "Build Python Module" FALSE)
 option(WITH_SDL "Build With SDL" TRUE)
 
 set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
+set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
 
 cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY;NOT WIN32" FALSE)
@@ -235,7 +236,7 @@ endif()
 if(${BUILD_DEMOS})
 	include_directories(${INCLUDE})
 
-	set(DEMOS audaplay audaconvert audaremap)
+	set(DEMOS audaplay audaconvert audaremap signalgen)
 
 	add_executable(audaplay demos/audaplay.cpp)
 	target_link_libraries(audaplay audaspace)
@@ -243,11 +244,11 @@ if(${BUILD_DEMOS})
 	add_executable(audaconvert demos/audaconvert.cpp)
 	target_link_libraries(audaconvert audaspace)
 
-	add_executable(signalgen demos/signalgen.cpp)
-	target_link_libraries(signalgen audaspace)
-
 	add_executable(audaremap demos/audaremap.cpp)
 	target_link_libraries(audaremap audaspace)
+
+	add_executable(signalgen demos/signalgen.cpp)
+	target_link_libraries(signalgen audaspace)
 
 	if(${WITH_OPENAL})
 		list(APPEND DEMOS openaldevices)
@@ -319,9 +320,9 @@ endif()
 if(${WITH_BINDING_DOCS})
 	find_package(Sphinx REQUIRED)
 
-	set(DOCS_DIR "${CMAKE_CURRENT_BINARY_DIR}/bindings")
-
-	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${DOCS_DIR}" COMMENT "Building C/Python HTML documentation with Sphinx.")
+	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
 endif()
 
-
+if(${WITH_DOCS} OR ${WITH_BINDING_DOCS})
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/ DESTINATION ${DOCUMENTATION_INSTALL_PATH})
+endif()

@@ -755,9 +755,7 @@ WARN_LOGFILE           =
 
 INPUT                  = "@CMAKE_CURRENT_SOURCE_DIR@/include" \
                          "@CMAKE_CURRENT_SOURCE_DIR@/plugins" \
-                         "@CMAKE_CURRENT_SOURCE_DIR@/doc/main.txt" \
-                         "@CMAKE_CURRENT_SOURCE_DIR@/doc/setup.txt" \
-                         "@CMAKE_CURRENT_SOURCE_DIR@/doc/tutorials.txt"
+                         "@CMAKE_CURRENT_SOURCE_DIR@/doc"
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -777,7 +775,7 @@ INPUT_ENCODING         = UTF-8
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.h
+FILE_PATTERNS          = *.h *.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -1022,7 +1020,7 @@ GENERATE_HTML          = YES
 # The default directory is: html.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_OUTPUT            = audaspace
+HTML_OUTPUT            = doc
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for each
 # generated HTML page (for example: .htm, .php, .asp).
