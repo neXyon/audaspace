@@ -22,7 +22,10 @@
  * The main header file of the library defining the namespace and basic data types.
  */
 
+/// Used for exporting symbols in the shared library.
 #define AUD_API
+
+/// Used for hiding symbols from export in the shared library.
 #define AUD_LOCAL
 
 /// The default playback buffer size of a device.
