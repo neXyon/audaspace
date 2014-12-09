@@ -35,7 +35,7 @@ class Buffer;
  * The File sound tries to read a sound file via all available file inputs
  * that have been registered in the FileManager class.
  */
-class File : public ISound
+class AUD_API File : public ISound
 {
 private:
 	/**

@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
  * If the fading type is FADE_IN, everything before the fading start will be
  * silenced, for FADE_OUT that's true for everything after fading ends.
  */
-class Fader : public Effect
+class AUD_API Fader : public Effect
 {
 private:
 	/**

@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a reader that plays a square tone.
  */
-class Square : public ISound
+class AUD_API Square : public ISound
 {
 private:
 	/**

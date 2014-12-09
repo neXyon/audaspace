@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This manager provides utilities for plugin loading.
  */
-class PluginManager
+class AUD_API PluginManager
 {
 private:
 	static std::unordered_map<std::string, void*> m_plugins;

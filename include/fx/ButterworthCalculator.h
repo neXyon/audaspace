@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * The ButterworthCalculator class calculates fourth order Butterworth low pass
  * filter coefficients for a dynamic DynamicIIRFilter.
  */
-class ButterworthCalculator : public IDynamicIIRFilterCalculator
+class AUD_LOCAL ButterworthCalculator : public IDynamicIIRFilterCalculator
 {
 private:
 	/**

@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This sound loops another sound.
  * \note The reader has to be seekable.
  */
-class Loop : public Effect
+class AUD_API Loop : public Effect
 {
 private:
 	/**

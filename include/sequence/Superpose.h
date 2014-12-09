@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
  * \note Readers from the underlying factories must have the same sample rate
  *       and channel count.
  */
-class Superpose : public ISound
+class AUD_API Superpose : public ISound
 {
 private:
 	/**

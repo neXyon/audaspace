@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This sound creates a converter reader that is able to convert from one
  * audio format to another.
  */
-class Converter : public SpecsChanger
+class AUD_API Converter : public SpecsChanger
 {
 private:
 	// delete copy constructor and operator=

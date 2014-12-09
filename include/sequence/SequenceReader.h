@@ -33,7 +33,7 @@ class SequenceData;
 /**
  * This reader plays back sequenced entries.
  */
-class SequenceReader : public IReader
+class AUD_API SequenceReader : public IReader
 {
 private:
 	/**

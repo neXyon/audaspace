@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class reads another reader and delays it.
  */
-class DelayReader : public EffectReader
+class AUD_API DelayReader : public EffectReader
 {
 private:
 	/**

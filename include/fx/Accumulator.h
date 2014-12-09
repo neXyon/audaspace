@@ -35,7 +35,7 @@ class CallbackIIRFilterReader;
  * it's positive. In additive mode it additionaly adds the difference always.
  * So in case the difference is positive, it's added twice.
  */
-class Accumulator : public Effect
+class AUD_API Accumulator : public Effect
 {
 private:
 	/**
@@ -64,7 +64,7 @@ public:
 	 * @param useless A user defined pointer that is not needed for this filter.
 	 * @return The filtered sample.
 	 */
-	static sample_t accumulatorFilterAdditive(CallbackIIRFilterReader* reader, void* useless);
+	static sample_t AUD_LOCAL accumulatorFilterAdditive(CallbackIIRFilterReader* reader, void* useless);
 
 	/**
 	 * The accumulatorFilter function implements the doFilterIIR callback
@@ -73,7 +73,7 @@ public:
 	 * @param useless A user defined pointer that is not needed for this filter.
 	 * @return The filtered sample.
 	 */
-	static sample_t accumulatorFilter(CallbackIIRFilterReader* reader, void* useless);
+	static sample_t AUD_LOCAL accumulatorFilter(CallbackIIRFilterReader* reader, void* useless);
 };
 
 AUD_NAMESPACE_END

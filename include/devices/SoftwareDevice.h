@@ -48,11 +48,11 @@ class ChannelMapperReader;
  *  - Call the create and destroy functions.
  *  - Call the mix function to retrieve their audio data.
  */
-class SoftwareDevice : public IDevice, public I3DDevice
+class AUD_API SoftwareDevice : public IDevice, public I3DDevice
 {
 protected:
 	/// Saves the data for playback.
-	class SoftwareHandle : public IHandle, public I3DHandle
+	class AUD_API SoftwareHandle : public IHandle, public I3DHandle
 	{
 	private:
 		// delete copy constructor and operator=

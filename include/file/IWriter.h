@@ -57,7 +57,7 @@ enum Codec
  * @interface IWriter
  * This class represents a sound sink where audio data can be written to.
  */
-class IWriter
+class AUD_API IWriter
 {
 public:
 	/**

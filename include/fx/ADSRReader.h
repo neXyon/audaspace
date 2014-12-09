@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class is an ADSR filters.
  */
-class ADSRReader : public EffectReader
+class AUD_API ADSRReader : public EffectReader
 {
 private:
 	enum ADSRState
@@ -75,7 +75,7 @@ private:
 	ADSRReader(const ADSRReader&) = delete;
 	ADSRReader& operator=(const ADSRReader&) = delete;
 
-	void nextState(ADSRState state);
+	void AUD_LOCAL nextState(ADSRState state);
 
 public:
 	/**

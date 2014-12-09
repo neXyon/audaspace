@@ -32,7 +32,7 @@ class IDynamicIIRFilterCalculator;
  * This class is for dynamic infinite impulse response filters with simple
  * coefficients that change depending on the sample rate.
  */
-class DynamicIIRFilterReader : public IIRFilterReader
+class AUD_API DynamicIIRFilterReader : public IIRFilterReader
 {
 private:
 	/**

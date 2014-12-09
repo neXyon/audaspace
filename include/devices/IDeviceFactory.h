@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
  * @interface IDeviceFactory
  * The IDeviceFactory interface opens an output device.
  */
-class IDeviceFactory
+class AUD_API IDeviceFactory
 {
 public:
 	/**

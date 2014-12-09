@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This sound creates a reader that maps a sound source's channels to a
  * specific output channel count.
  */
-class ChannelMapper : public SpecsChanger
+class AUD_API ChannelMapper : public SpecsChanger
 {
 private:
 	// delete copy constructor and operator=

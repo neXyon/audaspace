@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This reader plays two readers with the same specs in parallel.
  */
-class SuperposeReader : public IReader
+class AUD_API SuperposeReader : public IReader
 {
 private:
 	/**

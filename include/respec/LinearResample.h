@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a resampling reader that does simple linear resampling.
  */
-class LinearResample : public SpecsChanger
+class AUD_API LinearResample : public SpecsChanger
 {
 private:
 	// delete copy constructor and operator=

@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a reader that plays silence.
  */
-class Silence : public ISound
+class AUD_API Silence : public ISound
 {
 private:
 	// delete copy constructor and operator=

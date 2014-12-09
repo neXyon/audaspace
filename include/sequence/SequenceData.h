@@ -39,7 +39,7 @@ class ISound;
 /**
  * This class represents sequenced entries to play a sound scene.
  */
-class SequenceData : public ILockable
+class AUD_API SequenceData : public ILockable
 {
 	friend class SequenceReader;
 private:

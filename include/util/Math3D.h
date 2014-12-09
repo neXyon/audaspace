@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class represents a 3 dimensional vector.
  */
-class Vector3
+class AUD_API Vector3
 {
 private:
 	/**
@@ -202,7 +202,7 @@ public:
 /**
  * This class represents a quaternion used for 3D rotations.
  */
-class Quaternion
+class AUD_API Quaternion
 {
 private:
 	/**

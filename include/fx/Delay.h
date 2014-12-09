@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound plays another sound delayed.
  */
-class Delay : public Effect
+class AUD_API Delay : public Effect
 {
 private:
 	/**

@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
  * This class maps a sound source's channels to a specific output channel count.
  * \note The input sample format must be float.
  */
-class ChannelMapperReader : public EffectReader
+class AUD_API ChannelMapperReader : public EffectReader
 {
 private:
 	/**
@@ -91,12 +91,12 @@ private:
 	/**
 	 * Calculates the mapping matrix.
 	 */
-	void calculateMapping();
+	void AUD_LOCAL calculateMapping();
 
 	/**
 	 * Calculates the distance between two angles.
 	 */
-	float angleDistance(float alpha, float beta);
+	float AUD_LOCAL angleDistance(float alpha, float beta);
 
 public:
 	/**

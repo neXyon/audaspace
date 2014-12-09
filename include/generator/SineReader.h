@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This class is used for sine tone playback.
  * The sample rate can be specified, the signal is mono.
  */
-class SineReader : public IReader
+class AUD_API SineReader : public IReader
 {
 private:
 	/**

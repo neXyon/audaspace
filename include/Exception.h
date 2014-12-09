@@ -35,7 +35,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * The Exception class is the general exception base class.
  */
-class Exception : public std::exception
+class AUD_API Exception : public std::exception
 {
 protected:
 	/// A message describing the problem.
@@ -90,7 +90,7 @@ public:
  * The FileException class is used for error cases in which files cannot
  * be read or written due to unknown containers or codecs.
  */
-class FileException : public Exception
+class AUD_API FileException : public Exception
 {
 public:
 	/**
@@ -108,7 +108,7 @@ public:
  * devices, which usually happens when specific features or requests
  * cannot be fulfilled by a device, for example when the device is opened.
  */
-class DeviceException : public Exception
+class AUD_API DeviceException : public Exception
 {
 public:
 	/**
@@ -127,7 +127,7 @@ public:
  * It is used for example when an effect reader needs a specific
  * specification from its input.
  */
-class StateException : public Exception
+class AUD_API StateException : public Exception
 {
 public:
 	/**

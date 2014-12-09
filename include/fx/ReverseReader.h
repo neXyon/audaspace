@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This class reads another reader from back to front.
  * \note The underlying reader must be seekable.
  */
-class ReverseReader : public EffectReader
+class AUD_API ReverseReader : public EffectReader
 {
 private:
 	/**

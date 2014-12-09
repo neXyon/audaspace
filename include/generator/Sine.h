@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a reader that plays a sine tone.
  */
-class Sine : public ISound
+class AUD_API Sine : public ISound
 {
 private:
 	/**

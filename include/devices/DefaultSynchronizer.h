@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This class is a default ISynchronizer implementation that actually does no
  * synchronization and is intended for devices that don't support it.
  */
-class DefaultSynchronizer : public ISynchronizer
+class AUD_API DefaultSynchronizer : public ISynchronizer
 {
 public:
 	virtual void seek(std::shared_ptr<IHandle> handle, float time);

@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a resampling reader that does Julius O. Smith's resampling algorithm.
  */
-class JOSResample : public SpecsChanger
+class AUD_API JOSResample : public SpecsChanger
 {
 private:
 	// delete copy constructor and operator=

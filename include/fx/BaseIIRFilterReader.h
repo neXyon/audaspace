@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class is a base class for infinite impulse response filters.
  */
-class BaseIIRFilterReader : public EffectReader
+class AUD_API BaseIIRFilterReader : public EffectReader
 {
 private:
 	/**

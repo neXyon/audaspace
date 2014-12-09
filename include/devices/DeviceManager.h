@@ -39,7 +39,7 @@ class I3DDevice;
  * This enables applications to access their output device without having to carry
  * it through the whole application.
  */
-class DeviceManager
+class AUD_API DeviceManager
 {
 private:
 	static std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> m_factories;

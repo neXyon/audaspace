@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
  * This reader is a base class for all effect readers that take one other reader
  * as input.
  */
-class EffectReader : public IReader
+class AUD_API EffectReader : public IReader
 {
 private:
 	// delete copy constructor and operator=

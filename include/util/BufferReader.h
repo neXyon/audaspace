@@ -35,7 +35,7 @@ class Buffer;
  * \warning Notice that the buffer is not multi-threading ready, so changing the
  *          buffer while the reader is reading is potentially dangerous.
  */
-class BufferReader : public IReader
+class AUD_API BufferReader : public IReader
 {
 private:
 	/**

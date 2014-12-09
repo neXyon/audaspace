@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This reader limits another reader in start and end times.
  */
-class LimiterReader : public EffectReader
+class AUD_API LimiterReader : public EffectReader
 {
 private:
 	/**

@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This class is used for silence playback.
  * The signal generated is 44.1kHz mono.
  */
-class SilenceReader : public IReader
+class AUD_API SilenceReader : public IReader
 {
 private:
 	/**

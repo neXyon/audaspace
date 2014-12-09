@@ -34,7 +34,7 @@ AUD_NAMESPACE_BEGIN
  * in most cases this will result in having to resample for output, so stereo
  * sound is created directly.
  */
-class TriangleReader : public IReader
+class AUD_API TriangleReader : public IReader
 {
 private:
 	/**

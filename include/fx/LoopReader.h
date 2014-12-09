@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This class reads another reader and loops it.
  * \note The other reader must be seekable.
  */
-class LoopReader : public EffectReader
+class AUD_API LoopReader : public EffectReader
 {
 private:
 	/**

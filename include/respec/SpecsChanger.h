@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound is a base class for all mixer factories.
  */
-class SpecsChanger : public ISound
+class AUD_API SpecsChanger : public ISound
 {
 protected:
 	/**

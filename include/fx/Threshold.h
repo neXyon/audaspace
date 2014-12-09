@@ -31,7 +31,7 @@ class CallbackIIRFilterReader;
 /**
  * This sound Transforms any signal to a square signal by thresholding.
  */
-class Threshold : public Effect
+class AUD_API Threshold : public Effect
 {
 private:
 	/**
@@ -65,14 +65,14 @@ public:
 	 * @param threshold The threshold value.
 	 * @return The filtered sample.
 	 */
-	static sample_t thresholdFilter(CallbackIIRFilterReader* reader, float* threshold);
+	static sample_t AUD_LOCAL thresholdFilter(CallbackIIRFilterReader* reader, float* threshold);
 
 	/**
 	 * The endThresholdFilter function implements the endFilterIIR callback
 	 * for the callback IIR filter.
 	 * @param threshold The threshold value.
 	 */
-	static void endThresholdFilter(float* threshold);
+	static void AUD_LOCAL endThresholdFilter(float* threshold);
 };
 
 AUD_NAMESPACE_END

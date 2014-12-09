@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This sound plays another sound first normal, then reversed.
  * \note Readers from the underlying sound must be reversable with seeking.
  */
-class PingPong : public Effect
+class AUD_API PingPong : public Effect
 {
 private:
 	// delete copy constructor and operator=

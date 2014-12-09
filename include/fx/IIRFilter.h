@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a IIR filter reader.
  */
-class IIRFilter : public Effect
+class AUD_API IIRFilter : public Effect
 {
 private:
 	/**

@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a sum reader.
  */
-class Sum : public Effect
+class AUD_API Sum : public Effect
 {
 private:
 	// delete copy constructor and operator=

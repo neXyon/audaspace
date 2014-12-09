@@ -46,7 +46,7 @@ typedef void (*endFilterIIR)(void*);
  * This class provides an interface for infinite impulse response filters via a
  * callback filter function.
  */
-class CallbackIIRFilterReader : public BaseIIRFilterReader
+class AUD_API CallbackIIRFilterReader : public BaseIIRFilterReader
 {
 private:
 	/**

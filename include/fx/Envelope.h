@@ -32,7 +32,7 @@ struct EnvelopeParameters;
 /**
  * This sound creates an envelope follower reader.
  */
-class Envelope : public Effect
+class AUD_API Envelope : public Effect
 {
 private:
 	/**
@@ -80,14 +80,14 @@ public:
 	 * @param param The envelope parameters.
 	 * @return The filtered sample.
 	 */
-	static sample_t envelopeFilter(CallbackIIRFilterReader* reader, EnvelopeParameters* param);
+	static sample_t AUD_LOCAL envelopeFilter(CallbackIIRFilterReader* reader, EnvelopeParameters* param);
 
 	/**
 	 * The endEnvelopeFilter function implements the endFilterIIR callback
 	 * for the callback IIR filter.
 	 * @param param The envelope parameters.
 	 */
-	static void endEnvelopeFilter(EnvelopeParameters* param);
+	static void AUD_LOCAL endEnvelopeFilter(EnvelopeParameters* param);
 };
 
 AUD_NAMESPACE_END

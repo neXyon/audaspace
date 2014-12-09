@@ -43,7 +43,7 @@ enum AnimateablePropertyType
 /**
  * This class saves animation data for float properties.
  */
-class AnimateableProperty : private Buffer
+class AUD_API AnimateableProperty : private Buffer
 {
 private:
 	struct Unknown {
@@ -70,7 +70,7 @@ private:
 	AnimateableProperty(const AnimateableProperty&) = delete;
 	AnimateableProperty& operator=(const AnimateableProperty&) = delete;
 
-	void updateUnknownCache(int start, int end);
+	void AUD_LOCAL updateUnknownCache(int start, int end);
 
 public:
 	/**

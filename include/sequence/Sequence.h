@@ -37,7 +37,7 @@ class SequenceData;
 /**
  * This sound represents sequenced entries to play a sound scene.
  */
-class Sequence : public ISound
+class AUD_API Sequence : public ISound
 {
 	friend class SequenceReader;
 private:

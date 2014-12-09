@@ -49,7 +49,7 @@ enum DistanceModel
  * The interface has been modelled after the OpenAL 1.1 API,
  * see the [OpenAL Specification](http://openal.org/) for lots of details.
  */
-class I3DDevice
+class AUD_API I3DDevice
 {
 public:
 	/**

@@ -35,7 +35,7 @@ AUD_NAMESPACE_BEGIN
  * The interface has been modelled after the OpenAL 1.1 API,
  * see the [OpenAL Specification](http://openal.org/) for lots of details.
  */
-class I3DHandle
+class AUD_API I3DHandle
 {
 public:
 	/**

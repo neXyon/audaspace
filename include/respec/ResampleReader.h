@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This is the base class for all resampling readers.
  */
-class ResampleReader : public EffectReader
+class AUD_API ResampleReader : public EffectReader
 {
 protected:
 	/**

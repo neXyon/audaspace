@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device enables to let the user read raw data out of it.
  */
-class ReadDevice : public SoftwareDevice
+class AUD_API ReadDevice : public SoftwareDevice
 {
 private:
 	/**
@@ -42,7 +42,7 @@ private:
 	ReadDevice& operator=(const ReadDevice&) = delete;
 
 protected:
-	virtual void playing(bool playing);
+	virtual void AUD_LOCAL playing(bool playing);
 
 public:
 	/**

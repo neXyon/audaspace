@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class is for infinite impulse response filters with simple coefficients.
  */
-class IIRFilterReader : public BaseIIRFilterReader
+class AUD_API IIRFilterReader : public BaseIIRFilterReader
 {
 private:
 	/**

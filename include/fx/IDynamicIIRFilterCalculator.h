@@ -33,7 +33,7 @@ AUD_NAMESPACE_BEGIN
  * This interface calculates dynamic filter coefficients which depend on the
  * sampling rate for DynamicIIRFilterReaders.
  */
-class IDynamicIIRFilterCalculator
+class AUD_API IDynamicIIRFilterCalculator
 {
 public:
 	virtual ~IDynamicIIRFilterCalculator() {}

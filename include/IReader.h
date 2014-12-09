@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
  * This class represents a sound source as stream or as buffer which can be read
  * for example by another reader, a device or whatever.
  */
-class IReader
+class AUD_API IReader
 {
 public:
 	/**

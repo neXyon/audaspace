@@ -38,7 +38,7 @@ class Buffer;
 /**
  * The FileManager manages all file input and output plugins.
  */
-class FileManager
+class AUD_API FileManager
 {
 private:
 	static std::list<std::shared_ptr<IFileInput>> m_inputs;

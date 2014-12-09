@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This reader plays two readers sequently.
  */
-class DoubleReader : public IReader
+class AUD_API DoubleReader : public IReader
 {
 private:
 	/**

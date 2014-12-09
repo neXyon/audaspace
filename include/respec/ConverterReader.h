@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class converts a sound source from one to another format.
  */
-class ConverterReader : public EffectReader
+class AUD_API ConverterReader : public EffectReader
 {
 private:
 	/**

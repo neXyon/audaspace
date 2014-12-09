@@ -33,10 +33,10 @@ class IReader;
  * This device plays nothing.
  * It is similar to the linux device /dev/null.
  */
-class NULLDevice : public IDevice
+class AUD_API NULLDevice : public IDevice
 {
 private:
-	class NULLHandle : public IHandle
+	class AUD_LOCAL NULLHandle : public IHandle
 	{
 	private:
 		// delete copy constructor and operator=

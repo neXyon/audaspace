@@ -36,7 +36,7 @@ class IReader;
  * This abstract class is able to mix audiosignals with same channel count
  * and sample rate and convert it to a specific output format.
  */
-class Mixer
+class AUD_API Mixer
 {
 private:
 	// delete copy constructor and operator=

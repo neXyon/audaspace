@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a lowpass filter reader.
  */
-class Lowpass : public DynamicIIRFilter
+class AUD_API Lowpass : public DynamicIIRFilter
 {
 private:
 	// delete copy constructor and operator=

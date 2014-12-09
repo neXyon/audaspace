@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a reader that plays a triangle tone.
  */
-class Triangle : public ISound
+class AUD_API Triangle : public ISound
 {
 private:
 	/**

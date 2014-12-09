@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * The LowpassCalculator class calculates low pass filter coefficients for a
  * dynamic DynamicIIRFilter.
  */
-class LowpassCalculator : public IDynamicIIRFilterCalculator
+class AUD_LOCAL LowpassCalculator : public IDynamicIIRFilterCalculator
 {
 private:
 	/**

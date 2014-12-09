@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class reads another reader and changes it's pitch.
  */
-class PitchReader : public EffectReader
+class AUD_API PitchReader : public EffectReader
 {
 private:
 	/**

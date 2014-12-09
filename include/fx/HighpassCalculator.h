@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * The HighpassCalculator class calculates high pass filter coefficients for a
  * dynamic DynamicIIRFilter.
  */
-class HighpassCalculator : public IDynamicIIRFilterCalculator
+class AUD_LOCAL HighpassCalculator : public IDynamicIIRFilterCalculator
 {
 private:
 	/**

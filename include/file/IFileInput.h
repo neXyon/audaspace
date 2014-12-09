@@ -36,7 +36,7 @@ class Buffer;
  * The IFileInput interface represents a file input plugin that can create file
  * input readers from filenames or buffers.
  */
-class IFileInput
+class AUD_API IFileInput
 {
 public:
 	/**

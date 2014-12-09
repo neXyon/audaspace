@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This sound reads another sound reverted.
  * \note Readers from the underlying sound must be seekable.
  */
-class Reverse : public Effect
+class AUD_API Reverse : public Effect
 {
 private:
 	// delete copy constructor and operator=

@@ -35,7 +35,7 @@ class ISound;
 /**
  * This class represents a sequenced entry in a sequencer sound.
  */
-class SequenceEntry : public ILockable
+class AUD_API SequenceEntry : public ILockable
 {
 	friend class SequenceHandle;
 private:

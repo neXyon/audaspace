@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This sound is a base class for all effect factories that take one other
  * sound as input.
  */
-class Effect : public ISound
+class AUD_API Effect : public ISound
 {
 private:
 	// delete copy constructor and operator=

@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound limits another sound in start and end time.
  */
-class Limiter : public Effect
+class AUD_API Limiter : public Effect
 {
 private:
 	/**

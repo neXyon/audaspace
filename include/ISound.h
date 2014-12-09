@@ -36,7 +36,7 @@ class IReader;
  * for it. It is able to create a reader that is actually usable for playback
  * of the respective sound source through the factory method createReader.
  */
-class ISound
+class AUD_API ISound
 {
 public:
 	/**

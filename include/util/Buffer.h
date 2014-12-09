@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
  * This class is a simple buffer in RAM which is 32 Byte aligned and provides
  * resize functionality.
  */
-class Buffer
+class AUD_API Buffer
 {
 private:
 	/// The size of the buffer in bytes.

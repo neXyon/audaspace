@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This resampling reader does simple first-order hold resampling.
  */
-class LinearResampleReader : public ResampleReader
+class AUD_API LinearResampleReader : public ResampleReader
 {
 private:
 	/**

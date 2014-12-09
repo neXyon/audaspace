@@ -34,7 +34,7 @@ class IDynamicIIRFilterCalculator;
  * This means that on sample rate change the filter recalculates its
  * coefficients.
  */
-class DynamicIIRFilter : public Effect
+class AUD_API DynamicIIRFilter : public Effect
 {
 protected:
 	/// The IDynamicIIRFilterCalculator that calculates the dynamic filter coefficients.

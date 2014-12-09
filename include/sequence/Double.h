@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound plays two other factories behind each other.
  */
-class Double : public ISound
+class AUD_API Double : public ISound
 {
 private:
 	/**

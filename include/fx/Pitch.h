@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound changes the pitch of another sound.
  */
-class Pitch : public Effect
+class AUD_API Pitch : public Effect
 {
 private:
 	/**

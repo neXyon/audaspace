@@ -38,7 +38,7 @@ enum FadeType
  * If the fading type is FADE_IN, everything before the fading start will be
  * silenced, for FADE_OUT that's true for everything after fading ends.
  */
-class FaderReader : public EffectReader
+class AUD_API FaderReader : public EffectReader
 {
 private:
 	/**

@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
  * The set volume should be a value between 0.0 and 1.0, higher values at your
  * own risk!
  */
-class Volume : public Effect
+class AUD_API Volume : public Effect
 {
 private:
 	/**

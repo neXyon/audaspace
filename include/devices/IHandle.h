@@ -45,7 +45,7 @@ typedef void (*stopCallback)(void*);
  * @interface IHandle
  * The IHandle interface represents a playback handles of a specific device.
  */
-class IHandle
+class AUD_API IHandle
 {
 public:
 	/**

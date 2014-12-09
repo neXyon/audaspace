@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * The ADSR effect implements the Attack-Delay-Sustain-Release behaviour of a sound.
  */
-class ADSR : public Effect
+class AUD_API ADSR : public Effect
 {
 private:
 	/**

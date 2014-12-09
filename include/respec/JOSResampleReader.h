@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This resampling reader uses Julius O. Smith's resampling algorithm.
  */
-class JOSResampleReader : public ResampleReader
+class AUD_API JOSResampleReader : public ResampleReader
 {
 private:
 	typedef void (JOSResampleReader::*resample_f)(double target_factor, int length, sample_t* buffer);
@@ -97,7 +97,7 @@ private:
 	/**
 	 * Resets the resampler to its initial state.
 	 */
-	void reset();
+	void AUD_LOCAL reset();
 
 	/**
 	 * Updates the buffer to be as small as possible for the coming reading.
@@ -105,11 +105,11 @@ private:
 	 * \param factor The next resampling factor.
 	 * \param samplesize The size of a sample.
 	 */
-	void updateBuffer(int size, double factor, int samplesize);
+	void AUD_LOCAL updateBuffer(int size, double factor, int samplesize);
 
-	void resample(double target_factor, int length, sample_t* buffer);
-	void resample_mono(double target_factor, int length, sample_t* buffer);
-	void resample_stereo(double target_factor, int length, sample_t* buffer);
+	void AUD_LOCAL resample(double target_factor, int length, sample_t* buffer);
+	void AUD_LOCAL resample_mono(double target_factor, int length, sample_t* buffer);
+	void AUD_LOCAL resample_stereo(double target_factor, int length, sample_t* buffer);
 
 public:
 	/**

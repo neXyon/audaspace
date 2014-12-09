@@ -22,6 +22,9 @@
  * The main header file of the library defining the namespace and basic data types.
  */
 
+#define AUD_API
+#define AUD_LOCAL
+
 /// The default playback buffer size of a device.
 #define AUD_DEFAULT_BUFFER_SIZE 1024
 

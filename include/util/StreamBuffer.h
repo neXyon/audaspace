@@ -33,7 +33,7 @@ class Buffer;
  * This sound creates a buffer out of a reader. This way normally streamed
  * sound sources can be loaded into memory for buffered playback.
  */
-class StreamBuffer : public ISound
+class AUD_API StreamBuffer : public ISound
 {
 private:
 	/**

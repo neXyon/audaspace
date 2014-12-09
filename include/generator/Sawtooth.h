@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This sound creates a reader that plays a sawtooth tone.
  */
-class Sawtooth : public ISound
+class AUD_API Sawtooth : public ISound
 {
 private:
 	/**
