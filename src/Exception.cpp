@@ -27,7 +27,7 @@ Exception::Exception(std::string message, std::string file, int line) :
 {
 }
 
-const char* Exception::what() const noexcept
+const char* Exception::what() const AUD_NOEXCEPT
 {
 	return m_message.c_str();
 }

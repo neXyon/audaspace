@@ -23,7 +23,7 @@ using namespace aud;
 int main()
 {
 	for(auto name : OpenALDevice::getDeviceNames())
-		std::cout << name << std::endl;
+		std::cout << name.c_str() << std::endl;
 
 	return 0;
 }

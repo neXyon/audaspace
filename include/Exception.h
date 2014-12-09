@@ -16,6 +16,12 @@
 
 #pragma once
 
+#ifdef _MSC_VER
+#define AUD_NOEXCEPT
+#else
+#define AUD_NOEXCEPT noexcept
+#endif
+
 /**
  * @file Exception.h
  * @ingroup general
@@ -59,7 +65,7 @@ public:
 	 * Returns the error message.
 	 * @return A C string error message.
 	 */
-	virtual const char* what() const noexcept;
+	virtual const char* what() const AUD_NOEXCEPT;
 
 	/**
 	 * Returns the error message plus file and line number for debugging purposes.

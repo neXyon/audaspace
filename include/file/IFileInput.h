@@ -25,6 +25,7 @@
 #include "Audaspace.h"
 
 #include <memory>
+#include <string>
 
 AUD_NAMESPACE_BEGIN
 

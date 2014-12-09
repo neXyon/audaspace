@@ -19,7 +19,7 @@ find_path(LIBSNDFILE_INCLUDE_DIR
 
 # Library
 find_library(LIBSNDFILE_LIBRARY
-	NAMES sndfile
+	NAMES sndfile libsndfile-1
 	PATHS ${LIBSNDFILE_PKGCONF_LIBRARY_DIRS}
 )
 

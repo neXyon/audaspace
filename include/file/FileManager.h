@@ -41,8 +41,8 @@ class Buffer;
 class AUD_API FileManager
 {
 private:
-	static std::list<std::shared_ptr<IFileInput>> m_inputs;
-	static std::list<std::shared_ptr<IFileOutput>> m_outputs;
+	static std::list<std::shared_ptr<IFileInput>>& inputs();
+	static std::list<std::shared_ptr<IFileOutput>>& outputs();
 
 	// delete copy constructor and operator=
 	FileManager(const FileManager&) = delete;

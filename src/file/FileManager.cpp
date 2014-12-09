@@ -21,22 +21,31 @@
 
 AUD_NAMESPACE_BEGIN
 
-std::list<std::shared_ptr<IFileInput>> FileManager::m_inputs;
-std::list<std::shared_ptr<IFileOutput>> FileManager::m_outputs;
+std::list<std::shared_ptr<IFileInput>>& FileManager::inputs()
+{
+	static std::list<std::shared_ptr<IFileInput>> inputs;
+	return inputs;
+}
+
+std::list<std::shared_ptr<IFileOutput>>& FileManager::outputs()
+{
+	static std::list<std::shared_ptr<IFileOutput>> outputs;
+	return outputs;
+}
 
 void FileManager::registerInput(std::shared_ptr<IFileInput> input)
 {
-	m_inputs.push_back(input);
+	inputs().push_back(input);
 }
 
 void FileManager::registerOutput(std::shared_ptr<aud::IFileOutput> output)
 {
-	m_outputs.push_back(output);
+	outputs().push_back(output);
 }
 
 std::shared_ptr<IReader> FileManager::createReader(std::string filename)
 {
-	for(std::shared_ptr<IFileInput> input : m_inputs)
+	for(std::shared_ptr<IFileInput> input : inputs())
 	{
 		try
 		{
@@ -50,7 +59,7 @@ std::shared_ptr<IReader> FileManager::createReader(std::string filename)
 
 std::shared_ptr<IReader> FileManager::createReader(std::shared_ptr<Buffer> buffer)
 {
-	for(std::shared_ptr<IFileInput> input : m_inputs)
+	for(std::shared_ptr<IFileInput> input : inputs())
 	{
 		try
 		{
@@ -64,7 +73,7 @@ std::shared_ptr<IReader> FileManager::createReader(std::shared_ptr<Buffer> buffe
 
 std::shared_ptr<IWriter> FileManager::createWriter(std::string filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate)
 {
-	for(std::shared_ptr<IFileOutput> output : m_outputs)
+	for(std::shared_ptr<IFileOutput> output : outputs())
 	{
 		try
 		{

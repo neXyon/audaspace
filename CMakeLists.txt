@@ -32,6 +32,9 @@ set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 set(INCLUDE include)
 if(${WIN32})
 	set(LIBRARIES)
+	set(LIBRARY_PATH "../lib" CACHE PATH "Path which contains the libraries.")
+	file(GLOB LIBRARY_DIRS ${LIBRARY_PATH}/*)
+	list(APPEND CMAKE_PREFIX_PATH ${LIBRARY_DIRS})
 else()
 	set(LIBRARIES ${CMAKE_DL_LIBS} -lpthread)
 endif()
@@ -63,6 +66,19 @@ cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LI
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY;NOT WIN32" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY;NOT WIN32" FALSE)
+
+# compiler options
+
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	add_definitions(-std=c++11)
+endif()
+
+if(${MSVC})
+	add_definitions(/D_USE_MATH_DEFINES /EHsc)
+	if(${SHARED_LIBRARY})
+		include(GenerateExportHeader)
+	endif()
+endif()
 
 # C
 if(${WITH_C})
@@ -161,11 +177,10 @@ list(REMOVE_ITEM SRC ${PLUGINMANAGER_FILENAME})
 configure_file(${PLUGINMANAGER_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 
-# directories and compiler options
+# directories
 
 include_directories(${INCLUDE})
 link_directories()
-add_definitions(-std=c++11)
 
 # library
 

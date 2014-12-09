@@ -20,17 +20,17 @@ find_path(FFMPEG_INCLUDE_DIR
 
 # Libraries
 find_library(AVCODEC_LIBRARY
-	NAMES libavcodec.so
+	NAMES avcodec
 #	PATHS ${FFMPEG_PKGCONF_LIBRARY_DIRS}
 )
 
 find_library(AVFORMAT_LIBRARY
-	NAMES libavformat.so
+	NAMES avformat
 #	PATHS ${FFMPEG_PKGCONF_LIBRARY_DIRS}
 )
 
 find_library(AVUTIL_LIBRARY
-	NAMES libavutil.so
+	NAMES avutil
 #	PATHS ${FFMPEG_PKGCONF_LIBRARY_DIRS}
 )
 
