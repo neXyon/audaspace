@@ -172,9 +172,15 @@ if(${WITH_SDL})
 endif()
 
 # file configuration
-set(PLUGINMANAGER_FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManager.cpp)
-list(REMOVE_ITEM SRC ${PLUGINMANAGER_FILENAME})
-configure_file(${PLUGINMANAGER_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+file(GLOB PLUGINMANAGERS src/plugin/PluginManager*.cpp)
+list(REMOVE_ITEM SRC ${PLUGINMANAGERS})
+
+if(${WIN32})
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+else()
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+endif()
+
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 
 # directories
