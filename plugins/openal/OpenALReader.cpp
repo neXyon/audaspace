@@ -19,7 +19,7 @@
 #include "Exception.h"
 
 #include <algorithm>
-#include <AL/al.h>
+#include <al.h>
 
 AUD_NAMESPACE_BEGIN
 

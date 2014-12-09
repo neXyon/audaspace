@@ -29,8 +29,8 @@
 #include "devices/DefaultSynchronizer.h"
 #include "util/Buffer.h"
 
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <al.h>
+#include <alc.h>
 #include <list>
 #include <mutex>
 #include <thread>

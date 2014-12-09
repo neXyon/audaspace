@@ -24,7 +24,7 @@
 
 #include "IReader.h"
 
-#include <AL/alc.h>
+#include <alc.h>
 
 AUD_NAMESPACE_BEGIN
 
