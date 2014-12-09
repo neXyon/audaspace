@@ -1,9 +1,6 @@
-from setuptools import setup, Extension
+# -*- coding: utf-8 -*-
 
-# python setup.py build
-# LD_LIBRARY_PATH=../../../build python
-# import sys
-# sys.path.append('/data/Work/Computer/Programming/Audaspace/audaspace/bindings/python/build/lib.linux-x86_64-3.3')
+from setuptools import setup, Extension
 
 audaspace = Extension('aud',
                     include_dirs = ['@PYTHON_SOURCE_DIRECTORY@/../../include'],

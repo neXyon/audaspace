@@ -20,6 +20,7 @@
 #include "devices/I3DDevice.h"
 
 #include <limits>
+#include <string>
 
 AUD_NAMESPACE_BEGIN
 

@@ -19,6 +19,7 @@
 #include "devices/IDeviceFactory.h"
 
 #include <limits>
+#include <string>
 
 AUD_NAMESPACE_BEGIN
 

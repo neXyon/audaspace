@@ -242,7 +242,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize) :
 		for(int i = 0; i < m_specs.channels && ports[i]; i++)
 			jack_connect(m_client, jack_port_name(m_ports[i]), ports[i]);
 
-		free(ports);
+		jack_free(ports);
 	}
 
 	m_mixingThread = std::thread(&JackDevice::updateRingBuffers, this);

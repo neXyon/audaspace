@@ -34,6 +34,7 @@
 #include <list>
 #include <mutex>
 #include <thread>
+#include <string>
 
 AUD_NAMESPACE_BEGIN
 

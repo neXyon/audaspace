@@ -24,8 +24,6 @@
 #include <chrono>
 #include <cstring>
 #include <iostream>
-#include <mutex>
-#include <thread>
 
 AUD_NAMESPACE_BEGIN
 
