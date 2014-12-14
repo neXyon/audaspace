@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef FFMPEG_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file FFMPEG.h
  * @ingroup plugin
@@ -30,7 +34,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This plugin class reads and writes sounds via ffmpeg.
  */
-class AUD_API FFMPEG : public IFileInput, public IFileOutput
+class AUD_PLUGIN_API FFMPEG : public IFileInput, public IFileOutput
 {
 private:
 	// delete copy constructor and operator=

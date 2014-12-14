@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef LIBSNDFILE_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file SndFileWriter.h
  * @ingroup plugin
@@ -32,7 +36,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class writes a sound file via libsndfile.
  */
-class AUD_API SndFileWriter : public IWriter
+class AUD_PLUGIN_API SndFileWriter : public IWriter
 {
 private:
 	/**

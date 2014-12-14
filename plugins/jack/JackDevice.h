@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef JACK_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file JackDevice.h
  * @ingroup plugin
@@ -37,7 +41,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device plays back through Jack.
  */
-class AUD_API JackDevice : public SoftwareDevice
+class AUD_PLUGIN_API JackDevice : public SoftwareDevice
 {
 private:
 	/**

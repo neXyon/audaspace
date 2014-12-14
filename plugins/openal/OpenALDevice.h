@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef OPENAL_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file OpenALDevice.h
  * @ingroup plugin
@@ -41,7 +45,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device plays through OpenAL.
  */
-class AUD_API OpenALDevice : public IDevice, public I3DDevice
+class AUD_PLUGIN_API OpenALDevice : public IDevice, public I3DDevice
 {
 private:
 	/// Saves the data for playback.

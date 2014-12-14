@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef FFMPEG_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file FFMPEGReader.h
  * @ingroup plugin
@@ -42,7 +46,7 @@ AUD_NAMESPACE_BEGIN
  *          a buffer reading call. So calling getPosition right after seek
  *          normally results in a wrong value.
  */
-class AUD_API FFMPEGReader : public IReader
+class AUD_PLUGIN_API FFMPEGReader : public IReader
 {
 private:
 	/**

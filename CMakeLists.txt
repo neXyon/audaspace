@@ -71,6 +71,8 @@ cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRA
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	add_definitions(-std=c++11)
+	list(APPEND CMAKE_C_COMPILER_FLAGS "-fvisibility=hidden")
+	list(APPEND CMAKE_CXX_COMPILER_FLAGS "-fvisibility=hidden")
 endif()
 
 if(${MSVC})
@@ -192,6 +194,9 @@ link_directories()
 
 if(${SHARED_LIBRARY})
 	set(LIBRARY_TYPE SHARED)
+	# TODO: gotta do this as a configuration file!!
+	add_definitions(-DAUD_SHARED_LIBRARY)
+	add_definitions(-DAUD_BUILD_SHARED_LIBRARY)
 else()
 	set(LIBRARY_TYPE STATIC)
 endif()

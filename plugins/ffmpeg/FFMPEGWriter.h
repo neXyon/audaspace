@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef FFMPEG_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file FFMPEGWriter.h
  * @ingroup plugin
@@ -38,7 +42,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class writes a sound file via ffmpeg.
  */
-class AUD_API FFMPEGWriter : public IWriter
+class AUD_PLUGIN_API FFMPEGWriter : public IWriter
 {
 private:
 	/**

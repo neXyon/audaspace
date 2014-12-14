@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef OPENAL_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file OpenALReader.h
  * @ingroup plugin
@@ -36,7 +40,7 @@ AUD_NAMESPACE_BEGIN
  * in most cases this will result in having to resample for output, so stereo
  * sound is created directly.
  */
-class AUD_API OpenALReader : public IReader
+class AUD_PLUGIN_API OpenALReader : public IReader
 {
 private:
 	/**

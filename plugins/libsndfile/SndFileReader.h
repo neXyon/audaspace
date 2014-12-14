@@ -18,6 +18,10 @@
 
 #include "IReader.h"
 
+#ifdef LIBSNDFILE_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file SndFileReader.h
  * @ingroup plugin
@@ -35,7 +39,7 @@ class Buffer;
 /**
  * This class reads a sound file via libsndfile.
  */
-class AUD_API SndFileReader : public IReader
+class AUD_PLUGIN_API SndFileReader : public IReader
 {
 private:
 	/**

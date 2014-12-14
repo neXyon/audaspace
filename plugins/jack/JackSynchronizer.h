@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef JACK_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file JackSynchronizer.h
  * @ingroup plugin
@@ -31,7 +35,7 @@ class JackDevice;
 /**
  * This class is a Synchronizer implementation using Jack Transport.
  */
-class AUD_API JackSynchronizer : public ISynchronizer
+class AUD_PLUGIN_API JackSynchronizer : public ISynchronizer
 {
 private:
 	/// The device that is being synchronized.

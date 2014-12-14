@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef SDL_PLUGIN
+#define AUD_BUILD_PLUGIN
+#endif
+
 /**
  * @file SDLDevice.h
  * @ingroup plugin
@@ -31,7 +35,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device plays back through SDL, the simple direct media layer.
  */
-class AUD_API SDLDevice : public SoftwareDevice
+class AUD_PLUGIN_API SDLDevice : public SoftwareDevice
 {
 private:
 	/**
