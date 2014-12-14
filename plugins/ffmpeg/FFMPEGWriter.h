@@ -38,7 +38,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class writes a sound file via ffmpeg.
  */
-class FFMPEGWriter : public IWriter
+class AUD_API FFMPEGWriter : public IWriter
 {
 private:
 	/**
@@ -108,12 +108,12 @@ private:
 	/**
 	 * Encodes to the output buffer.
 	 */
-	void encode();
+	AUD_LOCAL void encode();
 
 	/**
 	 * Finishes writing to the file.
 	 */
-	void close();
+	AUD_LOCAL void close();
 
 public:
 	/**

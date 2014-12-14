@@ -42,7 +42,7 @@ AUD_NAMESPACE_BEGIN
  *          a buffer reading call. So calling getPosition right after seek
  *          normally results in a wrong value.
  */
-class FFMPEGReader : public IReader
+class AUD_API FFMPEGReader : public IReader
 {
 private:
 	/**
@@ -116,12 +116,12 @@ private:
 	 * \param buffer The target buffer.
 	 * \return The count of read bytes.
 	 */
-	int decode(AVPacket& packet, Buffer& buffer);
+	AUD_LOCAL int decode(AVPacket& packet, Buffer& buffer);
 
 	/**
 	 * Initializes the object.
 	 */
-	void init();
+	AUD_LOCAL void init();
 
 	// delete copy constructor and operator=
 	FFMPEGReader(const FFMPEGReader&) = delete;

@@ -31,7 +31,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device plays back through SDL, the simple direct media layer.
  */
-class SDLDevice : public SoftwareDevice
+class AUD_API SDLDevice : public SoftwareDevice
 {
 private:
 	/**
@@ -40,7 +40,7 @@ private:
 	 * \param buffer The target buffer.
 	 * \param length The length in bytes to be filled.
 	 */
-	static void SDL_mix(void* data, Uint8* buffer, int length);
+	AUD_LOCAL static void SDL_mix(void* data, Uint8* buffer, int length);
 
 	// delete copy constructor and operator=
 	SDLDevice(const SDLDevice&) = delete;

@@ -31,7 +31,7 @@ class JackDevice;
 /**
  * This class is a Synchronizer implementation using Jack Transport.
  */
-class JackSynchronizer : public ISynchronizer
+class AUD_API JackSynchronizer : public ISynchronizer
 {
 private:
 	/// The device that is being synchronized.

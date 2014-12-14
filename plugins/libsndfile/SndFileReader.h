@@ -35,7 +35,7 @@ class Buffer;
 /**
  * This class reads a sound file via libsndfile.
  */
-class SndFileReader : public IReader
+class AUD_API SndFileReader : public IReader
 {
 private:
 	/**
@@ -79,10 +79,10 @@ private:
 	int m_memoffset;
 
 	// Functions for libsndfile virtual IO functionality
-	static sf_count_t vio_get_filelen(void* user_data);
-	static sf_count_t vio_seek(sf_count_t offset, int whence, void* user_data);
-	static sf_count_t vio_read(void* ptr, sf_count_t count, void* user_data);
-	static sf_count_t vio_tell(void* user_data);
+	AUD_LOCAL static sf_count_t vio_get_filelen(void* user_data);
+	AUD_LOCAL static sf_count_t vio_seek(sf_count_t offset, int whence, void* user_data);
+	AUD_LOCAL static sf_count_t vio_read(void* ptr, sf_count_t count, void* user_data);
+	AUD_LOCAL static sf_count_t vio_tell(void* user_data);
 
 	// delete copy constructor and operator=
 	SndFileReader(const SndFileReader&) = delete;

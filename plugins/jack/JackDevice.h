@@ -37,7 +37,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device plays back through Jack.
  */
-class JackDevice : public SoftwareDevice
+class AUD_API JackDevice : public SoftwareDevice
 {
 private:
 	/**
@@ -74,7 +74,7 @@ private:
 	 * Invalidates the jack device.
 	 * \param data The jack device that gets invalidet by jack.
 	 */
-	static void jack_shutdown(void* data);
+	AUD_LOCAL static void jack_shutdown(void* data);
 
 	/**
 	 * Mixes the next bytes into the buffer.
@@ -82,9 +82,9 @@ private:
 	 * \param data A pointer to the jack device.
 	 * \return 0 what shows success.
 	 */
-	static int jack_mix(jack_nframes_t length, void* data);
+	AUD_LOCAL static int jack_mix(jack_nframes_t length, void* data);
 
-	static int jack_sync(jack_transport_state_t state, jack_position_t* pos, void* data);
+	AUD_LOCAL static int jack_sync(jack_transport_state_t state, jack_position_t* pos, void* data);
 
 	/**
 	 * Next Jack Transport state (-1 if not expected to change).
@@ -129,7 +129,7 @@ private:
 	/**
 	 * Updates the ring buffers.
 	 */
-	void updateRingBuffers();
+	AUD_LOCAL void updateRingBuffers();
 
 	// delete copy constructor and operator=
 	JackDevice(const JackDevice&) = delete;

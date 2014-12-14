@@ -41,7 +41,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This device plays through OpenAL.
  */
-class OpenALDevice : public IDevice, public I3DDevice
+class AUD_API OpenALDevice : public IDevice, public I3DDevice
 {
 private:
 	/// Saves the data for playback.
@@ -94,7 +94,7 @@ private:
 		/// Own device.
 		OpenALDevice* m_device;
 
-		bool pause(bool keep);
+		AUD_LOCAL bool pause(bool keep);
 
 		// delete copy constructor and operator=
 		OpenALHandle(const OpenALHandle&) = delete;
@@ -221,12 +221,12 @@ private:
 	 * Starts the streaming thread.
 	 * \param Whether the previous thread should be joined.
 	 */
-	void start();
+	AUD_LOCAL void start();
 
 	/**
 	 * Streaming thread main function.
 	 */
-	void updateStreams();
+	AUD_LOCAL void updateStreams();
 
 	/**
 	 * Gets the format according to the specs.
@@ -234,7 +234,7 @@ private:
 	 * \param specs The specs to read the channel count from.
 	 * \return Whether the format is valid or not.
 	 */
-	bool getFormat(ALenum &format, Specs specs);
+	AUD_LOCAL bool getFormat(ALenum &format, Specs specs);
 
 	// delete copy constructor and operator=
 	OpenALDevice(const OpenALDevice&) = delete;

@@ -32,7 +32,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class writes a sound file via libsndfile.
  */
-class SndFileWriter : public IWriter
+class AUD_API SndFileWriter : public IWriter
 {
 private:
 	/**

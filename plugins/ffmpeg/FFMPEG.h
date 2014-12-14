@@ -30,7 +30,7 @@ AUD_NAMESPACE_BEGIN
 /**
  * This plugin class reads and writes sounds via ffmpeg.
  */
-class FFMPEG : public IFileInput, public IFileOutput
+class AUD_API FFMPEG : public IFileInput, public IFileOutput
 {
 private:
 	// delete copy constructor and operator=
