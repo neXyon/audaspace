@@ -61,11 +61,11 @@ set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading 
 set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
 
 cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY;NOT WIN32" FALSE)
-cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LIBRARY;NOT WIN32" FALSE)
-cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY;NOT WIN32" FALSE)
-cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY;NOT WIN32" FALSE)
-cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY;NOT WIN32" FALSE)
+cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
 
 # compiler options
 
@@ -76,6 +76,11 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUA
 endif()
 
 if(${MSVC})
+	list(APPEND CMAKE_C_FLAGS_DEBUG "/Zi /Od")
+	list(APPEND CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
+	list(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG")
+	list(APPEND CMAKE_STATIC_LINKER_FLAGS_DEBUG "/DEBUG")
+	list(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
 	add_definitions(/D_USE_MATH_DEFINES /EHsc)
 	if(${SHARED_LIBRARY})
 		include(GenerateExportHeader)
