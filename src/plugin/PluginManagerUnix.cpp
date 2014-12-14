@@ -62,9 +62,8 @@ void PluginManager::loadPlugins(const std::string& path)
 	{
 		const std::string filename = entry->d_name;
 		const std::string end = ".so";
-		const std::string start = "lib";
 
-		if(filename.length() >= end.length() + start.length() && filename.substr(0, start.length()) == start && filename.substr(filename.length() - end.length()) == end)
+		if(filename.length() >= end.length() && filename.substr(filename.length() - end.length()) == end)
 		{
 			loadPlugin(readpath + "/" + filename);
 		}
