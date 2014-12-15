@@ -22,6 +22,31 @@
  * The main header file of the library defining the namespace and basic data types.
  */
 
+/**
+ * \def AUD_API
+ * Used for exporting symbols in the shared library.
+ */
+
+/**
+ * \def AUD_PLUGIN_API
+ * Used for exporting symbols in the shared library.
+ */
+
+/**
+ * \def AUD_EXPORT_API
+ * Used for using exporting symbols of the shared library.
+ */
+
+/**
+ * \def AUD_USE_API
+ * Used for using exporting symbols of the shared library.
+ */
+
+/**
+ * \def AUD_LOCAL
+ * Used for hiding symbols from export in the shared library.
+ */
+
 #ifdef _MSC_VER
 	#define AUD_EXPORT_API __declspec(dllexport)
 	#define AUD_USE_API __declspec(dllimport)
@@ -55,23 +80,6 @@
 	#define AUD_API
 	#define AUD_PLUGIN_API
 #endif
-
-/*
-/// Used for exporting symbols in the shared library.
-#define AUD_API
-
-/// Used for exporting symbols in the shared library.
-#define AUD_PLUGIN_API
-
-/// Used for using exporting symbols of the shared library.
-#define AUD_EXPORT_API
-
-/// Used for using exporting symbols of the shared library.
-#define AUD_USE_API
-
-/// Used for hiding symbols from export in the shared library.
-#define AUD_LOCAL
-*/
 
 /// The default playback buffer size of a device.
 #define AUD_DEFAULT_BUFFER_SIZE 1024
