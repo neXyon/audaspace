@@ -16,6 +16,10 @@
 
 #pragma once
 
+/**
+ * \def AUD_NOEXCEPT
+ * Compatibility macro for noexcept.
+ */
 #ifdef _MSC_VER
 #define AUD_NOEXCEPT
 #else
@@ -54,6 +58,12 @@ protected:
 	const int m_line;
 
 	/**
+	 * Copy constructor.
+	 * @param exception The exception to be copied.
+	 */
+	Exception(const Exception& exception);
+
+	/**
 	 * Creates a new Exception object.
 	 * @param message A message describing the problem.
 	 * @param file The source code file in which the exception was thrown.
@@ -61,6 +71,11 @@ protected:
 	 */
 	Exception(std::string message, std::string file, int line);
 public:
+	/**
+	 * Destroys the object.
+	 */
+	virtual ~Exception() AUD_NOEXCEPT;
+
 	/**
 	 * Returns the error message.
 	 * @return A C string error message.
@@ -105,8 +120,15 @@ public:
 	 * @param file The source code file in which the exception was thrown.
 	 * @param line The source code line from which the exception was thrown.
 	 */
-	FileException(std::string message, std::string file, int line) :
-		Exception(message, file, line) {}
+	FileException(std::string message, std::string file, int line);
+
+	/**
+	 * Copy constructor.
+	 * @param exception The exception to be copied.
+	 */
+	FileException(const FileException& exception);
+
+	~FileException() AUD_NOEXCEPT;
 };
 
 /**
@@ -123,8 +145,15 @@ public:
 	 * @param file The source code file in which the exception was thrown.
 	 * @param line The source code line from which the exception was thrown.
 	 */
-	DeviceException(std::string message, std::string file, int line) :
-		Exception(message, file, line) {}
+	DeviceException(std::string message, std::string file, int line);
+
+	/**
+	 * Copy constructor.
+	 * @param exception The exception to be copied.
+	 */
+	DeviceException(const DeviceException& exception);
+
+	~DeviceException() AUD_NOEXCEPT;
 };
 
 /**
@@ -142,8 +171,15 @@ public:
 	 * @param file The source code file in which the exception was thrown.
 	 * @param line The source code line from which the exception was thrown.
 	 */
-	StateException(std::string message, std::string file, int line) :
-		Exception(message, file, line) {}
+	StateException(std::string message, std::string file, int line);
+
+	/**
+	 * Copy constructor.
+	 * @param exception The exception to be copied.
+	 */
+	StateException(const StateException& exception);
+
+	~StateException() AUD_NOEXCEPT;
 };
 
 AUD_NAMESPACE_END

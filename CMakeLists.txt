@@ -51,10 +51,10 @@ option(WITH_C "Build C Module" TRUE)
 option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" FALSE)
 option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" FALSE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
-option(WITH_JACK "Build With Jack" FALSE)
+cmake_dependent_option(WITH_JACK "Build With Plugin" FALSE "NOT WIN32" FALSE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
-option(WITH_PYTHON "Build Python Module" FALSE)
+option(WITH_PYTHON "Build With Python Library" FALSE)
 option(WITH_SDL "Build With SDL" TRUE)
 
 set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
@@ -66,6 +66,7 @@ cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LI
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON;NOT WIN32" FALSE)
 
 # compiler options
 
@@ -161,7 +162,10 @@ if(${WITH_PYTHON})
 	set(Python_ADDITIONAL_VERSIONS 3.3)
 	find_package(PythonLibs REQUIRED)
 	list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
-	set(PYAUDASPACE_LIBRARY -lpyaudaspace)
+
+	if(${WITH_PYTHON_MODULE})
+		find_package(PythonInterp REQUIRED)
+	endif()
 endif()
 
 # SDL
@@ -328,14 +332,16 @@ if(${WITH_PYTHON})
 
 	install(FILES ${PYTHON_HDR} DESTINATION include/audaspace/python)
 
-	set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
-	configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
+	if(${WITH_PYTHON_MODULE})
+		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
+		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
-	add_custom_command(OUTPUT build COMMAND python setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
-	add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
-	add_dependencies(pythonmodule audaspace)
+		add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
+		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
+		add_dependencies(pythonmodule audaspace)
 
-	install(CODE "EXECUTE_PROCESS(COMMAND python setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
+		install(CODE "EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
+	endif()
 endif()
 
 # docs

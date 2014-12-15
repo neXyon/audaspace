@@ -41,7 +41,7 @@ typedef void (*convert_f)(data_t* target, data_t* source, int length);
  * @param length The amount of samples to be converted.
  */
 template <class T>
-void AUD_API convert_copy(data_t* target, data_t* source, int length)
+void convert_copy(data_t* target, data_t* source, int length)
 {
 	std::memcpy(target, source, length*sizeof(T));
 }

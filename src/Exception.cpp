@@ -20,10 +20,19 @@
 
 AUD_NAMESPACE_BEGIN
 
+Exception::Exception(const Exception& exception) :
+	Exception(exception.m_message, exception.m_file, exception.m_line)
+{
+}
+
 Exception::Exception(std::string message, std::string file, int line) :
 	m_message(message),
 	m_file(file),
 	m_line(line)
+{
+}
+
+Exception::~Exception()
 {
 }
 
@@ -54,6 +63,48 @@ const std::string& Exception::getFile() const
 int Exception::getLine() const
 {
 	return m_line;
+}
+
+FileException::FileException(std::string message, std::string file, int line) :
+	Exception(message, file, line)
+{
+}
+
+FileException::FileException(const FileException& exception) :
+	Exception(exception)
+{
+}
+
+FileException::~FileException()
+{
+}
+
+DeviceException::DeviceException(std::string message, std::string file, int line) :
+	Exception(message, file, line)
+{
+}
+
+DeviceException::DeviceException(const DeviceException& exception) :
+	Exception(exception)
+{
+}
+
+DeviceException::~DeviceException()
+{
+}
+
+StateException::StateException(std::string message, std::string file, int line) :
+	Exception(message, file, line)
+{
+}
+
+StateException::StateException(const StateException& exception) :
+	Exception(exception)
+{
+}
+
+StateException::~StateException()
+{
 }
 
 AUD_NAMESPACE_END
