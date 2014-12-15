@@ -33,8 +33,8 @@
 #include <string>
 #include <condition_variable>
 #include <thread>
-#include <jack.h>
-#include <ringbuffer.h>
+#include <jack/jack.h>
+#include <jack/ringbuffer.h>
 
 AUD_NAMESPACE_BEGIN
 

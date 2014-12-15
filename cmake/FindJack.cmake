@@ -13,8 +13,8 @@ endif(PKG_CONFIG_FOUND)
 
 # Include dir
 find_path(JACK_INCLUDE_DIR
-	NAMES jack.h
-	PATH_SUFFIXES include/jack include
+	NAMES jack/jack.h
+	PATH_SUFFIXES include includes
 	PATHS ${JACK_PKGCONF_INCLUDE_DIRS}
 )
 
