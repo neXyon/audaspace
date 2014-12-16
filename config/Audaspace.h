@@ -47,6 +47,18 @@
  * Used for hiding symbols from export in the shared library.
  */
 
+/**
+ * \def AUD_SHARED_LIBRARY
+ * Defined when audaspace was built as a shared library.
+ */
+
+/**
+ * \def AUD_STATIC_LIBRARY
+ * Defined when audaspace was built as a static library.
+ */
+
+#define @AUD_LIBRARY_TYPE@
+
 #ifdef _MSC_VER
 	#define AUD_EXPORT_API __declspec(dllexport)
 	#define AUD_USE_API __declspec(dllimport)

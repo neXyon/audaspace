@@ -29,7 +29,7 @@ file(GLOB_RECURSE PUBLIC_HDR include/*.h)
 
 set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 
-set(INCLUDE include)
+set(INCLUDE ${CMAKE_CURRENT_BINARY_DIR} include)
 if(${WIN32})
 	set(LIBRARIES)
 	set(LIBRARY_PATH "../lib" CACHE PATH "Path which contains the libraries.")
@@ -182,7 +182,23 @@ if(${WITH_SDL})
 	endif()
 endif()
 
+# library configuration
+
+if(${SHARED_LIBRARY})
+	set(AUD_LIBRARY_TYPE AUD_SHARED_LIBRARY)
+	set(LIBRARY_TYPE SHARED)
+	add_definitions(-DAUD_BUILD_SHARED_LIBRARY)
+else()
+	set(AUD_LIBRARY_TYPE AUD_STATIC_LIBRARY)
+	set(LIBRARY_TYPE STATIC)
+endif()
+
 # file configuration
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/Audaspace.h ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h ESCAPE_QUOTES @ONLY)
+
+list(APPEND HDR ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h)
+
 file(GLOB PLUGINMANAGERS src/plugin/PluginManager*.cpp)
 list(REMOVE_ITEM SRC ${PLUGINMANAGERS})
 
@@ -201,15 +217,6 @@ link_directories()
 
 # library
 
-if(${SHARED_LIBRARY})
-	set(LIBRARY_TYPE SHARED)
-	# TODO: gotta do this as a configuration file!!
-	add_definitions(-DAUD_SHARED_LIBRARY)
-	add_definitions(-DAUD_BUILD_SHARED_LIBRARY)
-else()
-	set(LIBRARY_TYPE STATIC)
-endif()
-
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
 
@@ -220,6 +227,7 @@ install(TARGETS audaspace
 )
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h DESTINATION include/audaspace)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages/pkgconfig/audaspace.pc.in ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc DESTINATION "lib${LIB_SUFFIX}/pkgconfig")
