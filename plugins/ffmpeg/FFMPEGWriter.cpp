@@ -150,6 +150,8 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 		AUD_THROW(FileException, "File couldn't be written, output format couldn't be found with ffmpeg.");
 	}
 
+	m_outputFmt->audio_codec = AV_CODEC_ID_NONE;
+
 	switch(codec)
 	{
 	case CODEC_AAC:
@@ -220,12 +222,6 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 		m_stream->id = m_formatCtx->nb_streams - 1;
 
 		m_codecCtx = m_stream->codec;
-		m_codecCtx->codec_id = m_outputFmt->audio_codec;
-		m_codecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
-		m_codecCtx->bit_rate = bitrate;
-		m_codecCtx->channels = m_specs.channels;
-		m_codecCtx->time_base.num = 1;
-		m_codecCtx->time_base.den = m_codecCtx->sample_rate;
 
 		switch(m_specs.format)
 		{
@@ -333,18 +329,20 @@ FFMPEGWriter::FFMPEGWriter(std::string filename, DeviceSpecs specs, Container fo
 
 		m_specs.rate = m_codecCtx->sample_rate;
 
+		m_codecCtx->codec_id = m_outputFmt->audio_codec;
+		m_codecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
+		m_codecCtx->bit_rate = bitrate;
+		m_codecCtx->channels = m_specs.channels;
+		m_stream->time_base.num = m_codecCtx->time_base.num = 1;
+		m_stream->time_base.den = m_codecCtx->time_base.den = m_codecCtx->sample_rate;
+
 		if(avcodec_open2(m_codecCtx, codec, nullptr) < 0)
 			AUD_THROW(FileException, "File couldn't be written, encoder couldn't be opened with ffmpeg.");
 
 		int samplesize = std::max(int(AUD_SAMPLE_SIZE(m_specs)), AUD_DEVICE_SAMPLE_SIZE(m_specs));
 
-		if(m_codecCtx->frame_size <= 1)
-			m_input_size = 0;
-		else
-		{
-			m_input_buffer.resize(m_codecCtx->frame_size * samplesize);
-			m_input_size = m_codecCtx->frame_size;
-		}
+		if((m_input_size = m_codecCtx->frame_size))
+			m_input_buffer.resize(m_input_size * samplesize);
 
 		if(avio_open(&m_formatCtx->pb, filename.c_str(), AVIO_FLAG_WRITE))
 			AUD_THROW(FileException, "File couldn't be written, file opening failed with ffmpeg.");
@@ -418,6 +416,8 @@ void FFMPEGWriter::write(unsigned int length, sample_t* buffer)
 
 		sample_t* buf = m_input_buffer.getBuffer();
 		m_convert(reinterpret_cast<data_t*>(buf), reinterpret_cast<data_t*>(buffer), length * m_specs.channels);
+
+		m_input_samples = length;
 
 		encode();
 
