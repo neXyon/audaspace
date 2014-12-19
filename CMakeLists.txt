@@ -19,7 +19,7 @@ include(CMakeDependentOption)
 
 project(audaspace)
 
-set(AUDASPACE_VERSION 0.1)
+set(AUDASPACE_VERSION 1.0)
 
 # sources
 

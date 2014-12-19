@@ -11,7 +11,7 @@ audaspace = Extension('aud',
                     sources = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp']])
 
 setup (name = 'audaspace',
-       version = '0.1',
+       version = '1.0',
        description = 'Audaspace is a high level audio library.',
        author = 'Jörg Müller',
        author_email = 'nexyon@gmail.com',
