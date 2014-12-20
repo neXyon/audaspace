@@ -49,12 +49,12 @@ std::shared_ptr<IWriter> FFMPEG::createWriter(std::string filename, DeviceSpecs 
 }
 
 #ifdef FFMPEG_PLUGIN
-extern "C" void registerPlugin()
+extern "C" AUD_PLUGIN_API void registerPlugin()
 {
 	FFMPEG::registerPlugin();
 }
 
-extern "C" const char* getName()
+extern "C" AUD_PLUGIN_API const char* getName()
 {
 	return "FFMPEG";
 }

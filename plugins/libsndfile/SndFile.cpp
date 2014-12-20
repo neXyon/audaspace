@@ -48,12 +48,12 @@ std::shared_ptr<IWriter> SndFile::createWriter(std::string filename, DeviceSpecs
 }
 
 #ifdef LIBSNDFILE_PLUGIN
-extern "C" void registerPlugin()
+extern "C" AUD_PLUGIN_API void registerPlugin()
 {
 	SndFile::registerPlugin();
 }
 
-extern "C" const char* getName()
+extern "C" AUD_PLUGIN_API const char* getName()
 {
 	return "LibSndFile";
 }

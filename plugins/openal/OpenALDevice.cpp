@@ -1472,12 +1472,12 @@ void OpenALDevice::registerPlugin()
 }
 
 #ifdef OPENAL_PLUGIN
-extern "C" void registerPlugin()
+extern "C" AUD_PLUGIN_API void registerPlugin()
 {
 	OpenALDevice::registerPlugin();
 }
 
-extern "C" const char* getName()
+extern "C" AUD_PLUGIN_API const char* getName()
 {
 	return "OpenAL";
 }

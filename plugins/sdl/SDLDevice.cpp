@@ -130,12 +130,12 @@ void SDLDevice::registerPlugin()
 }
 
 #ifdef SDL_PLUGIN
-extern "C" void registerPlugin()
+extern "C" AUD_PLUGIN_API void registerPlugin()
 {
 	SDLDevice::registerPlugin();
 }
 
-extern "C" const char* getName()
+extern "C" AUD_PLUGIN_API const char* getName()
 {
 	return "SDL";
 }

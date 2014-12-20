@@ -369,12 +369,12 @@ void JackDevice::registerPlugin()
 }
 
 #ifdef JACK_PLUGIN
-extern "C" void registerPlugin()
+extern "C" AUD_PLUGIN_API void registerPlugin()
 {
 	JackDevice::registerPlugin();
 }
 
-extern "C" const char* getName()
+extern "C" AUD_PLUGIN_API const char* getName()
 {
 	return "Jack";
 }
