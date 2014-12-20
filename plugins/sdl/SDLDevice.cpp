@@ -139,17 +139,6 @@ extern "C" AUD_PLUGIN_API const char* getName()
 {
 	return "SDL";
 }
-#else
-class SDLRegister
-{
-public:
-	SDLRegister()
-	{
-		SDLDevice::registerPlugin();
-	}
-};
-
-static SDLRegister reg;
 #endif
 
 AUD_NAMESPACE_END

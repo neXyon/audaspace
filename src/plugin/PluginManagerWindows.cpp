@@ -45,8 +45,15 @@ bool PluginManager::loadPlugin(const std::string& path)
 	return true;
 }
 
+#define STATIC_PLUGIN_CLASS(name) class name { public: static void registerPlugin(); };
+#define STATIC_PLUGIN_REGISTER(name) name::registerPlugin();
+
+@STATIC_PLUGIN_CLASSES@
+
 void PluginManager::loadPlugins(const std::string& path)
 {
+@STATIC_PLUGIN_REGISTERS@
+
 	std::string readpath = path;
 
 	if(path == "")
