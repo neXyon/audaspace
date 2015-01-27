@@ -32,7 +32,7 @@ Exception::Exception(std::string message, std::string file, int line) :
 {
 }
 
-Exception::~Exception()
+Exception::~Exception() AUD_NOEXCEPT
 {
 }
 
@@ -75,7 +75,7 @@ FileException::FileException(const FileException& exception) :
 {
 }
 
-FileException::~FileException()
+FileException::~FileException() AUD_NOEXCEPT
 {
 }
 
@@ -89,7 +89,7 @@ DeviceException::DeviceException(const DeviceException& exception) :
 {
 }
 
-DeviceException::~DeviceException()
+DeviceException::~DeviceException() AUD_NOEXCEPT
 {
 }
 
@@ -103,7 +103,7 @@ StateException::StateException(const StateException& exception) :
 {
 }
 
-StateException::~StateException()
+StateException::~StateException() AUD_NOEXCEPT
 {
 }
 

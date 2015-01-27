@@ -17,6 +17,7 @@
 #include "SequenceHandle.h"
 #include "sequence/SequenceEntry.h"
 #include "devices/ReadDevice.h"
+#include "Exception.h"
 
 #include <mutex>
 
@@ -43,7 +44,7 @@ void SequenceHandle::start()
 			m_handle = m_device.play(m_entry->m_sound, true);
 			m_3dhandle = std::dynamic_pointer_cast<I3DHandle>(m_handle);
 		}
-		catch(AUD_Exception&)
+		catch(Exception&)
 		{
 			// handle stays invalid in case we get an exception
 		}

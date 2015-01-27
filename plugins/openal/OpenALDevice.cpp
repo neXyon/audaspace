@@ -1001,7 +1001,7 @@ void OpenALDevice::updateStreams()
 /******************************************************************************/
 
 OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, std::string name) :
-	m_buffersize(buffersize), m_playing(false)
+	m_playing(false), m_buffersize(buffersize)
 {
 	// cannot determine how many channels or which format OpenAL uses, but
 	// it at least is able to play 16 bit stereo audio

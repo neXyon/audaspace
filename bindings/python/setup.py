@@ -3,7 +3,7 @@
 from setuptools import setup, Extension
 
 audaspace = Extension('aud',
-                    include_dirs = ['@PYTHON_SOURCE_DIRECTORY@/../../include'],
+                    include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', '@PYTHON_SOURCE_DIRECTORY@/../../include'],
                     libraries = ['audaspace'],
                     library_dirs = ['.'],
                     language = 'c++',

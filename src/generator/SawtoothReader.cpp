@@ -23,8 +23,8 @@ AUD_NAMESPACE_BEGIN
 SawtoothReader::SawtoothReader(float frequency, SampleRate sampleRate) :
 	m_frequency(frequency),
 	m_position(0),
-	m_sampleRate(sampleRate),
-	m_sample(0)
+	m_sample(0),
+	m_sampleRate(sampleRate)
 {
 }
 

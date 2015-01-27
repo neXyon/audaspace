@@ -23,8 +23,8 @@ AUD_NAMESPACE_BEGIN
 TriangleReader::TriangleReader(float frequency, SampleRate sampleRate) :
 	m_frequency(frequency),
 	m_position(0),
-	m_sampleRate(sampleRate),
-	m_sample(0.5f)
+	m_sample(0.5f),
+	m_sampleRate(sampleRate)
 {
 }
 

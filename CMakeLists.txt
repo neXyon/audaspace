@@ -72,7 +72,7 @@ cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHO
 
 # compiler options
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 	add_definitions(-std=c++11)
 	list(APPEND CMAKE_C_COMPILER_FLAGS "-fvisibility=hidden")
 	list(APPEND CMAKE_CXX_COMPILER_FLAGS "-fvisibility=hidden")
