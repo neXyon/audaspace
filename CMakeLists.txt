@@ -30,7 +30,7 @@ file(GLOB_RECURSE PUBLIC_HDR include/*.h)
 set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 
 set(INCLUDE ${CMAKE_CURRENT_BINARY_DIR} include)
-if(${WIN32})
+if(WIN32)
 	set(LIBRARIES)
 	set(LIBRARY_PATH "../lib" CACHE PATH "Path which contains the libraries.")
 	file(GLOB LIBRARY_DIRS ${LIBRARY_PATH}/*)
@@ -88,6 +88,10 @@ if(${MSVC})
 	if(${SHARED_LIBRARY})
 		include(GenerateExportHeader)
 	endif()
+endif()
+
+if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "" FORCE)
 endif()
 
 # C
@@ -362,7 +366,11 @@ if(${WITH_PYTHON})
 		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
 		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
-		add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
+		if(APPLE)
+			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
+		else()
+			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
+		endif()
 		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
 		add_dependencies(pythonmodule audaspace)
 
