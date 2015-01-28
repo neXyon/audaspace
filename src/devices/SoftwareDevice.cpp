@@ -696,7 +696,7 @@ void SoftwareDevice::create()
 	m_playback = false;
 	m_volume = 1.0f;
 	m_mixer = std::shared_ptr<Mixer>(new Mixer(m_specs));
-	m_speed_of_sound = 343.0f;
+	m_speed_of_sound = 343.2f;
 	m_doppler_factor = 1.0f;
 	m_distance_model = DISTANCE_MODEL_INVERSE_CLAMPED;
 	m_flags = 0;

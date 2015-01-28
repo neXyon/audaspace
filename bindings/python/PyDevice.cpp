@@ -595,7 +595,7 @@ Device_get_rate(Device* self, void* nothing)
 
 PyDoc_STRVAR(M_aud_Device_speed_of_sound_doc,
 			 "The speed of sound of the device.\n"
-			 "The speed of sound in air is typically 343 m/s.");
+			 "The speed of sound in air is typically 343.2 m/s.");
 
 static PyObject *
 Device_get_speed_of_sound(Device* self, void* nothing)
