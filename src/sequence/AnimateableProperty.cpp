@@ -41,17 +41,10 @@ void AnimateableProperty::updateUnknownCache(int start, int end)
 {
 	float* buf = getBuffer();
 
-	if(start == 0)
-	{
-		for(int i = 0; i < end; i++)
-			memcpy(buf + i * m_count, buf + end * m_count, m_count * sizeof(float));
-	}
-	else
-	{
-		// TODO: maybe first instead of zero order interpolation?
-		for(int i = start; i <= end; i++)
-			std::memcpy(buf + i * m_count, buf + (start - 1) * m_count, m_count * sizeof(float));
-	}
+	// we could do a better interpolation than zero order, but that doesn't work with Blender's animation system
+	// as frames are only written when changing, so to support jumps, we need zero order interpolation here.
+	for(int i = start; i <= end; i++)
+		std::memcpy(buf + i * m_count, buf + (start - 1) * m_count, m_count * sizeof(float));
 }
 
 AnimateableProperty::~AnimateableProperty()
@@ -93,6 +86,11 @@ void AnimateableProperty::write(const float* data, int position, int count)
 	if(pos < position)
 	{
 		m_unknown.push_back(Unknown(pos, position - 1));
+
+		// if the buffer was not animated before, we copy the previous static value
+		if(pos == 0)
+			pos = 1;
+
 		updateUnknownCache(pos, position - 1);
 	}
 	// otherwise it's not at the end, let's check if some unknown part got filled
