@@ -239,44 +239,43 @@ bool OpenALDevice::OpenALHandle::seek(float position)
 
 		alGetSourcei(m_source, AL_SOURCE_STATE, &info);
 
-		if(info != AL_PLAYING)
+		// we need to stop playing sounds as well to clear the buffers
+		// this might cause clicks, but fixes a bug regarding position determination
+		if(info == AL_PAUSED || info == AL_PLAYING)
+			alSourceStop(m_source);
+
+		alSourcei(m_source, AL_BUFFER, 0);
+
+		ALenum err;
+		if((err = alGetError()) == AL_NO_ERROR)
 		{
-			if(info == AL_PAUSED)
-				alSourceStop(m_source);
+			int length;
+			DeviceSpecs specs = m_device->m_specs;
+			specs.specs = m_reader->getSpecs();
+			m_device->m_buffer.assureSize(m_device->m_buffersize * AUD_DEVICE_SAMPLE_SIZE(specs));
 
-			alSourcei(m_source, AL_BUFFER, 0);
-
-			ALenum err;
-			if((err = alGetError()) == AL_NO_ERROR)
+			for(m_current = 0; m_current < CYCLE_BUFFERS; m_current++)
 			{
-				int length;
-				DeviceSpecs specs = m_device->m_specs;
-				specs.specs = m_reader->getSpecs();
-				m_device->m_buffer.assureSize(m_device->m_buffersize * AUD_DEVICE_SAMPLE_SIZE(specs));
+				length = m_device->m_buffersize;
 
-				for(m_current = 0; m_current < CYCLE_BUFFERS; m_current++)
-				{
-					length = m_device->m_buffersize;
+				m_reader->read(length, m_eos, m_device->m_buffer.getBuffer());
 
-					m_reader->read(length, m_eos, m_device->m_buffer.getBuffer());
+				if(length == 0)
+					break;
 
-					if(length == 0)
-						break;
+				alBufferData(m_buffers[m_current], m_format, m_device->m_buffer.getBuffer(), length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
 
-					alBufferData(m_buffers[m_current], m_format, m_device->m_buffer.getBuffer(), length * AUD_DEVICE_SAMPLE_SIZE(specs), specs.rate);
-
-					if(alGetError() != AL_NO_ERROR)
-						break;
-				}
-
-				if(m_loopcount != 0)
-					m_eos = false;
-
-				alSourceQueueBuffers(m_source, m_current, m_buffers);
+				if(alGetError() != AL_NO_ERROR)
+					break;
 			}
 
-			alSourceRewind(m_source);
+			if(m_loopcount != 0)
+				m_eos = false;
+
+			alSourceQueueBuffers(m_source, m_current, m_buffers);
 		}
+
+		alSourceRewind(m_source);
 	}
 
 	if(m_status == STATUS_STOPPED)
@@ -301,8 +300,13 @@ float OpenALDevice::OpenALHandle::getPosition()
 
 	if(!m_isBuffered)
 	{
+		int queued;
+
+		// this usually always returns CYCLE_BUFFERS
+		alGetSourcei(m_source, AL_BUFFERS_QUEUED, &queued);
+
 		Specs specs = m_reader->getSpecs();
-		position += (m_reader->getPosition() - m_device->m_buffersize * CYCLE_BUFFERS) / (float)specs.rate;
+		position += (m_reader->getPosition() - m_device->m_buffersize * queued) / (float)specs.rate;
 	}
 
 	return position;
