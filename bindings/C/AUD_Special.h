@@ -55,7 +55,7 @@ extern AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds);
  * \param samples_per_second How many samples to read per second of the sound.
  * \return How many samples really have been read. Always <= length.
  */
-extern int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second);
+extern int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second, short* interrupt);
 
 /**
  * Mixes a sound down into a file.

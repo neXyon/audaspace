@@ -200,7 +200,7 @@ AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds)
 	return nullptr;
 }
 
-int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second)
+int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second, short* interrupt)
 {
 	DeviceSpecs specs;
 	float* buf;
@@ -223,6 +223,9 @@ int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_s
 	for(int i = 0; i < length; i++)
 	{
 		len = floor(samplejump * (i+1)) - floor(samplejump * i);
+
+		if (*interrupt)
+			return 0;
 
 		aBuffer.assureSize(len * AUD_SAMPLE_SIZE(specs));
 		buf = aBuffer.getBuffer();
