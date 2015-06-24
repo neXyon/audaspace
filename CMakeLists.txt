@@ -23,9 +23,187 @@ set(AUDASPACE_VERSION 1.0)
 
 # sources
 
-file(GLOB_RECURSE SRC src/*.cpp)
-file(GLOB_RECURSE PRIVATE_HDR src/*.h)
-file(GLOB_RECURSE PUBLIC_HDR include/*.h)
+set(SRC
+	src/devices/DefaultSynchronizer.cpp
+	src/devices/DeviceManager.cpp
+	src/devices/NULLDevice.cpp
+	src/devices/ReadDevice.cpp
+	src/devices/SoftwareDevice.cpp
+	src/Exception.cpp
+	src/file/File.cpp
+	src/file/FileManager.cpp
+	src/file/FileWriter.cpp
+	src/fx/Accumulator.cpp
+	src/fx/ADSR.cpp
+	src/fx/ADSRReader.cpp
+	src/fx/BaseIIRFilterReader.cpp
+	src/fx/ButterworthCalculator.cpp
+	src/fx/Butterworth.cpp
+	src/fx/CallbackIIRFilterReader.cpp
+	src/fx/Delay.cpp
+	src/fx/DelayReader.cpp
+	src/fx/DynamicIIRFilter.cpp
+	src/fx/DynamicIIRFilterReader.cpp
+	src/fx/Effect.cpp
+	src/fx/EffectReader.cpp
+	src/fx/Envelope.cpp
+	src/fx/Fader.cpp
+	src/fx/FaderReader.cpp
+	src/fx/HighpassCalculator.cpp
+	src/fx/Highpass.cpp
+	src/fx/IIRFilter.cpp
+	src/fx/IIRFilterReader.cpp
+	src/fx/Limiter.cpp
+	src/fx/LimiterReader.cpp
+	src/fx/Loop.cpp
+	src/fx/LoopReader.cpp
+	src/fx/LowpassCalculator.cpp
+	src/fx/Lowpass.cpp
+	src/fx/Pitch.cpp
+	src/fx/PitchReader.cpp
+	src/fx/Reverse.cpp
+	src/fx/ReverseReader.cpp
+	src/fx/Sum.cpp
+	src/fx/Threshold.cpp
+	src/fx/Volume.cpp
+	src/generator/Sawtooth.cpp
+	src/generator/SawtoothReader.cpp
+	src/generator/Silence.cpp
+	src/generator/SilenceReader.cpp
+	src/generator/Sine.cpp
+	src/generator/SineReader.cpp
+	src/generator/Square.cpp
+	src/generator/SquareReader.cpp
+	src/generator/Triangle.cpp
+	src/generator/TriangleReader.cpp
+	src/respec/ChannelMapper.cpp
+	src/respec/ChannelMapperReader.cpp
+	src/respec/Converter.cpp
+	src/respec/ConverterFunctions.cpp
+	src/respec/ConverterReader.cpp
+	src/respec/JOSResample.cpp
+	src/respec/JOSResampleReaderCoeff.cpp
+	src/respec/JOSResampleReader.cpp
+	src/respec/LinearResample.cpp
+	src/respec/LinearResampleReader.cpp
+	src/respec/Mixer.cpp
+	src/respec/ResampleReader.cpp
+	src/respec/SpecsChanger.cpp
+	src/sequence/AnimateableProperty.cpp
+	src/sequence/Double.cpp
+	src/sequence/DoubleReader.cpp
+	src/sequence/PingPong.cpp
+	src/sequence/Sequence.cpp
+	src/sequence/SequenceData.cpp
+	src/sequence/SequenceEntry.cpp
+	src/sequence/SequenceHandle.cpp
+	src/sequence/SequenceReader.cpp
+	src/sequence/Superpose.cpp
+	src/sequence/SuperposeReader.cpp
+	src/util/Buffer.cpp
+	src/util/BufferReader.cpp
+	src/util/StreamBuffer.cpp
+)
+
+set(PRIVATE_HDR
+	src/sequence/SequenceHandle.h
+)
+
+set(PUBLIC_HDR
+	include/devices/DefaultSynchronizer.h
+	include/devices/DeviceManager.h
+	include/devices/I3DDevice.h
+	include/devices/I3DHandle.h
+	include/devices/IDeviceFactory.h
+	include/devices/IDevice.h
+	include/devices/IHandle.h
+	include/devices/ISynchronizer.h
+	include/devices/NULLDevice.h
+	include/devices/ReadDevice.h
+	include/devices/SoftwareDevice.h
+	include/Exception.h
+	include/file/File.h
+	include/file/FileManager.h
+	include/file/FileWriter.h
+	include/file/IFileInput.h
+	include/file/IFileOutput.h
+	include/file/IWriter.h
+	include/fx/Accumulator.h
+	include/fx/ADSR.h
+	include/fx/ADSRReader.h
+	include/fx/BaseIIRFilterReader.h
+	include/fx/ButterworthCalculator.h
+	include/fx/Butterworth.h
+	include/fx/CallbackIIRFilterReader.h
+	include/fx/Delay.h
+	include/fx/DelayReader.h
+	include/fx/DynamicIIRFilter.h
+	include/fx/DynamicIIRFilterReader.h
+	include/fx/Effect.h
+	include/fx/EffectReader.h
+	include/fx/Envelope.h
+	include/fx/Fader.h
+	include/fx/FaderReader.h
+	include/fx/HighpassCalculator.h
+	include/fx/Highpass.h
+	include/fx/IDynamicIIRFilterCalculator.h
+	include/fx/IIRFilter.h
+	include/fx/IIRFilterReader.h
+	include/fx/Limiter.h
+	include/fx/LimiterReader.h
+	include/fx/Loop.h
+	include/fx/LoopReader.h
+	include/fx/LowpassCalculator.h
+	include/fx/Lowpass.h
+	include/fx/Pitch.h
+	include/fx/PitchReader.h
+	include/fx/Reverse.h
+	include/fx/ReverseReader.h
+	include/fx/Sum.h
+	include/fx/Threshold.h
+	include/fx/Volume.h
+	include/generator/Sawtooth.h
+	include/generator/SawtoothReader.h
+	include/generator/Silence.h
+	include/generator/SilenceReader.h
+	include/generator/Sine.h
+	include/generator/SineReader.h
+	include/generator/Square.h
+	include/generator/SquareReader.h
+	include/generator/Triangle.h
+	include/generator/TriangleReader.h
+	include/IReader.h
+	include/ISound.h
+	include/plugin/PluginManager.h
+	include/respec/ChannelMapper.h
+	include/respec/ChannelMapperReader.h
+	include/respec/ConverterFunctions.h
+	include/respec/Converter.h
+	include/respec/ConverterReader.h
+	include/respec/JOSResample.h
+	include/respec/JOSResampleReader.h
+	include/respec/LinearResample.h
+	include/respec/LinearResampleReader.h
+	include/respec/Mixer.h
+	include/respec/ResampleReader.h
+	include/respec/Specification.h
+	include/respec/SpecsChanger.h
+	include/sequence/AnimateableProperty.h
+	include/sequence/Double.h
+	include/sequence/DoubleReader.h
+	include/sequence/PingPong.h
+	include/sequence/SequenceData.h
+	include/sequence/SequenceEntry.h
+	include/sequence/Sequence.h
+	include/sequence/SequenceReader.h
+	include/sequence/Superpose.h
+	include/sequence/SuperposeReader.h
+	include/util/Buffer.h
+	include/util/BufferReader.h
+	include/util/ILockable.h
+	include/util/Math3D.h
+	include/util/StreamBuffer.h
+)
 
 set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 
@@ -72,20 +250,20 @@ cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHO
 
 # compiler options
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 	add_definitions(-std=c++11)
 	list(APPEND CMAKE_C_COMPILER_FLAGS "-fvisibility=hidden")
 	list(APPEND CMAKE_CXX_COMPILER_FLAGS "-fvisibility=hidden")
 endif()
 
-if(${MSVC})
+if(MSVC)
 	list(APPEND CMAKE_C_FLAGS_DEBUG "/Zi /Od")
 	list(APPEND CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
 	list(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG")
 	list(APPEND CMAKE_STATIC_LINKER_FLAGS_DEBUG "/DEBUG")
 	list(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
 	add_definitions(/D_USE_MATH_DEFINES /EHsc)
-	if(${SHARED_LIBRARY})
+	if(SHARED_LIBRARY)
 		include(GenerateExportHeader)
 	endif()
 endif()
@@ -95,11 +273,24 @@ if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
 endif()
 
 # C
-if(${WITH_C})
-	file(GLOB_RECURSE C_SRC bindings/C/*.cpp)
-	file(GLOB_RECURSE C_HDR bindings/C/*.h)
+if(WITH_C)
+	set(C_SRC
+		bindings/C/AUD_Device.cpp
+		bindings/C/AUD_Handle.cpp
+		bindings/C/AUD_Sequence.cpp
+		bindings/C/AUD_Sound.cpp
+		bindings/C/AUD_Special.cpp
+	)
+	set(C_HDR
+		bindings/C/AUD_Device.h
+		bindings/C/AUD_Handle.h
+		bindings/C/AUD_Sequence.h
+		bindings/C/AUD_Sound.h
+		bindings/C/AUD_Special.h
+		bindings/C/AUD_Types.h
+	)
 
-	if(NOT ${SEPARATE_C})
+	if(NOT SEPARATE_C)
 		list(APPEND SRC ${C_SRC})
 		list(APPEND HDR ${C_HDR})
 	else()
@@ -108,12 +299,21 @@ if(${WITH_C})
 endif()
 
 # FFMPEG
-if(${WITH_FFMPEG})
+if(WITH_FFMPEG)
 	find_package(FFMPEG REQUIRED)
-	file(GLOB_RECURSE FFMPEG_SRC plugins/ffmpeg/*.cpp)
-	file(GLOB_RECURSE FFMPEG_HDR plugins/ffmpeg/*.h)
 
-	if(NOT ${PLUGIN_FFMPEG})
+	set(FFMPEG_SRC
+		plugins/ffmpeg/FFMPEG.cpp
+		plugins/ffmpeg/FFMPEGReader.cpp
+		plugins/ffmpeg/FFMPEGWriter.cpp
+	)
+	set(FFMPEG_HDR
+		plugins/ffmpeg/FFMPEG.h
+		plugins/ffmpeg/FFMPEGReader.h
+		plugins/ffmpeg/FFMPEGWriter.h
+	)
+
+	if(NOT PLUGIN_FFMPEG)
 		list(APPEND INCLUDE ${FFMPEG_INCLUDE_DIRS})
 		list(APPEND LIBRARIES ${FFMPEG_LIBRARIES})
 		list(APPEND SRC ${FFMPEG_SRC})
@@ -123,12 +323,19 @@ if(${WITH_FFMPEG})
 endif()
 
 # Jack
-if(${WITH_JACK})
+if(WITH_JACK)
 	find_package(Jack REQUIRED)
-	file(GLOB_RECURSE JACK_SRC plugins/jack/*.cpp)
-	file(GLOB_RECURSE JACK_HDR plugins/jack/*.h)
 
-	if(NOT ${PLUGIN_JACK})
+	set(JACK_SRC
+		plugins/jack/JackDevice.cpp
+		plugins/jack/JackSynchronizer.cpp
+	)
+	set(JACK_HDR
+		plugins/jack/JackDevice.h
+		plugins/jack/JackSynchronizer.h
+	)
+
+	if(NOT PLUGIN_JACK)
 		list(APPEND INCLUDE ${JACK_INCLUDE_DIRS})
 		list(APPEND LIBRARIES ${JACK_LIBRARIES})
 		list(APPEND SRC ${JACK_SRC})
@@ -138,12 +345,21 @@ if(${WITH_JACK})
 endif()
 
 # LibSndFile
-if(${WITH_LIBSNDFILE})
+if(WITH_LIBSNDFILE)
 	find_package(LibSndFile REQUIRED)
-	file(GLOB_RECURSE LIBSNDFILE_SRC plugins/libsndfile/*.cpp)
-	file(GLOB_RECURSE LIBSNDFILE_HDR plugins/libsndfile/*.h)
 
-	if(NOT ${PLUGIN_LIBSNDFILE})
+	set(LIBSNDFILE_SRC
+		plugins/libsndfile/SndFile.cpp
+		plugins/libsndfile/SndFileReader.cpp
+		plugins/libsndfile/SndFileWriter.cpp
+	)
+	set(LIBSNDFILE_HDR
+		plugins/libsndfile/SndFile.h
+		plugins/libsndfile/SndFileReader.h
+		plugins/libsndfile/SndFileWriter.h
+	)
+
+	if(NOT PLUGIN_LIBSNDFILE)
 		list(APPEND INCLUDE ${LIBSNDFILE_INCLUDE_DIRS})
 		list(APPEND LIBRARIES ${LIBSNDFILE_LIBRARIES})
 		list(APPEND SRC ${LIBSNDFILE_SRC})
@@ -153,12 +369,19 @@ if(${WITH_LIBSNDFILE})
 endif()
 
 # OpenAL
-if(${WITH_OPENAL})
+if(WITH_OPENAL)
 	find_package(OpenAL REQUIRED)
-	file(GLOB_RECURSE OPENAL_SRC plugins/openal/*.cpp)
-	file(GLOB_RECURSE OPENAL_HDR plugins/openal/*.h)
 
-	if(NOT ${PLUGIN_OPENAL})
+	set(OPENAL_SRC
+		plugins/openal/OpenALDevice.cpp
+		plugins/openal/OpenALReader.cpp
+	)
+	set(OPENAL_HDR
+		plugins/openal/OpenALDevice.h
+		plugins/openal/OpenALReader.h
+	)
+
+	if(NOT PLUGIN_OPENAL)
 		list(APPEND INCLUDE ${OPENAL_INCLUDE_DIR})
 		list(APPEND LIBRARIES ${OPENAL_LIBRARY})
 		list(APPEND SRC ${OPENAL_SRC})
@@ -168,23 +391,28 @@ if(${WITH_OPENAL})
 endif()
 
 # Python
-if(${WITH_PYTHON})
+if(WITH_PYTHON)
 	set(Python_ADDITIONAL_VERSIONS 3.3)
 	find_package(PythonLibs REQUIRED)
 	list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
 
-	if(${WITH_PYTHON_MODULE})
+	if(WITH_PYTHON_MODULE)
 		find_package(PythonInterp REQUIRED)
 	endif()
 endif()
 
 # SDL
-if(${WITH_SDL})
+if(WITH_SDL)
 	find_package(SDL REQUIRED)
-	file(GLOB_RECURSE SDL_SRC plugins/sdl/*.cpp)
-	file(GLOB_RECURSE SDL_HDR plugins/sdl/*.h)
 
-	if(NOT ${PLUGIN_SDL})
+	set(SDL_SRC
+		plugins/sdl/SDLDevice.cpp
+	)
+	set(SDL_HDR
+		plugins/sdl/SDLDevice.h
+	)
+
+	if(NOT PLUGIN_SDL)
 		list(APPEND INCLUDE ${SDL_INCLUDE_DIR})
 		list(APPEND LIBRARIES ${SDL_LIBRARY})
 		list(APPEND SRC ${SDL_SRC})
@@ -195,7 +423,7 @@ endif()
 
 # library configuration
 
-if(${SHARED_LIBRARY})
+if(SHARED_LIBRARY)
 	set(AUD_LIBRARY_TYPE AUD_SHARED_LIBRARY)
 	set(LIBRARY_TYPE SHARED)
 	add_definitions(-DAUD_BUILD_SHARED_LIBRARY)
@@ -221,10 +449,7 @@ endforeach()
 string(CONCAT STATIC_PLUGIN_CLASSES ${STATIC_PLUGIN_CLASSES})
 string(CONCAT STATIC_PLUGIN_REGISTERS ${STATIC_PLUGIN_REGISTERS})
 
-file(GLOB PLUGINMANAGERS src/plugin/PluginManager*.cpp)
-list(REMOVE_ITEM SRC ${PLUGINMANAGERS})
-
-if(${WIN32})
+if(WIN32)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
 else()
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
@@ -256,7 +481,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc DESTINATION "lib${LIB_SUF
 
 # plugins
 
-if(${PLUGIN_FFMPEG})
+if(PLUGIN_FFMPEG)
 	add_definitions(-DFFMPEG_PLUGIN)
 	include_directories(${INCLUDE} ${FFMPEG_INCLUDE_DIRS})
 	add_library(audffmpeg SHARED ${FFMPEG_SRC} ${FFMPEG_HDR} ${HDR})
@@ -264,7 +489,7 @@ if(${PLUGIN_FFMPEG})
 	install(TARGETS audffmpeg DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
-if(${PLUGIN_JACK})
+if(PLUGIN_JACK)
 	add_definitions(-DJACK_PLUGIN)
 	include_directories(${INCLUDE} ${JACK_INCLUDE_DIRS})
 	add_library(audjack SHARED ${JACK_SRC} ${JACK_HDR} ${HDR})
@@ -272,7 +497,7 @@ if(${PLUGIN_JACK})
 	install(TARGETS audjack DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
-if(${PLUGIN_LIBSNDFILE})
+if(PLUGIN_LIBSNDFILE)
 	add_definitions(-DLIBSNDFILE_PLUGIN)
 	include_directories(${INCLUDE} ${LIBSNDFILE_INCLUDE_DIRS})
 	add_library(audlibsndfile SHARED ${LIBSNDFILE_SRC} ${LIBSNDFILE_HDR} ${HDR})
@@ -280,7 +505,7 @@ if(${PLUGIN_LIBSNDFILE})
 	install(TARGETS audlibsndfile DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
-if(${PLUGIN_OPENAL})
+if(PLUGIN_OPENAL)
 	add_definitions(-DOPENAL_PLUGIN)
 	include_directories(${INCLUDE} ${OPENAL_INCLUDE_DIR})
 	add_library(audopenal SHARED ${OPENAL_SRC} ${OPENAL_HDR} ${HDR})
@@ -288,7 +513,7 @@ if(${PLUGIN_OPENAL})
 	install(TARGETS audopenal DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
-if(${PLUGIN_SDL})
+if(PLUGIN_SDL)
 	add_definitions(-DSDL_PLUGIN)
 	include_directories(${INCLUDE} ${SDL_INCLUDE_DIR})
 	add_library(audsdl SHARED ${SDL_SRC} ${SDL_HDR} ${HDR})
@@ -298,7 +523,7 @@ endif()
 
 # demos
 
-if(${BUILD_DEMOS})
+if(BUILD_DEMOS)
 	include_directories(${INCLUDE})
 
 	set(DEMOS audaplay audaconvert audaremap signalgen)
@@ -315,11 +540,11 @@ if(${BUILD_DEMOS})
 	add_executable(signalgen demos/signalgen.cpp)
 	target_link_libraries(signalgen audaspace)
 
-	if(${WITH_OPENAL})
+	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
 
 		add_executable(openaldevices demos/openaldevices.cpp)
-		if(${PLUGIN_OPENAL})
+		if(PLUGIN_OPENAL)
 			target_link_libraries(openaldevices audaspace audopenal)
 		else()
 			target_link_libraries(openaldevices audaspace)
@@ -335,7 +560,7 @@ endif()
 
 # bindings
 
-if(${WITH_C} AND ${SEPARATE_C})
+if(WITH_C AND SEPARATE_C)
 	add_library(caudaspace ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
 	target_link_libraries(caudaspace audaspace)
 	install(TARGETS caudaspace
@@ -347,9 +572,23 @@ if(${WITH_C} AND ${SEPARATE_C})
 	install(FILES ${C_HDR} DESTINATION include/audaspace)
 endif()
 
-if(${WITH_PYTHON})
-	file(GLOB_RECURSE PYTHON_SRC bindings/python/*.cpp)
-	file(GLOB_RECURSE PYTHON_HDR bindings/python/*.h)
+if(WITH_PYTHON)
+	set(PYTHON_SRC
+		bindings/python/PyAPI.cpp
+		bindings/python/PyDevice.cpp
+		bindings/python/PyHandle.cpp
+		bindings/python/PySequence.cpp
+		bindings/python/PySequenceEntry.cpp
+		bindings/python/PySound.cpp
+	)
+	set(PYTHON_HDR
+		bindings/python/PyAPI.h
+		bindings/python/PyDevice.h
+		bindings/python/PyHandle.h
+		bindings/python/PySequence.h
+		bindings/python/PySequenceEntry.h
+		bindings/python/PySound.h
+	)
 
 	add_library(pyaudaspace ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
 	target_link_libraries(pyaudaspace audaspace ${PYTHON_LIBRARIES})
@@ -362,7 +601,7 @@ if(${WITH_PYTHON})
 
 	install(FILES ${PYTHON_HDR} DESTINATION include/audaspace/python)
 
-	if(${WITH_PYTHON_MODULE})
+	if(WITH_PYTHON_MODULE)
 		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
 		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
@@ -380,7 +619,7 @@ endif()
 
 # docs
 
-if(${WITH_DOCS})
+if(WITH_DOCS)
 	find_package(Doxygen REQUIRED)
 
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
@@ -388,12 +627,12 @@ if(${WITH_DOCS})
 	add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
 endif()
 
-if(${WITH_BINDING_DOCS})
+if(WITH_BINDING_DOCS)
 	find_package(Sphinx REQUIRED)
 
 	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
 endif()
 
-if(${WITH_DOCS} OR ${WITH_BINDING_DOCS})
+if(WITH_DOCS OR WITH_BINDING_DOCS)
 	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/ DESTINATION ${DOCUMENTATION_INSTALL_PATH})
 endif()
