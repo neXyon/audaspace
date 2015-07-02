@@ -13,8 +13,8 @@ using namespace aud;
 int main(int argc, char* argv[])
 {
 	if (argc == 1){
-		std::cerr << "Usage: " << argv[0] << " <filename>" << " <filename>" << " .." << std::endl;
-		return 7687686;
+		std::cerr << "Usage: " << argv[0] << " <filename>" << " <filename>" << " ..." << std::endl;
+		return 1;
 	}
 
 	PluginManager::loadPlugins("");
