@@ -526,7 +526,7 @@ endif()
 if(BUILD_DEMOS)
 	include_directories(${INCLUDE})
 
-	set(DEMOS audaplay audaconvert audaremap signalgen)
+	set(DEMOS audaplay audaconvert audaremap signalgen randsounds)
 
 	add_executable(audaplay demos/audaplay.cpp)
 	target_link_libraries(audaplay audaspace)
@@ -539,6 +539,9 @@ if(BUILD_DEMOS)
 
 	add_executable(signalgen demos/signalgen.cpp)
 	target_link_libraries(signalgen audaspace)
+
+	add_executable(randsounds demos/randsounds/randsounds.cpp demos/randsounds/SoundList.h demos/randsounds/SoundList.cpp)
+	target_link_libraries(randsounds audaspace)
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
