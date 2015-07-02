@@ -1,5 +1,7 @@
 #include "SoundList.h"
 
+#include <chrono>
+
 SoundList::SoundList(std::shared_ptr<IDevice> device){
 	this->_device = device;
 	_currentSound = 0;
@@ -8,9 +10,10 @@ SoundList::SoundList(std::shared_ptr<IDevice> device){
 
 void SoundList::addSound(std::shared_ptr<File> sound){
 	this->_list.push_back(sound);
+	_currentSound = rand() % getNumberOfSounds();
 }
 
-std::shared_ptr<IHandle> SoundList::play(int num){
+std::shared_ptr<IHandle> SoundList::play(int num){ 
 	auto changeSound = [](void* current){
 		int num = 0;
 		do{

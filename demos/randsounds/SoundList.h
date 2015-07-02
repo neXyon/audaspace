@@ -1,18 +1,10 @@
 # pragma once
 
-#include "devices/DeviceManager.h"
 #include "devices/IDevice.h"
-#include "devices/IDeviceFactory.h"
 #include "devices/IHandle.h"
-#include "plugin/PluginManager.h"
 #include "file/File.h"
-#include "Exception.h"
-#include "IReader.h"
 
-#include <iostream>
-#include <chrono>
-#include <condition_variable>
-#include <mutex>
+#include <vector>
 
 using namespace aud;
 
@@ -26,6 +18,6 @@ public:
 	std::shared_ptr<IHandle> play();
 	std::shared_ptr<IHandle> play(int num);
 	int getCurrentSound();
-	void setCurrentSound(int num);
+	void setCurrentSound(int num); 
 	int getNumberOfSounds();
 };
