@@ -4,41 +4,46 @@
 
 SoundList::SoundList(std::shared_ptr<IDevice> device){
 	this->_device = device;
-	_currentSound = 0;
+	_simulRepr = 0;
 	srand(time(NULL));
 }
 
 void SoundList::addSound(std::shared_ptr<File> sound){
 	this->_list.push_back(sound);
-	_currentSound = rand() % getNumberOfSounds();
 }
 
-std::shared_ptr<IHandle> SoundList::play(int num){ 
-	auto changeSound = [](void* current){
+int SoundList::play(int num, int id){
+	auto changeSound = [](void* data){
 		int num = 0;
+		pDataStruct* datastruct = reinterpret_cast<pDataStruct*>(data);
 		do{
-			num = rand() % ((SoundList*)current)->getNumberOfSounds();
-		} while (num == ((SoundList*)current)->getCurrentSound());
-		((SoundList*)current)->play(num);
+			num = rand() % datastruct->sound->getNumberOfSounds();
+		} while (num == datastruct->soundNumber);
+		datastruct->sound->play(num, datastruct->id); 
+		delete datastruct;
 	};
-	_currentSound = num;
+
+	pDataStruct* data = new pDataStruct;
+	data->sound = this;
+	data->id = id;
+	data->soundNumber = num;
+
 	_device->lock();
-	auto handle = _device->play(_list[_currentSound]);
-	handle->setStopCallback(changeSound, this);
+	auto handle = _device->play(_list[num]);
+	_handlers[id] = handle;
+	handle->setStopCallback(changeSound, data);
 	_device->unlock();
-	return handle;
+
+	return id;
 }
 
-std::shared_ptr<IHandle> SoundList::play(){
-	return play(_currentSound);
+int SoundList::play(int num){
+	_simulRepr++;
+	return play(num, _simulRepr);
 }
 
-int SoundList::getCurrentSound(){
-	return _currentSound;
-}
-
-void SoundList::setCurrentSound(int num){
-	_currentSound = num;
+int SoundList::play(){
+	return play(rand() % getNumberOfSounds());
 }
 
 int SoundList::getNumberOfSounds(){
