@@ -22,6 +22,7 @@ int SoundList::play(int num, int id){
 		datastruct->sound->play(num, datastruct->id); 
 		delete datastruct;
 	};
+	_mutex.lock();
 
 	pDataStruct* data = new pDataStruct;
 	data->sound = this;
@@ -33,6 +34,8 @@ int SoundList::play(int num, int id){
 	_handlers[id] = handle;
 	handle->setStopCallback(changeSound, data);
 	_device->unlock();
+
+	_mutex.unlock();
 
 	return id;
 }

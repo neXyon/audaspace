@@ -31,7 +31,6 @@ int main(int argc, char* argv[])
 	}
 
 	slist.play();
-	slist.play();
 
 	std::condition_variable condition;
 	std::mutex mutex;
