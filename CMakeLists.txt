@@ -540,7 +540,7 @@ if(BUILD_DEMOS)
 	add_executable(signalgen demos/signalgen.cpp)
 	target_link_libraries(signalgen audaspace)
 
-	add_executable(randsounds demos/randsounds/randsounds.cpp demos/randsounds/SoundList.h demos/randsounds/UpdateableHandle.h demos/randsounds/SoundList.cpp demos/randsounds/UpdateableHandle.cpp)
+	add_executable(randsounds demos/randsounds/randsounds.cpp demos/randsounds/SoundList.h demos/randsounds/SoundList.cpp)
 	target_link_libraries(randsounds audaspace)
 
 	if(WITH_OPENAL)
