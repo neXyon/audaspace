@@ -46,7 +46,6 @@ int main(int argc, char* argv[])
 		device->lock();
 		auto handle = device->play(list);
 		handle->setStopCallback(release, &condition);
-		handle->
 		device->unlock();
 
 		condition.wait(lock);
