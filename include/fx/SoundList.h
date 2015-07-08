@@ -64,7 +64,7 @@ public:
 
 	/**
 	* Sets the playback mode of the sound list.
-	* The two posible modes are random and sequential.
+	* There are two posible modes, random and sequential.
 	* \param random True to activate the random mode, false to activate sequential mode.
 	*/
 	void setRandomMode(bool random);
@@ -75,6 +75,12 @@ public:
 	* \return True if the random mode is activated, false otherwise.
 	*/
 	bool getRandomMode();
+
+	/**
+	* Returns the amount of sounds in the list.
+	* \return The amount of sounds in the list.
+	*/
+	int getSize();
 
 };
 

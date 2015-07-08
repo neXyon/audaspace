@@ -41,14 +41,13 @@ int main(int argc, char* argv[])
 
 	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
 
-	for (;;)
-	{
-		device->lock();
-		auto handle = device->play(list);
-		handle->setStopCallback(release, &condition);
-		device->unlock();
+	device->lock();
+	auto handle = device->play(list->createReader());
+	handle->setStopCallback(release, &condition);
+	handle->setLoopCount(2);
+	device->unlock();
 
-		condition.wait(lock);
-	}
+	condition.wait(lock);
+
 	return 0;
 }

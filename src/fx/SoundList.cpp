@@ -1,4 +1,5 @@
 #include "fx/SoundList.h"
+#include "fx/MutableReader.h"
 #include "Exception.h"
 
 #include <cstring>
@@ -30,7 +31,8 @@ std::shared_ptr<IReader> SoundList::createReader()
 			m_index = temp;
 		}
 
-		return m_list[m_index]->createReader();
+		std::shared_ptr<IReader> reader(std::make_shared<MutableReader>(m_list, m_random, m_index));
+		return reader;
 	}
 	else
 		AUD_THROW(FileException, "The sound list is empty");
@@ -59,4 +61,8 @@ bool SoundList::getRandomMode()
 	return m_random;
 }
 
+int SoundList::getSize()
+{
+	return m_list.size();
+}
 AUD_NAMESPACE_END
