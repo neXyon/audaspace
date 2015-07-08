@@ -1,8 +1,12 @@
-#include "SoundList.h"
-
-#include "devices/IDeviceFactory.h"
+#include "fx/SoundList.h"
 #include "devices/DeviceManager.h"
+#include "devices/IDevice.h"
+#include "devices/IDeviceFactory.h"
+#include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
+#include "file/File.h"
+#include "Exception.h"
+#include "IReader.h"
 
 #include <iostream>
 #include <condition_variable>
@@ -22,21 +26,30 @@ int main(int argc, char* argv[])
 	auto factory = DeviceManager::getDefaultDeviceFactory();
 	auto device = factory->openDevice();
 
-	SoundList slist(device);
-
+	std::shared_ptr<SoundList> list(std::make_shared<SoundList>());
 	std::shared_ptr<File> file;
-	for (int i = 1; i < argc; i++){
+	for (int i = 1; i < argc; i++)
+	{
 		file.reset(new File(argv[i]));
-		slist.addSound(file);
+		list->addSound(file);
 	}
-
-	slist.play();
+	list->setRandomMode(true);
 
 	std::condition_variable condition;
 	std::mutex mutex;
 	std::unique_lock<std::mutex> lock(mutex);
 
-	condition.wait(lock);
+	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
 
+	for (;;)
+	{
+		device->lock();
+		auto handle = device->play(list);
+		handle->setStopCallback(release, &condition);
+		handle->
+		device->unlock();
+
+		condition.wait(lock);
+	}
 	return 0;
 }

@@ -1,18 +1,18 @@
-#include "SoundList.h"
+#include "SoundListTest.h"
 
 #include <chrono>
 
-SoundList::SoundList(std::shared_ptr<IDevice> device){
+SoundListTest::SoundListTest(std::shared_ptr<IDevice> device){
 	this->_device = device;
 	_simulRepr = 0;
 	srand(time(NULL));
 }
 
-void SoundList::addSound(std::shared_ptr<File> sound){
+void SoundListTest::addSound(std::shared_ptr<File> sound){
 	this->_list.push_back(sound);
 }
 
-int SoundList::play(int num, int id){
+int SoundListTest::play(int num, int id){
 	auto changeSound = [](void* data){
 		int num = 0;
 		pDataStruct* datastruct = reinterpret_cast<pDataStruct*>(data);
@@ -40,15 +40,15 @@ int SoundList::play(int num, int id){
 	return id;
 }
 
-int SoundList::play(int num){
+int SoundListTest::play(int num){
 	_simulRepr++;
 	return play(num, _simulRepr);
 }
 
-int SoundList::play(){
+int SoundListTest::play(){
 	return play(rand() % getNumberOfSounds());
 }
 
-int SoundList::getNumberOfSounds(){
+int SoundListTest::getNumberOfSounds(){
 	return _list.size();
 }

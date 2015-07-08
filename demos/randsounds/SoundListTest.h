@@ -10,14 +10,14 @@
 
 using namespace aud;
 
-class SoundList{
+class SoundListTest{
 private: std::vector<std::shared_ptr<File>> _list;
 		 std::shared_ptr<IDevice> _device;
 		 int _simulRepr;
 		 std::unordered_map<int, std::shared_ptr<IHandle>> _handlers;
 		 std::mutex _mutex;
 public:
-	SoundList(std::shared_ptr<IDevice> device);
+	SoundListTest(std::shared_ptr<IDevice> device);
 	void addSound(std::shared_ptr<File> sound);
 	int play();
 	int play(int num);
@@ -26,7 +26,7 @@ public:
 };
 
 typedef struct RandomPlayData{
-	SoundList* sound;
+	SoundListTest* sound;
 	int id;
 	int soundNumber;
 } pDataStruct;

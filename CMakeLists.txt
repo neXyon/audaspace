@@ -66,6 +66,7 @@ set(SRC
 	src/fx/Sum.cpp
 	src/fx/Threshold.cpp
 	src/fx/Volume.cpp
+	src/fx/SoundList.cpp
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -162,6 +163,7 @@ set(PUBLIC_HDR
 	include/fx/Sum.h
 	include/fx/Threshold.h
 	include/fx/Volume.h
+	include/fx/SoundList.h
 	include/generator/Sawtooth.h
 	include/generator/SawtoothReader.h
 	include/generator/Silence.h
@@ -540,7 +542,7 @@ if(BUILD_DEMOS)
 	add_executable(signalgen demos/signalgen.cpp)
 	target_link_libraries(signalgen audaspace)
 
-	add_executable(randsounds demos/randsounds/randsounds.cpp demos/randsounds/SoundList.h demos/randsounds/SoundList.cpp)
+	add_executable(randsounds demos/randsounds/randsounds.cpp demos/randsounds/SoundListTemp.h demos/randsounds/SoundListTemp.cpp)
 	target_link_libraries(randsounds audaspace)
 
 	if(WITH_OPENAL)
