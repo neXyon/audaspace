@@ -45,6 +45,12 @@ public:
 	*/
 	SoundList();
 
+	/**
+	* Creates a new sound list and initializes it.
+	* \param list A vector with sounds to initialize the list.
+	*/
+	SoundList(std::vector<std::shared_ptr<ISound>>& list);
+
 	virtual std::shared_ptr<IReader> createReader();
 
 	/**

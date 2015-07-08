@@ -59,14 +59,15 @@ set(SRC
 	src/fx/LoopReader.cpp
 	src/fx/LowpassCalculator.cpp
 	src/fx/Lowpass.cpp
+	src/fx/MutableReader.cpp
 	src/fx/Pitch.cpp
 	src/fx/PitchReader.cpp
 	src/fx/Reverse.cpp
 	src/fx/ReverseReader.cpp
+	src/fx/SoundList.cpp
 	src/fx/Sum.cpp
 	src/fx/Threshold.cpp
-	src/fx/Volume.cpp
-	src/fx/SoundList.cpp
+	src/fx/Volume.cpp	
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -156,14 +157,15 @@ set(PUBLIC_HDR
 	include/fx/LoopReader.h
 	include/fx/LowpassCalculator.h
 	include/fx/Lowpass.h
+	include/fx/MutableReader.h
 	include/fx/Pitch.h
 	include/fx/PitchReader.h
 	include/fx/Reverse.h
 	include/fx/ReverseReader.h
+	include/fx/SoundList.h
 	include/fx/Sum.h
 	include/fx/Threshold.h
 	include/fx/Volume.h
-	include/fx/SoundList.h
 	include/generator/Sawtooth.h
 	include/generator/SawtoothReader.h
 	include/generator/Silence.h
@@ -542,7 +544,7 @@ if(BUILD_DEMOS)
 	add_executable(signalgen demos/signalgen.cpp)
 	target_link_libraries(signalgen audaspace)
 
-	add_executable(randsounds demos/randsounds/randsounds.cpp demos/randsounds/SoundListTemp.h demos/randsounds/SoundListTemp.cpp)
+	add_executable(randsounds demos/randsounds.cpp)
 	target_link_libraries(randsounds audaspace)
 
 	if(WITH_OPENAL)

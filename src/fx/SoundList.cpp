@@ -12,6 +12,11 @@ SoundList::SoundList()
 	srand(time(NULL));
 }
 
+SoundList::SoundList(std::vector<std::shared_ptr<ISound>>& list) :
+m_list(list)
+{
+	srand(time(NULL));
+}
 
 std::shared_ptr<IReader> SoundList::createReader()
 {
