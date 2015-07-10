@@ -1,67 +1,51 @@
 #pragma once
 
 /**
-* @file SoundList.h
+* @file MutableSound.h
 * @ingroup fx
-* The SoundList class.
+* The MutableSound class.
 */
 
-#include "ISound.h"
+#include "SoundList.h"
 
-#include <vector>
 #include <memory>
-#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
 /**
-* This class allows to have a list of sound that will play sequentially or randomly with each playback.
+* This sound allows to have a list of sounds that will play randomly or sequentially with each playback.
+* Furthermore, the reader returned with the createReader() method permits to play the list in a loop.
 */
-class AUD_API SoundList : public ISound
+class AUD_API MutableSound : public ISound
 {
 private:
 	/**
-	* The list of sounds that will play.
+	* A pointer to the sound list
 	*/
-	std::vector<std::shared_ptr<ISound>> m_list;
-
-	/**
-	* Flag for random playback
-	*/
-	bool m_random = false;
-
-	/**
-	* Current sound index. -1 if no reader has been created.
-	*/
-	int m_index = -1;
-
-	/**
-	* Mutex to prevent multithreading crashes.
-	*/
-	std::recursive_mutex m_mutex;
+	std::shared_ptr<SoundList> m_sound;
 
 	// delete copy constructor and operator=
-	SoundList(const SoundList&) = delete;
-	SoundList& operator=(const SoundList&) = delete;
+	MutableSound(const MutableSound&) = delete;
+	MutableSound& operator=(const MutableSound&) = delete;
 
 public:
 	/**
-	* Creates a new, empty sound list.
-	* Sounds must be added to the list using the addSound() method. 
+	* Creates the sound with an empty list.
+	* Sounds must be added to the list using the addSound() method.
 	*/
-	SoundList();
+	MutableSound();
 
 	/**
-	* Creates a new sound list and initializes it.
+	* Creates a new mutable sound and initializes it.
 	* \param list A vector with sounds to initialize the list.
 	*/
-	SoundList(std::vector<std::shared_ptr<ISound>>& list);
+	MutableSound(std::vector<std::shared_ptr<ISound>>& list);
 
 	virtual std::shared_ptr<IReader> createReader();
 
 	/**
 	* Adds a sound to the list.
-	* The added sounds can be played sequentially or randomly dependig 
+	* The added sounds can be played sequentially or randomly dependig
 	* on the m_random flag
 	* \param sound A shared_ptr to the sound.
 	* \return The index of the added sound.
@@ -93,7 +77,6 @@ public:
 	* \return The amount of sounds in the list.
 	*/
 	int getSize();
-
 };
 
 AUD_NAMESPACE_END

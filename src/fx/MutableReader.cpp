@@ -4,10 +4,10 @@
 
 AUD_NAMESPACE_BEGIN
 
-MutableReader::MutableReader(std::vector<std::shared_ptr<ISound>>& sounds, bool random, int index) :
-m_sounds(sounds), m_random(random), m_index(index)
+MutableReader::MutableReader(std::shared_ptr<ISound> sound) :
+m_sound(sound)
 {
-	m_reader = m_sounds[m_index]->createReader();
+	m_reader = m_sound->createReader();
 }
 
 bool MutableReader::isSeekable() const
@@ -17,25 +17,9 @@ bool MutableReader::isSeekable() const
 
 void MutableReader::seek(int position)
 {
-	if (position == 0)
+	if (position < m_reader->getPosition())
 	{
-		if (m_sounds.size() > 0)
-		{
-			if (!m_random){
-				m_index++;
-				if (m_index >= m_sounds.size())
-					m_index = 0;
-			}
-			else
-			{
-				int temp;
-				do{
-					temp = rand() % m_sounds.size();
-				} while (temp == m_index);
-				m_index = temp;
-			}
-		}
-		m_reader = m_sounds[m_index]->createReader();
+		m_reader = m_sound->createReader();
 	}
 	else
 		m_reader->seek(position);

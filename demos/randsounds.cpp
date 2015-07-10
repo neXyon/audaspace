@@ -7,6 +7,7 @@
 #include "file/File.h"
 #include "Exception.h"
 #include "IReader.h"
+#include "fx/MutableSound.h"
 
 #include <iostream>
 #include <condition_variable>
@@ -26,7 +27,7 @@ int main(int argc, char* argv[])
 	auto factory = DeviceManager::getDefaultDeviceFactory();
 	auto device = factory->openDevice();
 
-	std::shared_ptr<SoundList> list(std::make_shared<SoundList>());
+	std::shared_ptr<MutableSound> list(std::make_shared<MutableSound>());
 	std::shared_ptr<File> file;
 	for (int i = 1; i < argc; i++)
 	{
@@ -41,8 +42,8 @@ int main(int argc, char* argv[])
 
 	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
 
-	device->lock();
-	auto handle = device->play(list->createReader());
+	device->lock(); 
+	auto handle = device->play(list);
 	handle->setStopCallback(release, &condition);
 	handle->setLoopCount(2);
 	device->unlock();
