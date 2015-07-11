@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	auto factory = DeviceManager::getDefaultDeviceFactory();
 	auto device = factory->openDevice();
 
-	std::shared_ptr<MutableSound> list(std::make_shared<MutableSound>());
+	std::shared_ptr<SoundList> list(std::make_shared<SoundList>());
 	std::shared_ptr<File> file;
 	for (int i = 1; i < argc; i++)
 	{
@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
 		list->addSound(file);
 	}
 	list->setRandomMode(true);
+	std::shared_ptr<MutableSound> mtSound = std::make_shared<MutableSound>(list);
 
 	std::condition_variable condition;
 	std::mutex mutex;
@@ -43,7 +44,7 @@ int main(int argc, char* argv[])
 	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
 
 	device->lock(); 
-	auto handle = device->play(list);
+	auto handle = device->play(mtSound);
 	handle->setStopCallback(release, &condition);
 	handle->setLoopCount(2);
 	device->unlock();

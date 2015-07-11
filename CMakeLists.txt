@@ -60,6 +60,7 @@ set(SRC
 	src/fx/LowpassCalculator.cpp
 	src/fx/Lowpass.cpp
 	src/fx/MutableReader.cpp
+	src/fx/MutableSound.cpp
 	src/fx/Pitch.cpp
 	src/fx/PitchReader.cpp
 	src/fx/Reverse.cpp
@@ -158,6 +159,7 @@ set(PUBLIC_HDR
 	include/fx/LowpassCalculator.h
 	include/fx/Lowpass.h
 	include/fx/MutableReader.h
+	include/fx/MutableSound.h
 	include/fx/Pitch.h
 	include/fx/PitchReader.h
 	include/fx/Reverse.h
