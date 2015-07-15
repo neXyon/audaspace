@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 	std::shared_ptr<File> file;
 	for (int i = 1; i < argc; i++)
 	{
-		file.reset(new File(argv[i]));
+		file=(std::make_shared<File>(argv[i]));
 		list->addSound(file);
 	}
 	list->setRandomMode(true);
