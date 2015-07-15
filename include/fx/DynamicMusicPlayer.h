@@ -12,7 +12,6 @@
 
 #include <memory>
 #include <vector>
-#include <thread>
 
 AUD_NAMESPACE_BEGIN
 
@@ -47,6 +46,12 @@ private:
 	* Device used for playback.
 	*/
 	std::shared_ptr<IDevice> m_device;
+
+	struct PlayData{
+		std::shared_ptr<IDevice> device;
+		std::shared_ptr<ISound> sound;
+		std::shared_ptr<IHandle>* handle;
+	} m_pData;
 
 	// delete copy constructor and operator=
 	DynamicMusicPlayer(const DynamicMusicPlayer&) = delete;
@@ -93,6 +98,9 @@ public:
 	* \return The length of the cressfade transition in seconds.
 	*/
 	float getFadeTime();
+
+private:
+	void transition(int init, int end);
 };
 
 AUD_NAMESPACE_END

@@ -33,10 +33,12 @@ int main(int argc, char* argv[])
 	std::shared_ptr<File> file;
 	for (int i = 1; i < argc; i++)
 	{
-		file.reset(new File(argv[i]));
+		file = (std::make_shared<File>(argv[i]));
 		manager.addScene(file);
 	}
-	manager.setFadeTime(3.0f);
+	file.reset(new File("effect.ogg"));
+	manager.addTransition(2, 1, file);
+	manager.setFadeTime(2.0f);
 
 	std::condition_variable condition;
 	std::mutex mutex;
@@ -45,9 +47,9 @@ int main(int argc, char* argv[])
 	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
 
 	manager.changeScene(1);
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	manager.changeScene(2);
-	std::this_thread::sleep_for(std::chrono::seconds(10));
+	std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 	manager.changeScene(1);
 
 	condition.wait(lock);
