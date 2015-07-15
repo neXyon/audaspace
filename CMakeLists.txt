@@ -44,6 +44,7 @@ set(SRC
 	src/fx/DelayReader.cpp
 	src/fx/DynamicIIRFilter.cpp
 	src/fx/DynamicIIRFilterReader.cpp
+	src/fx/DynamicMusicPlayer.cpp
 	src/fx/Effect.cpp
 	src/fx/EffectReader.cpp
 	src/fx/Envelope.cpp
@@ -142,6 +143,7 @@ set(PUBLIC_HDR
 	include/fx/DelayReader.h
 	include/fx/DynamicIIRFilter.h
 	include/fx/DynamicIIRFilterReader.h
+	include/fx/DynamicMusicPlayer.h
 	include/fx/Effect.h
 	include/fx/EffectReader.h
 	include/fx/Envelope.h
@@ -548,6 +550,9 @@ if(BUILD_DEMOS)
 
 	add_executable(randsounds demos/randsounds.cpp)
 	target_link_libraries(randsounds audaspace)
+
+	add_executable(dynamicmusic demos/dynamicmusic.cpp)
+	target_link_libraries(dynamicmusic audaspace)
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
