@@ -12,6 +12,10 @@
 
 #include <memory>
 #include <vector>
+#include <thread>
+#include <atomic> 
+#include <condition_variable>
+#include <mutex>
 
 AUD_NAMESPACE_BEGIN
 
@@ -50,6 +54,7 @@ private:
 	struct PlayData{
 		std::shared_ptr<IDevice> device;
 		std::shared_ptr<ISound> sound;
+		std::shared_ptr<ISound> transition;
 		std::shared_ptr<IHandle>* handle;
 	} m_pData;
 
@@ -98,9 +103,6 @@ public:
 	* \return The length of the cressfade transition in seconds.
 	*/
 	float getFadeTime();
-
-private:
-	void transition(int init, int end);
 };
 
 AUD_NAMESPACE_END

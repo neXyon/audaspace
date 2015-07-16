@@ -10,11 +10,7 @@ AUD_NAMESPACE_BEGIN
 DynamicMusicPlayer::DynamicMusicPlayer(std::shared_ptr<IDevice> device) :
 m_id(0), m_fadeTime(1.0f), m_device(device)
 {
-	m_scenes.push_back(new std::vector<std::shared_ptr<ISound>>(1, std::make_shared<Silence>()));
-	m_device->lock();
-	m_currentHandle = m_device->play((*m_scenes[m_id])[m_id]);
-	m_currentHandle->setLoopCount(-1);
-	m_device->unlock();
+	m_scenes.push_back(new std::vector<std::shared_ptr<ISound>>(1, NULL));
 }
 
 DynamicMusicPlayer::~DynamicMusicPlayer()
@@ -41,38 +37,71 @@ void DynamicMusicPlayer::changeScene(int id)
 {
 	if (id == m_id || id >= m_scenes.size())
 		return;
-
-	if ((*m_scenes[m_id])[id] == NULL)
-	{
-		m_currentHandle->pause();
-		float time = m_currentHandle->getPosition();
-		m_currentHandle->stop();
-		m_currentHandle = m_device->play(std::make_shared<Fader>((*m_scenes[id])[id], FADE_IN, 0.0f, m_fadeTime));
-
-		m_device->lock();
-		auto tempHandle = m_device->play(std::make_shared<Fader>((*m_scenes[m_id])[m_id], FADE_OUT, time, m_fadeTime));
-		tempHandle->seek(time);
-		m_device->unlock();
-	}
 	else
 	{
-		auto callback = [](void* pData)
+		if ((*m_scenes[m_id])[id] == NULL)
 		{
-			auto dat = reinterpret_cast<PlayData*>(pData);
-			*dat->handle = dat->device->play(dat->sound);
-		};
+			auto callback = [](void* pData)
+			{
+				auto dat = reinterpret_cast<PlayData*>(pData);
+				dat->device->lock();
+				*dat->handle = dat->device->play(dat->sound);
+				(*dat->handle)->setLoopCount(-1);
+				dat->device->unlock();
+			};
 
-		m_pData.device = m_device;
-		m_pData.sound = (*m_scenes[id])[id];
-		m_pData.handle = &m_currentHandle;
+			m_pData.device = m_device;
+			m_pData.sound = std::make_shared<Fader>((*m_scenes[id])[id], FADE_IN, 0.0f, m_fadeTime);
+			m_pData.handle = &m_currentHandle;
 
-		m_currentHandle->stop();
-		m_device->lock();
-		m_currentHandle = m_device->play((*m_scenes[m_id])[id]);
-		m_currentHandle->setStopCallback(callback, &m_pData);
-		m_device->unlock();
+			if (m_id == 0 || m_currentHandle->getStatus() == STATUS_INVALID)
+				callback(&m_pData);
+			else
+			{
+				m_device->lock();
+				m_currentHandle->setLoopCount(0);
+				m_currentHandle->setStopCallback(callback, &m_pData);
+				m_device->unlock();
+			}
+			
+		}
+		else
+		{
+			auto callback1 = [](void* pData)
+			{
+				auto callback2 = [](void* pData)
+				{
+					auto dat = reinterpret_cast<PlayData*>(pData);
+					dat->device->lock();
+					*dat->handle = dat->device->play(dat->sound);
+					(*dat->handle)->setLoopCount(-1);
+					dat->device->unlock();
+				};
+				auto dat = reinterpret_cast<PlayData*>(pData);
+				dat->device->lock();
+				*dat->handle = dat->device->play(dat->transition);
+				if (dat->sound!=NULL)
+					(*dat->handle)->setStopCallback(callback2, pData);
+				dat->device->unlock();
+			};
+
+			m_pData.device = m_device;
+			m_pData.sound = (*m_scenes[id])[id];
+			m_pData.transition = (*m_scenes[m_id])[id];
+			m_pData.handle = &m_currentHandle;
+
+			if (m_id == 0 || m_currentHandle->getStatus() == STATUS_INVALID)
+				callback1(&m_pData);
+			else
+			{
+				m_device->lock();
+				m_currentHandle->setLoopCount(0);
+				m_currentHandle->setStopCallback(callback1, &m_pData);
+				m_device->unlock();
+			}
+		}
+		m_id = id;
 	}
-	m_id = id;
 }
 
 void DynamicMusicPlayer::addTransition(int init, int end, std::shared_ptr<ISound> sound)
@@ -89,25 +118,6 @@ void DynamicMusicPlayer::setFadeTime(float seconds)
 float DynamicMusicPlayer::getFadeTime()
 {
 	return m_fadeTime;
-}
-
-void DynamicMusicPlayer::transition(int init, int end)
-{
-	std::condition_variable condition;
-	std::mutex mutex;
-	std::unique_lock<std::mutex> lock(mutex);
-	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
-
-	m_device->lock();
-	m_currentHandle = m_device->play((*m_scenes[init])[end]);
-	m_currentHandle->setStopCallback(release, &condition);
-	m_device->unlock();
-
-	condition.wait(lock);
-
-	m_device->lock();
-	m_currentHandle = m_device->play((*m_scenes[end])[end]);
-	m_device->unlock();
 }
 
 AUD_NAMESPACE_END

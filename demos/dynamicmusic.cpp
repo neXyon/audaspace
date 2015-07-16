@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 		manager.addScene(file);
 	}
 	file.reset(new File("effect.ogg"));
-	manager.addTransition(2, 1, file);
+	manager.addTransition(1, 2, file);
 	manager.setFadeTime(2.0f);
 
 	std::condition_variable condition;
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	manager.changeScene(1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	manager.changeScene(2);
-	std::this_thread::sleep_for(std::chrono::milliseconds(20000));
+	std::this_thread::sleep_for(std::chrono::milliseconds(180000));
 	manager.changeScene(1);
 
 	condition.wait(lock);
