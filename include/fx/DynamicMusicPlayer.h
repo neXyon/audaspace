@@ -51,6 +51,9 @@ private:
 	*/
 	std::shared_ptr<IDevice> m_device;
 
+	/**
+	* Data passed to the callback function which makes the transitions 
+	*/
 	struct PlayData{
 		std::shared_ptr<IDevice> device;
 		std::shared_ptr<ISound> sound;
@@ -103,6 +106,90 @@ public:
 	* \return The length of the cressfade transition in seconds.
 	*/
 	float getFadeTime();
+
+	/**
+	* Resumes a paused sound.
+	* \return
+	*        - true if the sound has been resumed.
+	*        - false if the sound isn't paused or the handle is invalid.
+	*/
+	bool resume();
+
+	/**
+	* Pauses the current played back sound.
+	* \return
+	*        - true if the sound has been paused.
+	*        - false if the sound isn't playing back or the handle is invalid.
+	*/
+	bool pause();
+
+	/**
+	* Seeks in the current played back sound.
+	* \param position The new position from where to play back, in seconds.
+	* \return
+	*        - true if the handle is valid.
+	*        - false if the handle is invalid.
+	* \warning Whether the seek works or not depends on the sound source.
+	*/
+	bool seek(float position); 
+
+	/**
+	* Retrieves the current playback position of a sound.
+	* \return The playback position in seconds, or 0.0 if the handle is
+	*         invalid.
+	*/
+	float getPosition();
+
+	/**
+	* Retrieves the pitch of the playing sound.
+	* \return The pitch.
+	*/
+	float getPitch(); 
+
+	/**
+	* Sets the pitch of the playing sound.
+	* \param pitch The pitch.
+	* \return
+	*        - true if the handle is valid.
+	*        - false if the handle is invalid.
+	*/
+	bool setPitch(float pitch);
+
+	/**
+	* Retrieves the volume of the playing sound.
+	* \return The volume.
+	*/
+	float getVolume();
+
+	/**
+	* Sets the volume of the playing sound.
+	* \param volume The volume.
+	* \return
+	*        - true if the handle is valid.
+	*        - false if the handle is invalid.
+	*/
+	bool setVolume(float volume);
+
+	/**
+	* Returns the status of the current played back sound.
+	* \return
+	*        - STATUS_INVALID if the sound has stopped or the handle is
+	*.         invalid
+	*        - STATUS_PLAYING if the sound is currently played back.
+	*        - STATUS_PAUSED if the sound is currently paused.
+	*        - STATUS_STOPPED if the sound finished playing and is still
+	*          kept in the device.
+	* \see Status
+	*/
+	Status getStatus();
+
+	/**
+	* Stops any played back or paused sound and sets the dynamic music player to default silent state (scene 0)
+	* \return
+	*        - true if the sound has been stopped.
+	*        - false if the handle is invalid.
+	*/
+	bool stop();
 };
 
 AUD_NAMESPACE_END

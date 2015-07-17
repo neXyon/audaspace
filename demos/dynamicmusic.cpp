@@ -6,9 +6,6 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "file/File.h"
-#include "Exception.h"
-#include "IReader.h"
-#include "fx/MutableSound.h"
 
 #include <iostream>
 #include <condition_variable>
@@ -20,8 +17,8 @@ using namespace aud;
 
 int main(int argc, char* argv[])
 {
-	if (argc == 1){
-		std::cerr << "Usage: " << argv[0] << " <filename>" << " <filename>" << " ..." << std::endl;
+	if (argc != 4){
+		std::cerr << "Usage: " << argv[0] << " <scene 1>" << " <scene 2>" << " <transition 1-2>" << std::endl;
 		return 1;
 	}
 
@@ -34,23 +31,20 @@ int main(int argc, char* argv[])
 	for (int i = 1; i < argc; i++)
 	{
 		file = (std::make_shared<File>(argv[i]));
-		manager.addScene(file);
+		if (i==3)
+			manager.addTransition(1, 2, file);
+		else
+			manager.addScene(file);
 	}
-	file.reset(new File("effect.ogg"));
-	manager.addTransition(1, 2, file);
-	manager.setFadeTime(2.0f);
+	manager.setFadeTime(10.0f);
 
 	std::condition_variable condition;
 	std::mutex mutex;
 	std::unique_lock<std::mutex> lock(mutex);
 
-	auto release = [](void* condition){reinterpret_cast<std::condition_variable*>(condition)->notify_all(); };
-
 	manager.changeScene(1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	manager.changeScene(2);
-	std::this_thread::sleep_for(std::chrono::milliseconds(180000));
-	manager.changeScene(1);
 
 	condition.wait(lock);
 
