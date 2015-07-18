@@ -99,6 +99,11 @@ void DynamicMusicPlayer::changeScene(int id)
 	}
 }
 
+int DynamicMusicPlayer::getScene()
+{
+	return m_id;
+}
+
 void DynamicMusicPlayer::addTransition(int init, int end, std::shared_ptr<ISound> sound)
 {
 	if (init != end && init < m_scenes.size() && end < m_scenes.size())

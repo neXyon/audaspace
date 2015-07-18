@@ -89,6 +89,12 @@ public:
 	void changeScene(int id);
 
 	/**
+	* Retrieves the scene currently selected.
+	* \return The identifier of the current scene.
+	*/
+	int getScene();
+
+	/**
 	* Changes to another scene.
 	* \param id The id of the scene which should start playing the changeScene method.
 	* \exception Exception An exception will be thrown if the selected scene doesn't exist.
