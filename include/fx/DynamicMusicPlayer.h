@@ -29,7 +29,7 @@ private:
 	/**
 	* Matrix of pointers which will store the sounds of the scenes and the transitions between them.
 	*/
-	std::vector<std::vector<std::shared_ptr<ISound>>*> m_scenes;
+	std::vector<std::vector<std::shared_ptr<ISound>>> m_scenes;
 
 	/**
 	* Id of the current scene.

@@ -10,25 +10,23 @@ AUD_NAMESPACE_BEGIN
 DynamicMusicPlayer::DynamicMusicPlayer(std::shared_ptr<IDevice> device) :
 m_id(0), m_fadeTime(1.0f), m_device(device)
 {
-	m_scenes.push_back(new std::vector<std::shared_ptr<ISound>>(1, NULL));
+	m_scenes.push_back(std::vector<std::shared_ptr<ISound>>(1, nullptr));
 }
 
 DynamicMusicPlayer::~DynamicMusicPlayer()
 {
 	stop();
-	for (int i = 0; i < m_scenes.size(); i++)
-		delete m_scenes[i];
 }
 
 int DynamicMusicPlayer::addScene(std::shared_ptr<ISound> sound)
 {
-	auto v = new std::vector<std::shared_ptr<ISound>>();
-	for (int i = 0; i < m_scenes.size(); i++)
-		v->push_back(NULL);
+	std::vector<std::shared_ptr<ISound>> v;
 	m_scenes.push_back(v);
-	for (int i = 0; i < m_scenes.size(); i++)
-		m_scenes[i]->push_back(NULL);
-	m_scenes.back()->back() = sound;
+	for (int i = 0; i < m_scenes.size()-1; i++)
+		m_scenes.back().push_back(nullptr);
+	for (int i = 0; i < m_scenes.size()-1; i++)
+		m_scenes[i].push_back(nullptr);
+	m_scenes.back().push_back(sound);
 
 	return m_scenes.size() - 1;
 }
@@ -40,22 +38,35 @@ void DynamicMusicPlayer::changeScene(int id)
 	else
 	{
 		stopCallback callback;
-		if ((*m_scenes[m_id])[id] == NULL)
+		if (m_scenes[m_id][id] == nullptr)
 		{
-			callback = [](void* pData)
-						{
-							auto dat = reinterpret_cast<PlayData*>(pData);
-							dat->device->lock();
-							*dat->handle = dat->device->play(dat->sound);
-							(*dat->handle)->setLoopCount(-1);
-							dat->device->unlock();
-						};
+			if (m_scenes[id][id] != nullptr)
+			{
+				callback = [](void* pData)
+				{
+					auto dat = reinterpret_cast<PlayData*>(pData);
+					dat->device->lock();
+					*dat->handle = dat->device->play(dat->sound);
+					(*dat->handle)->setLoopCount(-1);
+					dat->device->unlock();
+				};
 
-			m_device->lock();
-			m_pData.device = m_device;
-			m_pData.sound = std::make_shared<Fader>((*m_scenes[id])[id], FADE_IN, 0.0f, m_fadeTime);
-			m_pData.handle = &m_currentHandle;	
-			m_device->unlock();
+				m_device->lock();
+				m_pData.device = m_device;
+				m_pData.sound = std::make_shared<Fader>(m_scenes[id][id], FADE_IN, 0.0f, m_fadeTime);
+				m_pData.handle = &m_currentHandle;
+				m_device->unlock();
+
+				if (m_id == 0 || m_currentHandle->getStatus() == STATUS_INVALID)
+					callback(&m_pData);
+				else
+				{
+					m_device->lock();
+					m_currentHandle->setLoopCount(0);
+					m_currentHandle->setStopCallback(callback, &m_pData);
+					m_device->unlock();
+				}
+			}
 		}
 		else
 		{
@@ -72,27 +83,27 @@ void DynamicMusicPlayer::changeScene(int id)
 							auto dat = reinterpret_cast<PlayData*>(pData);
 							dat->device->lock();
 							*dat->handle = dat->device->play(dat->transition);
-							if (dat->sound!=NULL)
+							if (dat->sound != nullptr)
 								(*dat->handle)->setStopCallback(callback2, pData);
 							dat->device->unlock();
 						};
 
 			m_device->lock();
 			m_pData.device = m_device;
-			m_pData.sound = (*m_scenes[id])[id];
-			m_pData.transition = (*m_scenes[m_id])[id];
+			m_pData.sound = m_scenes[id][id];
+			m_pData.transition = m_scenes[m_id][id];
 			m_pData.handle = &m_currentHandle;
 			m_device->unlock();
-		}
 
-		if (m_id == 0 || m_currentHandle->getStatus() == STATUS_INVALID)
-			callback(&m_pData);
-		else
-		{
-			m_device->lock();
-			m_currentHandle->setLoopCount(0);
-			m_currentHandle->setStopCallback(callback, &m_pData);
-			m_device->unlock();
+			if (m_id == 0 || m_currentHandle->getStatus() == STATUS_INVALID)
+				callback(&m_pData);
+			else
+			{
+				m_device->lock();
+				m_currentHandle->setLoopCount(0);
+				m_currentHandle->setStopCallback(callback, &m_pData);
+				m_device->unlock();
+			}
 		}
 
 		m_id = id;
@@ -107,7 +118,7 @@ int DynamicMusicPlayer::getScene()
 void DynamicMusicPlayer::addTransition(int init, int end, std::shared_ptr<ISound> sound)
 {
 	if (init != end && init < m_scenes.size() && end < m_scenes.size())
-		(*m_scenes[init])[end] = sound;
+		m_scenes[init][end] = sound;
 }
 
 void DynamicMusicPlayer::setFadeTime(float seconds)
