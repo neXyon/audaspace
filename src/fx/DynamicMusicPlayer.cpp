@@ -8,10 +8,9 @@
 AUD_NAMESPACE_BEGIN
 
 DynamicMusicPlayer::DynamicMusicPlayer(std::shared_ptr<IDevice> device) :
-m_device(device)
+m_device(device), m_fadeTime(1.0f)
 {
 	m_id = 0;
-	m_fadeTime = 1.0f;
 	m_transitioning = false;
 	m_scenes.push_back(std::vector<std::shared_ptr<ISound>>(1, nullptr));
 }
@@ -40,11 +39,10 @@ bool DynamicMusicPlayer::changeScene(int id)
 		return false;
 	else
 	{
+		m_device->lock();
 		m_soundTarget = id;
-		stopCallback callback;
 		if (m_scenes[m_id][id] == nullptr)
 		{
-			m_device->lock();
 			if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
 			{
 				fadeCallback(this);
@@ -58,11 +56,9 @@ bool DynamicMusicPlayer::changeScene(int id)
 				m_currentHandle->seek(time);
 				m_currentHandle->setStopCallback(fadeCallback, this);
 			}
-			m_device->unlock();
 		}
 		else
 		{
-			m_device->lock();
 			if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
 				transitionCallback(this);
 			else
@@ -70,8 +66,8 @@ bool DynamicMusicPlayer::changeScene(int id)
 				m_currentHandle->setLoopCount(0);
 				m_currentHandle->setStopCallback(transitionCallback, this);			
 			}
-			m_device->unlock();
 		}
+		m_device->unlock();
 	}
 }
 
