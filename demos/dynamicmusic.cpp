@@ -31,10 +31,7 @@ int main(int argc, char* argv[])
 	{
 		file = (std::make_shared<File>(argv[i]));
 		if (i == 3)
-		{
-			//manager.addTransition(0, 1, file);
-			//manager.addTransition(2, 1, file);
-		}
+			manager.addTransition(2, 1, file);
 		else
 			manager.addScene(file);
 	}
@@ -44,10 +41,9 @@ int main(int argc, char* argv[])
 	std::mutex mutex;
 	std::unique_lock<std::mutex> lock(mutex);
 
-	manager.changeScene(2);
-	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.seek(300);
 	manager.changeScene(1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+	manager.changeScene(2);
 
 	condition.wait(lock);
 
