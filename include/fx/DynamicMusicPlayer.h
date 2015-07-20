@@ -163,7 +163,7 @@ public:
 
 	/**
 	* Retrieves the volume of the playing sound.
-	* \return The volume.
+	* \return The volume. 
 	*/
 	float getVolume();
 
