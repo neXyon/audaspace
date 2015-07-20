@@ -51,7 +51,14 @@ private:
 	*/
 	std::shared_ptr<IDevice> m_device;
 
+	/**
+	* Flag that is true when a transition is happening.
+	*/
 	std::atomic_bool m_transitioning;
+
+	/**
+	* Id of the sound that will play with the next transition.
+	*/
 	std::atomic_int m_soundTarget;
 
 	// delete copy constructor and operator=
@@ -79,7 +86,7 @@ public:
 	* \param id The id of the scene which should start playing the changeScene method.
 	* \return
 	*        - true if the change has been scheduled succesfully.
-	*        - false if there already is a transition in course, the scene selected doesnt exist, or the scene scene selected is already playing.
+	*        - false if there already is a transition in course or the scene selected doesnt exist.
 	*/
 	bool changeScene(int id);
 
@@ -194,6 +201,7 @@ public:
 	bool stop();
 
 	private:
+		//Callbacks used to schedule transitions after a sound ends.
 		static void transitionCallback(void* player);
 		static void sceneCallback(void* player);
 		static void fadeCallback(void* player);

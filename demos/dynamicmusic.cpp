@@ -31,11 +31,11 @@ int main(int argc, char* argv[])
 	{
 		file = (std::make_shared<File>(argv[i]));
 		if (i == 3)
-			manager.addTransition(2, 1, file);
+			manager.addTransition(1, 2, file);
 		else
 			manager.addScene(file);
 	}
-	manager.setFadeTime(3.0f);
+	manager.setFadeTime(2.0f);
 
 	std::condition_variable condition;
 	std::mutex mutex;

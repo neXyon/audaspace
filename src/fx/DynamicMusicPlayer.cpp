@@ -35,39 +35,51 @@ int DynamicMusicPlayer::addScene(std::shared_ptr<ISound> sound)
 
 bool DynamicMusicPlayer::changeScene(int id)
 {
-	if (id == m_id || id >= m_scenes.size() || m_transitioning)
+	if (id >= m_scenes.size() || m_transitioning)
 		return false;
 	else
 	{
 		m_device->lock();
-		m_soundTarget = id;
-		if (m_scenes[m_id][id] == nullptr)
+		if (id == m_id)
 		{
-			if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
-			{
-				fadeCallback(this);
-			}
-			else
-			{
-				float time = m_currentHandle->getPosition();
-				m_currentHandle->stop();
-				auto reader = m_scenes[m_id][m_id]->createReader();
-				m_currentHandle = m_device->play(std::make_shared<Fader>(m_scenes[m_id][m_id], FADE_OUT, (reader->getLength() / reader->getSpecs().rate) - m_fadeTime, m_fadeTime));
-				m_currentHandle->seek(time);
-				m_currentHandle->setStopCallback(fadeCallback, this);
-			}
+			float time = m_currentHandle->getPosition();
+			m_currentHandle->stop();
+			m_currentHandle = m_device->play(m_scenes[m_id][m_id]);
+			m_currentHandle->seek(time);
+			m_currentHandle->setLoopCount(-1);
 		}
 		else
 		{
-			if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
-				transitionCallback(this);
+			m_soundTarget = id;
+			if (m_scenes[m_id][id] == nullptr)
+			{
+				if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
+				{
+					fadeCallback(this);
+				}
+				else
+				{
+					float time = m_currentHandle->getPosition();
+					m_currentHandle->stop();
+					auto reader = m_scenes[m_id][m_id]->createReader();
+					m_currentHandle = m_device->play(std::make_shared<Fader>(m_scenes[m_id][m_id], FADE_OUT, (reader->getLength() / reader->getSpecs().rate) - m_fadeTime, m_fadeTime));
+					m_currentHandle->seek(time);
+					m_currentHandle->setStopCallback(fadeCallback, this);
+				}
+			}
 			else
 			{
-				m_currentHandle->setLoopCount(0);
-				m_currentHandle->setStopCallback(transitionCallback, this);			
+				if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
+					transitionCallback(this);
+				else
+				{
+					m_currentHandle->setLoopCount(0);
+					m_currentHandle->setStopCallback(transitionCallback, this);
+				}
 			}
 		}
 		m_device->unlock();
+		return true;
 	}
 }
 
@@ -194,6 +206,7 @@ void DynamicMusicPlayer::sceneCallback(void* player)
 	dat->m_currentHandle->setLoopCount(-1);
 	dat->m_device->unlock();
 	dat->m_id = dat->m_soundTarget;
+	dat->m_soundTarget = -1;
 	dat->m_transitioning = false;
 }
 
