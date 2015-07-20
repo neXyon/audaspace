@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include "Python.h"
+#include <Python.h>
+#include "Audaspace.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,14 +31,14 @@ PyInit_aud();
  * \param sound The sound factory.
  * \return The python factory.
  */
-extern PyObject* AUD_getPythonSound(void* sound);
+extern AUD_API PyObject* AUD_getPythonSound(void* sound);
 
 /**
  * Retrieves the sound factory of a python factory.
  * \param sound The python factory.
  * \return The sound factory.
  */
-extern void* AUD_getSoundFromPython(PyObject* object);
+extern AUD_API void* AUD_getSoundFromPython(PyObject* object);
 
 #ifdef __cplusplus
 }

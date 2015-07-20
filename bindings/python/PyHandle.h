@@ -17,6 +17,7 @@
 #pragma once
 
 #include <Python.h>
+#include "Audaspace.h"
 
 typedef void Reference_IHandle;
 
@@ -25,8 +26,8 @@ typedef struct {
 	Reference_IHandle* handle;
 } Handle;
 
-extern PyObject* Handle_empty();
-extern Handle* checkHandle(PyObject* handle);
+extern AUD_API PyObject* Handle_empty();
+extern AUD_API Handle* checkHandle(PyObject* handle);
 
 bool initializeHandle();
 void addHandleToModule(PyObject* module);

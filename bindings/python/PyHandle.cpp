@@ -1093,13 +1093,13 @@ static PyTypeObject HandleType = {
 };
 
 
-PyObject* Handle_empty()
+AUD_API PyObject* Handle_empty()
 {
 	return HandleType.tp_alloc(&HandleType, 0);
 }
 
 
-Handle*checkHandle(PyObject* handle)
+AUD_API Handle*checkHandle(PyObject* handle)
 {
 	if(!PyObject_TypeCheck(handle, &HandleType))
 	{

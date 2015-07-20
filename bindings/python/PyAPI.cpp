@@ -167,7 +167,7 @@ PyInit_aud()
 	return module;
 }
 
-PyObject* AUD_getPythonSound(void* sound)
+AUD_API PyObject* AUD_getPythonSound(void* sound)
 {
 	if(sound)
 	{
@@ -182,7 +182,7 @@ PyObject* AUD_getPythonSound(void* sound)
 	return nullptr;
 }
 
-void* AUD_getSoundFromPython(PyObject* object)
+AUD_API void* AUD_getSoundFromPython(PyObject* object)
 {
 	Sound* sound = checkSound(object);
 

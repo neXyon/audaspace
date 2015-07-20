@@ -624,13 +624,13 @@ static PyTypeObject SequenceType = {
 	Sequence_new,                /* tp_new */
 };
 
-PyObject* Sequence_empty()
+AUD_API PyObject* Sequence_empty()
 {
 	return SequenceType.tp_alloc(&SequenceType, 0);
 }
 
 
-Sequence* checkSequence(PyObject* sequence)
+AUD_API Sequence* checkSequence(PyObject* sequence)
 {
 	if(!PyObject_TypeCheck(sequence, &SequenceType))
 	{

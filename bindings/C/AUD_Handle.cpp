@@ -24,19 +24,19 @@ using namespace aud;
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Handle.h"
 
-int AUD_Handle_pause(AUD_Handle* handle)
+AUD_API int AUD_Handle_pause(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->pause();
 }
 
-int AUD_Handle_resume(AUD_Handle* handle)
+AUD_API int AUD_Handle_resume(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->resume();
 }
 
-int AUD_Handle_stop(AUD_Handle* handle)
+AUD_API int AUD_Handle_stop(AUD_Handle* handle)
 {
 	assert(handle);
 	int result = (*handle)->stop();
@@ -44,7 +44,7 @@ int AUD_Handle_stop(AUD_Handle* handle)
 	return result;
 }
 
-float AUD_Handle_getAttenuation(AUD_Handle* handle)
+AUD_API float AUD_Handle_getAttenuation(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -54,7 +54,7 @@ float AUD_Handle_getAttenuation(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setAttenuation(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setAttenuation(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -64,7 +64,7 @@ int AUD_Handle_setAttenuation(AUD_Handle* handle, float value)
 	return false;
 }
 
-float AUD_Handle_getConeAngleInner(AUD_Handle* handle)
+AUD_API float AUD_Handle_getConeAngleInner(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -74,7 +74,7 @@ float AUD_Handle_getConeAngleInner(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setConeAngleInner(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setConeAngleInner(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -84,7 +84,7 @@ int AUD_Handle_setConeAngleInner(AUD_Handle* handle, float value)
 	return false;
 }
 
-float AUD_Handle_getConeAngleOuter(AUD_Handle* handle)
+AUD_API float AUD_Handle_getConeAngleOuter(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -94,7 +94,7 @@ float AUD_Handle_getConeAngleOuter(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setConeAngleOuter(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setConeAngleOuter(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -104,7 +104,7 @@ int AUD_Handle_setConeAngleOuter(AUD_Handle* handle, float value)
 	return false;
 }
 
-float AUD_Handle_getConeVolumeOuter(AUD_Handle* handle)
+AUD_API float AUD_Handle_getConeVolumeOuter(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -114,7 +114,7 @@ float AUD_Handle_getConeVolumeOuter(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setConeVolumeOuter(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setConeVolumeOuter(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -124,7 +124,7 @@ int AUD_Handle_setConeVolumeOuter(AUD_Handle* handle, float value)
 	return false;
 }
 
-float AUD_Handle_getDistanceMaximum(AUD_Handle* handle)
+AUD_API float AUD_Handle_getDistanceMaximum(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -134,7 +134,7 @@ float AUD_Handle_getDistanceMaximum(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setDistanceMaximum(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setDistanceMaximum(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -144,7 +144,7 @@ int AUD_Handle_setDistanceMaximum(AUD_Handle* handle, float value)
 	return false;
 }
 
-float AUD_Handle_getDistanceReference(AUD_Handle* handle)
+AUD_API float AUD_Handle_getDistanceReference(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -154,7 +154,7 @@ float AUD_Handle_getDistanceReference(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setDistanceReference(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setDistanceReference(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -164,19 +164,19 @@ int AUD_Handle_setDistanceReference(AUD_Handle* handle, float value)
 	return false;
 }
 
-int AUD_Handle_doesKeep(AUD_Handle* handle)
+AUD_API int AUD_Handle_doesKeep(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->getKeep();
 }
 
-int AUD_Handle_setKeep(AUD_Handle* handle, int value)
+AUD_API int AUD_Handle_setKeep(AUD_Handle* handle, int value)
 {
 	assert(handle);
 	return (*handle)->setKeep(value);
 }
 
-int AUD_Handle_getLocation(AUD_Handle* handle, float value[3])
+AUD_API int AUD_Handle_getLocation(AUD_Handle* handle, float value[3])
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -192,7 +192,7 @@ int AUD_Handle_getLocation(AUD_Handle* handle, float value[3])
 	return false;
 }
 
-int AUD_Handle_setLocation(AUD_Handle* handle, const float value[3])
+AUD_API int AUD_Handle_setLocation(AUD_Handle* handle, const float value[3])
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -205,19 +205,19 @@ int AUD_Handle_setLocation(AUD_Handle* handle, const float value[3])
 	return false;
 }
 
-int AUD_Handle_getLoopCount(AUD_Handle* handle)
+AUD_API int AUD_Handle_getLoopCount(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->getLoopCount();
 }
 
-int AUD_Handle_setLoopCount(AUD_Handle* handle, int value)
+AUD_API int AUD_Handle_setLoopCount(AUD_Handle* handle, int value)
 {
 	assert(handle);
 	return (*handle)->setLoopCount(value);
 }
 
-int AUD_Handle_getOrientation(AUD_Handle* handle, float value[4])
+AUD_API int AUD_Handle_getOrientation(AUD_Handle* handle, float value[4])
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -234,7 +234,7 @@ int AUD_Handle_getOrientation(AUD_Handle* handle, float value[4])
 	return false;
 }
 
-int AUD_Handle_setOrientation(AUD_Handle* handle, const float value[4])
+AUD_API int AUD_Handle_setOrientation(AUD_Handle* handle, const float value[4])
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -247,31 +247,31 @@ int AUD_Handle_setOrientation(AUD_Handle* handle, const float value[4])
 	return false;
 }
 
-float AUD_Handle_getPitch(AUD_Handle* handle)
+AUD_API float AUD_Handle_getPitch(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->getPitch();
 }
 
-int AUD_Handle_setPitch(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setPitch(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	return (*handle)->setPitch(value);
 }
 
-float AUD_Handle_getPosition(AUD_Handle* handle)
+AUD_API float AUD_Handle_getPosition(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->getPosition();
 }
 
-int AUD_Handle_setPosition(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setPosition(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	return (*handle)->seek(value);
 }
 
-int AUD_Handle_isRelative(AUD_Handle* handle)
+AUD_API int AUD_Handle_isRelative(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -281,7 +281,7 @@ int AUD_Handle_isRelative(AUD_Handle* handle)
 	return true;
 }
 
-int AUD_Handle_setRelative(AUD_Handle* handle, int value)
+AUD_API int AUD_Handle_setRelative(AUD_Handle* handle, int value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -291,13 +291,13 @@ int AUD_Handle_setRelative(AUD_Handle* handle, int value)
 	return false;
 }
 
-AUD_Status AUD_Handle_getStatus(AUD_Handle* handle)
+AUD_API AUD_Status AUD_Handle_getStatus(AUD_Handle* handle)
 {
 	assert(handle);
 	return static_cast<AUD_Status>((*handle)->getStatus());
 }
 
-int AUD_Handle_getVelocity(AUD_Handle* handle, float value[3])
+AUD_API int AUD_Handle_getVelocity(AUD_Handle* handle, float value[3])
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -313,7 +313,7 @@ int AUD_Handle_getVelocity(AUD_Handle* handle, float value[3])
 	return false;
 }
 
-int AUD_Handle_setVelocity(AUD_Handle* handle, const float value[3])
+AUD_API int AUD_Handle_setVelocity(AUD_Handle* handle, const float value[3])
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -326,19 +326,19 @@ int AUD_Handle_setVelocity(AUD_Handle* handle, const float value[3])
 	return false;
 }
 
-float AUD_Handle_getVolume(AUD_Handle* handle)
+AUD_API float AUD_Handle_getVolume(AUD_Handle* handle)
 {
 	assert(handle);
 	return (*handle)->getVolume();
 }
 
-int AUD_Handle_setVolume(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setVolume(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	return (*handle)->setVolume(value);
 }
 
-float AUD_Handle_getVolumeMaximum(AUD_Handle* handle)
+AUD_API float AUD_Handle_getVolumeMaximum(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -348,7 +348,7 @@ float AUD_Handle_getVolumeMaximum(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setVolumeMaximum(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setVolumeMaximum(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -358,7 +358,7 @@ int AUD_Handle_setVolumeMaximum(AUD_Handle* handle, float value)
 	return false;
 }
 
-float AUD_Handle_getVolumeMinimum(AUD_Handle* handle)
+AUD_API float AUD_Handle_getVolumeMinimum(AUD_Handle* handle)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -368,7 +368,7 @@ float AUD_Handle_getVolumeMinimum(AUD_Handle* handle)
 	return 0.0f;
 }
 
-int AUD_Handle_setVolumeMinimum(AUD_Handle* handle, float value)
+AUD_API int AUD_Handle_setVolumeMinimum(AUD_Handle* handle, float value)
 {
 	assert(handle);
 	std::shared_ptr<I3DHandle> h = std::dynamic_pointer_cast<I3DHandle>(*handle);
@@ -378,7 +378,7 @@ int AUD_Handle_setVolumeMinimum(AUD_Handle* handle, float value)
 	return false;
 }
 
-void AUD_Handle_free(AUD_Handle* handle)
+AUD_API void AUD_Handle_free(AUD_Handle* handle)
 {
 	delete handle;
 }

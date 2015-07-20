@@ -17,6 +17,7 @@
 #pragma once
 
 #include <Python.h>
+#include "Audaspace.h"
 
 typedef void Reference_Sequence;
 
@@ -25,8 +26,8 @@ typedef struct {
 	Reference_Sequence* sequence;
 } Sequence;
 
-extern PyObject* Sequence_empty();
-extern Sequence* checkSequence(PyObject* sequence);
+extern AUD_API PyObject* Sequence_empty();
+extern AUD_API Sequence* checkSequence(PyObject* sequence);
 
 bool initializeSequence();
 void addSequenceToModule(PyObject* module);

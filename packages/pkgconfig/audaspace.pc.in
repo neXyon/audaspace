@@ -8,4 +8,4 @@ Description: Audaspace is a feature rich high level audio library
 Requires: 
 Version: @AUDASPACE_VERSION@
 Libs: -L${libdir} -laudaspace @CAUDASPACE_LIBRARY@ @PYAUDASPACE_LIBRARY@
-Cflags: -I${prefix}/include/audaspace
+Cflags: -I${includedir}/audaspace

@@ -51,13 +51,13 @@ using namespace aud;
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Sound.h"
 
-AUD_Sound* AUD_Sound_bufferFile(unsigned char* buffer, int size)
+AUD_API AUD_Sound* AUD_Sound_bufferFile(unsigned char* buffer, int size)
 {
 	assert(buffer);
 	return new AUD_Sound(new File(buffer, size));
 }
 
-AUD_Sound* AUD_Sound_cache(AUD_Sound* sound)
+AUD_API AUD_Sound* AUD_Sound_cache(AUD_Sound* sound)
 {
 	assert(sound);
 
@@ -71,38 +71,38 @@ AUD_Sound* AUD_Sound_cache(AUD_Sound* sound)
 	}
 }
 
-AUD_Sound* AUD_Sound_file(const char* filename)
+AUD_API AUD_Sound* AUD_Sound_file(const char* filename)
 {
 	assert(filename);
 	return new AUD_Sound(new File(filename));
 }
 
-AUD_Sound* AUD_Sound_sawtooth(float frequency, AUD_SampleRate rate)
+AUD_API AUD_Sound* AUD_Sound_sawtooth(float frequency, AUD_SampleRate rate)
 {
 	return new AUD_Sound(new Sawtooth(frequency, rate));
 }
 
-AUD_Sound*AUD_Sound_silence()
+AUD_API AUD_Sound*AUD_Sound_silence()
 {
 	return new AUD_Sound(new Silence());
 }
 
-AUD_Sound* AUD_Sound_sine(float frequency, AUD_SampleRate rate)
+AUD_API AUD_Sound* AUD_Sound_sine(float frequency, AUD_SampleRate rate)
 {
 	return new AUD_Sound(new Sine(frequency, rate));
 }
 
-AUD_Sound* AUD_Sound_square(float frequency, AUD_SampleRate rate)
+AUD_API AUD_Sound* AUD_Sound_square(float frequency, AUD_SampleRate rate)
 {
 	return new AUD_Sound(new Square(frequency, rate));
 }
 
-AUD_Sound* AUD_Sound_triangle(float frequency, AUD_SampleRate rate)
+AUD_API AUD_Sound* AUD_Sound_triangle(float frequency, AUD_SampleRate rate)
 {
 	return new AUD_Sound(new Triangle(frequency, rate));
 }
 
-AUD_Sound* AUD_Sound_accumulate(AUD_Sound* sound, int additive)
+AUD_API AUD_Sound* AUD_Sound_accumulate(AUD_Sound* sound, int additive)
 {
 	assert(sound);
 
@@ -116,7 +116,7 @@ AUD_Sound* AUD_Sound_accumulate(AUD_Sound* sound, int additive)
 	}
 }
 
-AUD_Sound* AUD_Sound_ADSR(AUD_Sound* sound, float attack, float decay, float sustain, float release)
+AUD_API AUD_Sound* AUD_Sound_ADSR(AUD_Sound* sound, float attack, float decay, float sustain, float release)
 {
 	assert(sound);
 
@@ -130,7 +130,7 @@ AUD_Sound* AUD_Sound_ADSR(AUD_Sound* sound, float attack, float decay, float sus
 	}
 }
 
-AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay)
+AUD_API AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay)
 {
 	assert(sound);
 
@@ -144,7 +144,7 @@ AUD_Sound* AUD_Sound_delay(AUD_Sound* sound, float delay)
 	}
 }
 
-AUD_Sound* AUD_Sound_envelope(AUD_Sound* sound, float attack, float release, float threshold, float arthreshold)
+AUD_API AUD_Sound* AUD_Sound_envelope(AUD_Sound* sound, float attack, float release, float threshold, float arthreshold)
 {
 	assert(sound);
 
@@ -158,7 +158,7 @@ AUD_Sound* AUD_Sound_envelope(AUD_Sound* sound, float attack, float release, flo
 	}
 }
 
-AUD_Sound* AUD_Sound_fadein(AUD_Sound* sound, float start, float length)
+AUD_API AUD_Sound* AUD_Sound_fadein(AUD_Sound* sound, float start, float length)
 {
 	assert(sound);
 
@@ -172,7 +172,7 @@ AUD_Sound* AUD_Sound_fadein(AUD_Sound* sound, float start, float length)
 	}
 }
 
-AUD_Sound* AUD_Sound_fadeout(AUD_Sound* sound, float start, float length)
+AUD_API AUD_Sound* AUD_Sound_fadeout(AUD_Sound* sound, float start, float length)
 {
 	assert(sound);
 
@@ -186,7 +186,7 @@ AUD_Sound* AUD_Sound_fadeout(AUD_Sound* sound, float start, float length)
 	}
 }
 
-AUD_Sound* AUD_Sound_filter(AUD_Sound* sound, float* b, int b_length, float* a, int a_length)
+AUD_API AUD_Sound* AUD_Sound_filter(AUD_Sound* sound, float* b, int b_length, float* a, int a_length)
 {
 	assert(sound);
 
@@ -215,7 +215,7 @@ AUD_Sound* AUD_Sound_filter(AUD_Sound* sound, float* b, int b_length, float* a, 
 	}
 }
 
-AUD_Sound* AUD_Sound_highpass(AUD_Sound* sound, float frequency, float Q)
+AUD_API AUD_Sound* AUD_Sound_highpass(AUD_Sound* sound, float frequency, float Q)
 {
 	assert(sound);
 
@@ -229,7 +229,7 @@ AUD_Sound* AUD_Sound_highpass(AUD_Sound* sound, float frequency, float Q)
 	}
 }
 
-AUD_Sound* AUD_Sound_limit(AUD_Sound* sound, float start, float end)
+AUD_API AUD_Sound* AUD_Sound_limit(AUD_Sound* sound, float start, float end)
 {
 	assert(sound);
 
@@ -243,7 +243,7 @@ AUD_Sound* AUD_Sound_limit(AUD_Sound* sound, float start, float end)
 	}
 }
 
-AUD_Sound* AUD_Sound_loop(AUD_Sound* sound, int count)
+AUD_API AUD_Sound* AUD_Sound_loop(AUD_Sound* sound, int count)
 {
 	assert(sound);
 
@@ -257,7 +257,7 @@ AUD_Sound* AUD_Sound_loop(AUD_Sound* sound, int count)
 	}
 }
 
-AUD_Sound* AUD_Sound_lowpass(AUD_Sound* sound, float frequency, float Q)
+AUD_API AUD_Sound* AUD_Sound_lowpass(AUD_Sound* sound, float frequency, float Q)
 {
 	assert(sound);
 
@@ -271,7 +271,7 @@ AUD_Sound* AUD_Sound_lowpass(AUD_Sound* sound, float frequency, float Q)
 	}
 }
 
-AUD_Sound* AUD_Sound_pitch(AUD_Sound* sound, float factor)
+AUD_API AUD_Sound* AUD_Sound_pitch(AUD_Sound* sound, float factor)
 {
 	assert(sound);
 
@@ -285,7 +285,7 @@ AUD_Sound* AUD_Sound_pitch(AUD_Sound* sound, float factor)
 	}
 }
 
-AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels)
+AUD_API AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels)
 {
 	assert(sound);
 
@@ -303,7 +303,7 @@ AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels)
 	}
 }
 
-AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound)
+AUD_API AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound)
 {
 	assert(sound);
 
@@ -317,7 +317,7 @@ AUD_Sound* AUD_Sound_reverse(AUD_Sound* sound)
 	}
 }
 
-AUD_Sound* AUD_Sound_sum(AUD_Sound* sound)
+AUD_API AUD_Sound* AUD_Sound_sum(AUD_Sound* sound)
 {
 	assert(sound);
 
@@ -331,7 +331,7 @@ AUD_Sound* AUD_Sound_sum(AUD_Sound* sound)
 	}
 }
 
-AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound, float threshold)
+AUD_API AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound, float threshold)
 {
 	assert(sound);
 
@@ -345,7 +345,7 @@ AUD_Sound* AUD_Sound_threshold(AUD_Sound* sound, float threshold)
 	}
 }
 
-AUD_Sound* AUD_Sound_volume(AUD_Sound* sound, float volume)
+AUD_API AUD_Sound* AUD_Sound_volume(AUD_Sound* sound, float volume)
 {
 	assert(sound);
 
@@ -359,7 +359,7 @@ AUD_Sound* AUD_Sound_volume(AUD_Sound* sound, float volume)
 	}
 }
 
-AUD_Sound* AUD_Sound_join(AUD_Sound* first, AUD_Sound* second)
+AUD_API AUD_Sound* AUD_Sound_join(AUD_Sound* first, AUD_Sound* second)
 {
 	assert(first);
 	assert(second);
@@ -374,7 +374,7 @@ AUD_Sound* AUD_Sound_join(AUD_Sound* first, AUD_Sound* second)
 	}
 }
 
-AUD_Sound* AUD_Sound_mix(AUD_Sound* first, AUD_Sound* second)
+AUD_API AUD_Sound* AUD_Sound_mix(AUD_Sound* first, AUD_Sound* second)
 {
 	assert(first);
 	assert(second);
@@ -389,7 +389,7 @@ AUD_Sound* AUD_Sound_mix(AUD_Sound* first, AUD_Sound* second)
 	}
 }
 
-AUD_Sound* AUD_Sound_pingpong(AUD_Sound* sound)
+AUD_API AUD_Sound* AUD_Sound_pingpong(AUD_Sound* sound)
 {
 	assert(sound);
 
@@ -403,13 +403,13 @@ AUD_Sound* AUD_Sound_pingpong(AUD_Sound* sound)
 	}
 }
 
-void AUD_Sound_free(AUD_Sound* sound)
+AUD_API void AUD_Sound_free(AUD_Sound* sound)
 {
 	assert(sound);
 	delete sound;
 }
 
-AUD_Sound* AUD_Sound_copy(AUD_Sound* sound)
+AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound)
 {
 	return new std::shared_ptr<ISound>(*sound);
 }

@@ -754,13 +754,13 @@ static PyTypeObject DeviceType = {
 	Device_new,                /* tp_new */
 };
 
-PyObject* Device_empty()
+AUD_API PyObject* Device_empty()
 {
 	return DeviceType.tp_alloc(&DeviceType, 0);
 }
 
 
-Device* checkDevice(PyObject* device)
+AUD_API Device* checkDevice(PyObject* device)
 {
 	if(!PyObject_TypeCheck(device, &DeviceType))
 	{
