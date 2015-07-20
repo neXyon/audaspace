@@ -34,7 +34,7 @@ private:
 	/**
 	* Id of the current scene.
 	*/
-	int m_id;
+	std::atomic_int m_id;
 
 	/**
 	* Length of the crossfade transition in seconds, used when no custom transition has been set.
@@ -51,15 +51,8 @@ private:
 	*/
 	std::shared_ptr<IDevice> m_device;
 
-	/**
-	* Data passed to the callback function which makes the transitions 
-	*/
-	struct PlayData{
-		std::shared_ptr<IDevice> device;
-		std::shared_ptr<ISound> sound;
-		std::shared_ptr<ISound> transition;
-		std::shared_ptr<IHandle>* handle;
-	} m_pData;
+	std::atomic_bool m_transitioning;
+	std::atomic_int m_soundTarget;
 
 	// delete copy constructor and operator=
 	DynamicMusicPlayer(const DynamicMusicPlayer&) = delete;
@@ -84,9 +77,11 @@ public:
 	/**
 	* Changes to another scene.
 	* \param id The id of the scene which should start playing the changeScene method.
-	* \exception Exception An exception will be thrown if the selected scene doesn't exist.
+	* \return
+	*        - true if the change has been scheduled succesfully.
+	*        - false if there already is a transition in course, the scene selected doesnt exist, or the scene scene selected is already playing.
 	*/
-	void changeScene(int id);
+	bool changeScene(int id);
 
 	/**
 	* Retrieves the scene currently selected.
@@ -95,9 +90,10 @@ public:
 	int getScene();
 
 	/**
-	* Changes to another scene.
-	* \param id The id of the scene which should start playing the changeScene method.
-	* \exception Exception An exception will be thrown if the selected scene doesn't exist.
+	* Adds a new transition between scenes
+	* \param init The id of the initial scene that will allow the transition to play.
+	* \param end The id if the target scene for the transition.
+	* \param sound The sound that will play when the scene changes from init to end.
 	*/
 	void addTransition(int init, int end, std::shared_ptr<ISound> sound);
 
@@ -196,6 +192,11 @@ public:
 	*        - false if the handle is invalid.
 	*/
 	bool stop();
+
+	private:
+		static void transitionCallback(void* player);
+		static void sceneCallback(void* player);
+		static void fadeCallback(void* player);
 };
 
 AUD_NAMESPACE_END
