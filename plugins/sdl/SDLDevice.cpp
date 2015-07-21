@@ -26,7 +26,7 @@ void SDLDevice::SDL_mix(void* data, Uint8* buffer, int length)
 {
 	SDLDevice* device = (SDLDevice*)data;
 
-	device->mix((data_t*)buffer,length/AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
+	device->mix((data_t*)buffer, length / AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
 }
 
 void SDLDevice::playing(bool playing)
