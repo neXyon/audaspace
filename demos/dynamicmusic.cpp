@@ -16,8 +16,9 @@ using namespace aud;
 
 int main(int argc, char* argv[])
 {
-	if (argc != 4){
-		std::cerr << "Usage: " << argv[0] << " <scene 1>" << " <scene 2>" << " <transition 1-2>" << std::endl;
+	if (argc < 3)
+	{
+		std::cerr << "Usage: " << argv[0] << " <scene 1>" << " <scene 2>" << " [<transition 1-2>]" << std::endl;
 		return 1;
 	}
 
@@ -35,17 +36,12 @@ int main(int argc, char* argv[])
 		else
 			manager.addScene(file);
 	}
-	manager.setFadeTime(2.0f);
-
-	std::condition_variable condition;
-	std::mutex mutex;
-	std::unique_lock<std::mutex> lock(mutex);
-
+	manager.setFadeTime(4.0f);
+	manager.setVolume(0.5f);
 	manager.changeScene(1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	manager.changeScene(2);
-
-	condition.wait(lock);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 
 	return 0;
 }

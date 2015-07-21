@@ -47,6 +47,11 @@ private:
 	std::shared_ptr<IHandle> m_currentHandle;
 
 	/**
+	 * Handle used during transitions.
+	 */
+	std::shared_ptr<IHandle> m_transitionHandle;
+
+	/**
 	* Device used for playback.
 	*/
 	std::shared_ptr<IDevice> m_device;
@@ -60,6 +65,11 @@ private:
 	* Id of the sound that will play with the next transition.
 	*/
 	std::atomic_int m_soundTarget;
+
+	/**
+	* volume of the scenes.
+	*/
+	float m_volume;
 
 	// delete copy constructor and operator=
 	DynamicMusicPlayer(const DynamicMusicPlayer&) = delete;
@@ -150,28 +160,13 @@ public:
 	float getPosition();
 
 	/**
-	* Retrieves the pitch of the playing sound.
-	* \return The pitch.
-	*/
-	float getPitch(); 
-
-	/**
-	* Sets the pitch of the playing sound.
-	* \param pitch The pitch.
-	* \return
-	*        - true if the handle is valid.
-	*        - false if the handle is invalid.
-	*/
-	bool setPitch(float pitch);
-
-	/**
-	* Retrieves the volume of the playing sound.
+	* Retrieves the volume of the scenes.
 	* \return The volume. 
 	*/
 	float getVolume();
 
 	/**
-	* Sets the volume of the playing sound.
+	* Sets the volume for the scenes.
 	* \param volume The volume.
 	* \return
 	*        - true if the handle is valid.
