@@ -27,13 +27,13 @@ extern "C" {
  * \param sound The sound to get the info about.
  * \return The AUD_SoundInfo structure with filled in data.
  */
-extern AUD_SoundInfo AUD_getInfo(AUD_Sound* sound);
+extern AUD_API AUD_SoundInfo AUD_getInfo(AUD_Sound* sound);
 
 /**
  * Reads a sound file into a newly created float buffer.
  * The sound is therefore bandpassed, rectified and resampled.
  */
-extern float* AUD_readSoundBuffer(const char* filename, float low, float high,
+extern AUD_API float* AUD_readSoundBuffer(const char* filename, float low, float high,
 								  float attack, float release, float threshold,
 								  int accumulate, int additive, int square,
 								  float sthreshold, double samplerate,
@@ -45,7 +45,7 @@ extern float* AUD_readSoundBuffer(const char* filename, float low, float high,
  * \param seconds The time in seconds.
  * \return The silence handle.
  */
-extern AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds);
+extern AUD_API AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds);
 
 /**
  * Reads a sound into a buffer for drawing at a specific sampling rate.
@@ -55,7 +55,7 @@ extern AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds);
  * \param samples_per_second How many samples to read per second of the sound.
  * \return How many samples really have been read. Always <= length.
  */
-extern int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second, short* interrupt);
+extern AUD_API int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second, short* interrupt);
 
 /**
  * Mixes a sound down into a file.
@@ -70,7 +70,7 @@ extern int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int sample
  * \param bitrate The bitrate for encoding.
  * \return An error message or NULL in case of success.
  */
-extern const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int length,
+extern AUD_API const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int length,
 							   unsigned int buffersize, const char* filename,
 							   AUD_DeviceSpecs specs, AUD_Container format,
 							   AUD_Codec codec, unsigned int bitrate);
@@ -88,7 +88,7 @@ extern const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned in
  * \param bitrate The bitrate for encoding.
  * \return An error message or NULL in case of success.
  */
-extern const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsigned int length,
+extern AUD_API const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsigned int length,
 										   unsigned int buffersize, const char* filename,
 										   AUD_DeviceSpecs specs, AUD_Container format,
 										   AUD_Codec codec, unsigned int bitrate);
@@ -101,17 +101,17 @@ extern const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start,
  * \param start The start time of the mixdown in the sound scene.
  * \return The read device for the mixdown.
  */
-extern AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start);
+extern AUD_API AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start);
 
 /**
  * Initializes audio rutines (FFMPEG/Jack if it is enabled).
  */
-extern void AUD_initOnce();
+extern AUD_API void AUD_initOnce();
 
 /**
  * Unitinitializes an audio routines.
  */
-extern void AUD_exitOnce();
+extern AUD_API void AUD_exitOnce();
 
 /**
  * Initializes an audio device.
@@ -120,12 +120,12 @@ extern void AUD_exitOnce();
  * \param buffersize The buffersize for the device.
  * \return Whether the device has been initialized.
  */
-extern AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, const char* name);
+extern AUD_API AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, const char* name);
 
 /**
  * Unitinitializes an audio device.
  */
-extern void AUD_exit(AUD_Device* device);
+extern AUD_API void AUD_exit(AUD_Device* device);
 
 #ifdef __cplusplus
 }

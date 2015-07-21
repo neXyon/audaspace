@@ -1335,12 +1335,12 @@ PyTypeObject SoundType = {
 	Sound_new,                 /* tp_new */
 };
 
-PyObject* Sound_empty()
+AUD_API PyObject* Sound_empty()
 {
 	return SoundType.tp_alloc(&SoundType, 0);
 }
 
-Sound* checkSound(PyObject* sound)
+AUD_API Sound* checkSound(PyObject* sound)
 {
 	if(!PyObject_TypeCheck(sound, &SoundType))
 	{

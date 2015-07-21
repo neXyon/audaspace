@@ -709,13 +709,13 @@ static PyTypeObject SequenceEntryType = {
 	0,                                 /* tp_new */
 };
 
-PyObject* SequenceEntry_empty()
+AUD_API PyObject* SequenceEntry_empty()
 {
 	return SequenceEntryType.tp_alloc(&SequenceEntryType, 0);
 }
 
 
-SequenceEntry* checkSequenceEntry(PyObject* entry)
+AUD_API SequenceEntry* checkSequenceEntry(PyObject* entry)
 {
 	if(!PyObject_TypeCheck(entry, &SequenceEntryType))
 	{

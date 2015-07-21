@@ -43,7 +43,7 @@ static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
 	return s;
 }
 
-AUD_Device* AUD_Device_open(const char* type, AUD_DeviceSpecs specs, int buffersize, const char* name)
+AUD_API AUD_Device* AUD_Device_open(const char* type, AUD_DeviceSpecs specs, int buffersize, const char* name)
 {
 	DeviceSpecs dspecs = convCToDSpec(specs);
 
@@ -96,13 +96,13 @@ AUD_Device* AUD_Device_open(const char* type, AUD_DeviceSpecs specs, int buffers
 	return nullptr;
 }
 
-void AUD_Device_lock(AUD_Device* device)
+AUD_API void AUD_Device_lock(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	dev->lock();
 }
 
-AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound* sound, int keep)
+AUD_API AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound* sound, int keep)
 {
 	assert(sound);
 	auto dev = device ? *device : DeviceManager::getDevice();
@@ -121,55 +121,55 @@ AUD_Handle* AUD_Device_play(AUD_Device* device, AUD_Sound* sound, int keep)
 	return nullptr;
 }
 
-void AUD_Device_stopAll(AUD_Device* device)
+AUD_API void AUD_Device_stopAll(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	dev->stopAll();
 }
 
-void AUD_Device_unlock(AUD_Device* device)
+AUD_API void AUD_Device_unlock(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	dev->unlock();
 }
 
-AUD_Channels AUD_Device_getChannels(AUD_Device* device)
+AUD_API AUD_Channels AUD_Device_getChannels(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	return static_cast<AUD_Channels>(dev->getSpecs().channels);
 }
 
-AUD_DistanceModel AUD_Device_getDistanceModel(AUD_Device* device)
+AUD_API AUD_DistanceModel AUD_Device_getDistanceModel(AUD_Device* device)
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	return static_cast<AUD_DistanceModel>(dev->getDistanceModel());
 }
 
-void AUD_Device_setDistanceModel(AUD_Device* device, AUD_DistanceModel value)
+AUD_API void AUD_Device_setDistanceModel(AUD_Device* device, AUD_DistanceModel value)
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	dev->setDistanceModel(static_cast<DistanceModel>(value));
 }
 
-float AUD_Device_getDopplerFactor(AUD_Device* device)
+AUD_API float AUD_Device_getDopplerFactor(AUD_Device* device)
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	return dev->getDopplerFactor();
 }
 
-void AUD_Device_setDopplerFactor(AUD_Device* device, float value)
+AUD_API void AUD_Device_setDopplerFactor(AUD_Device* device, float value)
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	dev->setDopplerFactor(value);
 }
 
-AUD_SampleFormat AUD_Device_getFormat(AUD_Device* device)
+AUD_API AUD_SampleFormat AUD_Device_getFormat(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	return static_cast<AUD_SampleFormat>(dev->getSpecs().format);
 }
 
-void AUD_Device_getListenerLocation(AUD_Device* device, float value[3])
+AUD_API void AUD_Device_getListenerLocation(AUD_Device* device, float value[3])
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	Vector3 v = dev->getListenerLocation();
@@ -178,14 +178,14 @@ void AUD_Device_getListenerLocation(AUD_Device* device, float value[3])
 	value[2] = v.z();
 }
 
-void AUD_Device_setListenerLocation(AUD_Device* device, const float value[3])
+AUD_API void AUD_Device_setListenerLocation(AUD_Device* device, const float value[3])
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	Vector3 v(value[0], value[1], value[2]);
 	dev->setListenerLocation(v);
 }
 
-void AUD_Device_getListenerOrientation(AUD_Device* device, float value[4])
+AUD_API void AUD_Device_getListenerOrientation(AUD_Device* device, float value[4])
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	Quaternion v = dev->getListenerOrientation();
@@ -195,14 +195,14 @@ void AUD_Device_getListenerOrientation(AUD_Device* device, float value[4])
 	value[3] = v.w();
 }
 
-void AUD_Device_setListenerOrientation(AUD_Device* device, const float value[4])
+AUD_API void AUD_Device_setListenerOrientation(AUD_Device* device, const float value[4])
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	Quaternion v(value[3], value[0], value[1], value[2]);
 	dev->setListenerOrientation(v);
 }
 
-void AUD_Device_getListenerVelocity(AUD_Device* device, float value[3])
+AUD_API void AUD_Device_getListenerVelocity(AUD_Device* device, float value[3])
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	Vector3 v = dev->getListenerVelocity();
@@ -211,44 +211,44 @@ void AUD_Device_getListenerVelocity(AUD_Device* device, float value[3])
 	value[2] = v.z();
 }
 
-void AUD_Device_setListenerVelocity(AUD_Device* device, const float value[3])
+AUD_API void AUD_Device_setListenerVelocity(AUD_Device* device, const float value[3])
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	Vector3 v(value[0], value[1], value[2]);
 	dev->setListenerVelocity(v);
 }
 
-double AUD_Device_getRate(AUD_Device* device)
+AUD_API double AUD_Device_getRate(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	return dev->getSpecs().rate;
 }
 
-float AUD_Device_getSpeedOfSound(AUD_Device* device)
+AUD_API float AUD_Device_getSpeedOfSound(AUD_Device* device)
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	return dev->getSpeedOfSound();
 }
 
-void AUD_Device_setSpeedOfSound(AUD_Device* device, float value)
+AUD_API void AUD_Device_setSpeedOfSound(AUD_Device* device, float value)
 {
 	auto dev = device ? std::dynamic_pointer_cast<I3DDevice>(*device) : DeviceManager::get3DDevice();
 	dev->setSpeedOfSound(value);
 }
 
-float AUD_Device_getVolume(AUD_Device* device)
+AUD_API float AUD_Device_getVolume(AUD_Device* device)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	return dev->getVolume();
 }
 
-void AUD_Device_setVolume(AUD_Device* device, float value)
+AUD_API void AUD_Device_setVolume(AUD_Device* device, float value)
 {
 	auto dev = device ? *device : DeviceManager::getDevice();
 	dev->setVolume(value);
 }
 
-int AUD_Device_read(AUD_Device* device, unsigned char* buffer, int length)
+AUD_API int AUD_Device_read(AUD_Device* device, unsigned char* buffer, int length)
 {
 	assert(device);
 	assert(buffer);
@@ -267,7 +267,7 @@ int AUD_Device_read(AUD_Device* device, unsigned char* buffer, int length)
 	}
 }
 
-void AUD_Device_free(AUD_Device* device)
+AUD_API void AUD_Device_free(AUD_Device* device)
 {
 	assert(device);
 
@@ -280,14 +280,14 @@ void AUD_Device_free(AUD_Device* device)
 	}
 }
 
-void AUD_seekSynchronizer(AUD_Handle* handle, float time)
+AUD_API void AUD_seekSynchronizer(AUD_Handle* handle, float time)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
 		synchronizer->seek(*reinterpret_cast<std::shared_ptr<IHandle>*>(handle), time);
 }
 
-float AUD_getSynchronizerPosition(AUD_Handle* handle)
+AUD_API float AUD_getSynchronizerPosition(AUD_Handle* handle)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
@@ -295,28 +295,28 @@ float AUD_getSynchronizerPosition(AUD_Handle* handle)
 	return (*reinterpret_cast<std::shared_ptr<IHandle>*>(handle))->getPosition();
 }
 
-void AUD_playSynchronizer()
+AUD_API void AUD_playSynchronizer()
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
 		synchronizer->play();
 }
 
-void AUD_stopSynchronizer()
+AUD_API void AUD_stopSynchronizer()
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
 		synchronizer->stop();
 }
 
-void AUD_setSynchronizerCallback(AUD_syncFunction function, void* data)
+AUD_API void AUD_setSynchronizerCallback(AUD_syncFunction function, void* data)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
 		synchronizer->setSyncCallback(function, data);
 }
 
-int AUD_isSynchronizerPlaying()
+AUD_API int AUD_isSynchronizerPlaying()
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)

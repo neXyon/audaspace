@@ -17,6 +17,7 @@
 #pragma once
 
 #include <Python.h>
+#include "Audaspace.h"
 
 typedef void Reference_ISound;
 
@@ -25,8 +26,8 @@ typedef struct {
 	Reference_ISound* sound;
 } Sound;
 
-extern PyObject* Sound_empty();
-extern Sound* checkSound(PyObject* sound);
+extern AUD_API PyObject* Sound_empty();
+extern AUD_API Sound* checkSound(PyObject* sound);
 
 bool initializeSound();
 void addSoundToModule(PyObject* module);

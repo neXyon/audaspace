@@ -96,6 +96,8 @@
 /// The default playback buffer size of a device.
 #define AUD_DEFAULT_BUFFER_SIZE 1024
 
+#ifdef __cplusplus
+
 /// Opens the audaspace namespace aud.
 #define AUD_NAMESPACE_BEGIN namespace aud {
 
@@ -111,3 +113,5 @@ typedef float sample_t;
 typedef unsigned char data_t;
 
 AUD_NAMESPACE_END
+
+#endif

@@ -78,7 +78,7 @@ static inline aud::DeviceSpecs convCToDSpec(AUD_DeviceSpecs specs)
 	return s;
 }
 
-AUD_SoundInfo AUD_getInfo(AUD_Sound* sound)
+AUD_API AUD_SoundInfo AUD_getInfo(AUD_Sound* sound)
 {
 	assert(sound);
 
@@ -104,7 +104,7 @@ AUD_SoundInfo AUD_getInfo(AUD_Sound* sound)
 	return info;
 }
 
-float* AUD_readSoundBuffer(const char* filename, float low, float high,
+AUD_API float* AUD_readSoundBuffer(const char* filename, float low, float high,
 						   float attack, float release, float threshold,
 						   int accumulate, int additive, int square,
 						   float sthreshold, double samplerate, int* length)
@@ -175,7 +175,7 @@ static void pauseSound(AUD_Handle* handle)
 	(*handle)->pause();
 }
 
-AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds)
+AUD_API AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds)
 {
 	std::shared_ptr<ISound> silence = std::shared_ptr<ISound>(new Silence);
 	std::shared_ptr<ISound> limiter = std::shared_ptr<ISound>(new Limiter(silence, 0, seconds));
@@ -200,7 +200,7 @@ AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds)
 	return nullptr;
 }
 
-int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second, short* interrupt)
+AUD_API int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_second, short* interrupt)
 {
 	DeviceSpecs specs;
 	float* buf;
@@ -270,7 +270,7 @@ int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int samples_per_s
 	return length;
 }
 
-const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int length, unsigned int buffersize, const char* filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
+AUD_API const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int length, unsigned int buffersize, const char* filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
 {
 	try
 	{
@@ -290,7 +290,7 @@ const char* AUD_mixdown(AUD_Sound* sound, unsigned int start, unsigned int lengt
 	}
 }
 
-const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsigned int length, unsigned int buffersize, const char* filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
+AUD_API const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsigned int length, unsigned int buffersize, const char* filename, AUD_DeviceSpecs specs, AUD_Container format, AUD_Codec codec, unsigned int bitrate)
 {
 	try
 	{
@@ -336,7 +336,7 @@ const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned int start, unsign
 	}
 }
 
-AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start)
+AUD_API AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start)
 {
 	try
 	{
@@ -360,17 +360,17 @@ AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, f
 	}
 }
 
-void AUD_initOnce()
+AUD_API void AUD_initOnce()
 {
 	PluginManager::loadPlugins();
 	NULLDevice::registerPlugin();
 }
 
-void AUD_exitOnce()
+AUD_API void AUD_exitOnce()
 {
 }
 
-AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, const char* name)
+AUD_API AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, const char* name)
 {
 	try
 	{
@@ -393,7 +393,7 @@ AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, int buffersize, 
 	return nullptr;
 }
 
-void AUD_exit(AUD_Device* device)
+AUD_API void AUD_exit(AUD_Device* device)
 {
 	delete device;
 	DeviceManager::releaseDevice();

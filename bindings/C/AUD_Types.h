@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "Audaspace.h"
+
 #ifdef AUD_CAPI_IMPLEMENTATION
 #include "ISound.h"
 #include "devices/IHandle.h"
