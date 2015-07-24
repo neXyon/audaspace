@@ -87,7 +87,8 @@ std::shared_ptr<I3DDevice> DeviceManager::get3DDevice()
 
 std::vector<std::string> DeviceManager::getAvailableDeviceNames()
 {
-	std::vector<std::string> names(m_factories.size());
+	std::vector<std::string> names;
+	names.reserve(m_factories.size());
 
 	for(const auto& pair : m_factories)
 		names.push_back(pair.first);
