@@ -124,8 +124,14 @@ extern AUD_API AUD_Device* AUD_init(const char* device, AUD_DeviceSpecs specs, i
 
 /**
  * Unitinitializes an audio device.
+ * \param device The device to free.
  */
 extern AUD_API void AUD_exit(AUD_Device* device);
+
+/**
+ * Retrieves available devices. Note that all memory returned has to be freed!
+ */
+extern AUD_API char** AUD_getDeviceNames();
 
 #ifdef __cplusplus
 }
