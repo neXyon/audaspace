@@ -91,6 +91,8 @@ std::vector<std::string> DeviceManager::getAvailableDeviceNames()
 
 	for(const auto& pair : m_factories)
 		names.push_back(pair.first);
+
+	return names;
 }
 
 AUD_NAMESPACE_END
