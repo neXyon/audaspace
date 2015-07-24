@@ -412,5 +412,7 @@ AUD_API char** AUD_getDeviceNames()
 		strcpy(names[i], name.c_str());
 	}
 
+	names[v_names.size()] = nullptr;
+
 	return names;
 }
