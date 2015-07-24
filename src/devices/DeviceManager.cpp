@@ -21,6 +21,7 @@
 
 #include <limits>
 #include <string>
+#include <algorithm>
 
 AUD_NAMESPACE_BEGIN
 
@@ -87,11 +88,28 @@ std::shared_ptr<I3DDevice> DeviceManager::get3DDevice()
 
 std::vector<std::string> DeviceManager::getAvailableDeviceNames()
 {
-	std::vector<std::string> names;
-	names.reserve(m_factories.size());
+	struct DeviceNamePriority {
+		std::string name;
+		int priority;
+	};
+
+	std::vector<DeviceNamePriority> devices;
+	devices.reserve(m_factories.size());
 
 	for(const auto& pair : m_factories)
-		names.push_back(pair.first);
+		devices.push_back({pair.first, pair.second->getPriority()});
+
+	auto sort = [](const DeviceNamePriority& lhs, const DeviceNamePriority& rhs){
+		return lhs.priority > rhs.priority;
+	};
+
+	std::sort(devices.begin(), devices.end(), sort);
+
+	std::vector<std::string> names;
+	names.reserve(devices.size());
+
+	for(const auto& device : devices)
+		names.push_back(device.name);
 
 	return names;
 }
