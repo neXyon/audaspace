@@ -296,7 +296,7 @@ if(WITH_C)
 		list(APPEND SRC ${C_SRC})
 		list(APPEND HDR ${C_HDR})
 	else()
-		set(CAUDASPACE_LIBRARY -lcaudaspace)
+		set(AUDASPACE_C_LIBRARY -laudaspace-c)
 	endif()
 endif()
 
@@ -401,6 +401,8 @@ if(WITH_PYTHON)
 	if(WITH_PYTHON_MODULE)
 		find_package(PythonInterp REQUIRED)
 	endif()
+
+	set(AUDASPACE_PY_LIBRARY -laudaspace-py)
 endif()
 
 # SDL
@@ -563,9 +565,9 @@ endif()
 # bindings
 
 if(WITH_C AND SEPARATE_C)
-	add_library(caudaspace ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
-	target_link_libraries(caudaspace audaspace)
-	install(TARGETS caudaspace
+	add_library(audaspace-c ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
+	target_link_libraries(audaspace-c audaspace)
+	install(TARGETS audaspace-c
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
 		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
@@ -592,10 +594,10 @@ if(WITH_PYTHON)
 		bindings/python/PySound.h
 	)
 
-	add_library(pyaudaspace ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
-	target_link_libraries(pyaudaspace audaspace ${PYTHON_LIBRARIES})
+	add_library(audaspace-py ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
+	target_link_libraries(audaspace-py audaspace ${PYTHON_LIBRARIES})
 
-	install(TARGETS pyaudaspace
+	install(TARGETS audaspace-py
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
 		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"

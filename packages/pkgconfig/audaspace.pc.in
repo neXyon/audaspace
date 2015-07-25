@@ -7,5 +7,5 @@ Name: audaspace
 Description: Audaspace is a feature rich high level audio library
 Requires: 
 Version: @AUDASPACE_VERSION@
-Libs: -L${libdir} -laudaspace @CAUDASPACE_LIBRARY@ @PYAUDASPACE_LIBRARY@
+Libs: -L${libdir} -laudaspace @AUDASPACE_C_LIBRARY@ @AUDASPACE_PY_LIBRARY@
 Cflags: -I${includedir}/audaspace
