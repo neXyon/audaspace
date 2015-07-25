@@ -31,7 +31,7 @@ endif(PKG_CONFIG_FOUND)
 
 # Include dir
 find_path(AUDASPACE_INCLUDE_DIR
-	NAMES audaspace/ISound.h
+	NAMES ISound.h
 	HINTS ${_audaspace_SEARCH_DIRS}
 	PATHS ${AUDASPACE_PKGCONF_INCLUDE_DIRS}
 )
@@ -45,7 +45,7 @@ find_library(AUDASPACE_LIBRARY
 
 # Include dir
 find_path(AUDASPACE_C_INCLUDE_DIR
-	NAMES audaspace/AUD_Sound.h
+	NAMES AUD_Sound.h
 	HINTS ${_audaspace_SEARCH_DIRS}
 	PATHS ${AUDASPACE_PKGCONF_INCLUDE_DIRS}
 )
@@ -59,7 +59,7 @@ find_library(AUDASPACE_C_LIBRARY
 
 # Include dir
 find_path(AUDASPACE_PY_INCLUDE_DIR
-	NAMES audaspace/python/PyAPI.h
+	NAMES python/PyAPI.h
 	HINTS ${_audaspace_SEARCH_DIRS}
 	PATHS ${AUDASPACE_PKGCONF_INCLUDE_DIRS}
 )
