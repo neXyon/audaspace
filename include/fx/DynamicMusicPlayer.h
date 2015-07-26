@@ -71,6 +71,11 @@ private:
 	*/
 	float m_volume;
 
+	/**
+	* A thread that manages the crossfade transition.
+	*/
+	std::thread m_fadeThread;
+
 	// delete copy constructor and operator=
 	DynamicMusicPlayer(const DynamicMusicPlayer&) = delete;
 	DynamicMusicPlayer& operator=(const DynamicMusicPlayer&) = delete;
@@ -200,6 +205,9 @@ public:
 		static void transitionCallback(void* player);
 		static void sceneCallback(void* player);
 		static void fadeCallback(void* player);
+		void fadeThread();
+		void fadeInThread();
+		void fadeOutThread();
 };
 
 AUD_NAMESPACE_END
