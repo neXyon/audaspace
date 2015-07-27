@@ -32,21 +32,15 @@ int main(int argc, char* argv[])
 	{
 		file = (std::make_shared<File>(argv[i]));
 		if (i == 3)
-			manager.addTransition(2, 1, file);
+			manager.addTransition(1, 2, file);
 		else
 			manager.addScene(file);
 	}
-	manager.setFadeTime(2.0f);
+	manager.setFadeTime(3.0f);
 	manager.setVolume(0.5f);
 	manager.changeScene(1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	manager.changeScene(2);
-	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.changeScene(0);
-	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.changeScene(2);
-	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.changeScene(1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 
 	return 0;

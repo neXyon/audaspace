@@ -62,12 +62,17 @@ private:
 	std::atomic_bool m_transitioning;
 
 	/**
+	* Flag that is true when the music is paused.
+	*/
+	std::atomic_bool m_stopThread;
+
+	/**
 	* Id of the sound that will play with the next transition.
 	*/
 	std::atomic_int m_soundTarget;
 
 	/**
-	* volume of the scenes.
+	* Volume of the scenes.
 	*/
 	float m_volume;
 
@@ -205,7 +210,7 @@ public:
 		static void transitionCallback(void* player);
 		static void sceneCallback(void* player);
 		static void fadeCallback(void* player);
-		void fadeThread();
+		void crossfadeThread();
 		void fadeInThread();
 		void fadeOutThread();
 };
