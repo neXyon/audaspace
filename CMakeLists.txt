@@ -66,6 +66,8 @@ set(SRC
 	src/fx/MutableSound.cpp
 	src/fx/Pitch.cpp
 	src/fx/PitchReader.cpp
+	src/fx/PlaybackManager.cpp
+	src/fx/PlaybackCategory.cpp
 	src/fx/Reverse.cpp
 	src/fx/ReverseReader.cpp
 	src/fx/SoundList.cpp
@@ -166,6 +168,8 @@ set(PUBLIC_HDR
 	include/fx/MutableSound.h
 	include/fx/Pitch.h
 	include/fx/PitchReader.h
+	include/fx/PlaybackManager.h
+	include/fx/PlaybackCategory.h
 	include/fx/Reverse.h
 	include/fx/ReverseReader.h
 	include/fx/SoundList.h
