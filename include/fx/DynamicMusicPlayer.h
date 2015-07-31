@@ -210,6 +210,7 @@ public:
 		static void transitionCallback(void* player);
 		static void sceneCallback(void* player);
 		static void fadeCallback(void* player);
+		//These functions can fade sounds in and out if used with a thread.
 		void crossfadeThread();
 		void fadeInThread();
 		void fadeOutThread();

@@ -1,5 +1,7 @@
 #include "fx/PlaybackManager.h"
 
+#include <stdexcept> 
+
 AUD_NAMESPACE_BEGIN
 PlaybackManager::PlaybackManager(std::shared_ptr<IDevice> device) :
 	m_device(device)
@@ -18,31 +20,74 @@ void PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category, st
 
 std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, std::string catName)
 {
-	return nullptr;
+	m_device->lock();
+	auto handle = m_device->play(sound);
+	m_categories[catName]->addHandle(handle);
+	m_device->unlock();
+	return handle;
 }
 
-void PlaybackManager::resume(std::string catName)
+bool PlaybackManager::resume(std::string catName)
 {
-
+	try
+	{
+		m_categories.at(catName)->resume();
+		return true;
+	}
+	catch (std::out_of_range& oot) 
+	{
+		return false;
+	}
 }
 
-void PlaybackManager::pause(std::string catName)
+bool PlaybackManager::pause(std::string catName)
 {
-
+	try
+	{
+		m_categories.at(catName)->pause();
+		return true;
+	}
+	catch (std::out_of_range& oot)
+	{
+		return false;
+	}
 }
 
 float PlaybackManager::getVolume(std::string catName)
 {
-	return 0.0f;
+	try
+	{
+		return m_categories.at(catName)->getVolume();
+	}
+	catch (std::out_of_range& oot)
+	{
+		return -1.0;
+	}
 }
 
-void PlaybackManager::setVolume(float volume, std::string catName)
+bool PlaybackManager::setVolume(float volume, std::string catName)
 {
-
+	try
+	{
+		m_categories.at(catName)->setVolume(volume);
+		return true;
+	}
+	catch (std::out_of_range& oot)
+	{
+		return false;
+	}
 }
 
-void PlaybackManager::stop(std::string catName)
+bool PlaybackManager::stop(std::string catName)
 {
-
+	try
+	{
+		m_categories.at(catName)->stop();
+		return true;
+	}
+	catch (std::out_of_range& oot)
+	{
+		return false;
+	}
 }
 AUD_NAMESPACE_END

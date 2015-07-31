@@ -64,19 +64,25 @@ public:
 	/**
 	* Resumes all the paused sounds of a category.
 	* \param catName Name of the category.
+	* \return
+	*        - true if succesful.
+	*        - false if the category doesn't exist.
 	*/
-	void resume(std::string catName);
+	bool resume(std::string catName);
 
 	/**
 	* Pauses all current playing sounds of a category.
 	* \param catName Name of the category.
+	* \return
+	*        - true if succesful.
+	*        - false if the category doesn't exist.
 	*/
-	void pause(std::string catName);
+	bool pause(std::string catName);
 
 	/**
 	* Retrieves the volume of a category.
 	* \param catName Name of the category.
-	* \return The volume.
+	* \return The volume value of the category. If the category doesn't exist it returns a negative number.
 	*/
 	float getVolume(std::string catName);
 
@@ -84,14 +90,20 @@ public:
 	* Sets the volume for a category.
 	* \param volume The volume.
 	* \param catName Name of the category.
+	* \return
+	*        - true if succesful.
+	*        - false if the category doesn't exist.
 	*/
-	void setVolume(float volume, std::string catName);
+	bool setVolume(float volume, std::string catName);
 
 	/**
 	* Stops and erases a category of sounds.
 	* \param catName Name of the category.
+	* \return
+	*        - true if succesful.
+	*        - false if the category doesn't exist.
 	*/
-	void stop(std::string catName);
+	bool stop(std::string catName);
 };
 
 AUD_NAMESPACE_END

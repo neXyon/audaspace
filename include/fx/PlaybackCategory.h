@@ -24,6 +24,11 @@ private:
 	*/
 	std::vector<std::shared_ptr<IHandle>> m_handles;
 
+	/**
+	* Status of the category.
+	*/
+	Status m_status;
+
 	// delete copy constructor and operator=
 	PlaybackCategory(const PlaybackCategory&) = delete;
 	PlaybackCategory& operator=(const PlaybackCategory&) = delete;
