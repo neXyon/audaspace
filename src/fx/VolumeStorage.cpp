@@ -2,7 +2,7 @@
 
 AUD_NAMESPACE_BEGIN
 VolumeStorage::VolumeStorage() :
-	m_volume(0)
+	m_volume(1.0f)
 {
 }
 

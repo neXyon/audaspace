@@ -29,7 +29,7 @@ private:
 
 public:
 	/**
-	* Creates a new VolumeStorage instance with volume 0
+	* Creates a new VolumeStorage instance with volume 1
 	*/
 	VolumeStorage();
 
