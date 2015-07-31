@@ -7,6 +7,7 @@
 */
 
 #include "devices/IHandle.h"
+#include "VolumeStorage.h"
 
 #include <vector>
 #include <memory>
@@ -28,6 +29,11 @@ private:
 	* Status of the category.
 	*/
 	Status m_status;
+
+	/**
+	* Volume of all the sounds of the category.
+	*/
+	std::shared_ptr<VolumeStorage> m_volumeStorage;
 
 	// delete copy constructor and operator=
 	PlaybackCategory(const PlaybackCategory&) = delete;

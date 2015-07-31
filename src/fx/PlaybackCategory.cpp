@@ -1,7 +1,8 @@
 #include "fx/PlaybackCategory.h"
 
 AUD_NAMESPACE_BEGIN
-PlaybackCategory::PlaybackCategory()
+PlaybackCategory::PlaybackCategory() :
+	m_volumeStorage(std::make_shared<VolumeStorage>(1.0f))
 {
 }
 
@@ -35,12 +36,12 @@ void PlaybackCategory::pause()
 
 float PlaybackCategory::getVolume()
 {
-	return 0.0f;
+	return m_volumeStorage->getVolume();
 }
 
 void PlaybackCategory::setVolume(float volume)
 {
-
+	m_volumeStorage->setVolume(volume);
 }
 
 void PlaybackCategory::stop() 
