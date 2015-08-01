@@ -13,7 +13,7 @@ VolumeSound::VolumeSound(std::shared_ptr<ISound> sound, std::shared_ptr<VolumeSt
 
 std::shared_ptr<IReader> VolumeSound::createReader()
 {
-	return std::make_shared<VolumeReader>(m_sound, m_volumeStorage);
+	return std::make_shared<VolumeReader>(m_sound->createReader(), m_volumeStorage);
 }
 
 std::shared_ptr<VolumeStorage> VolumeSound::getSharedVolume()
