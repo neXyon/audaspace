@@ -19,7 +19,16 @@ void PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category, st
 
 std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, std::string catName)
 {
-	auto category = m_categories[catName];
+	std::shared_ptr<PlaybackCategory> category;
+	try
+	{
+		category = m_categories.at(catName);
+	}
+	catch (std::out_of_range& oor)
+	{
+		category = std::make_shared<PlaybackCategory>();
+		m_categories[catName] = category;
+	}
 	std::shared_ptr<ISound> vs (std::make_shared<VolumeSound>(sound, category->getSharedVolume()));
 	m_device->lock();
 	auto handle = m_device->play(vs);
@@ -35,7 +44,7 @@ bool PlaybackManager::resume(std::string catName)
 		m_categories.at(catName)->resume();
 		return true;
 	}
-	catch (std::out_of_range& oot) 
+	catch (std::out_of_range& oor) 
 	{
 		return false;
 	}
@@ -48,7 +57,7 @@ bool PlaybackManager::pause(std::string catName)
 		m_categories.at(catName)->pause();
 		return true;
 	}
-	catch (std::out_of_range& oot)
+	catch (std::out_of_range& oor)
 	{
 		return false;
 	}
@@ -60,7 +69,7 @@ float PlaybackManager::getVolume(std::string catName)
 	{
 		return m_categories.at(catName)->getVolume();
 	}
-	catch (std::out_of_range& oot)
+	catch (std::out_of_range& oor)
 	{
 		return -1.0;
 	}
@@ -73,7 +82,7 @@ bool PlaybackManager::setVolume(float volume, std::string catName)
 		m_categories.at(catName)->setVolume(volume);
 		return true;
 	}
-	catch (std::out_of_range& oot)
+	catch (std::out_of_range& oor)
 	{
 		return false;
 	}
@@ -86,7 +95,7 @@ bool PlaybackManager::stop(std::string catName)
 		m_categories.at(catName)->stop();
 		return true;
 	}
-	catch (std::out_of_range& oot)
+	catch (std::out_of_range& oor)
 	{
 		return false;
 	}

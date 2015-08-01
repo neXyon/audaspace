@@ -2,7 +2,7 @@
 
 AUD_NAMESPACE_BEGIN
 PlaybackCategory::PlaybackCategory() :
-	m_volumeStorage(std::make_shared<VolumeStorage>(1.0f))
+	m_volumeStorage(std::make_shared<VolumeStorage>(1.0f)), m_status(STATUS_PLAYING)
 {
 }
 
