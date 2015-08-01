@@ -566,6 +566,9 @@ if(BUILD_DEMOS)
 	add_executable(dynamicmusic demos/dynamicmusic.cpp)
 	target_link_libraries(dynamicmusic audaspace)
 
+	add_executable(playbackmanager demos/playbackmanager.cpp)
+	target_link_libraries(playbackmanager audaspace)
+
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
 
