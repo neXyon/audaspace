@@ -74,6 +74,8 @@ public:
 	* Stops all the playing back or paused sounds.
 	*/
 	void stop();
+
+	std::shared_ptr<VolumeStorage> getSharedVolume();
 };
 
 AUD_NAMESPACE_END

@@ -50,4 +50,9 @@ void PlaybackCategory::stop()
 		han->stop();
 	m_status = STATUS_STOPPED;
 }
+
+std::shared_ptr<VolumeStorage> PlaybackCategory::getSharedVolume()
+{
+	return m_volumeStorage;
+}
 AUD_NAMESPACE_END

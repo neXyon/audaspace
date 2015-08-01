@@ -1,4 +1,5 @@
 #include "fx/PlaybackManager.h"
+#include "fx/VolumeSound.h"
 
 #include <stdexcept> 
 
@@ -10,19 +11,19 @@ PlaybackManager::PlaybackManager(std::shared_ptr<IDevice> device) :
 
 void PlaybackManager::addHandle(std::shared_ptr<IHandle> handle, std::string catName)
 {
-
 }
 
 void PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category, std::string catName)
 {
-
 }
 
 std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, std::string catName)
 {
+	auto category = m_categories[catName];
+	std::shared_ptr<ISound> vs (std::make_shared<VolumeSound>(sound, category->getSharedVolume()));
 	m_device->lock();
-	auto handle = m_device->play(sound);
-	m_categories[catName]->addHandle(handle);
+	auto handle = m_device->play(vs);
+	category->addHandle(handle);
 	m_device->unlock();
 	return handle;
 }
