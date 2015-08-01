@@ -38,7 +38,7 @@ void VolumeReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	m_reader->read(length, eos, buffer);
 	for (int i = 0; i < length * m_reader->getSpecs().channels; i++)
-		buffer[i] = buffer[i] * m_volumeStorage->getVolume;
+		buffer[i] = buffer[i] * m_volumeStorage->getVolume();
 }
 
 AUD_NAMESPACE_END
