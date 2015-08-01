@@ -47,10 +47,6 @@ bool DynamicMusicPlayer::changeScene(int id)
 		m_device->lock();
 		if (id == m_id)
 		{
-			//float time = m_currentHandle->getPosition();
-			//m_currentHandle->stop();
-			//m_currentHandle = m_device->play(m_scenes[m_id][m_id]);
-			//m_currentHandle->seek(time);
 			m_currentHandle->setVolume(m_volume);
 			m_currentHandle->setLoopCount(-1);
 		}
@@ -92,31 +88,6 @@ bool DynamicMusicPlayer::changeScene(int id)
 						}
 					}
 				}
-				/*if (m_scenes[m_id][m_id] == nullptr || m_currentHandle->getStatus() == STATUS_INVALID)
-				{
-					if (m_scenes[m_soundTarget][m_soundTarget] != nullptr)
-					{
-						m_currentHandle = m_device->play(std::make_shared<Fader>(m_scenes[m_soundTarget][m_soundTarget], FADE_IN, 0.0f, m_fadeTime));
-						m_currentHandle->setVolume(m_volume);
-						m_currentHandle->setStopCallback(sceneCallback, this);
-					}
-					m_id = id;
-				}
-				else
-				{
-					m_transitioning = true;
-					float time = m_currentHandle->getPosition();
-					m_currentHandle->stop();
-					m_transitionHandle = m_device->play(std::make_shared<Fader>(std::make_shared<Limiter>(m_scenes[m_id][m_id], time, time + m_fadeTime), FADE_OUT, 0.0f, m_fadeTime));
-					m_currentHandle->setVolume(m_volume);
-					m_transitionHandle->setStopCallback(fadeCallback, this);
-					if (m_scenes[m_soundTarget][m_soundTarget] != nullptr)
-					{
-						m_currentHandle = m_device->play(std::make_shared<Fader>(m_scenes[m_soundTarget][m_soundTarget], FADE_IN, 0.0f, m_fadeTime));
-						m_currentHandle->setVolume(m_volume);
-						m_currentHandle->setStopCallback(sceneCallback, this);
-					}
-				}*/
 			}
 			else
 			{
@@ -279,12 +250,6 @@ void DynamicMusicPlayer::sceneCallback(void* player)
 	dat->m_device->unlock();
 	dat->m_id = int(dat->m_soundTarget);
 	dat->m_soundTarget = -1;
-	dat->m_transitioning = false;
-}
-
-void DynamicMusicPlayer::fadeCallback(void* player)
-{
-	auto dat = reinterpret_cast<DynamicMusicPlayer*>(player);
 	dat->m_transitioning = false;
 }
 
