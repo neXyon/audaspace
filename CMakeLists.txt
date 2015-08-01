@@ -74,6 +74,7 @@ set(SRC
 	src/fx/Sum.cpp
 	src/fx/Threshold.cpp
 	src/fx/Volume.cpp
+	src/fx/VolumeReader.cpp
 	src/fx/VolumeSound.cpp
 	src/fx/VolumeStorage.cpp	
 	src/generator/Sawtooth.cpp
@@ -178,6 +179,7 @@ set(PUBLIC_HDR
 	include/fx/Sum.h
 	include/fx/Threshold.h
 	include/fx/Volume.h
+	include/fx/VolumeReader.h
 	include/fx/VolumeSound.h
 	include/fx/VolumeStorage.h
 	include/generator/Sawtooth.h
