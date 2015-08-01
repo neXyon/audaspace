@@ -7,6 +7,7 @@
 */
 
 #include "devices/IHandle.h"
+#include "devices/IDevice.h"
 #include "VolumeStorage.h"
 
 #include <vector>
@@ -26,6 +27,11 @@ private:
 	std::vector<std::shared_ptr<IHandle>> m_handles;
 
 	/**
+	* Device that will play the sounds.
+	*/
+	std::shared_ptr<IDevice> m_device;
+
+	/**
 	* Status of the category.
 	*/
 	Status m_status;
@@ -40,13 +46,17 @@ private:
 	PlaybackCategory& operator=(const PlaybackCategory&) = delete;
 
 public:
-	PlaybackCategory();
+	/**
+	* Creates a new PlaybackCategory.
+	* \param A shared pointer to the device which will be used for playback.
+	*/
+	PlaybackCategory(std::shared_ptr<IDevice> device);
 
 	/**
 	* Adds a new handle to the category.
 	* \param handle The handle to be added.
 	*/
-	void addHandle(std::shared_ptr<IHandle> handle);
+	std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound);
 
 	/**
 	* Resumes all the paused sounds of the category.

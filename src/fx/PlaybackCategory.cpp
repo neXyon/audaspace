@@ -1,13 +1,17 @@
 #include "fx/PlaybackCategory.h"
+#include "fx/VolumeSound.h"
 
 AUD_NAMESPACE_BEGIN
-PlaybackCategory::PlaybackCategory() :
-	m_volumeStorage(std::make_shared<VolumeStorage>(1.0f)), m_status(STATUS_PLAYING)
+PlaybackCategory::PlaybackCategory(std::shared_ptr<IDevice> device) :
+	m_device(device), m_volumeStorage(std::make_shared<VolumeStorage>(1.0f)), m_status(STATUS_PLAYING)
 {
 }
 
-void PlaybackCategory::addHandle(std::shared_ptr<IHandle> handle)
+std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 {
+	std::shared_ptr<ISound> vs(std::make_shared<VolumeSound>(sound, m_volumeStorage));
+	m_device->lock();
+	auto handle = m_device->play(vs);
 	switch (m_status) 
 	{
 	case STATUS_STOPPED:
@@ -17,7 +21,9 @@ void PlaybackCategory::addHandle(std::shared_ptr<IHandle> handle)
 		handle->pause();
 		break;
 	};
+	m_device->unlock();
 	m_handles.push_back(handle);
+	return handle;
 }
 
 void PlaybackCategory::resume()

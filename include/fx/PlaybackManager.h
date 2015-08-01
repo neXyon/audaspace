@@ -37,21 +37,21 @@ private:
 	PlaybackManager& operator=(const PlaybackManager&) = delete;
 
 public:
-	PlaybackManager(std::shared_ptr<IDevice> device);
-
 	/**
-	* Adds a new handle to an existent category or creates a new one.
-	* \param handle The handle to be added.
-	* \param catName Name of the category of the sound.
+	* Creates a new PlaybackManager.
+	* \param A shared pointer to the device which will be used for playback.
 	*/
-	void addHandle(std::shared_ptr<IHandle> handle, std::string catName);
+	PlaybackManager(std::shared_ptr<IDevice> device);
 
 	/**
 	* Adds an existent category to the manager.
 	* \param category The category to be added.
 	* \param catName Name of the category.
+	* \return
+	*        - true if succesful.
+	*        - false if the category already exists.
 	*/
-	void addCategory(std::shared_ptr<PlaybackCategory> category, std::string catName);
+	bool addCategory(std::shared_ptr<PlaybackCategory> category, std::string catName);
 
 	/**
 	* Plays a sound and adds it to a new or existent category.

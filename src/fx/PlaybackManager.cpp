@@ -9,12 +9,17 @@ PlaybackManager::PlaybackManager(std::shared_ptr<IDevice> device) :
 {
 }
 
-void PlaybackManager::addHandle(std::shared_ptr<IHandle> handle, std::string catName)
+bool PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category, std::string catName)
 {
-}
-
-void PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category, std::string catName)
-{
+	try
+	{
+		auto cat = m_categories.at(catName);
+		return false;
+	}
+	catch (std::out_of_range& oor)
+	{
+		m_categories[catName] = category;
+	}
 }
 
 std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, std::string catName)
@@ -26,15 +31,10 @@ std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, st
 	}
 	catch (std::out_of_range& oor)
 	{
-		category = std::make_shared<PlaybackCategory>();
+		category = std::make_shared<PlaybackCategory>(m_device);
 		m_categories[catName] = category;
 	}
-	std::shared_ptr<ISound> vs (std::make_shared<VolumeSound>(sound, category->getSharedVolume()));
-	m_device->lock();
-	auto handle = m_device->play(vs);
-	category->addHandle(handle);
-	m_device->unlock();
-	return handle;
+	return category->play(sound);
 }
 
 bool PlaybackManager::resume(std::string catName)
