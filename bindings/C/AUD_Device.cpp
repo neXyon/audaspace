@@ -280,6 +280,16 @@ AUD_API void AUD_Device_free(AUD_Device* device)
 	}
 }
 
+AUD_API AUD_Device* AUD_Device_getCurrent()
+{
+	auto device = DeviceManager::getDevice();
+
+	if(!device)
+		return nullptr;
+
+	return new AUD_Device(device);
+}
+
 AUD_API void AUD_seekSynchronizer(AUD_Handle* handle, float time)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
@@ -323,3 +333,4 @@ AUD_API int AUD_isSynchronizerPlaying()
 		return synchronizer->isPlaying();
 	return false;
 }
+
