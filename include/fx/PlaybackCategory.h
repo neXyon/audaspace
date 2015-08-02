@@ -10,7 +10,7 @@
 #include "devices/IDevice.h"
 #include "VolumeStorage.h"
 
-#include <vector>
+#include <list>
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
@@ -24,7 +24,7 @@ private:
 	/**
 	* Vector of handles that belong to the category.
 	*/
-	std::vector<std::shared_ptr<IHandle>> m_handles;
+	std::list<std::shared_ptr<IHandle>> m_handles;
 
 	/**
 	* Device that will play the sounds.
@@ -85,7 +85,16 @@ public:
 	*/
 	void stop();
 
+	/**
+	* Retrieves the shared volume of the category.
+	* \return A shared pointer to the VolumeStorage object that represents the shared volume of the category.
+	*/
 	std::shared_ptr<VolumeStorage> getSharedVolume();
+
+	/**
+	* Cleans the category erasing all the invalid handles.
+	*/
+	void cleanHandles();
 };
 
 AUD_NAMESPACE_END

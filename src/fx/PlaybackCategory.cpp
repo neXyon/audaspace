@@ -28,19 +28,35 @@ std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 
 void PlaybackCategory::resume()
 {
-	for (auto han : m_handles)
+	m_device->lock();
+	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		han->resume();
+		if ((*i)->getStatus() == STATUS_INVALID)
+			i = m_handles.erase(i);
+		else
+		{
+			(*i)->resume();
+			i++;
+		}
 	}
+	m_device->unlock();
 	m_status = STATUS_PLAYING;
 }
 
 void PlaybackCategory::pause()
 {
-	for (auto han : m_handles)
+	m_device->lock();
+	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		han->pause();
+		if ((*i)->getStatus() == STATUS_INVALID)
+			i = m_handles.erase(i);
+		else
+		{
+			(*i)->pause();
+			i++;
+		}
 	}
+	m_device->unlock();
 	m_status = STATUS_PAUSED;
 }
 
@@ -56,15 +72,32 @@ void PlaybackCategory::setVolume(float volume)
 
 void PlaybackCategory::stop() 
 {
-	for (auto han : m_handles)
+	m_device->lock();
+	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		han->stop();
+		(*i)->stop();
+		if ((*i)->getStatus() == STATUS_INVALID)
+			i = m_handles.erase(i);
+		else
+			i++;			
 	}
+	m_device->unlock();
 	m_status = STATUS_STOPPED;
 }
 
 std::shared_ptr<VolumeStorage> PlaybackCategory::getSharedVolume()
 {
 	return m_volumeStorage;
+}
+
+void PlaybackCategory::cleanHandles()
+{
+	for (auto i = m_handles.begin(); i != m_handles.end();)
+	{
+		if ((*i)->getStatus() == STATUS_INVALID)
+			i = m_handles.erase(i);
+		else
+			i++;
+	}
 }
 AUD_NAMESPACE_END
