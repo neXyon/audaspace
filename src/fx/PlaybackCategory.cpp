@@ -28,15 +28,19 @@ std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 
 void PlaybackCategory::resume()
 {
-	for each (auto han in m_handles)
+	for (auto han : m_handles)
+	{
 		han->resume();
+	}
 	m_status = STATUS_PLAYING;
 }
 
 void PlaybackCategory::pause()
 {
-	for each (auto han in m_handles)
+	for (auto han : m_handles)
+	{
 		han->pause();
+	}
 	m_status = STATUS_PAUSED;
 }
 
@@ -52,8 +56,10 @@ void PlaybackCategory::setVolume(float volume)
 
 void PlaybackCategory::stop() 
 {
-	for each (auto han in m_handles)
+	for (auto han : m_handles)
+	{
 		han->stop();
+	}
 	m_status = STATUS_STOPPED;
 }
 

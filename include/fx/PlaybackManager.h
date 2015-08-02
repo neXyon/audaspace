@@ -7,7 +7,7 @@
 */
 
 #include "PlaybackCategory.h"
-#include "devices\IDevice.h"
+#include "devices/IDevice.h"
 #include "ISound.h"
 
 #include <unordered_map>
