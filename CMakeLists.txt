@@ -470,6 +470,7 @@ link_directories()
 
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
+set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
 install(TARGETS audaspace
 	RUNTIME DESTINATION bin
@@ -490,6 +491,7 @@ if(PLUGIN_FFMPEG)
 	include_directories(${INCLUDE} ${FFMPEG_INCLUDE_DIRS})
 	add_library(audffmpeg SHARED ${FFMPEG_SRC} ${FFMPEG_HDR} ${HDR})
 	target_link_libraries(audffmpeg audaspace ${FFMPEG_LIBRARIES})
+	set_target_properties(audffmpeg PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	install(TARGETS audffmpeg DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
@@ -498,6 +500,7 @@ if(PLUGIN_JACK)
 	include_directories(${INCLUDE} ${JACK_INCLUDE_DIRS})
 	add_library(audjack SHARED ${JACK_SRC} ${JACK_HDR} ${HDR})
 	target_link_libraries(audjack audaspace ${JACK_LIBRARIES})
+	set_target_properties(audjack PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	install(TARGETS audjack DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
@@ -505,6 +508,7 @@ if(PLUGIN_LIBSNDFILE)
 	add_definitions(-DLIBSNDFILE_PLUGIN)
 	include_directories(${INCLUDE} ${LIBSNDFILE_INCLUDE_DIRS})
 	add_library(audlibsndfile SHARED ${LIBSNDFILE_SRC} ${LIBSNDFILE_HDR} ${HDR})
+	set_target_properties(audlibsndfile PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	target_link_libraries(audlibsndfile audaspace ${LIBSNDFILE_LIBRARIES})
 	install(TARGETS audlibsndfile DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
@@ -513,6 +517,7 @@ if(PLUGIN_OPENAL)
 	add_definitions(-DOPENAL_PLUGIN)
 	include_directories(${INCLUDE} ${OPENAL_INCLUDE_DIR})
 	add_library(audopenal SHARED ${OPENAL_SRC} ${OPENAL_HDR} ${HDR})
+	set_target_properties(audopenal PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	target_link_libraries(audopenal audaspace ${OPENAL_LIBRARY})
 	install(TARGETS audopenal DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
@@ -521,6 +526,7 @@ if(PLUGIN_SDL)
 	add_definitions(-DSDL_PLUGIN)
 	include_directories(${INCLUDE} ${SDL_INCLUDE_DIR})
 	add_library(audsdl SHARED ${SDL_SRC} ${SDL_HDR} ${HDR})
+	set_target_properties(audsdl PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	target_link_libraries(audsdl audaspace ${SDL_LIBRARY})
 	install(TARGETS audsdl DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
@@ -567,6 +573,7 @@ endif()
 if(WITH_C AND SEPARATE_C)
 	add_library(audaspace-c ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
 	target_link_libraries(audaspace-c audaspace)
+	set_target_properties(audaspace-c PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	install(TARGETS audaspace-c
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
@@ -596,6 +603,7 @@ if(WITH_PYTHON)
 
 	add_library(audaspace-py ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
 	target_link_libraries(audaspace-py audaspace ${PYTHON_LIBRARIES})
+	set_target_properties(audaspace-py PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
 	install(TARGETS audaspace-py
 		RUNTIME DESTINATION bin
