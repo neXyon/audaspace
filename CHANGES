@@ -1,0 +1,4 @@
+Initial Release of Audaspace 1.0 
+================================
+
+Audaspace has been the internal audio library of blender since blender 2.5. It is now released as a standalone library to be used in other projects as well.
