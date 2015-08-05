@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'audaspace'
-copyright = '2014, Jörg Müller'
+copyright = '2009-2015, Jörg Müller'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
