@@ -233,7 +233,7 @@ option(WITH_C "Build C Module" TRUE)
 option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" FALSE)
 option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" FALSE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
-cmake_dependent_option(WITH_JACK "Build With Plugin" FALSE "NOT WIN32" FALSE)
+option(WITH_JACK "Build With Plugin" FALSE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
 option(WITH_PYTHON "Build With Python Library" FALSE)
@@ -248,7 +248,7 @@ cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LI
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON;NOT WIN32" FALSE)
+cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
 
 # compiler options
 
@@ -264,7 +264,12 @@ if(MSVC)
 	list(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG")
 	list(APPEND CMAKE_STATIC_LINKER_FLAGS_DEBUG "/DEBUG")
 	list(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
-	add_definitions(/D_USE_MATH_DEFINES /EHsc)
+	add_definitions(
+		/D_USE_MATH_DEFINES
+		/EHsc
+		/DNOMINMAX
+		/D_STDINT_H
+	)
 	if(SHARED_LIBRARY)
 		include(GenerateExportHeader)
 	endif()

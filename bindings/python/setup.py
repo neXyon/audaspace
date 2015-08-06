@@ -1,21 +1,43 @@
 # -*- coding: utf-8 -*-
 
+import sys
+import os
+import codecs
+
 from setuptools import setup, Extension
 
-audaspace = Extension('aud',
-                    include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', '@PYTHON_SOURCE_DIRECTORY@/../../include'],
-                    libraries = ['audaspace'],
-                    library_dirs = ['.'],
-                    language = 'c++',
-                    extra_compile_args = ['-std=c++11'],
-                    sources = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp']])
+# the following line is not working due to https://bugs.python.org/issue9023
+#source_directory = os.path.relpath('@PYTHON_SOURCE_DIRECTORY@')
+source_directory = '@PYTHON_SOURCE_DIRECTORY@'
 
-setup (name = 'audaspace',
-       version = '1.0',
-       description = 'Audaspace is a high level audio library.',
-       author = 'Jörg Müller',
-       author_email = 'nexyon@gmail.com',
-       url = 'https://github.com/neXyon/audaspace',
-       ext_modules = [audaspace],
-       headers = ['@PYTHON_SOURCE_DIRECTORY@/' + file for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h']])
+extra_args = []
+
+if sys.platform == 'win32':
+    extra_args.append('/EHsc')
+    extra_args.append('/DAUD_BUILD_SHARED_LIBRARY')
+else:
+    extra_args.append('-std=c++11')
+
+audaspace = Extension(
+                      'aud',
+                      include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include')],
+                      libraries = ['audaspace'],
+                      library_dirs = ['.', 'Debug', 'Release'],
+                      language = 'c++',
+                      extra_compile_args = extra_args,
+                      sources = [os.path.join(source_directory, file) for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp']]
+)
+
+setup(
+      name = 'audaspace',
+      version = '@AUDASPACE_VERSION@',
+      description = 'Audaspace is a high level audio library.',
+      author = 'Jörg Müller',
+      author_email = 'nexyon@gmail.com',
+      url = 'https://github.com/audaspace/audaspace',
+      license = 'Apache License 2.0',
+      long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
+      ext_modules = [audaspace],
+      headers = [os.path.join(source_directory, file) for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h']]
+)
 
