@@ -13,7 +13,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
-* Ths class allows to create a sound with its own volume.
+* This class allows to create a sound with its own volume.
 */
 class AUD_API VolumeSound : public ISound
 {
@@ -23,6 +23,9 @@ private:
 	*/
 	std::shared_ptr<ISound> m_sound;
 
+	/**
+	* A pointer to the shared volume being used.
+	*/
 	std::shared_ptr<VolumeStorage> m_volumeStorage;
 
 	// delete copy constructor and operator=
@@ -32,7 +35,7 @@ private:
 public:
 	/**
 	* Creates a new VolumeSound.
-	* \param The sound in which shall have its own volume.
+	* \param sound The sound in which shall have its own volume.
 	* \param volumeStorage A shared pointer to a VolumeStorage object. It allows to change the volume of various sound in one go.
 	*/
 	VolumeSound(std::shared_ptr<ISound> sound, std::shared_ptr<VolumeStorage> volumeStorage);
