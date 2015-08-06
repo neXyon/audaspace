@@ -38,7 +38,7 @@ private:
 public:
 	/**
 	* Creates a new volume reader.
-	* \param reader A of the sound to be assigned to this reader.
+	* \param reader A reader of the sound to be assigned to this reader.
 	* \param volumeStorage A shared pointer to a VolumeStorage object.
 	*/
 	VolumeReader(std::shared_ptr<IReader> reader, std::shared_ptr<VolumeStorage> volumeStorage);
