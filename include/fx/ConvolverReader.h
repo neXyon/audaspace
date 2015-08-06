@@ -11,7 +11,6 @@
 #include "fftw3.h"
 
 #include <memory>
-
 AUD_NAMESPACE_BEGIN
 
 /**
@@ -33,8 +32,27 @@ private:
 	/**
 	* The reader of the impulse response sound.
 	*/
-	fftwf_complex* m_irBuffer;
+	void* m_irBuffer;
 
+	void* m_buffer;
+
+	int m_bufLen;
+
+	int m_n;
+
+	sample_t* m_tail;
+	
+	int m_irLength;
+
+	int m_lastLength;
+
+	fftwf_plan m_fftPlanR2C;
+
+	fftwf_plan m_fftPlanC2R;
+
+	sample_t* m_finalBuffer;
+
+	int m_position;
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
 	ConvolverReader& operator=(const ConvolverReader&) = delete;
@@ -54,6 +72,9 @@ public:
 	virtual int getPosition() const;
 	virtual Specs getSpecs() const;
 	virtual void read(int& length, bool& eos, sample_t* buffer);
+
+private:
+	void convolveAll();
 };
 
 AUD_NAMESPACE_END
