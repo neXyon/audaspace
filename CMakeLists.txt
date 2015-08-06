@@ -22,6 +22,7 @@ cmake_policy(SET CMP0054 NEW)
 project(audaspace)
 
 set(AUDASPACE_VERSION 1.0)
+set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION}-rc1)
 
 # sources
 
@@ -671,7 +672,9 @@ endif()
 if(WITH_BINDING_DOCS)
 	find_package(Sphinx REQUIRED)
 
-	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
+
+	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
 endif()
 
 if(WITH_DOCS OR WITH_BINDING_DOCS)

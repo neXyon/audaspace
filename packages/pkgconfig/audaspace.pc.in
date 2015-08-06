@@ -6,6 +6,6 @@ includedir=${prefix}/include
 Name: audaspace
 Description: Audaspace is a feature rich high level audio library
 Requires: 
-Version: @AUDASPACE_VERSION@
+Version: @AUDASPACE_LONG_VERSION@
 Libs: -L${libdir} -laudaspace @AUDASPACE_C_LIBRARY@ @AUDASPACE_PY_LIBRARY@
 Cflags: -I${includedir}/audaspace

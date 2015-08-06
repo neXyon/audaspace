@@ -30,7 +30,7 @@ audaspace = Extension(
 
 setup(
       name = 'audaspace',
-      version = '@AUDASPACE_VERSION@',
+      version = '@AUDASPACE_LONG_VERSION@',
       description = 'Audaspace is a high level audio library.',
       author = 'Jörg Müller',
       author_email = 'nexyon@gmail.com',
