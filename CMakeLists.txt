@@ -443,7 +443,7 @@ endif()
 
 # file configuration
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/Audaspace.h ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h ESCAPE_QUOTES @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/Audaspace.h.in ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h ESCAPE_QUOTES @ONLY)
 
 list(APPEND HDR ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h)
 
@@ -459,9 +459,9 @@ string(CONCAT STATIC_PLUGIN_CLASSES ${STATIC_PLUGIN_CLASSES})
 string(CONCAT STATIC_PLUGIN_REGISTERS ${STATIC_PLUGIN_REGISTERS})
 
 if(WIN32)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
 else()
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
 endif()
 
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
@@ -620,14 +620,14 @@ if(WITH_PYTHON)
 
 	if(WITH_PYTHON_MODULE)
 		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
-		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
+		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
 		if(APPLE)
 			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
 		else()
 			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
 		endif()
-		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
+		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${PYTHON_SRC} ${PYTHON_HDR})
 		add_dependencies(pythonmodule audaspace)
 
 		install(CODE "EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
@@ -639,7 +639,7 @@ endif()
 if(WITH_DOCS)
 	find_package(Doxygen REQUIRED)
 
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
 	add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
 endif()
