@@ -491,7 +491,7 @@ link_directories()
 
 
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
-target_link_libraries(audaspace ${LIBRARIES} ${LIBSNDFILE_LIBRARIES})
+target_link_libraries(audaspace ${LIBRARIES} ${FFTW_LIBRARIES})
 
 install(TARGETS audaspace
 	RUNTIME DESTINATION bin
@@ -574,6 +574,9 @@ if(BUILD_DEMOS)
 
 	add_executable(playbackmanager demos/playbackmanager.cpp)
 	target_link_libraries(playbackmanager audaspace)
+
+	add_executable(convolution demos/convolution.cpp)
+	target_link_libraries(convolution audaspace)
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
