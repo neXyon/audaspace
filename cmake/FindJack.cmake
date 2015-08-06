@@ -20,7 +20,8 @@ find_path(JACK_INCLUDE_DIR
 
 # Library
 find_library(JACK_LIBRARY
-	NAMES jack
+	NAMES jack jack64 libjack libjack64
+	PATH_SUFFIXES lib
 	PATHS ${JACK_PKGCONF_LIBRARY_DIRS}
 )
 

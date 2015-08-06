@@ -210,6 +210,7 @@ set(PUBLIC_HDR
 set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 
 set(INCLUDE ${CMAKE_CURRENT_BINARY_DIR} include)
+
 if(WIN32)
 	set(LIBRARIES)
 	set(LIBRARY_PATH "../lib" CACHE PATH "Path which contains the libraries.")
@@ -249,6 +250,7 @@ cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LI
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
+cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
 
 # compiler options
 
@@ -399,7 +401,6 @@ endif()
 
 # Python
 if(WITH_PYTHON)
-	set(Python_ADDITIONAL_VERSIONS 3.3)
 	find_package(PythonLibs REQUIRED)
 	list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
 
@@ -412,7 +413,17 @@ endif()
 
 # SDL
 if(WITH_SDL)
-	find_package(SDL REQUIRED)
+	if(USE_SDL2)
+		find_package(SDL2)
+		if(SDL2_FOUND)
+			set(SDL_INCLUDE_DIR ${SDL2_INCLUDE_DIR})
+			set(SDL_LIBRARY ${SDL2_LIBRARY})
+		else()
+			find_package(SDL REQUIRED)
+		endif()
+	else()
+		find_package(SDL REQUIRED)
+	endif()
 
 	set(SDL_SRC
 		plugins/sdl/SDLDevice.cpp
@@ -471,6 +482,16 @@ list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 include_directories(${INCLUDE})
 link_directories()
 
+# install configuration
+
+if(WIN32)
+	set(BIN_DESTINATION ".")
+else()
+	set(BIN_DESTINATION "bin")
+endif()
+
+set(LIB_DESTINATION "lib${LIB_SUFFIX}")
+
 # library
 
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
@@ -478,9 +499,9 @@ target_link_libraries(audaspace ${LIBRARIES})
 set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
 install(TARGETS audaspace
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION "lib${LIB_SUFFIX}"
-	ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+	RUNTIME DESTINATION ${BIN_DESTINATION}
+	LIBRARY DESTINATION ${LIB_DESTINATION}
+	ARCHIVE DESTINATION ${LIB_DESTINATION}
 )
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
@@ -567,9 +588,9 @@ if(BUILD_DEMOS)
 	endif()
 
 	install(TARGETS ${DEMOS}
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
-		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+		RUNTIME DESTINATION ${BIN_DESTINATION}
+		LIBRARY DESTINATION ${LIB_DESTINATION}
+		ARCHIVE DESTINATION ${LIB_DESTINATION}
 	)
 endif()
 
@@ -580,9 +601,9 @@ if(WITH_C AND SEPARATE_C)
 	target_link_libraries(audaspace-c audaspace)
 	set_target_properties(audaspace-c PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	install(TARGETS audaspace-c
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
-		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+		RUNTIME DESTINATION ${BIN_DESTINATION}
+		LIBRARY DESTINATION ${LIB_DESTINATION}
+		ARCHIVE DESTINATION ${LIB_DESTINATION}
 	)
 
 	install(FILES ${C_HDR} DESTINATION include/audaspace)
@@ -611,9 +632,9 @@ if(WITH_PYTHON)
 	set_target_properties(audaspace-py PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
 	install(TARGETS audaspace-py
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION "lib${LIB_SUFFIX}"
-		ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
+		RUNTIME DESTINATION ${BIN_DESTINATION}
+		LIBRARY DESTINATION ${LIB_DESTINATION}
+		ARCHIVE DESTINATION ${LIB_DESTINATION}
 	)
 
 	install(FILES ${PYTHON_HDR} DESTINATION include/audaspace/python)
@@ -624,6 +645,9 @@ if(WITH_PYTHON)
 
 		if(APPLE)
 			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
+		elseif(WIN32)
+			set(ENV{VS100COMNTOOLS} $ENV{VS120COMNTOOLS})
+			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
 		else()
 			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR})
 		endif()
