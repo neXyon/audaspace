@@ -42,6 +42,8 @@ set(SRC
 	src/fx/ButterworthCalculator.cpp
 	src/fx/Butterworth.cpp
 	src/fx/CallbackIIRFilterReader.cpp
+	src/fx/ConvolverReader.cpp
+	src/fx/ConvolverSound.cpp
 	src/fx/Delay.cpp
 	src/fx/DelayReader.cpp
 	src/fx/DynamicIIRFilter.cpp
@@ -146,6 +148,8 @@ set(PUBLIC_HDR
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
+	include/fx/ConvolverReader.h
+	include/fx/ConvolverSound.h
 	include/fx/Delay.h
 	include/fx/DelayReader.h
 	include/fx/DynamicIIRFilter.h
@@ -478,14 +482,16 @@ endif()
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 
 # directories
-
+find_package(FFTW REQUIRED)
+include_directories(${INCLUDE} ${FFTW_INCLUDE_DIRS})
 include_directories(${INCLUDE})
 link_directories()
 
 # library
 
+
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
-target_link_libraries(audaspace ${LIBRARIES})
+target_link_libraries(audaspace ${LIBRARIES} ${LIBSNDFILE_LIBRARIES})
 
 install(TARGETS audaspace
 	RUNTIME DESTINATION bin
