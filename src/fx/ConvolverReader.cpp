@@ -7,42 +7,31 @@
 AUD_NAMESPACE_BEGIN
 
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader) :
-	m_reader(reader), m_irReader(irReader), m_lastLength(0), m_buffer(nullptr), m_irBuffer(nullptr)
+	m_reader(reader), m_irReader(irReader), m_position(0), m_eosReader(false), m_eosTail(false)
 {
-	m_irLength = m_irReader->getLength()*m_irReader->getSpecs().channels;
-	m_tail = (sample_t*)calloc(m_irLength - 1, sizeof(sample_t));
-	m_finalBuffer = new sample_t[m_reader->getLength()*m_reader->getSpecs().channels];
-	m_position = 0;
-	convolveAll();
-	/*int len = irReader->getLength()*AUD_SAMPLE_SIZE(irReader->getSpecs);
-	sample_t* buf = (float*) fftwf_malloc(len);
-	m_irBuffer = (fftwf_complex*)fftw_malloc(((len / sizeof(sample_t) / 2) + 1) * sizeof(fftwf_complex));
-	fftwf_plan p = fftwf_plan_dft_r2c_1d(pow(2, ceil(log2(len))), buf, m_irBuffer, FFTW_ESTIMATE);
-
-	irReader->seek(0);
-	int length = irReader->getLength();
 	bool eos = false;
-	irReader->read(length, eos, buf);
-
+	m_M = m_irReader->getLength() + 1;
+	int a = irReader->getSpecs().channels;
+	sample_t* irBuffer = new sample_t[m_M*a];
+	irReader->read(m_M, eos, irBuffer);
 	if (!eos)
 	{
-		fftwf_destroy_plan(p);
-		fftwf_free(buf);
-		fftwf_free(m_irBuffer);
-		AUD_THROW(StateException, "The impulse response cannot be read");
+		AUD_THROW(StateException, "The impulse response can not be read");
+		delete irBuffer;
 	}
-
-	fftwf_execute(p);
-	fftwf_destroy_plan(p);
-	fftwf_free(buf);*/
+	m_L = pow(2, ceil(log2(m_M + m_M - 1))) - m_M + 1;
+	m_convolver = std::make_unique<FFTConvolver>(irBuffer, m_M, m_L);
+	delete irBuffer;
+	m_outBuffer = new sample_t[m_L];
+	m_inBuffer = new sample_t[m_L];
+	m_outBufferPos = m_L;
+	m_eOutBufLen = m_L;
 }
 
 ConvolverReader::~ConvolverReader()
 {
-	if (m_irBuffer != nullptr)
-		fftwf_free(m_irBuffer);
-	if (m_buffer)
-		fftwf_free(m_buffer);
+	delete m_outBuffer;
+	delete m_inBuffer;
 }
 
 bool ConvolverReader::isSeekable() const
@@ -72,7 +61,7 @@ Specs ConvolverReader::getSpecs() const
 
 void ConvolverReader::convolveAll()
 {
-	int length = 2 * m_irLength;
+	/*int length = 2 * m_irLength;
 	if (length <= 0)
 	{
 		length = 0;
@@ -128,7 +117,7 @@ void ConvolverReader::convolveAll()
 		fftwf_execute(m_fftPlanC2R);
 
 		for (int i = 0; i < m_n; i++)
-			((float*)m_buffer)[i] = ((float*)m_buffer)[i] / (m_n*20);
+			((float*)m_buffer)[i] = ((float*)m_buffer)[i] / (m_n*8);
 
 		for (int i = 0; i < m_irLength - 1; i++)
 		{
@@ -145,83 +134,66 @@ void ConvolverReader::convolveAll()
 			length += (m_irLength - 1);
 		std::memcpy(m_finalBuffer+(pos*m_reader->getSpecs().channels), m_buffer, length * AUD_SAMPLE_SIZE(m_reader->getSpecs()));
 		pos = pos + length - 1;
-	}
+	}*/
 }
 
 void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	eos = false;
-	std::memcpy(buffer, m_finalBuffer+(m_position*m_reader->getSpecs().channels), length * AUD_SAMPLE_SIZE(m_reader->getSpecs()));
-	m_position += length;
-
-	/*if (length <= 0)
+	if (length <= 0)
 	{
 		length = 0;
 		return;
 	}
 
-	if (m_lastLength < length)
+	int l = m_L;
+	int l2 = m_L;
+	int bufRest = m_eOutBufLen - m_outBufferPos;
+	if (bufRest < length)
 	{
-		m_lastLength = length;
-		int len = (length * m_reader->getSpecs().channels) + (m_irReader->getLength() * m_irReader->getSpecs().channels) - 1;
-		m_n = pow(2, ceil(log2(len)));
-		m_bufLen = ((m_n / 2) + 1) * 2;
-
-		m_buffer = (fftwf_complex*)fftwf_malloc(m_bufLen * sizeof(fftwf_complex));
-		m_irBuffer = (fftwf_complex*)fftwf_malloc(m_bufLen * sizeof(fftwf_complex));
-		fftwf_plan p = fftwf_plan_dft_r2c_1d(m_n, (float*)m_irBuffer, (fftwf_complex*)m_irBuffer, FFTW_ESTIMATE);
-		m_fftPlanR2C = fftwf_plan_dft_r2c_1d(m_n, (float*)m_buffer, (fftwf_complex*)m_buffer, FFTW_ESTIMATE);
-		m_fftPlanC2R = fftwf_plan_dft_c2r_1d(m_n, (fftwf_complex*)m_buffer, (float*)m_buffer, FFTW_ESTIMATE);
-
-		memset(m_irBuffer, 0, m_bufLen * sizeof(fftwf_complex));
-		m_irReader->seek(0);
-		int irLength = m_irReader->getLength() + 1;
-		bool end = false;
-		m_irReader->read(irLength, end, (float*)m_irBuffer);
-		m_irReader->seek(0);
-		if (!end)
+		if(bufRest>0)
+			std::memcpy(buffer, m_outBuffer + m_outBufferPos, bufRest);
+		if (!m_eosReader)
 		{
-			fftwf_destroy_plan(p);
-			AUD_THROW(StateException, "The impulse response cannot be read");
+			m_reader->read(l, m_eosReader, m_inBuffer);
+			m_convolver->getNext(m_inBuffer, m_outBuffer, l);
+			if (m_eosReader)
+			{
+				l2 = m_L - l;
+				m_convolver->getTail(l2, m_eosTail, m_outBuffer + l);
+				if (m_eosTail)
+					m_eOutBufLen = l + l2;
+			}
 		}
-		fftwf_execute(p);
-		fftwf_destroy_plan(p);
-	}
-
-	memset(m_buffer, 0, m_bufLen * sizeof(fftwf_complex));
-	m_reader->read(length, eos, (sample_t*)m_buffer);
-
-	fftwf_execute(m_fftPlanR2C);
-	for (int i = 0; i < m_bufLen; i++)
-	{
-		fftwf_complex a, b;
-		a[0] = ((fftwf_complex*)m_buffer)[i][0];
-		a[1] = ((fftwf_complex*)m_buffer)[i][1];
-		b[0] = ((fftwf_complex*)m_irBuffer)[i][0];
-		b[1] = ((fftwf_complex*)m_irBuffer)[i][1];
-
-		((fftwf_complex*)m_buffer)[i][0] = (a[0] * b[0]) - (a[1] * b[1]);
-		((fftwf_complex*)m_buffer)[i][1] = (a[0] * b[1]) + (a[1] * b[0]);
-	}
-	fftwf_execute(m_fftPlanC2R);
-
-	for (int i = 0; i < m_n; i++)
-		((float*)m_buffer)[i] = ((float*)m_buffer)[i] / (m_n);
-
-	for (int i = 0; i < m_irLength - 1; i++)
-	{
-		((sample_t*)m_buffer)[i] += m_tail[i];
-	}
-	for (int i = 0; i < m_irLength - 1; i++)
-	{
-		if (eos == false)
-			m_tail[i] = ((sample_t*)m_buffer)[i + (length * m_reader->getSpecs().channels)];
 		else
-			m_tail[i] = 0;
+		{
+			if (!m_eosTail)
+			{
+				m_convolver->getTail(l2, m_eosTail, m_outBuffer);
+				if (m_eosTail)
+					m_eOutBufLen = l2;
+			}
+		}
+		if (length - bufRest <= m_eOutBufLen) 
+		{
+			std::memcpy(buffer + bufRest, m_outBuffer, length - bufRest);
+			m_outBufferPos = length - bufRest;
+		}
+		else
+		{
+			std::memcpy(buffer + bufRest, m_outBuffer, m_eOutBufLen);
+			m_outBufferPos = m_eOutBufLen;
+			length = bufRest;
+		}
 	}
-	if (eos == true)
-		length += (m_irLength - 1);
-	std::memcpy(buffer, m_buffer, length * AUD_SAMPLE_SIZE(m_reader->getSpecs()));*/
+	else
+	{
+		std::memcpy(buffer, m_outBuffer + m_outBufferPos, length);
+		m_outBufferPos += length;
+	}
+	if(m_eosTail && m_outBufferPos > m_eOutBufLen)
+	{
+		eos = true;
+	}
 }
 
 AUD_NAMESPACE_END

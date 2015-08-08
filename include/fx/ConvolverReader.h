@@ -8,7 +8,7 @@
 
 #include "IReader.h"
 #include "ISound.h"
-#include "fftw3.h"
+#include "FFTConvolver.h"
 
 #include <memory>
 AUD_NAMESPACE_BEGIN
@@ -28,31 +28,21 @@ private:
 	* The reader of the impulse response sound.
 	*/
 	std::shared_ptr<IReader> m_irReader;
-
-	/**
-	* The reader of the impulse response sound.
-	*/
-	void* m_irBuffer;
-
-	void* m_buffer;
-
-	int m_bufLen;
-
-	int m_n;
-
-	sample_t* m_tail;
 	
-	int m_irLength;
+	int m_L;
+	int m_M;
 
-	int m_lastLength;
+	std::unique_ptr<FFTConvolver> m_convolver;
 
-	fftwf_plan m_fftPlanR2C;
+	sample_t* m_inBuffer;
+	sample_t* m_outBuffer;
 
-	fftwf_plan m_fftPlanC2R;
-
-	sample_t* m_finalBuffer;
+	int m_outBufferPos;
+	int m_eOutBufLen;
 
 	int m_position;
+	bool m_eosReader;
+	bool m_eosTail;
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
 	ConvolverReader& operator=(const ConvolverReader&) = delete;
