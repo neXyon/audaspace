@@ -9,21 +9,47 @@ AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader) :
 	m_reader(reader), m_irReader(irReader), m_position(0), m_eosReader(false), m_eosTail(false)
 {
+	m_irChannels = irReader->getSpecs().channels;
+	m_inChannels = reader->getSpecs().channels;
+	if (m_irChannels != 1 && m_irChannels != m_inChannels)
+		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
+
 	bool eos = false;
-	m_M = m_irReader->getLength() + 1;
-	int a = irReader->getSpecs().channels;
-	sample_t* irBuffer = new sample_t[m_M*a];
+	m_M = m_irReader->getLength();
+	sample_t* irBuffer = new sample_t[m_M * m_irChannels];
+	std::vector<sample_t*> irBperChannel;
+	for (int i = 0; i < m_irChannels; i++)
+		irBperChannel.push_back(new sample_t[m_M]);
+
+	m_M++;
 	irReader->read(m_M, eos, irBuffer);
 	if (!eos)
 	{
-		AUD_THROW(StateException, "The impulse response can not be read");
 		delete irBuffer;
+		AUD_THROW(StateException, "The impulse response can not be read");	
 	}
 	m_L = pow(2, ceil(log2(m_M + m_M - 1))) - m_M + 1;
-	m_convolver = std::make_unique<FFTConvolver>(irBuffer, m_M, m_L);
+
+	for (int i = 0; i < m_M*m_irChannels; i+=m_irChannels)
+	{
+		int k = 0;
+		for (int j = 0; j < m_irChannels; j++)
+			irBperChannel[j][k] = irBuffer[i + j];
+		k++;
+	}
+
+	if (m_irChannels > 1)
+		for (int i = 0; i < m_inChannels; i++)
+			m_convolvers.push_back(std::make_unique<FFTConvolver>(irBperChannel[i], m_M, m_L));
+	else
+		for (int i = 0; i < m_inChannels; i++)
+			m_convolvers.push_back(std::make_unique<FFTConvolver>(irBperChannel[0], m_M, m_L));
+
 	delete irBuffer;
-	m_outBuffer = new sample_t[m_L];
-	m_inBuffer = new sample_t[m_L];
+	for (int i = 0; i < m_irChannels; i++)
+		delete irBperChannel[i];
+	m_outBuffer = new sample_t[m_L * m_inChannels];
+	m_inBuffer = new sample_t[m_L * m_inChannels];
 	m_outBufferPos = m_L;
 	m_eOutBufLen = m_L;
 }
@@ -139,7 +165,8 @@ void ConvolverReader::convolveAll()
 
 void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	if (length <= 0)
+	length = 0;
+	/*if (length <= 0)
 	{
 		length = 0;
 		return;
@@ -193,7 +220,7 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 	if(m_eosTail && m_outBufferPos > m_eOutBufLen)
 	{
 		eos = true;
-	}
+	}*/
 }
 
 AUD_NAMESPACE_END

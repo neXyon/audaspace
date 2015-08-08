@@ -11,6 +11,7 @@
 #include "FFTConvolver.h"
 
 #include <memory>
+#include <vector>
 AUD_NAMESPACE_BEGIN
 
 /**
@@ -33,6 +34,7 @@ private:
 	int m_M;
 
 	std::unique_ptr<FFTConvolver> m_convolver;
+	std::vector<std::unique_ptr<FFTConvolver>> m_convolvers;
 
 	sample_t* m_inBuffer;
 	sample_t* m_outBuffer;
@@ -43,6 +45,9 @@ private:
 	int m_position;
 	bool m_eosReader;
 	bool m_eosTail;
+
+	int m_inChannels;
+	int m_irChannels;
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
 	ConvolverReader& operator=(const ConvolverReader&) = delete;
