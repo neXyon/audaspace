@@ -54,6 +54,7 @@ set(SRC
 	src/fx/Envelope.cpp
 	src/fx/Fader.cpp
 	src/fx/FaderReader.cpp
+	src/fx/FFTConvolver.cpp
 	src/fx/HighpassCalculator.cpp
 	src/fx/Highpass.cpp
 	src/fx/IIRFilter.cpp
@@ -160,6 +161,7 @@ set(PUBLIC_HDR
 	include/fx/Envelope.h
 	include/fx/Fader.h
 	include/fx/FaderReader.h
+	include/fx/FFTConvolver.h
 	include/fx/HighpassCalculator.h
 	include/fx/Highpass.h
 	include/fx/IDynamicIIRFilterCalculator.h
