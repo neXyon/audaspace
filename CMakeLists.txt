@@ -17,7 +17,9 @@
 cmake_minimum_required(VERSION 3.0)
 include(CMakeDependentOption)
 
-cmake_policy(SET CMP0054 NEW)
+if(POLICY CMP0054)
+	cmake_policy(SET CMP0054 NEW)
+endif()
 
 project(audaspace)
 
@@ -222,6 +224,7 @@ else()
 endif()
 
 set(STATIC_PLUGINS "")
+set(PACKAGE_OPTION "")
 
 # dependencies
 
@@ -232,17 +235,27 @@ option(BUILD_DEMOS "Build and install demos" TRUE)
 option(SHARED_LIBRARY "Build Shared Library" TRUE)
 
 option(WITH_C "Build C Module" TRUE)
-option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" FALSE)
-option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" FALSE)
+option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" TRUE)
+option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" TRUE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
-option(WITH_JACK "Build With Plugin" FALSE)
+option(WITH_JACK "Build With Plugin" TRUE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
 option(WITH_PYTHON "Build With Python Library" FALSE)
 option(WITH_SDL "Build With SDL" TRUE)
+option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
 
-set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
-set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
+if(WITH_STRICT_DEPENDENCIES)
+	set(PACKAGE_OPTION REQUIRED)
+endif()
+
+if(WIN32 OR APPLE)
+	set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
+	set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
+else()
+	set(DEFAULT_PLUGIN_PATH "share/audaspace/plugins" CACHE PATH "Default plugin installation and loading path.")
+	set(DOCUMENTATION_INSTALL_PATH "share/doc/audaspace" CACHE PATH "Path where the documentation is installed.")
+endif()
 
 cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY" FALSE)
@@ -310,106 +323,137 @@ endif()
 
 # FFMPEG
 if(WITH_FFMPEG)
-	find_package(FFMPEG REQUIRED)
+	find_package(FFMPEG ${PACKAGE_OPTION})
 
-	set(FFMPEG_SRC
-		plugins/ffmpeg/FFMPEG.cpp
-		plugins/ffmpeg/FFMPEGReader.cpp
-		plugins/ffmpeg/FFMPEGWriter.cpp
-	)
-	set(FFMPEG_HDR
-		plugins/ffmpeg/FFMPEG.h
-		plugins/ffmpeg/FFMPEGReader.h
-		plugins/ffmpeg/FFMPEGWriter.h
-	)
+	if(FFMPEG_FOUND)
+		set(FFMPEG_SRC
+			plugins/ffmpeg/FFMPEG.cpp
+			plugins/ffmpeg/FFMPEGReader.cpp
+			plugins/ffmpeg/FFMPEGWriter.cpp
+		)
+		set(FFMPEG_HDR
+			plugins/ffmpeg/FFMPEG.h
+			plugins/ffmpeg/FFMPEGReader.h
+			plugins/ffmpeg/FFMPEGWriter.h
+		)
 
-	if(NOT PLUGIN_FFMPEG)
-		list(APPEND INCLUDE ${FFMPEG_INCLUDE_DIRS})
-		list(APPEND LIBRARIES ${FFMPEG_LIBRARIES})
-		list(APPEND SRC ${FFMPEG_SRC})
-		list(APPEND HDR ${FFMPEG_HDR})
-		list(APPEND STATIC_PLUGINS FFMPEG)
+		if(NOT PLUGIN_FFMPEG)
+			list(APPEND INCLUDE ${FFMPEG_INCLUDE_DIRS})
+			list(APPEND LIBRARIES ${FFMPEG_LIBRARIES})
+			list(APPEND SRC ${FFMPEG_SRC})
+			list(APPEND HDR ${FFMPEG_HDR})
+			list(APPEND STATIC_PLUGINS FFMPEG)
+		endif()
+	else()
+		set(WITH_FFMPEG FALSE)
+		message(WARNING "FFMPEG not found, plugin will not be built.")
 	endif()
 endif()
 
 # Jack
 if(WITH_JACK)
-	find_package(Jack REQUIRED)
+	find_package(Jack ${PACKAGE_OPTION})
 
-	set(JACK_SRC
-		plugins/jack/JackDevice.cpp
-		plugins/jack/JackSynchronizer.cpp
-	)
-	set(JACK_HDR
-		plugins/jack/JackDevice.h
-		plugins/jack/JackSynchronizer.h
-	)
+	if(JACK_FOUND)
+		set(JACK_SRC
+			plugins/jack/JackDevice.cpp
+			plugins/jack/JackSynchronizer.cpp
+		)
+		set(JACK_HDR
+			plugins/jack/JackDevice.h
+			plugins/jack/JackSynchronizer.h
+		)
 
-	if(NOT PLUGIN_JACK)
-		list(APPEND INCLUDE ${JACK_INCLUDE_DIRS})
-		list(APPEND LIBRARIES ${JACK_LIBRARIES})
-		list(APPEND SRC ${JACK_SRC})
-		list(APPEND HDR ${JACK_HDR})
-		list(APPEND STATIC_PLUGINS JackDevice)
+		if(NOT PLUGIN_JACK)
+			list(APPEND INCLUDE ${JACK_INCLUDE_DIRS})
+			list(APPEND LIBRARIES ${JACK_LIBRARIES})
+			list(APPEND SRC ${JACK_SRC})
+			list(APPEND HDR ${JACK_HDR})
+			list(APPEND STATIC_PLUGINS JackDevice)
+		endif()
+	else()
+		set(WITH_JACK FALSE)
+		message(WARNING "Jack not found, plugin will not be built.")
 	endif()
 endif()
 
 # LibSndFile
 if(WITH_LIBSNDFILE)
-	find_package(LibSndFile REQUIRED)
+	find_package(LibSndFile ${PACKAGE_OPTION})
 
-	set(LIBSNDFILE_SRC
-		plugins/libsndfile/SndFile.cpp
-		plugins/libsndfile/SndFileReader.cpp
-		plugins/libsndfile/SndFileWriter.cpp
-	)
-	set(LIBSNDFILE_HDR
-		plugins/libsndfile/SndFile.h
-		plugins/libsndfile/SndFileReader.h
-		plugins/libsndfile/SndFileWriter.h
-	)
+	if(LibSndFile_FOUND)
+		set(LIBSNDFILE_SRC
+			plugins/libsndfile/SndFile.cpp
+			plugins/libsndfile/SndFileReader.cpp
+			plugins/libsndfile/SndFileWriter.cpp
+		)
+		set(LIBSNDFILE_HDR
+			plugins/libsndfile/SndFile.h
+			plugins/libsndfile/SndFileReader.h
+			plugins/libsndfile/SndFileWriter.h
+		)
 
-	if(NOT PLUGIN_LIBSNDFILE)
-		list(APPEND INCLUDE ${LIBSNDFILE_INCLUDE_DIRS})
-		list(APPEND LIBRARIES ${LIBSNDFILE_LIBRARIES})
-		list(APPEND SRC ${LIBSNDFILE_SRC})
-		list(APPEND HDR ${LIBSNDFILE_HDR})
-		list(APPEND STATIC_PLUGINS SndFile)
+		if(NOT PLUGIN_LIBSNDFILE)
+			list(APPEND INCLUDE ${LIBSNDFILE_INCLUDE_DIRS})
+			list(APPEND LIBRARIES ${LIBSNDFILE_LIBRARIES})
+			list(APPEND SRC ${LIBSNDFILE_SRC})
+			list(APPEND HDR ${LIBSNDFILE_HDR})
+			list(APPEND STATIC_PLUGINS SndFile)
+		endif()
+	else()
+		set(WITH_LIBSNDFILE FALSE)
+		message(WARNING "LibSndFile not found, plugin will not be built.")
 	endif()
 endif()
 
 # OpenAL
 if(WITH_OPENAL)
-	find_package(OpenAL REQUIRED)
+	find_package(OpenAL ${PACKAGE_OPTION})
 
-	set(OPENAL_SRC
-		plugins/openal/OpenALDevice.cpp
-		plugins/openal/OpenALReader.cpp
-	)
-	set(OPENAL_HDR
-		plugins/openal/OpenALDevice.h
-		plugins/openal/OpenALReader.h
-	)
+	if(OpenAL_FOUND)
+		set(OPENAL_SRC
+			plugins/openal/OpenALDevice.cpp
+			plugins/openal/OpenALReader.cpp
+		)
+		set(OPENAL_HDR
+			plugins/openal/OpenALDevice.h
+			plugins/openal/OpenALReader.h
+		)
 
-	if(NOT PLUGIN_OPENAL)
-		list(APPEND INCLUDE ${OPENAL_INCLUDE_DIR})
-		list(APPEND LIBRARIES ${OPENAL_LIBRARY})
-		list(APPEND SRC ${OPENAL_SRC})
-		list(APPEND HDR ${OPENAL_HDR})
-		list(APPEND STATIC_PLUGINS OpenALDevice)
+		if(NOT PLUGIN_OPENAL)
+			list(APPEND INCLUDE ${OPENAL_INCLUDE_DIR})
+			list(APPEND LIBRARIES ${OPENAL_LIBRARY})
+			list(APPEND SRC ${OPENAL_SRC})
+			list(APPEND HDR ${OPENAL_HDR})
+			list(APPEND STATIC_PLUGINS OpenALDevice)
+		endif()
+	else()
+		set(WITH_OPENAL FALSE)
+		message(WARNING "OpenAL not found, plugin will not be built.")
 	endif()
 endif()
 
 # Python
 if(WITH_PYTHON)
-	find_package(PythonLibs REQUIRED)
-	list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
+	find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
 
-	if(WITH_PYTHON_MODULE)
-		find_package(PythonInterp REQUIRED)
+	if(PythonLibs_FOUND)
+		list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
+
+		if(WITH_PYTHON_MODULE)
+			find_package(PythonInterp 3.2 ${PACKAGE_OPTION})
+
+			if(NOT PythonInterp_FOUND)
+				set(WITH_PYTHON_MODULE FALSE)
+				message(WARNING "Python interpreter not found, module will not be built.")
+			endif()
+		endif()
+
+		set(AUDASPACE_PY_LIBRARY -laudaspace-py)
+	else()
+		set(WITH_JACK FALSE)
+		message(WARNING "Python libraries not found, language binding will not be built.")
 	endif()
-
-	set(AUDASPACE_PY_LIBRARY -laudaspace-py)
 endif()
 
 # SDL
@@ -419,26 +463,32 @@ if(WITH_SDL)
 		if(SDL2_FOUND)
 			set(SDL_INCLUDE_DIR ${SDL2_INCLUDE_DIR})
 			set(SDL_LIBRARY ${SDL2_LIBRARY})
+			set(SDL_FOUND TRUE)
 		else()
-			find_package(SDL REQUIRED)
+			find_package(SDL ${PACKAGE_OPTION})
 		endif()
 	else()
-		find_package(SDL REQUIRED)
+		find_package(SDL ${PACKAGE_OPTION})
 	endif()
 
-	set(SDL_SRC
-		plugins/sdl/SDLDevice.cpp
-	)
-	set(SDL_HDR
-		plugins/sdl/SDLDevice.h
-	)
+	if(SDL_FOUND)
+		set(SDL_SRC
+			plugins/sdl/SDLDevice.cpp
+		)
+		set(SDL_HDR
+			plugins/sdl/SDLDevice.h
+		)
 
-	if(NOT PLUGIN_SDL)
-		list(APPEND INCLUDE ${SDL_INCLUDE_DIR})
-		list(APPEND LIBRARIES ${SDL_LIBRARY})
-		list(APPEND SRC ${SDL_SRC})
-		list(APPEND HDR ${SDL_HDR})
-		list(APPEND STATIC_PLUGINS SDLDevice)
+		if(NOT PLUGIN_SDL)
+			list(APPEND INCLUDE ${SDL_INCLUDE_DIR})
+			list(APPEND LIBRARIES ${SDL_LIBRARY})
+			list(APPEND SRC ${SDL_SRC})
+			list(APPEND HDR ${SDL_HDR})
+			list(APPEND STATIC_PLUGINS SDLDevice)
+		endif()
+	else()
+		set(WITH_SDL FALSE)
+		message(WARNING "SDL not found, plugin will not be built.")
 	endif()
 endif()
 
@@ -662,19 +712,29 @@ endif()
 # docs
 
 if(WITH_DOCS)
-	find_package(Doxygen REQUIRED)
+	find_package(Doxygen ${PACKAGE_OPTION})
 
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	if(Doxygen_FOUND)
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
-	add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
+		add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
+	else()
+		set(WITH_DOCS FALSE)
+		message(WARNING "Doxygen not found, documentation will not be built.")
+	endif()
 endif()
 
 if(WITH_BINDING_DOCS)
-	find_package(Sphinx REQUIRED)
+	find_package(Sphinx ${PACKAGE_OPTION})
 
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
+	if(Sphinx_FOUND)
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 
-	add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
+		add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
+	else()
+		set(WITH_BINDING_DOCS FALSE)
+		message(WARNING "Sphinx not found, binding documentation will not be built.")
+	endif()
 endif()
 
 if(WITH_DOCS OR WITH_BINDING_DOCS)
