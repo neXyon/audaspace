@@ -6,7 +6,7 @@
 #  JACK_LIBRARIES - link these to use Jack
 
 # Use pkg-config to get hints about paths
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(JACK_PKGCONF jack)
 endif(PKG_CONFIG_FOUND)

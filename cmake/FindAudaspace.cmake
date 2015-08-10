@@ -24,7 +24,7 @@ SET(_audaspace_SEARCH_DIRS
 )
 
 # Use pkg-config to get hints about paths
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(AUDASPACE_PKGCONF audaspace)
 endif(PKG_CONFIG_FOUND)
