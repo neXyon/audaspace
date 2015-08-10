@@ -24,7 +24,7 @@ endif()
 project(audaspace)
 
 set(AUDASPACE_VERSION 1.0)
-set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION}-rc1)
+set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION})
 
 # sources
 
@@ -241,7 +241,7 @@ option(WITH_FFMPEG "Build With FFMPEG" TRUE)
 option(WITH_JACK "Build With Plugin" TRUE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
-option(WITH_PYTHON "Build With Python Library" FALSE)
+option(WITH_PYTHON "Build With Python Library" TRUE)
 option(WITH_SDL "Build With SDL" TRUE)
 option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
 
