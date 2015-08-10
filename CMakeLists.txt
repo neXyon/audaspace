@@ -253,7 +253,7 @@ if(WIN32 OR APPLE)
 	set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
 	set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
 else()
-	set(DEFAULT_PLUGIN_PATH "share/audaspace/plugins" CACHE PATH "Default plugin installation and loading path.")
+	set(DEFAULT_PLUGIN_PATH "/usr/share/audaspace/plugins" CACHE PATH "Default plugin installation and loading path.")
 	set(DOCUMENTATION_INSTALL_PATH "share/doc/audaspace" CACHE PATH "Path where the documentation is installed.")
 endif()
 
