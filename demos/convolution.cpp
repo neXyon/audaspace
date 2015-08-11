@@ -31,9 +31,10 @@ int main(int argc, char* argv[])
 	std::shared_ptr<ConvolverSound> convolver;
 	file1 = std::make_shared<File>(argv[1]);
 	file2 = std::make_shared<File>(argv[2]);
+
 	convolver = std::make_shared<ConvolverSound>(file1, file2);
 
-	device->play(convolver);
+	auto handle = device->play(convolver);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 
 	return 0;

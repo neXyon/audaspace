@@ -9,9 +9,11 @@
 #include "IReader.h"
 #include "ISound.h"
 #include "FFTConvolver.h"
+#include "fftw3.h"
 
 #include <memory>
 #include <vector>
+#include <thread>
 AUD_NAMESPACE_BEGIN
 
 /**
@@ -32,12 +34,12 @@ private:
 	
 	int m_L;
 	int m_M;
+	int m_N;
 
-	std::unique_ptr<FFTConvolver> m_convolver;
 	std::vector<std::unique_ptr<FFTConvolver>> m_convolvers;
 
-	sample_t* m_inBuffer;
 	sample_t* m_outBuffer;
+	std::vector<sample_t*> m_vecInOut;
 
 	int m_outBufferPos;
 	int m_eOutBufLen;
@@ -48,6 +50,9 @@ private:
 
 	int m_inChannels;
 	int m_irChannels;
+
+	std::thread m_thread;
+
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
 	ConvolverReader& operator=(const ConvolverReader&) = delete;
@@ -69,7 +74,14 @@ public:
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
 private:
-	void convolveAll();
+	/**
+	* Processes the impulse response sound for its use in the FFTConvolver class.
+	* \return A shared pointer to a vector of vectors. It will contain a vector with the processed data for each channel of the impulse response.
+	*/
+	std::vector<std::shared_ptr<std::vector<fftwf_complex>>> processImpulseResponse();
+	void divideByChannel(sample_t* buffer, int len, int channels);
+	void joinByChannel(int len);
+	void loadBuffer(int ini);
 };
 
 AUD_NAMESPACE_END

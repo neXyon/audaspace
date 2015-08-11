@@ -14,50 +14,31 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	if (m_irChannels != 1 && m_irChannels != m_inChannels)
 		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
 
-	bool eos = false;
 	m_M = m_irReader->getLength();
-	sample_t* irBuffer = new sample_t[m_M * m_irChannels];
-	std::vector<sample_t*> irBperChannel;
-	for (int i = 0; i < m_irChannels; i++)
-		irBperChannel.push_back(new sample_t[m_M]);
-
-	m_M++;
-	irReader->read(m_M, eos, irBuffer);
-	if (!eos)
-	{
-		delete irBuffer;
-		AUD_THROW(StateException, "The impulse response can not be read");	
-	}
-	m_L = pow(2, ceil(log2(m_M + m_M - 1))) - m_M + 1;
-
-	for (int i = 0; i < m_M*m_irChannels; i+=m_irChannels)
-	{
-		int k = 0;
-		for (int j = 0; j < m_irChannels; j++)
-			irBperChannel[j][k] = irBuffer[i + j];
-		k++;
-	}
+	m_N = pow(2, ceil(log2(m_M + AUD_DEFAULT_BUFFER_SIZE - 1)));
+	m_L = AUD_DEFAULT_BUFFER_SIZE;
+	
+	auto irVector = processImpulseResponse();
 
 	if (m_irChannels > 1)
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::make_unique<FFTConvolver>(irBperChannel[i], m_M, m_L));
+			m_convolvers.push_back(std::make_unique<FFTConvolver>(irVector[i], m_M, m_L, m_N));
 	else
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::make_unique<FFTConvolver>(irBperChannel[0], m_M, m_L));
+			m_convolvers.push_back(std::make_unique<FFTConvolver>(irVector[0], m_M, m_L, m_N));
 
-	delete irBuffer;
-	for (int i = 0; i < m_irChannels; i++)
-		delete irBperChannel[i];
-	m_outBuffer = new sample_t[m_L * m_inChannels];
-	m_inBuffer = new sample_t[m_L * m_inChannels];
-	m_outBufferPos = m_L;
-	m_eOutBufLen = m_L;
+	for (int i = 0; i < m_inChannels; i++)
+		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));
+	m_outBuffer = (sample_t*)std::malloc(m_L*m_inChannels * sizeof(sample_t));
+	m_outBufferPos = m_L*m_inChannels;
+	m_eOutBufLen = m_L*m_inChannels;
 }
 
 ConvolverReader::~ConvolverReader()
 {
 	delete m_outBuffer;
-	delete m_inBuffer;
+	for (int i = 0; i < m_inChannels; i++)
+		std::free(m_vecInOut[i]);
 }
 
 bool ConvolverReader::isSeekable() const
@@ -68,6 +49,8 @@ bool ConvolverReader::isSeekable() const
 void ConvolverReader::seek(int position)
 {
 	m_reader->seek(position);
+	for (int i = 0; i < m_inChannels; i++)
+		m_convolvers[i]->clearTail();
 }
 
 int ConvolverReader::getLength() const
@@ -85,91 +68,40 @@ Specs ConvolverReader::getSpecs() const
 	return m_reader->getSpecs();
 }
 
-void ConvolverReader::convolveAll()
+void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	/*int length = 2 * m_irLength;
 	if (length <= 0)
 	{
 		length = 0;
 		return;
 	}
-	int pos = 0;
-	while (pos+length<m_reader->getLength()*m_reader->getSpecs().channels)
+
+	int l = m_L;
+
+	int bufRest = m_eOutBufLen - m_outBufferPos;
+	if (bufRest < length*m_inChannels)
 	{
-		if (m_lastLength < length)
-		{
-			m_lastLength = length;
-			int len = (length * m_reader->getSpecs().channels) + (m_irReader->getLength() * m_irReader->getSpecs().channels);
-			m_n = pow(2, ceil(log2(len)));
-			m_bufLen = ((m_n / 2) + 1) * 2;
-
-			m_buffer = (fftwf_complex*)fftwf_malloc(m_bufLen * sizeof(fftwf_complex));
-			m_irBuffer = (fftwf_complex*)fftwf_malloc(m_bufLen * sizeof(fftwf_complex));
-			fftwf_plan p = fftwf_plan_dft_r2c_1d(m_n, (float*)m_irBuffer, (fftwf_complex*)m_irBuffer, FFTW_ESTIMATE);
-			m_fftPlanR2C = fftwf_plan_dft_r2c_1d(m_n, (float*)m_buffer, (fftwf_complex*)m_buffer, FFTW_ESTIMATE);
-			m_fftPlanC2R = fftwf_plan_dft_c2r_1d(m_n, (fftwf_complex*)m_buffer, (float*)m_buffer, FFTW_ESTIMATE);
-
-			memset(m_irBuffer, 0, m_bufLen * sizeof(fftwf_complex));
-			m_irReader->seek(0);
-			int irLength = m_irReader->getLength() + 1;
-			bool end = false;
-			m_irReader->read(irLength, end, (float*)m_irBuffer);
-			m_irReader->seek(0);
-			if (!end)
-			{
-				fftwf_destroy_plan(p);
-				AUD_THROW(StateException, "The impulse response cannot be read");
-			}
-			fftwf_execute(p);
-			fftwf_destroy_plan(p);
-		}
-
-		bool eos = false;
-		memset(m_buffer, 0, m_bufLen * sizeof(fftwf_complex));
-		m_reader->read(length, eos, (sample_t*)m_buffer);
-
-		fftwf_execute(m_fftPlanR2C);
-		for (int i = 0; i < m_bufLen; i++)
-		{
-			fftwf_complex a, b;
-			a[0] = ((fftwf_complex*)m_buffer)[i][0];
-			a[1] = ((fftwf_complex*)m_buffer)[i][1];
-			b[0] = ((fftwf_complex*)m_irBuffer)[i][0];
-			b[1] = ((fftwf_complex*)m_irBuffer)[i][1];
-
-			((fftwf_complex*)m_buffer)[i][0] = (a[0] * b[0]) - (a[1] * b[1]);
-			((fftwf_complex*)m_buffer)[i][1] = (a[0] * b[1]) + (a[1] * b[0]);
-		}
-		fftwf_execute(m_fftPlanC2R);
-
-		for (int i = 0; i < m_n; i++)
-			((float*)m_buffer)[i] = ((float*)m_buffer)[i] / (m_n*8);
-
-		for (int i = 0; i < m_irLength - 1; i++)
-		{
-			((sample_t*)m_buffer)[i] += m_tail[i];
-		}
-		for (int i = 0; i < m_irLength - 1; i++)
-		{
-			if (eos == false)
-				m_tail[i] = ((sample_t*)m_buffer)[i + (length * m_reader->getSpecs().channels)];
-			else
-				m_tail[i] = 0;
-		}
-		if (eos == true)
-			length += (m_irLength - 1);
-		std::memcpy(m_finalBuffer+(pos*m_reader->getSpecs().channels), m_buffer, length * AUD_SAMPLE_SIZE(m_reader->getSpecs()));
-		pos = pos + length - 1;
-	}*/
-}
-
-void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
-{
-	length = 0;
-	/*if (length <= 0)
+		if (bufRest > 0)
+			std::memcpy(buffer, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
+		loadBuffer(0);
+		std::memcpy(buffer + bufRest, m_outBuffer, ((length*m_inChannels) - bufRest)*sizeof(sample_t));
+		m_outBufferPos = (length*m_inChannels) - bufRest;
+	}
+	else
 	{
-		length = 0;
-		return;
+		std::memcpy(buffer, m_outBuffer + m_outBufferPos, length*m_inChannels*sizeof(sample_t));
+		m_outBufferPos += length*m_inChannels;
+	}
+
+
+
+
+	/*for (int i = 0; i < m_M*m_irChannels; i += m_irChannels)
+	{
+		int k = 0;
+		for (int j = 0; j < m_irChannels; j++)
+			irBperChannel[j][k] = irBuffer[i + j];
+		k++;
 	}
 
 	int l = m_L;
@@ -182,7 +114,7 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 		if (!m_eosReader)
 		{
 			m_reader->read(l, m_eosReader, m_inBuffer);
-			m_convolver->getNext(m_inBuffer, m_outBuffer, l);
+			m_convolver->getNext(m_inBuffer, l);
 			if (m_eosReader)
 			{
 				l2 = m_L - l;
@@ -221,6 +153,83 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 	{
 		eos = true;
 	}*/
+}
+
+void ConvolverReader::loadBuffer(int ini)
+{
+	int l = m_L;
+	m_reader->read(l, m_eosReader, m_outBuffer + ini);
+	divideByChannel(m_outBuffer, l*m_inChannels, m_inChannels);
+	for (int i = 0; i < m_inChannels; i++)
+		m_convolvers[i]->getNext(m_vecInOut[i], l);
+	joinByChannel(l);
+	return;
+}
+
+std::vector<std::shared_ptr<std::vector<fftwf_complex>>> ConvolverReader::processImpulseResponse()
+{
+	int channels = m_irReader->getSpecs().channels;
+	bool eos = false;
+	int length = m_irReader->getLength();
+	sample_t* buffer = (sample_t*)std::malloc(length * channels * sizeof(sample_t));
+	std::vector<std::shared_ptr<std::vector<fftwf_complex>>> result;
+	for (int i = 0; i < channels; i++)
+		result.push_back(std::make_shared<std::vector<fftwf_complex>>((m_N / 2) + 1));
+
+	int l = length;
+	m_irReader->read(l, eos, buffer);
+	//if (!eos || l != length)
+	//{
+	//	std::free(buffer);
+	//	AUD_THROW(StateException, "The impulse response can not be read");
+	//}
+
+	void* bufferFFT = fftwf_malloc(((m_N / 2) + 1) * 2 * sizeof(fftwf_complex));
+	fftwf_plan p = fftwf_plan_dft_r2c_1d(length, (float*)bufferFFT, (fftwf_complex*)bufferFFT, FFTW_ESTIMATE);
+	for (int i = 0; i < channels; i++)
+	{
+		int k = 0;
+		std::memset(bufferFFT, 0, ((m_N / 2) + 1) * 2 * sizeof(fftwf_complex));
+		for (int j = i; j < length*channels; j += channels)
+		{
+			((float*)bufferFFT)[k] = buffer[j];
+			k++;
+		}
+		fftwf_execute(p);
+		for (int j = 0; j < (m_N / 2) + 1; j++)
+		{
+			(*result[i])[j][0] = ((fftwf_complex*)bufferFFT)[j][0];
+			(*result[i])[j][1] = ((fftwf_complex*)bufferFFT)[j][1];
+		}
+	}
+
+	fftwf_free(bufferFFT);
+	fftwf_destroy_plan(p);
+	std::free(buffer);
+
+	return result;
+}
+
+void ConvolverReader::divideByChannel(sample_t* buffer, int len, int channels)
+{
+	int k = 0;
+	for (int i = 0; i < len; i += channels)
+	{	
+		for (int j = 0; j < m_irChannels; j++)
+			m_vecInOut[j][k] = buffer[i + j];
+		k++;
+	}
+}
+
+void ConvolverReader::joinByChannel(int len)
+{
+	int k = 0;
+	for (int i = 0; i < len*m_inChannels; i += m_inChannels)
+	{
+		for (int j = 0; j < m_vecInOut.size(); j++)
+			m_outBuffer[i + j] = m_vecInOut[j][k];
+		k++;
+	}
 }
 
 AUD_NAMESPACE_END

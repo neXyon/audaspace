@@ -11,10 +11,11 @@
 #include "fftw3.h"
 
 #include <memory>
+#include <vector>
 AUD_NAMESPACE_BEGIN
 
 /**
-* This class represents a reader for a sound that has its own shared volume
+* This class allows to easily convolve a sound using the Fourier transform method.
 */
 class AUD_API FFTConvolver
 {
@@ -22,12 +23,11 @@ private:
 	int m_M;
 	int m_L;
 	int m_N;
-	int m_Npow2;
 	int m_realBufLen;
 
 	void* m_inBuffer;
-	void* m_irBuffer;
 	float* m_tail;
+	std::shared_ptr<std::vector<fftwf_complex>> m_irBuffer;
 
 	fftwf_plan m_fftPlanR2C;
 	fftwf_plan m_fftPlanC2R;
@@ -37,14 +37,14 @@ private:
 	// delete copy constructor and operator=
 	FFTConvolver(const FFTConvolver&) = delete;
 	FFTConvolver& operator=(const FFTConvolver&) = delete;
-	FFTConvolver() = delete;
 
 public:
-	FFTConvolver(sample_t* irBuffer, int M, int L, bool measure=false);
+	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>>, int M, int L, int N, bool measure = false);
 	virtual ~FFTConvolver();
 
-	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int length);
+	void getNext(sample_t* buffer, int length);
 	void getTail(int& length, bool& eos, sample_t* buffer);
+	void clearTail();
 };
 
 AUD_NAMESPACE_END

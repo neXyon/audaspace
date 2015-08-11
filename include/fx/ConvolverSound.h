@@ -7,7 +7,10 @@
 */
 
 #include "ISound.h"
+#include "util/Buffer.h"
+
 #include <memory>
+#include <vector>
 
 AUD_NAMESPACE_BEGIN
 
@@ -33,9 +36,9 @@ private:
 
 public:
 	/**
-	* Creates a new VolumeSound.
-	* \param sound in which shall have its own volume.
-	* \param volumeStorage A shared pointer to a VolumeStorage object. It allows to change the volume of various sound in one go.
+	* Creates a new ConvolverSound.
+	* \param sound The sound that will be convolved.
+	* \param impulseResponse The impulse response sound.
 	*/
 	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> impulseResponse);
 
