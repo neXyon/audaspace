@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <math.h>
+#include <algorithm>
 
 AUD_NAMESPACE_BEGIN
 
@@ -30,8 +31,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	for (int i = 0; i < m_inChannels; i++)
 		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));
 	m_outBuffer = (sample_t*)std::malloc(m_L*m_inChannels * sizeof(sample_t));
-	m_outBufferPos = m_L*m_inChannels;
-	m_eOutBufLen = m_L*m_inChannels;
+	m_outBufLen = m_eOutBufLen = m_outBufferPos = m_L*m_inChannels;;
 }
 
 ConvolverReader::~ConvolverReader()
@@ -75,23 +75,28 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 		length = 0;
 		return;
 	}
-
-	int l = m_L;
-
-	int bufRest = m_eOutBufLen - m_outBufferPos;
-	if (bufRest < length*m_inChannels)
+	
+	int writePos = 0;
+	do
 	{
-		if (bufRest > 0)
-			std::memcpy(buffer, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
-		loadBuffer(0);
-		std::memcpy(buffer + bufRest, m_outBuffer, ((length*m_inChannels) - bufRest)*sizeof(sample_t));
-		m_outBufferPos = (length*m_inChannels) - bufRest;
-	}
-	else
-	{
-		std::memcpy(buffer, m_outBuffer + m_outBufferPos, length*m_inChannels*sizeof(sample_t));
-		m_outBufferPos += length*m_inChannels;
-	}
+		int writeLength = std::min((length*m_inChannels) - writePos, m_outBufLen);
+		int l = m_L;
+		int bufRest = m_eOutBufLen - m_outBufferPos;
+		if (bufRest < writeLength)
+		{
+			if (bufRest > 0)
+				std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
+			loadBuffer(0);
+			std::memcpy(buffer + writePos + bufRest, m_outBuffer, (writeLength - bufRest)*sizeof(sample_t));
+			m_outBufferPos = writeLength - bufRest;
+		}
+		else
+		{
+			std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, writeLength*sizeof(sample_t));
+			m_outBufferPos += writeLength;
+		}
+		writePos += writeLength;
+	} while (writePos < length*m_inChannels);
 
 
 

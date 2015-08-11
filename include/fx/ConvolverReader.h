@@ -43,6 +43,7 @@ private:
 
 	int m_outBufferPos;
 	int m_eOutBufLen;
+	int m_outBufLen;
 
 	int m_position;
 	bool m_eosReader;

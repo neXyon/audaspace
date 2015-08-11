@@ -5,6 +5,7 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "file/File.h"
+#include "IReader.h"
 
 #include <iostream>
 #include <condition_variable>
