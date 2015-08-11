@@ -16,7 +16,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
 
 	m_M = m_irReader->getLength();
-	m_N = pow(2, ceil(log2(m_M + AUD_DEFAULT_BUFFER_SIZE - 1)));
+	m_N = m_M + AUD_DEFAULT_BUFFER_SIZE - 1;//pow(2, ceil(log2(m_M + AUD_DEFAULT_BUFFER_SIZE - 1)));
 	m_L = AUD_DEFAULT_BUFFER_SIZE;
 	
 	auto irVector = processImpulseResponse();
@@ -31,7 +31,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	for (int i = 0; i < m_inChannels; i++)
 		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));
 	m_outBuffer = (sample_t*)std::malloc(m_L*m_inChannels * sizeof(sample_t));
-	m_outBufLen = m_eOutBufLen = m_outBufferPos = m_L*m_inChannels;;
+	m_outBufLen = m_eOutBufLen = m_outBufferPos = m_L*m_inChannels;
 }
 
 ConvolverReader::~ConvolverReader()
@@ -77,8 +77,8 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 	}
 	
 	int writePos = 0;
-	do
-	{
+	//do
+	//{
 		int writeLength = std::min((length*m_inChannels) - writePos, m_outBufLen);
 		int l = m_L;
 		int bufRest = m_eOutBufLen - m_outBufferPos;
@@ -96,7 +96,7 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 			m_outBufferPos += writeLength;
 		}
 		writePos += writeLength;
-	} while (writePos < length*m_inChannels);
+	//} while (writePos < length*m_inChannels);
 
 
 
@@ -163,7 +163,7 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 void ConvolverReader::loadBuffer(int ini)
 {
 	int l = m_L;
-	m_reader->read(l, m_eosReader, m_outBuffer + ini);
+	m_reader->read(l, m_eosReader, m_outBuffer);
 	divideByChannel(m_outBuffer, l*m_inChannels, m_inChannels);
 	for (int i = 0; i < m_inChannels; i++)
 		m_convolvers[i]->getNext(m_vecInOut[i], l);
@@ -183,6 +183,7 @@ std::vector<std::shared_ptr<std::vector<fftwf_complex>>> ConvolverReader::proces
 
 	int l = length;
 	m_irReader->read(l, eos, buffer);
+	Specs specs = m_irReader->getSpecs();
 	//if (!eos || l != length)
 	//{
 	//	std::free(buffer);
@@ -190,7 +191,7 @@ std::vector<std::shared_ptr<std::vector<fftwf_complex>>> ConvolverReader::proces
 	//}
 
 	void* bufferFFT = fftwf_malloc(((m_N / 2) + 1) * 2 * sizeof(fftwf_complex));
-	fftwf_plan p = fftwf_plan_dft_r2c_1d(length, (float*)bufferFFT, (fftwf_complex*)bufferFFT, FFTW_ESTIMATE);
+	fftwf_plan p = fftwf_plan_dft_r2c_1d(m_N, (float*)bufferFFT, (fftwf_complex*)bufferFFT, FFTW_ESTIMATE);
 	for (int i = 0; i < channels; i++)
 	{
 		int k = 0;
@@ -220,7 +221,7 @@ void ConvolverReader::divideByChannel(sample_t* buffer, int len, int channels)
 	int k = 0;
 	for (int i = 0; i < len; i += channels)
 	{	
-		for (int j = 0; j < m_irChannels; j++)
+		for (int j = 0; j < channels; j++)
 			m_vecInOut[j][k] = buffer[i + j];
 		k++;
 	}

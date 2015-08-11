@@ -14,7 +14,7 @@ FFTConvolver::FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, int M
 	else
 		flag = FFTW_ESTIMATE;
 
-	m_tail = (float*)calloc(m_M - 1, sizeof(float*));
+	m_tail = (float*)calloc(m_M - 1, sizeof(float));
 	m_realBufLen = ((m_N / 2) + 1) * 2;
 	m_inBuffer = fftwf_malloc(m_realBufLen * sizeof(fftwf_complex));
 
@@ -48,14 +48,14 @@ void FFTConvolver::getNext(sample_t* buffer, int length)
 	}
 	fftwf_execute(m_fftPlanC2R);
 
+	for (int i = 0; i < m_N; i++)
+		((float*)m_inBuffer)[i] /= (m_N);
+
 	for (int i = 0; i < m_M - 1; i++)
 		((float*)m_inBuffer)[i] += m_tail[i];
 
 	for (int i = 0; i < m_M - 1; i++)
-		m_tail[i] = ((float*)m_inBuffer)[i + m_L];
-
-	for (int i = 0; i < m_N; i++)
-		((float*)m_inBuffer)[i] /= (m_N*8);
+		m_tail[i] = ((float*)m_inBuffer)[i + length];
 
 	std::memcpy(buffer, m_inBuffer, length * sizeof(sample_t));
 }
