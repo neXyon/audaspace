@@ -381,7 +381,7 @@ endif()
 if(WITH_LIBSNDFILE)
 	find_package(LibSndFile ${PACKAGE_OPTION})
 
-	if(LibSndFile_FOUND)
+	if(LIBSNDFILE_FOUND)
 		set(LIBSNDFILE_SRC
 			plugins/libsndfile/SndFile.cpp
 			plugins/libsndfile/SndFileReader.cpp
@@ -410,7 +410,7 @@ endif()
 if(WITH_OPENAL)
 	find_package(OpenAL ${PACKAGE_OPTION})
 
-	if(OpenAL_FOUND)
+	if(OPENAL_FOUND)
 		set(OPENAL_SRC
 			plugins/openal/OpenALDevice.cpp
 			plugins/openal/OpenALReader.cpp
@@ -437,7 +437,7 @@ endif()
 if(WITH_PYTHON)
 	find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
 
-	if(PythonLibs_FOUND)
+	if(PYTHONLIBS_FOUND)
 		list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS})
 
 		if(WITH_PYTHON_MODULE)
