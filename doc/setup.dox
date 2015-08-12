@@ -21,9 +21,11 @@ Audaspace is written in C++ 11 so a fairly recent compiler (g++ 4.8.2, clang 3.3
 Getting the Code
 ----------------
 
-Git is used to get the source code for blender.
+The audaspace source code or binary releases can be downloaded from https://github.com/audaspace/audaspace/releases.
 
-    git clone https://github.com:neXyon/audaspace.git
+For the most recent version you can use git to get the source code.
+
+    git clone https://github.com:audaspace/audaspace.git
 
 Configuration
 -------------
@@ -77,4 +79,3 @@ When audaspace is installed to the system, the required configuration for _pkgco
 It is also possible to build audaspace as a static library and use it directly in a project. For this the library has to be configured accordingly with ccmake and after building the resulting library file can be added to the project's build system.
 
 */
-

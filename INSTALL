@@ -3,8 +3,6 @@ Audaspace Installation Guide
 
 This document guides through the building and installation of audaspace.
 
-This page describes how to build and install audaspace.
-
 The build system used to build audaspace is CMake and it allows very building the library for very different application scenarios from a very general shared library build with plugins that is suitable for system wide installations to building everything into a single static library to be linked into a standalone program.
 
 Build Dependencies
@@ -22,9 +20,11 @@ Audaspace is written in C++ 11 so a fairly recent compiler (g++ 4.8.2, clang 3.3
 Getting the Code
 ----------------
 
-Git is used to get the source code for blender.
+The audaspace source code or binary releases can be downloaded from https://github.com/audaspace/audaspace/releases.
 
-    git clone https://github.com:neXyon/audaspace.git
+For the most recent version you can use git to get the source code.
+
+    git clone https://github.com:audaspace/audaspace.git
 
 Configuration
 -------------
