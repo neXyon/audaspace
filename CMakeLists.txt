@@ -443,7 +443,7 @@ if(WITH_PYTHON)
 		if(WITH_PYTHON_MODULE)
 			find_package(PythonInterp 3.2 ${PACKAGE_OPTION})
 
-			if(NOT PythonInterp_FOUND)
+			if(NOT PYTHONINTERP_FOUND)
 				set(WITH_PYTHON_MODULE FALSE)
 				message(WARNING "Python interpreter not found, module will not be built.")
 			endif()
@@ -716,7 +716,7 @@ endif()
 if(WITH_DOCS)
 	find_package(Doxygen ${PACKAGE_OPTION})
 
-	if(Doxygen_FOUND)
+	if(DOXYGEN_FOUND)
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
 		add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
@@ -729,7 +729,7 @@ endif()
 if(WITH_BINDING_DOCS)
 	find_package(Sphinx ${PACKAGE_OPTION})
 
-	if(Sphinx_FOUND)
+	if(SPHINX_FOUND)
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 
 		add_custom_target(bindings_doc ALL ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" COMMENT "Building C/Python HTML documentation with Sphinx.")
