@@ -42,6 +42,7 @@ set(SRC
 	src/fx/ButterworthCalculator.cpp
 	src/fx/Butterworth.cpp
 	src/fx/CallbackIIRFilterReader.cpp
+	src/fx/Convolver.cpp
 	src/fx/ConvolverReader.cpp
 	src/fx/ConvolverSound.cpp
 	src/fx/Delay.cpp
@@ -149,6 +150,7 @@ set(PUBLIC_HDR
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
+	include/fx/Convolver.h
 	include/fx/ConvolverReader.h
 	include/fx/ConvolverSound.h
 	include/fx/Delay.h
