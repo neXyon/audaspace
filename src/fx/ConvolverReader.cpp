@@ -51,7 +51,7 @@ void ConvolverReader::seek(int position)
 {
 	m_reader->seek(position);
 	for (int i = 0; i < m_inChannels; i++)
-		m_convolvers[i]->clearTail();
+		m_convolvers[i]->reset();
 }
 
 int ConvolverReader::getLength() const

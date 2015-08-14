@@ -8,7 +8,7 @@
 
 #include "IReader.h"
 #include "ISound.h"
-#include "FFTConvolver.h"
+#include "Convolver.h"
 #include "fftw3.h"
 
 #include <memory>
@@ -36,7 +36,7 @@ private:
 	int m_M;
 	int m_N;
 
-	std::vector<std::unique_ptr<FFTConvolver>> m_convolvers;
+	std::vector<std::unique_ptr<Convolver>> m_convolvers;
 
 	sample_t* m_outBuffer;
 	std::vector<sample_t*> m_vecInOut;
