@@ -51,6 +51,7 @@ public:
 	virtual ~Convolver();
 
 	void getNext(sample_t* buffer, int& length);
+	void getRest(sample_t* buffer, int& length);
 	void reset();
 
 private:

@@ -58,6 +58,11 @@ void Convolver::getNext(sample_t* buffer, int& length)
 	m_readPosition += nElem;
 }
 
+void Convolver::getRest(sample_t* buffer, int& length)
+{
+
+}
+
 void Convolver::reset()
 {
 	m_mutex.lock();
