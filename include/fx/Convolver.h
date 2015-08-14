@@ -6,12 +6,14 @@
 * The Convolver class.
 */
 
-#include "IReader.h"
-#include "ISound.h"
+#include "FFTConvolver.h"
 #include "fftw3.h"
 
 #include <memory>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <atomic>
 AUD_NAMESPACE_BEGIN
 
 /**
@@ -24,27 +26,35 @@ private:
 	int m_L;
 	int m_N;
 
-	int m_realBufLen;
-
 	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> m_irBuffers;
-	void* m_inBuffer;
-	float* m_tail;
+	std::vector<std::unique_ptr<FFTConvolver>> m_fftConvolvers;
 
-	fftwf_plan m_fftPlanR2C;
-	fftwf_plan m_fftPlanC2R;
+	int m_numThreads;
+	std::vector<std::thread> m_threads;
+	std::mutex m_mutex;
+	std::atomic_bool m_resetFlag;
 
-	int m_tailPos;
+	sample_t* m_inBuffer;
+	sample_t* m_outBuffer;
+	int m_bufLength;
+	int m_irLength;
+	int m_inLength;
+	int m_readPosition;
+	int m_writePosition;
 
 	// delete copy constructor and operator=
 	Convolver(const Convolver&) = delete;
 	Convolver& operator=(const Convolver&) = delete;
 
 public:
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, bool measure = false);
 	virtual ~Convolver();
 
-	void getNext(sample_t* buffer, int length);
+	void getNext(sample_t* buffer, int& length);
 	void reset();
+
+private:
+	void threadFunction(int id);
 };
 
 AUD_NAMESPACE_END
