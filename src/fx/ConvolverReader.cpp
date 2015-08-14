@@ -21,6 +21,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	
 	auto irVector = processFilter();
 
+	//TODO
 	/*if (m_irChannels > 1)
 		for (int i = 0; i < m_inChannels; i++)
 			m_convolvers.push_back(std::make_unique<FFTConvolver>(irVector[i], m_M, m_L, m_N));
