@@ -1,8 +1,6 @@
 #include "fx/FFTConvolver.h"
 
-#include <cstring>
 #include <math.h>
-#include <vector>
 
 AUD_NAMESPACE_BEGIN
 FFTConvolver::FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, int M, int L, int N, bool measure) :

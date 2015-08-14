@@ -26,6 +26,7 @@ private:
 
 	int m_realBufLen;
 
+	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> m_irBuffers;
 	void* m_inBuffer;
 	float* m_tail;
 
@@ -39,7 +40,7 @@ private:
 	Convolver& operator=(const Convolver&) = delete;
 
 public:
-	Convolver(sample_t* ir, int N, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, bool measure = false);
 	virtual ~Convolver();
 
 	void getNext(sample_t* buffer, int length);

@@ -19,7 +19,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	m_N = N;
 	m_M = m_L = N / 2;
 	
-	auto irVector = processImpulseResponse();
+	auto irVector = processFilter();
 
 	/*if (m_irChannels > 1)
 		for (int i = 0; i < m_inChannels; i++)
@@ -110,19 +110,19 @@ void ConvolverReader::loadBuffer(int ini)
 	return;
 }
 
-std::vector<std::shared_ptr<std::vector<std::vector<fftwf_complex>>>> ConvolverReader::processImpulseResponse()
+std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> ConvolverReader::processFilter()
 {
 	int channels = m_irReader->getSpecs().channels;
 	bool eos = false;
 	int length = m_irReader->getLength();
 	sample_t* buffer = (sample_t*)std::malloc(length * channels * sizeof(sample_t));
-	std::vector<std::shared_ptr<std::vector<std::vector<fftwf_complex>>>> result;
+	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> result;
 	int numParts = ceil((float)length / (N / 2));
 	for (int i = 0; i < channels; i++)
 	{
-		result.push_back(std::make_shared<std::vector<std::vector<fftwf_complex>>>());
+		result.push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>());
 		for (int j = 0; j < numParts; j++)
-			(*result[i]).push_back(std::vector<fftwf_complex>((N / 2) + 1));
+			(*result[i]).push_back(std::make_shared<std::vector<fftwf_complex>>((N / 2) + 1));
 	}
 	int l = length;
 	m_irReader->read(l, eos, buffer);
@@ -151,8 +151,8 @@ std::vector<std::shared_ptr<std::vector<std::vector<fftwf_complex>>>> ConvolverR
 			fftwf_execute(p);
 			for (int j = 0; j < (N / 2) + 1; j++)
 			{
-				(*result[i])[h][j][0] = ((fftwf_complex*)bufferFFT)[j][0];
-				(*result[i])[h][j][1] = ((fftwf_complex*)bufferFFT)[j][1];
+				(*(*result[i])[h])[j][0] = ((fftwf_complex*)bufferFFT)[j][0];
+				(*(*result[i])[h])[j][1] = ((fftwf_complex*)bufferFFT)[j][1];
 			}
 			partStart += N/2*channels;
 		}	
