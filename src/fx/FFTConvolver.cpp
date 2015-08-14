@@ -27,10 +27,10 @@ FFTConvolver::~FFTConvolver()
 	fftwf_destroy_plan(m_fftPlanR2C);
 }
 
-void FFTConvolver::getNext(sample_t* buffer, int length)
+void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int length)
 {
 	std::memset(m_inBuffer, 0, m_realBufLen * sizeof(fftwf_complex));
-	std::memcpy(m_inBuffer, buffer, length*sizeof(sample_t));
+	std::memcpy(m_inBuffer, inBuffer, length*sizeof(sample_t));
 
 	fftwf_execute(m_fftPlanR2C);
 	for (int i = 0; i < m_realBufLen / 2; i++)
@@ -55,7 +55,7 @@ void FFTConvolver::getNext(sample_t* buffer, int length)
 	for (int i = 0; i < m_M - 1; i++)
 		m_tail[i] = ((float*)m_inBuffer)[i + length];
 
-	std::memcpy(buffer, m_inBuffer, length * sizeof(sample_t));
+	std::memcpy(outBuffer, m_inBuffer, length * sizeof(sample_t));
 }
 
 void FFTConvolver::getTail(int& length, bool& eos, sample_t* buffer)

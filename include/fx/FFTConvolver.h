@@ -42,7 +42,7 @@ public:
 	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>>, int M, int L, int N, bool measure = false);
 	virtual ~FFTConvolver();
 
-	void getNext(sample_t* buffer, int length);
+	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int length);
 	void getTail(int& length, bool& eos, sample_t* buffer);
 	void clearTail();
 };
