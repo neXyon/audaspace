@@ -24,12 +24,10 @@ private:
 	int m_L;
 	int m_N;
 
-	std::shared_ptr<IReader> m_irReader;
 	int m_realBufLen;
 
 	void* m_inBuffer;
 	float* m_tail;
-	std::shared_ptr<std::vector<std::vector<fftwf_complex>>> m_irBuffer;
 
 	fftwf_plan m_fftPlanR2C;
 	fftwf_plan m_fftPlanC2R;
@@ -41,7 +39,7 @@ private:
 	Convolver& operator=(const Convolver&) = delete;
 
 public:
-	Convolver(std::shared_ptr<IReader> ir, int N, bool measure = false);
+	Convolver(sample_t* ir, int N, bool measure = false);
 	virtual ~Convolver();
 
 	void getNext(sample_t* buffer, int length);

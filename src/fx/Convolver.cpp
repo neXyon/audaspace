@@ -5,9 +5,10 @@
 #include <vector>
 
 AUD_NAMESPACE_BEGIN
-Convolver::Convolver(std::shared_ptr<IReader> ir, int N, bool measure) :
-	m_M(N/2), m_L(N/2), m_N(N), m_tailPos(0), m_irReader(ir)
+Convolver::Convolver(sample_t* ir, int N, bool measure) :
+	m_M(N/2), m_L(N/2), m_N(N), m_tailPos(0)
 {
+
 }
 
 Convolver::~Convolver()
