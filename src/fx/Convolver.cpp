@@ -25,7 +25,14 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 
 Convolver::~Convolver()
 {
+	m_resetFlag = true;
+	for (int i = 0; i < m_threads.size(); i++)
+	{
+		if (m_threads[i].joinable())
+			m_threads[i].join();
+	}
 	std::free(m_outBuffer);
+	std::free(m_inBuffer);
 	for (auto buf : m_fftOutBuffers)
 		std::free(buf);
 }
@@ -75,13 +82,17 @@ void Convolver::getRest(sample_t* buffer, int& length)
 
 void Convolver::reset()
 {
-	m_mutex.lock();
 	m_resetFlag = true;
+	for (int i = 0; i < m_threads.size(); i++)
+	{
+		if (m_threads[i].joinable())
+			m_threads[i].join();
+	}
+
 	m_inLength = 0;
 	m_readPosition = 0;
 	m_writePosition = 0;
 	std::memcpy(m_outBuffer, 0, m_bufLength*sizeof(sample_t));
-	m_mutex.unlock();
 }
 
 void Convolver::threadFunction(int id)
@@ -94,7 +105,6 @@ void Convolver::threadFunction(int id)
 	for (int i = start; i < end; i++)
 	{
 		m_fftConvolvers[i]->getNext(m_inBuffer, m_fftOutBuffers[id+1], m_inLength);
-		//m_mutex.lock();
 		if (m_resetFlag) 
 		{
 			m_resetFlag = false;
@@ -112,7 +122,6 @@ void Convolver::threadFunction(int id)
 				m_outBuffer[position] += m_fftOutBuffers[id+1][j];
 			}
 		}
-		//m_mutex.unlock();
 	}
 }
 AUD_NAMESPACE_END

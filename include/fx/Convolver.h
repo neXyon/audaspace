@@ -32,7 +32,6 @@ private:
 
 	int m_numThreads;
 	std::vector<std::thread> m_threads;
-	std::mutex m_mutex;
 	std::atomic_bool m_resetFlag;
 
 	sample_t* m_inBuffer;
