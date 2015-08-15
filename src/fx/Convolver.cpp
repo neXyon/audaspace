@@ -13,7 +13,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 		m_fftConvolvers.push_back(std::make_unique<FFTConvolver>((*m_irBuffers)[i], m_M, m_L, m_N, measure));
 
 	m_bufLength = irLength * 2;
-	m_outBuffer = (sample_t*)std::malloc(m_bufLength*sizeof(sample_t));
+	m_outBuffer = (sample_t*)std::calloc(m_bufLength, sizeof(sample_t));
 	m_inBuffer = (sample_t*)std::malloc(m_L*sizeof(sample_t));
 	m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1);
 	m_threads = std::vector<std::thread>(m_numThreads);
@@ -31,18 +31,27 @@ void Convolver::getNext(sample_t* buffer, int& length)
 		length = 0;
 		return;
 	}
-	
-	m_inLength = length;
+
 	std::memcpy(m_inBuffer, buffer, length*sizeof(sample_t));
 	sample_t* outBuf = (sample_t*)std::malloc(length * sizeof(sample_t));
 
 	m_fftConvolvers[0]->getNext(buffer, outBuf, length);
 	
 	for (int i = 0; i < m_threads.size(); i++)
+	{
 		if (m_threads[i].joinable())
 			m_threads[i].join();
+	}
 
 	m_writePosition += m_inLength;
+	if (m_writePosition > m_bufLength - length)
+	{
+		m_writePosition = 0;
+		std::memset(m_outBuffer + (m_bufLength / 2), 0, (m_bufLength / 2)*sizeof(sample_t));
+	}
+	else
+		if (m_writePosition >= m_bufLength / 2);
+			std::memset(m_outBuffer, 0, (m_bufLength / 2)*sizeof(sample_t));
 	m_inLength = length;
 
 	for (int i = 0; i < m_threads.size(); i++)
@@ -54,8 +63,9 @@ void Convolver::getNext(sample_t* buffer, int& length)
 	m_mutex.unlock();
 	
 	int nElem = length;
+	m_readPosition = m_writePosition;
 	std::memcpy(buffer, m_outBuffer + m_readPosition, nElem*sizeof(sample_t));
-	m_readPosition += nElem;
+	std::free(outBuf);
 }
 
 void Convolver::getRest(sample_t* buffer, int& length)
@@ -93,10 +103,19 @@ void Convolver::threadFunction(int id)
 		else
 		{
 			int delay = i*m_M;
-			for (int i = 0; i < m_inLength; i++)
-				m_outBuffer[i + m_writePosition + delay] += outBuf[i];
+			int position = 0;
+			for (int j = 0; j < m_inLength; j++)
+			{
+				position = j + m_writePosition + delay;
+				if (position >= m_bufLength)
+					position -= m_bufLength;
+				if (position >= m_bufLength || position < 0)
+					int a = 0;
+				m_outBuffer[position] += outBuf[j];
+			}
 		}
 		m_mutex.unlock();
 	}
+	std::free(outBuf);
 }
 AUD_NAMESPACE_END
