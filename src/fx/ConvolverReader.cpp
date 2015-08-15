@@ -5,7 +5,7 @@
 #include <math.h>
 #include <algorithm>
 
-#define N 4096
+#define N 16384
 AUD_NAMESPACE_BEGIN
 
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader) :

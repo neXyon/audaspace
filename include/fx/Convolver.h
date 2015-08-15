@@ -27,6 +27,7 @@ private:
 	int m_N;
 
 	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> m_irBuffers;
+	std::vector<sample_t*> m_fftOutBuffers;
 	std::vector<std::unique_ptr<FFTConvolver>> m_fftConvolvers;
 
 	int m_numThreads;
