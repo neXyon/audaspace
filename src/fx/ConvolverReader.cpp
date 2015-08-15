@@ -5,7 +5,7 @@
 #include <math.h>
 #include <algorithm>
 
-#define N 16384
+#define N 8192
 AUD_NAMESPACE_BEGIN
 
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader) :
@@ -114,14 +114,12 @@ void ConvolverReader::loadBuffer(int ini)
 std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> ConvolverReader::processFilter()
 {
 	int channels = m_irReader->getSpecs().channels;
-	//int channels = 2;
 	bool eos = false;
 	int length = m_irReader->getLength();
-	//int length = 16;
 	sample_t* buffer = (sample_t*)std::malloc(length * channels * sizeof(sample_t));
-	//sample_t* buffer = new sample_t[32]{1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16};
 	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> result;
 	int numParts = ceil((float)length / (N / 2));
+
 	for (int i = 0; i < channels; i++)
 	{
 		result.push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>());
