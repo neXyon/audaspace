@@ -3,7 +3,7 @@
 #include <math.h>
 #include <algorithm>
 
-#define MAX_NUM_THREADS 4
+#define MAX_NUM_THREADS 2
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, bool measure) :
@@ -12,7 +12,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	for (int i = 0; i < m_irBuffers->size(); i++)
 		m_fftConvolvers.push_back(std::make_unique<FFTConvolver>((*m_irBuffers)[i], m_M, m_L, m_N, measure));
 
-	m_bufLength = irLength * 2;
+	m_bufLength = std::ceil((float)irLength / (float)m_L)*m_L * 2;
 	m_outBuffer = (sample_t*)std::calloc(m_bufLength, sizeof(sample_t));
 	m_inBuffer = (sample_t*)std::malloc(m_L*sizeof(sample_t));
 	m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1);
@@ -50,7 +50,7 @@ void Convolver::getNext(sample_t* buffer, int& length)
 		std::memset(m_outBuffer + (m_bufLength / 2), 0, (m_bufLength / 2)*sizeof(sample_t));
 	}
 	else
-		if (m_writePosition >= m_bufLength / 2);
+		if (m_writePosition == m_bufLength / 2)
 			std::memset(m_outBuffer, 0, (m_bufLength / 2)*sizeof(sample_t));
 	m_inLength = length;
 
@@ -94,7 +94,7 @@ void Convolver::threadFunction(int id)
 	for (int i = start; i < end; i++)
 	{
 		m_fftConvolvers[i]->getNext(m_inBuffer, outBuf, m_inLength);
-		m_mutex.lock();
+		//m_mutex.lock();
 		if (m_resetFlag) 
 		{
 			m_resetFlag = false;
@@ -109,12 +109,10 @@ void Convolver::threadFunction(int id)
 				position = j + m_writePosition + delay;
 				if (position >= m_bufLength)
 					position -= m_bufLength;
-				if (position >= m_bufLength || position < 0)
-					int a = 0;
 				m_outBuffer[position] += outBuf[j];
 			}
 		}
-		m_mutex.unlock();
+		//m_mutex.unlock();
 	}
 	std::free(outBuf);
 }

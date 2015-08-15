@@ -5,7 +5,7 @@
 #include <math.h>
 #include <algorithm>
 
-#define N 2048
+#define N 4096
 AUD_NAMESPACE_BEGIN
 
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader) :
@@ -114,9 +114,12 @@ void ConvolverReader::loadBuffer(int ini)
 std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> ConvolverReader::processFilter()
 {
 	int channels = m_irReader->getSpecs().channels;
+	//int channels = 2;
 	bool eos = false;
 	int length = m_irReader->getLength();
+	//int length = 16;
 	sample_t* buffer = (sample_t*)std::malloc(length * channels * sizeof(sample_t));
+	//sample_t* buffer = new sample_t[32]{1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16};
 	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> result;
 	int numParts = ceil((float)length / (N / 2));
 	for (int i = 0; i < channels; i++)
@@ -127,23 +130,23 @@ std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_comple
 	}
 	int l = length;
 	m_irReader->read(l, eos, buffer);
-	Specs specs = m_irReader->getSpecs();
-	//if (!eos || l != length)
-	//{
-	//	std::free(buffer);
-	//	AUD_THROW(StateException, "The impulse response can not be read");
-	//}
+	/*Specs specs = m_irReader->getSpecs();
+	if (!eos || l != length)
+	{
+		std::free(buffer);
+		AUD_THROW(StateException, "The impulse response can not be read");
+	}*/
 
 	void* bufferFFT = fftwf_malloc(((N / 2) + 1) * 2 * sizeof(fftwf_complex));
 	fftwf_plan p = fftwf_plan_dft_r2c_1d(N, (float*)bufferFFT, (fftwf_complex*)bufferFFT, FFTW_ESTIMATE);
 	for (int i = 0; i < channels; i++)
 	{
-		std::memset(bufferFFT, 0, ((N / 2) + 1) * 2 * sizeof(fftwf_complex));
 		int partStart = 0;
 		for (int h = 0; h < numParts; h++) 
 		{
 			int k = 0;
 			int len = std::min(partStart + ((N / 2)*channels), length*channels);
+			std::memset(bufferFFT, 0, ((N / 2) + 1) * 2 * sizeof(fftwf_complex));
 			for (int j = partStart; j < len; j += channels)
 			{
 				((float*)bufferFFT)[k] = buffer[j + i];
