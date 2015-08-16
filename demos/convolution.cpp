@@ -33,9 +33,13 @@ int main(int argc, char* argv[])
 	file1 = std::make_shared<File>(argv[1]);
 	file2 = std::make_shared<File>(argv[2]);
 
-	convolver = std::make_shared<ConvolverSound>(file1, file2);
+	convolver = std::make_shared<ConvolverSound>(file1, file2, 8);
 
+	device->lock();
 	auto handle = device->play(convolver);
+	handle->setLoopCount(-1);
+	device->unlock();
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 
 	return 0;
