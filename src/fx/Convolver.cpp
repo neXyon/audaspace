@@ -3,11 +3,11 @@
 #include <math.h>
 #include <algorithm>
 
-#define MAX_NUM_THREADS 32
+#define MAX_NUM_THREADS 8
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, bool measure) :
-	m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0)
+m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_numThreads(m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads)
 {
 	m_resetFlag = false;
 	m_stopFlag = false;
@@ -21,9 +21,6 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	m_outBuffer = (sample_t*)std::calloc(m_bufLength, sizeof(sample_t));
 	m_inBuffer = (sample_t*)std::malloc(m_L*sizeof(sample_t));
 
-	m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1);
-	m_mutexes = std::vector<std::mutex>(m_numThreads);
-	m_conditions = std::vector<std::condition_variable>(m_numThreads);
 	for (int i = 0; i < m_numThreads; i++)
 		m_threads.push_back(std::thread(&Convolver::threadFunction, this, i));
 }

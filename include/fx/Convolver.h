@@ -13,6 +13,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include <atomic>
 AUD_NAMESPACE_BEGIN
 
