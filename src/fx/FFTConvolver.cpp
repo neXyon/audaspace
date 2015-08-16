@@ -73,7 +73,7 @@ void FFTConvolver::getTail(int& length, bool& eos, sample_t* buffer)
 	}
 	else
 		m_tailPos += length;
-	std::memcpy(buffer, m_tail, length);
+	std::memcpy(buffer, m_tail, length*sizeof(sample_t));
 }
 
 void FFTConvolver::clearTail()
