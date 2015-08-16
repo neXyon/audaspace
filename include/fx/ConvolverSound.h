@@ -30,6 +30,11 @@ private:
 	*/
 	std::shared_ptr<ISound> m_impulseResponse;
 
+	/**
+	*The max number of threads this sound will use when playing(per channel)
+	*/
+	int m_nThreads;
+
 	// delete copy constructor and operator=
 	ConvolverSound(const ConvolverSound&) = delete;
 	ConvolverSound& operator=(const ConvolverSound&) = delete;
@@ -39,8 +44,9 @@ public:
 	* Creates a new ConvolverSound.
 	* \param sound The sound that will be convolved.
 	* \param impulseResponse The impulse response sound.
+	* \param nThreads The max number of threads per channel that this sound will use when playing (default 4) .
 	*/
-	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> impulseResponse);
+	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> impulseResponse, int nThreads=4);
 
 	virtual std::shared_ptr<IReader> createReader();
 

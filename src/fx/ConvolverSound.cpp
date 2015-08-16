@@ -8,14 +8,14 @@
 
 AUD_NAMESPACE_BEGIN
 
-ConvolverSound::ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> impulseResponse) :
-	m_sound(sound), m_impulseResponse(impulseResponse)
+ConvolverSound::ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> impulseResponse, int nThreads) :
+	m_sound(sound), m_impulseResponse(impulseResponse), m_nThreads(nThreads)
 {
 }
 
 std::shared_ptr<IReader> ConvolverSound::createReader()
 {
-	return std::make_shared<ConvolverReader>(m_sound->createReader(), m_impulseResponse->createReader());
+	return std::make_shared<ConvolverReader>(m_sound->createReader(), m_impulseResponse->createReader(), m_nThreads);
 }
 
 std::shared_ptr<ISound> ConvolverSound::getImpulseResponse()
