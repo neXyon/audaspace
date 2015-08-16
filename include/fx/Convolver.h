@@ -46,6 +46,9 @@ private:
 	int m_readPosition;
 	int m_writePosition;
 
+	bool m_soundEnded;
+	int m_endPosition;
+
 	// delete copy constructor and operator=
 	Convolver(const Convolver&) = delete;
 	Convolver& operator=(const Convolver&) = delete;
@@ -55,7 +58,8 @@ public:
 	virtual ~Convolver();
 
 	void getNext(sample_t* buffer, int& length);
-	void getRest(sample_t* buffer, int& length);
+	void getRest(int& length, bool& eos, sample_t* buffer);
+	void endSound();
 	void reset();
 
 private:

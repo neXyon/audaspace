@@ -7,7 +7,7 @@
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, bool measure) :
-m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_numThreads(m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads)
+	m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_soundEnded(false), m_numThreads(m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads)
 {
 	m_resetFlag = false;
 	m_stopFlag = false;
@@ -18,6 +18,7 @@ m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLengt
 	}
 
 	m_bufLength = std::ceil((float)irLength / (float)m_L)*m_L * 2;
+	m_endPosition = m_bufLength;
 	m_outBuffer = (sample_t*)std::calloc(m_bufLength, sizeof(sample_t));
 	m_inBuffer = (sample_t*)std::malloc(m_L*sizeof(sample_t));
 
@@ -31,6 +32,7 @@ Convolver::~Convolver()
 	m_resetFlag = true;
 	for (int i = 0; i < m_threads.size(); i++)
 	{
+		std::lock_guard<std::mutex> lck(m_mutexes[i]);
 		m_conditions[i].notify_all();
 		if (m_threads[i].joinable())
 			m_threads[i].join();
@@ -43,7 +45,7 @@ Convolver::~Convolver()
 
 void Convolver::getNext(sample_t* buffer, int& length)
 {
-	if (length > m_L)
+	if (length > m_L || m_soundEnded)
 	{
 		length = 0;
 		return;
@@ -73,12 +75,61 @@ void Convolver::getNext(sample_t* buffer, int& length)
 
 	int nElem = length;
 	m_readPosition = m_writePosition;
-	std::memcpy(buffer, m_outBuffer + m_readPosition, nElem*sizeof(sample_t));
+	std::memcpy(buffer, m_outBuffer + m_writePosition, nElem*sizeof(sample_t));
 }
 
-void Convolver::getRest(sample_t* buffer, int& length)
+void Convolver::endSound()
 {
+	for (int i = 0; i < m_numThreads; i++)
+		std::lock_guard<std::mutex> lck(m_mutexes[i]);
 
+	m_soundEnded = true;
+	m_endPosition = m_readPosition + m_inLength + m_irLength - 1;
+	int length = m_M;
+	bool eos = false;
+	int pos = m_writePosition;
+	pos += m_inLength;
+
+	for (int i = 0; i < m_fftConvolvers.size(); i++)
+	{
+		m_fftConvolvers[i]->getTail(length, eos, m_fftOutBuffers[0]);
+		if(eos)
+			m_fftConvolvers[i]->clearTail();
+
+		int delay = i*m_M;
+		int position = 0;
+		for (int j = 0; j < m_inLength; j++)
+		{
+			position = j + pos + delay;
+			if (position >= m_bufLength)
+				position -= m_bufLength;
+			m_outBuffer[position] += m_fftOutBuffers[0][j];
+		}
+	}
+}
+
+void Convolver::getRest(int& length, bool& eos, sample_t* buffer)
+{
+	if (length <= 0 || !m_soundEnded)
+	{
+		length = 0;
+		return;
+	}
+
+	for (int i = 0; i < m_numThreads; i++)
+		std::lock_guard<std::mutex> lck(m_mutexes[i]);
+
+	m_readPosition += m_inLength;	
+
+	if (m_readPosition + length > m_endPosition)
+	{
+		length = m_endPosition - m_readPosition;
+		eos = true;
+		m_readPosition = m_endPosition;
+	}
+	else
+		m_inLength += length;
+	std::memcpy(buffer, m_outBuffer + m_readPosition, length*sizeof(sample_t));
 }
 
 void Convolver::reset()
@@ -90,7 +141,9 @@ void Convolver::reset()
 	m_inLength = 0;
 	m_readPosition = 0;
 	m_writePosition = 0;
-	std::memcpy(m_outBuffer, 0, m_bufLength*sizeof(sample_t));
+	m_endPosition = m_bufLength;
+	std::memset(m_outBuffer, 0, m_bufLength*sizeof(sample_t));
+	m_soundEnded = false;
 	m_resetFlag = false;
 }
 
