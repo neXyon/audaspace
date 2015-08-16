@@ -14,6 +14,9 @@
 #include <memory>
 #include <vector>
 #include <thread>
+
+#define N 8192
+
 AUD_NAMESPACE_BEGIN
 
 /**

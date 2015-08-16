@@ -5,9 +5,7 @@
 #include <math.h>
 #include <algorithm>
 
-#define N 8192
 AUD_NAMESPACE_BEGIN
-
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader, int nThreads) :
 	m_reader(reader), m_irReader(irReader), m_position(0), m_eosReader(false), m_eosTail(false), m_nThreads(nThreads)
 {
