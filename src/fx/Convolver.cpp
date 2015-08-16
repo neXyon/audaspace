@@ -3,11 +3,10 @@
 #include <math.h>
 #include <algorithm>
 
-#define MAX_NUM_THREADS 8
 
 AUD_NAMESPACE_BEGIN
-Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, bool measure) :
-	m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_soundEnded(false), m_numThreads(m_numThreads = std::min(MAX_NUM_THREADS, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads)
+Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, int nThreads, bool measure) :
+	m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_soundEnded(false), m_maxThreads(nThreads), m_numThreads(std::min(m_maxThreads, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads)
 {
 	m_resetFlag = false;
 	m_stopFlag = false;
@@ -80,6 +79,9 @@ void Convolver::getNext(sample_t* buffer, int& length)
 
 void Convolver::endSound()
 {
+	if (m_soundEnded)
+		return;
+
 	for (int i = 0; i < m_numThreads; i++)
 		std::lock_guard<std::mutex> lck(m_mutexes[i]);
 
@@ -124,12 +126,18 @@ void Convolver::getRest(int& length, bool& eos, sample_t* buffer)
 	if (m_readPosition + length > m_endPosition)
 	{
 		length = m_endPosition - m_readPosition;
+		if (length < 0)
+			length = 0;
 		eos = true;
 		m_readPosition = m_endPosition;
 	}
 	else
-		m_inLength += length;
-	std::memcpy(buffer, m_outBuffer + m_readPosition, length*sizeof(sample_t));
+		m_inLength = length;
+
+	int pos = m_readPosition;
+	if (pos >= m_bufLength)
+		pos -= m_bufLength;
+	std::memcpy(buffer, m_outBuffer + pos, length*sizeof(sample_t));
 }
 
 void Convolver::reset()

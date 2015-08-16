@@ -31,6 +31,7 @@ private:
 	std::vector<sample_t*> m_fftOutBuffers;
 	std::vector<std::unique_ptr<FFTConvolver>> m_fftConvolvers;
 
+	int m_maxThreads;
 	int m_numThreads;
 	std::vector<std::thread> m_threads;
 	std::vector<std::mutex> m_mutexes;
@@ -54,7 +55,7 @@ private:
 	Convolver& operator=(const Convolver&) = delete;
 
 public:
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, int nThreads=4, bool measure = false);
 	virtual ~Convolver();
 
 	void getNext(sample_t* buffer, int& length);

@@ -52,6 +52,8 @@ private:
 	int m_inChannels;
 	int m_irChannels;
 
+	int m_nThreads;
+
 	std::thread m_thread;
 
 	// delete copy constructor and operator=
@@ -64,7 +66,7 @@ public:
 	* \param reader A reader of the input sound to be assigned to this reader.
 	* \param imputResponseReader A reader of the impulse response sound.
 	*/
-	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader);
+	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader, int nThreads=4);
 	virtual ~ConvolverReader();
 
 	virtual bool isSeekable() const;
@@ -81,8 +83,8 @@ private:
 	*/
 	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> processFilter();
 	void divideByChannel(sample_t* buffer, int len, int channels);
-	void joinByChannel(int len);
-	void loadBuffer(int ini);
+	void joinByChannel(int start, int len);
+	void loadBuffer();
 };
 
 AUD_NAMESPACE_END
