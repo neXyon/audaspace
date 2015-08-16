@@ -32,7 +32,10 @@ private:
 
 	int m_numThreads;
 	std::vector<std::thread> m_threads;
+	std::vector<std::mutex> m_mutexes;
+	std::vector<std::condition_variable> m_conditions;
 	std::atomic_bool m_resetFlag;
+	std::atomic_bool m_stopFlag;
 
 	sample_t* m_inBuffer;
 	sample_t* m_outBuffer;
@@ -56,6 +59,7 @@ public:
 
 private:
 	void threadFunction(int id);
+	void processSignalFragment(int id);
 };
 
 AUD_NAMESPACE_END
