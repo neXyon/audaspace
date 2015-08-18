@@ -22,10 +22,10 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 
 	if (m_irChannels > 1)
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::make_unique<Convolver>(irVector[i], m_N, irLength, m_nThreads, false));
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(irVector[i], m_N, irLength, m_nThreads, false)));
 	else
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::make_unique<Convolver>(irVector[0], m_N, irLength, m_nThreads, false));
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(irVector[0], m_N, irLength, m_nThreads, false)));
 
 	for (int i = 0; i < m_inChannels; i++)
 		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));

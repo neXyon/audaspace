@@ -19,7 +19,7 @@ find_path(FFTW_INCLUDE_DIR
 
 # Library
 find_library(FFTW_LIBRARY
-	NAMES fftw libfftw3f-3
+	NAMES fftw libfftw3f-3 fftw3f
 	PATHS ${FFTW_PKGCONF_LIBRARY_DIRS}
 )
 

@@ -487,9 +487,8 @@ list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 
 # directories
 find_package(FFTW REQUIRED)
-include_directories(${INCLUDE} ${FFTW_INCLUDE_DIRS})
-include_directories(${INCLUDE})
-link_directories()
+list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
+list(APPEND LIBRARIES ${FFTW_LIBRARY})
 
 # library
 

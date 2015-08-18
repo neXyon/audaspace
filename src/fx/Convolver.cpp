@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <algorithm>
-
+#include <cstring>
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, int nThreads, bool measure) :
@@ -12,7 +12,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	m_stopFlag = false;
 	for (int i = 0; i < m_irBuffers->size(); i++)
 	{
-		m_fftConvolvers.push_back(std::make_unique<FFTConvolver>((*m_irBuffers)[i], m_M, m_L, m_N, measure));
+		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], m_M, m_L, m_N, measure)));
 		m_fftOutBuffers.push_back((sample_t*)std::malloc(m_L * sizeof(sample_t)));
 	}
 
