@@ -5,6 +5,11 @@
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
+Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, int nThreads, bool measure) :
+	Convolver(ir, FIXED_N, irLength, nThreads, measure)
+{
+}
+
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, int nThreads, bool measure) :
 	m_M(N / 2), m_L(N / 2), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_soundEnded(false), m_maxThreads(nThreads), m_numThreads(std::min(m_maxThreads, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads)
 {
@@ -12,7 +17,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	m_stopFlag = false;
 	for (int i = 0; i < m_irBuffers->size(); i++)
 	{
-		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], m_M, m_L, m_N, measure)));
+		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], measure)));
 		m_fftOutBuffers.push_back((sample_t*)std::malloc(m_L * sizeof(sample_t)));
 	}
 

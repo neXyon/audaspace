@@ -4,6 +4,12 @@
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
+
+FFTConvolver::FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, bool measure) :
+	FFTConvolver(ir, FIXED_N / 2, FIXED_N / 2, FIXED_N, measure)
+{
+}
+
 FFTConvolver::FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, int M, int L, int N, bool measure) :
 	m_M(M), m_L(L), m_N(N), m_tailPos(0), m_irBuffer(ir)
 {

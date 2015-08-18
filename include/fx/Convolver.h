@@ -55,6 +55,7 @@ private:
 	Convolver& operator=(const Convolver&) = delete;
 
 public:
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, int nThreads = 4, bool measure = false);
 	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int N, int irLength, int nThreads=4, bool measure = false);
 	virtual ~Convolver();
 

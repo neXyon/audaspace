@@ -12,8 +12,10 @@
 
 #include <memory>
 #include <vector>
-AUD_NAMESPACE_BEGIN
 
+#define FIXED_N 8192
+
+AUD_NAMESPACE_BEGIN
 /**
 * This class allows to easily convolve a sound using the Fourier transform method.
 */
@@ -39,6 +41,7 @@ private:
 	FFTConvolver& operator=(const FFTConvolver&) = delete;
 
 public:
+	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>>, bool measure = false);
 	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>>, int M, int L, int N, bool measure = false);
 	virtual ~FFTConvolver();
 
