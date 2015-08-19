@@ -100,4 +100,23 @@ bool PlaybackManager::stop(std::string catName)
 		return false;
 	}
 }
+
+void PlaybackManager::clean()
+{
+	for (auto cat : m_categories)
+		cat.second->cleanHandles();
+}
+
+bool PlaybackManager::clean(std::string catName)
+{
+	try
+	{
+		m_categories.at(catName)->cleanHandles();
+		return true;
+	}
+	catch (std::out_of_range& oor)
+	{
+		return false;
+	}
+}
 AUD_NAMESPACE_END

@@ -104,6 +104,20 @@ public:
 	*        - false if the category doesn't exist.
 	*/
 	bool stop(std::string catName);
+
+	/**
+	* Removes all the invalid handles of all the categories.
+	*/
+	void clean();
+
+	/**
+	* Removes all the invalid handles of a category.
+	* \param catName Name of the category.
+	* \return
+	*        - true if succesful.
+	*        - false if the category doesn't exist.
+	*/
+	bool clean(std::string catName);
 };
 
 AUD_NAMESPACE_END
