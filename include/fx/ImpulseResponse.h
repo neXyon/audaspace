@@ -17,6 +17,7 @@ AUD_NAMESPACE_BEGIN
 /**
 * This class represents an impulse response that can be used in convolution.
 * The impulse response will be processed and transformed upon creation.
+* The main objetive of this class is to allow the reutilization of an impulse response in various sounds without having to process it more than one time.
 */
 class AUD_API ImpulseResponse
 {
