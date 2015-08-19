@@ -46,7 +46,7 @@ private:
 public:
 	/**
 	* Creates a new ImpulseResponse objects.
-	* The impulse response will be splitted and transformed to the frequency domain.
+	* The impulse response will be split and transformed to the frequency domain.
 	* \param impulseResponse The impulse response sound.
 	*/
 	ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse);
