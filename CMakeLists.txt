@@ -60,6 +60,7 @@ set(SRC
 	src/fx/Highpass.cpp
 	src/fx/IIRFilter.cpp
 	src/fx/IIRFilterReader.cpp
+	src/fx/ImpulseResponse.h
 	src/fx/Limiter.cpp
 	src/fx/LimiterReader.cpp
 	src/fx/Loop.cpp
@@ -169,6 +170,7 @@ set(PUBLIC_HDR
 	include/fx/IDynamicIIRFilterCalculator.h
 	include/fx/IIRFilter.h
 	include/fx/IIRFilterReader.h
+	include/fx/ImpulseResponse.h
 	include/fx/Limiter.h
 	include/fx/LimiterReader.h
 	include/fx/Loop.h
