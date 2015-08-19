@@ -9,7 +9,7 @@
 #include "IReader.h"
 #include "ISound.h"
 #include "Convolver.h"
-#include "fftw3.h"
+#include "ImpulseResponse.h"
 
 #include <memory>
 #include <vector>
@@ -31,7 +31,7 @@ private:
 	/**
 	* The reader of the impulse response sound.
 	*/
-	std::shared_ptr<IReader> m_irReader;
+	std::shared_ptr<ImpulseResponse> m_ir;
 	
 	int m_L;
 	int m_M;
@@ -67,7 +67,7 @@ public:
 	* \param reader A reader of the input sound to be assigned to this reader.
 	* \param imputResponseReader A reader of the impulse response sound.
 	*/
-	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> irReader, int nThreads=4);
+	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nThreads=4);
 	virtual ~ConvolverReader();
 
 	virtual bool isSeekable() const;
@@ -78,11 +78,6 @@ public:
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
 private:
-	/**
-	* Processes the impulse response sound for its use in the FFTConvolver class.
-	* \return A shared pointer to a vector of vectors. It will contain a vector with the processed data for each channel of the impulse response.
-	*/
-	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> processFilter();
 	void divideByChannel(sample_t* buffer, int len, int channels);
 	void joinByChannel(int start, int len);
 	void loadBuffer();

@@ -7,7 +7,7 @@
 */
 
 #include "ISound.h"
-#include "util/Buffer.h"
+#include "ImpulseResponse.h"
 
 #include <memory>
 #include <vector>
@@ -26,9 +26,9 @@ private:
 	std::shared_ptr<ISound> m_sound;
 
 	/**
-	* A pointer to the impulse response sound.
+	* A pointer to the impulse response.
 	*/
-	std::shared_ptr<ISound> m_impulseResponse;
+	std::shared_ptr<ImpulseResponse> m_impulseResponse;
 
 	/**
 	*The max number of threads this sound will use when playing(per channel)
@@ -46,7 +46,7 @@ public:
 	* \param impulseResponse The impulse response sound.
 	* \param nThreads The max number of threads per channel that this sound will use when playing (default 4) .
 	*/
-	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> impulseResponse, int nThreads=4);
+	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, int nThreads=4);
 
 	virtual std::shared_ptr<IReader> createReader();
 
@@ -54,13 +54,13 @@ public:
 	* Retrieves the impulse response sound being used.
 	* \return A shared pointer to the current impulse response being used.
 	*/
-	std::shared_ptr<ISound> getImpulseResponse();
+	std::shared_ptr<ImpulseResponse> getImpulseResponse();
 
 	/**
 	* Changes the inpulse response used for convolution, it'll only affect newly created readers.
 	* \param impulseResponse A shared pointer to the new impulse response sound.
 	*/
-	void setImpulseResponse(std::shared_ptr<ISound> impulseResponse);
+	void setImpulseResponse(std::shared_ptr<ImpulseResponse> impulseResponse);
 };
 
 AUD_NAMESPACE_END
