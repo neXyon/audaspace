@@ -48,13 +48,10 @@ void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int le
 		b[0] = (*m_irBuffer)[i][0];
 		b[1] = (*m_irBuffer)[i][1];
 
-		((fftwf_complex*)m_inBuffer)[i][0] = ((a[0] * b[0]) - (a[1] * b[1]));
-		((fftwf_complex*)m_inBuffer)[i][1] = ((a[0] * b[1]) + (a[1] * b[0]));
+		((fftwf_complex*)m_inBuffer)[i][0] = ((a[0] * b[0]) - (a[1] * b[1])) / m_N;
+		((fftwf_complex*)m_inBuffer)[i][1] = ((a[0] * b[1]) + (a[1] * b[0])) / m_N;
 	}
 	fftwf_execute(m_fftPlanC2R);
-
-	for (int i = 0; i < m_N; i++)
-		((float*)m_inBuffer)[i] /= (m_N);
 
 	for (int i = 0; i < m_M - 1; i++)
 		((float*)m_inBuffer)[i] += m_tail[i];
