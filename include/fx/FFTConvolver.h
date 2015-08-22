@@ -101,22 +101,22 @@ public:
 
 	/**
 	* Convolves the data that is provided with the inpulse response
-	* \param inBuffer[in] A buffer with the input thata to be convolved.
+	* \param inBuffer[in] A buffer with the input data to be convolved.
 	* \param outBuffer[in] A pointer to the buffer in which the convolution result will be written.
 	* \param length[in,out] The number of samples to be convolved (the length of both the inBuffer and the outBuffer). 
-							The convolution output should be larger than the input, but since this class uses the overlap 
-							add method, the extra length will be saved internally.
-							It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
-							written in the outBuffer.
+	*						The convolution output should be larger than the input, but since this class uses the overlap 
+	*						add method, the extra length will be saved internally.
+	*						It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
+	*						written in the outBuffer.
 	*/
 	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length);
 	
 	/**
-	* Gets the internally stored extra data which is result of the convolution
+	* Gets the internally stored extra data which is result of the convolution.
 	* \param[in,out] length The count of samples that should be read. Shall
 	*                contain the real count of samples after reading, in case
 	*                there were only fewer samples available.
-	*                A smaller value also indicates the end of the reader.
+	*                A smaller value also indicates the end of the data.
 	* \param[out] eos End of stream, whether the end is reached or not.
 	* \param[in] buffer The pointer to the buffer to read into.
 	*/

@@ -44,7 +44,7 @@ public:
 	* Creates a new ConvolverSound.
 	* \param sound The sound that will be convolved.
 	* \param impulseResponse The impulse response sound.
-	* \param nThreads The max number of threads per channel that this sound will use when playing (default 4) .
+	* \param nThreads The max number of threads per channel that this sound can use when playing (default 4) .
 	*/
 	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, int nThreads=4);
 
