@@ -16,7 +16,7 @@ AUD_NAMESPACE_BEGIN
 
 /**
 * This class represents an impulse response that can be used in convolution.
-* The impulse response will be processed and transformed upon creation.
+* When this class is instanced, the impulse response is divided in channels and those channels are divided in parts of FIXED_N/2 samples.
 * The main objetive of this class is to allow the reutilization of an impulse response in various sounds without having to process it more than one time.
 */
 class AUD_API ImpulseResponse
@@ -24,8 +24,8 @@ class AUD_API ImpulseResponse
 private:
 	/**
 	* A tri-dimensional array (channels, parts, values) The impulse response is divided in channels and those channels are divided
-	* in parts according to the value of the FIXED_N constant. Those parts are transformed to the frequency domain transform which
-	* generates uni-dimensional arrays of fftwtf_complex data (complex numbers).
+	* in parts of FIXED_N/2 samples. Those parts are transformed to the frequency domain transform which generates uni-dimensional 
+	* arrays of fftwtf_complex data (complex numbers).
 	*/
 	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> m_processedIR;
 

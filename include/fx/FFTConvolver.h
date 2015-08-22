@@ -28,7 +28,7 @@ private:
 	int m_M;
 
 	/**
-	* The max length of the inoput slices.
+	* The max length of the input slices.
 	*/
 	int m_L;
 
