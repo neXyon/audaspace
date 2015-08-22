@@ -7,7 +7,7 @@
 
 AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nThreads) :
-	m_reader(reader), m_ir(ir), m_position(0), m_eosReader(false), m_eosTail(false), m_nThreads(nThreads)
+	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nThreads(nThreads)
 {
 	m_irChannels = m_ir->getNumberOfChannels();
 	m_inChannels = reader->getSpecs().channels;
@@ -33,7 +33,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 
 ConvolverReader::~ConvolverReader()
 {
-	delete m_outBuffer;
+	std::free(m_outBuffer);
 	for (int i = 0; i < m_inChannels; i++)
 		std::free(m_vecInOut[i]);
 }
@@ -116,7 +116,7 @@ void ConvolverReader::loadBuffer()
 	m_reader->read(l, m_eosReader, m_outBuffer);
 	if (!m_eosReader || l>0)
 	{
-		divideByChannel(m_outBuffer, l*m_inChannels, m_inChannels);
+		divideByChannel(m_outBuffer, l*m_inChannels);
 		for (int i = 0; i < m_inChannels; i++)
 			m_convolvers[i]->getNext(m_vecInOut[i], l);
 		joinByChannel(0, l);
@@ -147,12 +147,12 @@ void ConvolverReader::loadBuffer()
 	}
 }
 
-void ConvolverReader::divideByChannel(sample_t* buffer, int len, int channels)
+void ConvolverReader::divideByChannel(const sample_t* buffer, int len)
 {
 	int k = 0;
-	for (int i = 0; i < len; i += channels)
+	for (int i = 0; i < len; i += m_inChannels)
 	{	
-		for (int j = 0; j < channels; j++)
+		for (int j = 0; j < m_inChannels; j++)
 			m_vecInOut[j][k] = buffer[i + j];
 		k++;
 	}

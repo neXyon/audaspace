@@ -29,30 +29,78 @@ private:
 	std::shared_ptr<IReader> m_reader;
 
 	/**
-	* The reader of the impulse response sound.
+	* The impulse response in the frequency domain.
 	*/
 	std::shared_ptr<ImpulseResponse> m_ir;
 	
-	int m_L;
+	/**
+	* The length of the impulse response fragments, FIXED_N/2 will be used.
+	*/
 	int m_M;
+
+	/**
+	* The max length of the input slices, FIXED_N/2 will be used.
+	*/
+	int m_L;
+
+	/**
+	* The FFT size, FIXED_N value will be used.
+	*/
 	int m_N;
 
+	/**
+	* The array of convolvers that will be used, one per channel.
+	*/
 	std::vector<std::unique_ptr<Convolver>> m_convolvers;
 
+	/**
+	* The output buffer in which the convolved data will be written and from which the reader will read.
+	*/
 	sample_t* m_outBuffer;
+
+	/**
+	* A vector of buffers (one per channel) on which the audio signal will be separated per channel so it can be convolved.
+	*/
 	std::vector<sample_t*> m_vecInOut;
 
+	/**
+	* Current position in which the m_outBuffer is being read.
+	*/
 	int m_outBufferPos;
+	
+	/**
+	* Effective length of rhe m_outBuffer.
+	*/
 	int m_eOutBufLen;
+
+	/**
+	* Real length of the m_outBuffer.
+	*/
 	int m_outBufLen;
 
-	int m_position;
+	/**
+	* Flag indicating whether the end of the sound has been reached or not.
+	*/
 	bool m_eosReader;
+
+	/**
+	* Flag indicating whether the end of the extra data generated in the convolution has been reached or not.
+	*/
 	bool m_eosTail;
 
+	/**
+	* The number of channels of the sound to be convolved.
+	*/
 	int m_inChannels;
+
+	/**
+	* The number of channels of the impulse response.
+	*/
 	int m_irChannels;
 
+	/**
+	* The number of threads per channel that will be used for convolution.
+	*/
 	int m_nThreads;
 
 	std::thread m_thread;
@@ -65,7 +113,8 @@ public:
 	/**
 	* Creates a new convolver reader.
 	* \param reader A reader of the input sound to be assigned to this reader.
-	* \param imputResponseReader A reader of the impulse response sound.
+	* \param ir A shared pointer to an impulseResponse object that will be used to convolve the sound.
+	* \param nThreads The number of threads per channel that will be used for convolution.
 	*/
 	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nThreads=4);
 	virtual ~ConvolverReader();
@@ -78,8 +127,23 @@ public:
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
 private:
-	void divideByChannel(sample_t* buffer, int len, int channels);
+	/**
+	* Divides a sound buffer in several buffers, one per channel.
+	* \param buffer The buffer that will be divided.
+	* \param len The length of the buffer.
+	*/
+	void divideByChannel(const sample_t* buffer, int len);
+
+	/**
+	* Joins several buffers (one per channel) into the m_outBuffer.
+	* \param start The starting position from which the m_outBuffer will be written.
+	* \param len The amout of samples that will be joined.
+	*/
 	void joinByChannel(int start, int len);
+
+	/**
+	* Loads the m_outBuffer with data.
+	*/
 	void loadBuffer();
 };
 
