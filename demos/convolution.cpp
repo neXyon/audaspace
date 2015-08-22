@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
 
 	device->lock();
 	auto handle = device->play(convolver);
+	handle->setVolume(0.2);
 	handle->setLoopCount(-1);
 	device->unlock();
 
