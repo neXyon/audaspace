@@ -78,7 +78,7 @@ private:
 
 public:
 	/**
-	* Creates a new FFTConvolver. This constructor uses the default value of N (8192)
+	* Creates a new FFTConvolver. This constructor uses the default value of N
 	* \param ir A shared pointer to a vector with the impulse response data in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
 	* \param measure A flag that will change how the object will be instanced.
 	*		-If true the object creation will take a long time, but convolution will be faster.
@@ -87,9 +87,9 @@ public:
 	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, bool measure = false);
 
 	/**
-	* Creates a new FFTConvolver. This constructor uses the default value of N (8192)
+	* Creates a new FFTConvolver.
 	* \param ir A shared pointer to a vector with the impulse response datas in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
-	* \param M The number of samples of the impulse response (before being transformed into the frequency domain).
+	* \param M The number of samples of the impulse response.
 	* \paran L The max number of samples that can be processed at a time.
 	* \param N Must be at least M+L-1, but larger values are possible, the performance will be better if N is a power of 2
 	* \param measure A flag that will change how the object will be instanced.
@@ -103,9 +103,13 @@ public:
 	* Convolves the data that is provided with the inpulse response
 	* \param inBuffer[in] A buffer with the input thata to be convolved.
 	* \param outBuffer[in] A pointer to the buffer in which the convolution result will be written.
-	* \param length The number of samples to be convolved (the length of both the inBuffer and the outBuffer). The convolution output should be larger than the input, but since this class uses the overlap add method, the extra length will be saved internally.
+	* \param length[in,out] The number of samples to be convolved (the length of both the inBuffer and the outBuffer). 
+							The convolution output should be larger than the input, but since this class uses the overlap 
+							add method, the extra length will be saved internally.
+							It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
+							written in the outBuffer.
 	*/
-	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int length);
+	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length);
 	
 	/**
 	* Gets the internally stored extra data which is result of the convolution
