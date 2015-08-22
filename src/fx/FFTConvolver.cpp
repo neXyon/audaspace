@@ -29,6 +29,7 @@ FFTConvolver::FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, int M
 
 FFTConvolver::~FFTConvolver()
 {
+	std::free(m_tail);
 	fftwf_free(m_inBuffer);
 	fftwf_destroy_plan(m_fftPlanC2R);
 	fftwf_destroy_plan(m_fftPlanR2C);
