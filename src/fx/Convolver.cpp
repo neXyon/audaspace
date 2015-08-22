@@ -36,8 +36,9 @@ Convolver::~Convolver()
 	m_resetFlag = true;
 	for (int i = 0; i < m_threads.size(); i++)
 	{
-		std::lock_guard<std::mutex> lck(m_mutexes[i]);
+		m_mutexes[i].lock();
 		m_conditions[i].notify_all();
+		m_mutexes[i].unlock();
 		if (m_threads[i].joinable())
 			m_threads[i].join();
 	}
@@ -151,6 +152,8 @@ void Convolver::reset()
 	for (int i = 0; i < m_threads.size(); i++)
 		std::lock_guard<std::mutex> lck(m_mutexes[i]);
 
+	for (int i = 0; i < m_fftConvolvers.size(); i++)
+		m_fftConvolvers[i]->clearTail();
 	m_inLength = 0;
 	m_readPosition = 0;
 	m_writePosition = 0;
