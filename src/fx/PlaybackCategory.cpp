@@ -122,5 +122,6 @@ void PlaybackCategory::cleanHandleCallback(void* data)
 {
 	auto dat = reinterpret_cast<HandleData*>(data);
 	dat->category->m_handles.erase(dat->id);
+	delete dat;
 }
 AUD_NAMESPACE_END
