@@ -10,7 +10,7 @@
 #include "devices/IDevice.h"
 #include "VolumeStorage.h"
 
-#include <list>
+#include <unordered_map>
 #include <memory>
 
 AUD_NAMESPACE_BEGIN
@@ -22,9 +22,14 @@ class AUD_API PlaybackCategory
 {
 private:
 	/**
+	* Next handle ID to be assigned.
+	*/
+	unsigned int m_currentID;
+
+	/**
 	* Vector of handles that belong to the category.
 	*/
-	std::list<std::shared_ptr<IHandle>> m_handles;
+	std::unordered_map<unsigned int, std::shared_ptr<IHandle>> m_handles;
 
 	/**
 	* Device that will play the sounds.
@@ -51,6 +56,7 @@ public:
 	* \param A shared pointer to the device which will be used for playback.
 	*/
 	PlaybackCategory(std::shared_ptr<IDevice> device);
+	~PlaybackCategory();
 
 	/**
 	* Adds a new handle to the category.
@@ -95,6 +101,9 @@ public:
 	* Cleans the category erasing all the invalid handles.
 	*/
 	void cleanHandles();
+
+private:
+	static void cleanHandleCallback(void* data);
 };
 
 AUD_NAMESPACE_END

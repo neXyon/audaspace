@@ -2,9 +2,20 @@
 #include "fx/VolumeSound.h"
 
 AUD_NAMESPACE_BEGIN
+
+struct HandleData {
+	unsigned int id;
+	PlaybackCategory* category;
+};
+
 PlaybackCategory::PlaybackCategory(std::shared_ptr<IDevice> device) :
-	m_device(device), m_volumeStorage(std::make_shared<VolumeStorage>(1.0f)), m_status(STATUS_PLAYING)
+	m_device(device), m_volumeStorage(std::make_shared<VolumeStorage>(1.0f)), m_status(STATUS_PLAYING), m_currentID(0)
 {
+}
+
+PlaybackCategory::~PlaybackCategory()
+{
+	stop();
 }
 
 std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
@@ -21,8 +32,14 @@ std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 		handle->pause();
 		break;
 	};
+	m_handles[m_currentID] = handle;
+	HandleData* data = new HandleData;
+	data->category = this;
+	data->id = m_currentID;
+	handle->setStopCallback(cleanHandleCallback, data);
 	m_device->unlock();
-	m_handles.push_back(handle);
+	
+	m_currentID++;
 	return handle;
 }
 
@@ -31,11 +48,11 @@ void PlaybackCategory::resume()
 	m_device->lock();
 	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		if ((*i)->getStatus() == STATUS_INVALID)
+		if (i->second->getStatus() == STATUS_INVALID)
 			i = m_handles.erase(i);
 		else
 		{
-			(*i)->resume();
+			i->second->resume();
 			i++;
 		}
 	}
@@ -48,11 +65,11 @@ void PlaybackCategory::pause()
 	m_device->lock();
 	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		if ((*i)->getStatus() == STATUS_INVALID)
+		if (i->second->getStatus() == STATUS_INVALID)
 			i = m_handles.erase(i);
 		else
 		{
-			(*i)->pause();
+			i->second->pause();
 			i++;
 		}
 	}
@@ -75,8 +92,8 @@ void PlaybackCategory::stop()
 	m_device->lock();
 	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		(*i)->stop();
-		if ((*i)->getStatus() == STATUS_INVALID)
+		i->second->stop();
+		if (i->second->getStatus() == STATUS_INVALID)
 			i = m_handles.erase(i);
 		else
 			i++;			
@@ -94,10 +111,16 @@ void PlaybackCategory::cleanHandles()
 {
 	for (auto i = m_handles.begin(); i != m_handles.end();)
 	{
-		if ((*i)->getStatus() == STATUS_INVALID)
+		if (i->second->getStatus() == STATUS_INVALID)
 			i = m_handles.erase(i);
 		else
 			i++;
 	}
+}
+
+void PlaybackCategory::cleanHandleCallback(void* data)
+{
+	auto dat = reinterpret_cast<HandleData*>(data);
+	dat->category->m_handles.erase(dat->id);
 }
 AUD_NAMESPACE_END
