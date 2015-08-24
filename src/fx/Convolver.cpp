@@ -122,9 +122,11 @@ void Convolver::getRest(int& length, bool& eos, sample_t* buffer)
 	if (length <= 0)
 	{
 		length = 0;
+		eos = m_readPosition >= m_endPosition;
 		return;
 	}
 
+	eos = false;
 	if (!m_soundEnded)
 		endSound();
 

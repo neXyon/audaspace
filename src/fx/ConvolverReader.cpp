@@ -27,7 +27,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 
 	for (int i = 0; i < m_inChannels; i++)
 		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));
-	m_outBuffer = (sample_t*)std::malloc(m_L*m_inChannels * sizeof(sample_t));
+	m_outBuffer = (sample_t*)std::malloc(m_L*m_inChannels*sizeof(sample_t));
 	m_outBufLen = m_eOutBufLen = m_outBufferPos = m_L*m_inChannels;
 }
 
@@ -50,8 +50,7 @@ void ConvolverReader::seek(int position)
 		m_convolvers[i]->reset();
 	m_eosTail = false;
 	m_eosReader = false;
-	m_eOutBufLen = m_outBufLen;
-	m_outBufferPos = 0;
+	m_outBufferPos = m_eOutBufLen = m_outBufLen;
 }
 
 int ConvolverReader::getLength() const
@@ -74,9 +73,10 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 	if (length <= 0)
 	{
 		length = 0;
+		eos = (m_eosTail && m_outBufferPos >= m_eOutBufLen);
 		return;
 	}
-	
+	eos = false;
 	int writePos = 0;
 	do
 	{
@@ -97,8 +97,10 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 			}
 			else
 			{
-				length = writePos / m_inChannels;
+				m_outBufferPos += bufRest;
+				length = (writePos + bufRest) / m_inChannels;
 				eos = true;
+				return;
 			}
 		}
 		else
@@ -122,10 +124,10 @@ void ConvolverReader::loadBuffer()
 		joinByChannel(0, l);
 		if (m_eosReader)
 		{
-			int l2 = m_L - l;
+			int l2;
 			for (int i = 0; i < m_inChannels; i++)
 			{
-				m_convolvers[i]->endSound();
+				l2 = m_L - l;
 				m_convolvers[i]->getRest(l2, m_eosTail, m_vecInOut[i]);
 			}
 			joinByChannel(l, l2);
@@ -138,7 +140,7 @@ void ConvolverReader::loadBuffer()
 		l = m_L;
 		for (int i = 0; i < m_inChannels; i++)
 		{
-			m_convolvers[i]->endSound();
+			l = m_L;
 			m_convolvers[i]->getRest(l, m_eosTail, m_vecInOut[i]);
 		}
 		joinByChannel(0, l);

@@ -74,8 +74,10 @@ void FFTConvolver::getTail(int& length, bool& eos, sample_t* buffer)
 	if (length <= 0)
 	{
 		length = 0;
+		eos = m_tailPos >= m_M - 1;
 		return;
 	}
+
 	eos = false;
 	if (m_tailPos + length > m_M - 1)
 	{
