@@ -101,6 +101,7 @@ void Convolver::endSound()
 	for (int i = 0; i < m_fftConvolvers.size(); i++)
 	{
 		m_fftConvolvers[i]->getTail(length, eos, m_fftOutBuffers[0]);
+		length = m_M;
 		if(eos)
 			m_fftConvolvers[i]->clearTail();
 
@@ -118,11 +119,14 @@ void Convolver::endSound()
 
 void Convolver::getRest(int& length, bool& eos, sample_t* buffer)
 {
-	if (length <= 0 || !m_soundEnded)
+	if (length <= 0)
 	{
 		length = 0;
 		return;
 	}
+
+	if (!m_soundEnded)
+		endSound();
 
 	for (int i = 0; i < m_numThreads; i++)
 		std::lock_guard<std::mutex> lck(m_mutexes[i]);

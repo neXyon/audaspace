@@ -177,7 +177,8 @@ public:
 	void getNext(sample_t* buffer, int& length);
 
 	/**
-	* Gets the extra data which is generated as result of the convolution.
+	* Gets the extra data which is generated as result of the convolution. This method calls endSound() when it is used for the 
+	* first time after a reset, so calling reset will be needed to be able to convolve more data.
 	* \param[in,out] length The count of samples that should be read. Shall
 	*                contain the real count of samples after reading, in case
 	*                there were only fewer samples available.
@@ -188,17 +189,18 @@ public:
 	void getRest(int& length, bool& eos, sample_t* buffer);
 
 	/**
-	* This method should only be called when all the sound data has already been convolved and you need to get the extra data 
-	* generated in the convolution. To convolve more data after using this method, the reset() method must be called.
-	*/
-	void endSound();
-
-	/**
 	* Resets all the internally stored data so the convolution of a new sound can be started. 
 	*/
 	void reset();
 
 private:
+	/**
+	* This method should only be called when all the sound data has already been convolved and getting the extra data
+	* generated in the convolution is needed. To convolve more data after using this method, the reset() method must be called.
+	* This method is called by getRest().
+	*/
+	void endSound();
+
 	/**
 	* The function that will be asigned to the different threads.
 	* \param id The id of the thread, starting with 0.
