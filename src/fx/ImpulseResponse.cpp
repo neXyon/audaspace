@@ -39,8 +39,8 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader)
 		for (int j = 0; j < numParts; j++)
 			(*m_processedIR[i]).push_back(std::make_shared<std::vector<fftwf_complex>>((FIXED_N / 2) + 1));
 	}
-	int l = length;
-	reader->read(l, eos, buffer);
+	length += reader->getSpecs().rate;
+	reader->read(length, eos, buffer);
 
 
 	void* bufferFFT = fftwf_malloc(((FIXED_N / 2) + 1) * 2 * sizeof(fftwf_complex));
