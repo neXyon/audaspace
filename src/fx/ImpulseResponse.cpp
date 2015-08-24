@@ -1,6 +1,7 @@
 #include "fx/ImpulseResponse.h"
 
 #include <algorithm>
+#include <cstring>
 
 AUD_NAMESPACE_BEGIN
 ImpulseResponse::ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse)

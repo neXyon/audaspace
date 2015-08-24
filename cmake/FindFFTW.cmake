@@ -8,13 +8,13 @@
 # Use pkg-config to get hints about paths
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(FFTW_PKGCONF fftw)
+	pkg_check_modules(FFTW_PKGCONF fftw3)
 endif(PKG_CONFIG_FOUND)
 
 # Include dir
 find_path(FFTW_INCLUDE_DIR
 	NAMES fftw3.h
-	PATHS ${FFTWE_PKGCONF_INCLUDE_DIRS}
+	PATHS ${FFTW_PKGCONF_INCLUDE_DIRS}
 )
 
 # Library

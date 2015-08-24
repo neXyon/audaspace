@@ -60,7 +60,7 @@ set(SRC
 	src/fx/Highpass.cpp
 	src/fx/IIRFilter.cpp
 	src/fx/IIRFilterReader.cpp
-	src/fx/ImpulseResponse.h
+	src/fx/ImpulseResponse.cpp
 	src/fx/Limiter.cpp
 	src/fx/LimiterReader.cpp
 	src/fx/Loop.cpp
