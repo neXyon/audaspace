@@ -60,6 +60,21 @@ StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
 	m_buffer->resize(index * sample_size, true);
 }
 
+StreamBuffer::StreamBuffer(std::shared_ptr<Buffer> buffer, Specs specs) :
+	m_buffer(buffer), m_specs(specs)
+{
+}
+
+std::shared_ptr<Buffer> StreamBuffer::getBuffer()
+{
+	return m_buffer;
+}
+
+Specs StreamBuffer::getSpecs()
+{
+	return m_specs;
+}
+
 std::shared_ptr<IReader> StreamBuffer::createReader()
 {
 	return std::shared_ptr<IReader>(new BufferReader(m_buffer, m_specs));

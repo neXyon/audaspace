@@ -47,7 +47,9 @@
 #include "sequence/PingPong.h"
 #include "sequence/Superpose.h"
 
+#include <cstring>
 #include <structmember.h>
+#include <numpy/ndarrayobject.h>
 
 using namespace aud;
 
@@ -1346,6 +1348,126 @@ Sound_write(Sound* self, PyObject* args, PyObject* kwds)
 	Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(M_aud_Sound_data_doc,
+			 "data()\n\n"
+			 "Retrieves the data of the sound as numpy array.\n\n"
+			 ":return: A two dimensional numpy float array.\n"
+			 ":rtype: :class:`numpy.ndarray`");
+
+static PyObject *
+Sound_data(Sound* self)
+{
+	std::shared_ptr<ISound> sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
+
+	auto stream_buffer = std::make_shared<StreamBuffer>(sound);
+	Specs specs = stream_buffer->getSpecs();
+	auto buffer = stream_buffer->getBuffer();
+
+	npy_intp dimensions[2];
+	dimensions[0] = buffer->getSize() / AUD_SAMPLE_SIZE(specs);
+	dimensions[1] = specs.channels;
+
+	PyObject* array = PyArray_SimpleNew(2, dimensions, NPY_FLOAT);
+
+	sample_t* data = reinterpret_cast<sample_t*>(PyArray_DATA(array));
+
+	std::memcpy(data, buffer->getBuffer(), buffer->getSize());
+
+	Py_INCREF(array);
+
+	return array;
+
+	//Py_RETURN_NONE;
+
+	/*PyErr_SetString(AUDError, "Not implemented.");
+	return nullptr;*/
+}
+
+PyDoc_STRVAR(M_aud_Sound_buffer_doc,
+			 "buffer(data, rate)\n\n"
+			 "Creates a sound from a data buffer.\n\n"
+			 ":arg data: The data as two dimensional numpy array.\n"
+			 ":type data: numpy.ndarray\n"
+			 ":arg rate: The sample rate.\n"
+			 ":type rate: double\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_buffer(PyTypeObject* type, PyObject* args)
+{
+	PyObject* array = nullptr;
+	double rate = RATE_INVALID;
+
+	if(!PyArg_ParseTuple(args, "Od:buffer", &array, &rate))
+		return nullptr;
+
+	if((!PyObject_TypeCheck(array, &PyArray_Type)) || (PyArray_TYPE(array) != NPY_FLOAT))
+	{
+		PyErr_SetString(PyExc_TypeError, "The data needs to be supplied as float32 numpy array!");
+		return nullptr;
+	}
+
+	if(PyArray_NDIM(array) > 2)
+	{
+		PyErr_SetString(PyExc_TypeError, "The array needs to have one or two dimensions!");
+		return nullptr;
+	}
+
+	Specs specs;
+	specs.rate = rate;
+	specs.channels = CHANNELS_MONO;
+
+	if(PyArray_NDIM(array) == 2)
+		specs.channels = static_cast<Channels>(PyArray_DIM(array, 1));
+
+	int size = PyArray_DIM(array, 0) * AUD_SAMPLE_SIZE(specs);
+
+	std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(size);
+
+	std::memcpy(buffer->getBuffer(), PyArray_DATA(array), size);
+
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<StreamBuffer>(new StreamBuffer(buffer, specs));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
+PyDoc_STRVAR(M_aud_Sound_specs_doc,
+			 "specs()\n\n"
+			 "Retrieves the specs of the sound.\n\n"
+			 ":return: A tuple with rate and channel count.\n"
+			 ":rtype: tuple");
+
+static PyObject *
+Sound_specs(Sound* self)
+{
+	try
+	{
+		Specs specs = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader()->getSpecs();
+		return Py_BuildValue("(di)", specs.rate, specs.channels);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
 static PyMethodDef Sound_methods[] = {
 	{"cache", (PyCFunction)Sound_cache, METH_NOARGS,
 	 M_aud_Sound_cache_doc
@@ -1431,6 +1553,15 @@ static PyMethodDef Sound_methods[] = {
 	{"write", (PyCFunction)Sound_write, METH_VARARGS | METH_KEYWORDS,
 	 M_aud_Sound_write_doc
 	},
+	{"data", (PyCFunction)Sound_data, METH_NOARGS,
+	 M_aud_Sound_data_doc
+	},
+	{"buffer", (PyCFunction)Sound_buffer, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_buffer_doc
+	},
+	{"specs", (PyCFunction)Sound_specs, METH_NOARGS,
+	 M_aud_Sound_specs_doc
+	},
 	{nullptr}  /* Sentinel */
 };
 
@@ -1500,6 +1631,8 @@ AUD_API Sound* checkSound(PyObject* sound)
 
 bool initializeSound()
 {
+	import_array();
+
 	return PyType_Ready(&SoundType) >= 0;
 }
 
