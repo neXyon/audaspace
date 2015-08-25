@@ -18,6 +18,7 @@
 
 #include "Exception.h"
 #include "file/File.h"
+#include "file/FileWriter.h"
 #include "util/StreamBuffer.h"
 #include "generator/Sawtooth.h"
 #include "generator/Silence.h"
@@ -40,10 +41,11 @@
 #include "fx/Threshold.h"
 #include "fx/Volume.h"
 #include "respec/ChannelMapper.h"
+#include "respec/ChannelMapperReader.h"
+#include "respec/JOSResampleReader.h"
 #include "sequence/Double.h"
 #include "sequence/PingPong.h"
 #include "sequence/Superpose.h"
-
 
 #include <structmember.h>
 
@@ -1203,6 +1205,147 @@ Sound_pingpong(Sound* self)
 	return (PyObject *)parent;
 }
 
+PyDoc_STRVAR(M_aud_Sound_write_doc,
+			 "write(filename, rate, channels, format, container, codec, bitrate, buffersize)\n\n"
+			 "Writes the sound to a file.\n\n"
+			 ":arg filename: The path to write to.\n"
+			 ":type filename: string\n"
+			 ":arg rate: The sample rate to write with.\n"
+			 ":type rate: int\n"
+			 ":arg channels: The number of channels to write with.\n"
+			 ":type channels: int\n"
+			 ":arg format: The sample format to write with.\n"
+			 ":type format: int\n"
+			 ":arg container: The container format for the file.\n"
+			 ":type container: int\n"
+			 ":arg codec: The codec to use in the file.\n"
+			 ":type codec: int\n"
+			 ":arg bitrate: The bitrate to write with.\n"
+			 ":type bitrate: int\n"
+			 ":arg buffersize: The size of the writing buffer.\n"
+			 ":type buffersize: int\n");
+
+static PyObject *
+Sound_write(Sound* self, PyObject* args, PyObject* kwds)
+{
+	const char* filename = nullptr;
+	int rate = RATE_INVALID;
+	Channels channels = CHANNELS_INVALID;
+	SampleFormat format = FORMAT_INVALID;
+	Container container = CONTAINER_INVALID;
+	Codec codec = CODEC_INVALID;
+	int bitrate = 0;
+	int buffersize = 0;
+
+	static const char* kwlist[] = {"filename", "rate", "channels", "format", "container", "codec", "bitrate", "buffersize", nullptr};
+
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "s|iiiiiii:write", const_cast<char**>(kwlist), &filename, &rate, &channels, &format, &container, &codec, &bitrate, &buffersize))
+		return nullptr;
+
+	try
+	{
+		std::shared_ptr<IReader> reader = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader();
+
+		DeviceSpecs specs;
+		specs.specs = reader->getSpecs();
+
+		if((rate != RATE_INVALID) && (specs.rate != rate))
+		{
+			specs.rate = rate;
+			reader = std::make_shared<JOSResampleReader>(reader, specs.specs);
+		}
+
+		if((channels != CHANNELS_INVALID) && (specs.channels != channels))
+		{
+			specs.channels = channels;
+			reader = std::make_shared<ChannelMapperReader>(reader, channels);
+		}
+
+		if(format == FORMAT_INVALID)
+			format = FORMAT_S16;
+		specs.format = format;
+
+		const char* invalid_container_error = "Container could not be determined from filename.";
+
+		if(container == CONTAINER_INVALID)
+		{
+			std::string path = filename;
+
+			if(path.length() < 4)
+			{
+				PyErr_SetString(AUDError, invalid_container_error);
+				return nullptr;
+			}
+
+			std::string extension = path.substr(path.length() - 4);
+
+			if(extension == ".ac3")
+				container = CONTAINER_AC3;
+			else if(extension == "flac")
+				container = CONTAINER_FLAC;
+			else if(extension == ".mkv")
+				container = CONTAINER_MATROSKA;
+			else if(extension == ".mp2")
+				container = CONTAINER_MP2;
+			else if(extension == ".mp3")
+				container = CONTAINER_MP3;
+			else if(extension == ".ogg")
+				container = CONTAINER_OGG;
+			else if(extension == ".wav")
+				container = CONTAINER_WAV;
+			else
+			{
+				PyErr_SetString(AUDError, invalid_container_error);
+				return nullptr;
+			}
+		}
+
+		if(codec == CODEC_INVALID)
+		{
+			switch(container)
+			{
+			case CONTAINER_AC3:
+				codec = CODEC_AC3;
+				break;
+			case CONTAINER_FLAC:
+				codec = CODEC_FLAC;
+				break;
+			case CONTAINER_MATROSKA:
+				codec = CODEC_OPUS;
+				break;
+			case CONTAINER_MP2:
+				codec = CODEC_MP2;
+				break;
+			case CONTAINER_MP3:
+				codec = CODEC_MP3;
+				break;
+			case CONTAINER_OGG:
+				codec = CODEC_VORBIS;
+				break;
+			case CONTAINER_WAV:
+				codec = CODEC_PCM;
+				break;
+			default:
+				PyErr_SetString(AUDError, "Unknown container, cannot select default codec.");
+				return nullptr;
+			}
+		}
+
+		if(buffersize <= 0)
+			buffersize = AUD_DEFAULT_BUFFER_SIZE;
+
+		std::shared_ptr<IWriter> writer = FileWriter::createWriter(filename, specs, container, codec, bitrate);
+		FileWriter::writeReader(reader, writer, 0, buffersize);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+
+	Py_RETURN_NONE;
+}
+
 static PyMethodDef Sound_methods[] = {
 	{"cache", (PyCFunction)Sound_cache, METH_NOARGS,
 	 M_aud_Sound_cache_doc
@@ -1284,6 +1427,9 @@ static PyMethodDef Sound_methods[] = {
 	},
 	{"pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
 	 M_aud_Sound_pingpong_doc
+	},
+	{"write", (PyCFunction)Sound_write, METH_VARARGS | METH_KEYWORDS,
+	 M_aud_Sound_write_doc
 	},
 	{nullptr}  /* Sentinel */
 };
