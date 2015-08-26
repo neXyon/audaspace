@@ -1254,7 +1254,7 @@ Sound_write(Sound* self, PyObject* args, PyObject* kwds)
 		if((rate != RATE_INVALID) && (specs.rate != rate))
 		{
 			specs.rate = rate;
-			reader = std::make_shared<JOSResampleReader>(reader, specs.specs);
+			reader = std::make_shared<JOSResampleReader>(reader, rate);
 		}
 
 		if((channels != CHANNELS_INVALID) && (specs.channels != channels))

@@ -21,14 +21,13 @@
 
 AUD_NAMESPACE_BEGIN
 
-LinearResampleReader::LinearResampleReader(std::shared_ptr<IReader> reader,
-												   Specs specs) :
-	ResampleReader(reader, specs.rate),
+LinearResampleReader::LinearResampleReader(std::shared_ptr<IReader> reader, SampleRate rate) :
+	ResampleReader(reader, rate),
 	m_channels(reader->getSpecs().channels),
 	m_cache_pos(0),
 	m_cache_ok(false)
 {
-	specs.channels = m_channels;
+	Specs specs = { rate, m_channels };
 	m_cache.resize(2 * AUD_SAMPLE_SIZE(specs));
 }
 

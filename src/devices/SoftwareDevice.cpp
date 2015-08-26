@@ -845,9 +845,9 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 
 	// resample
 	if(m_quality)
-		resampler = std::shared_ptr<ResampleReader>(new JOSResampleReader(reader, m_specs.specs));
+		resampler = std::shared_ptr<ResampleReader>(new JOSResampleReader(reader, m_specs.rate));
 	else
-		resampler = std::shared_ptr<ResampleReader>(new LinearResampleReader(reader, m_specs.specs));
+		resampler = std::shared_ptr<ResampleReader>(new LinearResampleReader(reader, m_specs.rate));
 	reader = std::shared_ptr<IReader>(resampler);
 
 	// rechannel

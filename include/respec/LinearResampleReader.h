@@ -66,9 +66,9 @@ public:
 	/**
 	 * Creates a resampling reader.
 	 * \param reader The reader to mix.
-	 * \param specs The target specification.
+	 * \param rate The target sampling rate.
 	 */
-	LinearResampleReader(std::shared_ptr<IReader> reader, Specs specs);
+	LinearResampleReader(std::shared_ptr<IReader> reader, SampleRate rate);
 
 	virtual void seek(int position);
 	virtual int getLength() const;
