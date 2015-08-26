@@ -1352,14 +1352,17 @@ PyDoc_STRVAR(M_aud_Sound_data_doc,
 			 "data()\n\n"
 			 "Retrieves the data of the sound as numpy array.\n\n"
 			 ":return: A two dimensional numpy float array.\n"
-			 ":rtype: :class:`numpy.ndarray`");
+			 ":rtype: :class:`numpy.ndarray`\n\n"
+			 ".. note:: Best efficiency with cached sounds.");
 
 static PyObject *
 Sound_data(Sound* self)
 {
 	std::shared_ptr<ISound> sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
 
-	auto stream_buffer = std::make_shared<StreamBuffer>(sound);
+	auto stream_buffer = std::dynamic_pointer_cast<StreamBuffer>(sound);
+	if(!stream_buffer)
+		stream_buffer = std::make_shared<StreamBuffer>(sound);
 	Specs specs = stream_buffer->getSpecs();
 	auto buffer = stream_buffer->getBuffer();
 
