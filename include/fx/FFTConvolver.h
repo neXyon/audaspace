@@ -78,7 +78,7 @@ private:
 
 public:
 	/**
-	* Creates a new FFTConvolver. This constructor uses the default value of N
+	* Creates a new FFTConvolver. This constructor uses the default value of N (FIXED_N constant)
 	* \param ir A shared pointer to a vector with the impulse response data in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
 	* \param measure A flag that will change how the object will be instanced.
 	*		-If true the object creation will take a long time, but convolution will be faster.
@@ -103,13 +103,38 @@ public:
 	* Convolves the data that is provided with the inpulse response
 	* \param inBuffer[in] A buffer with the input data to be convolved.
 	* \param outBuffer[in] A pointer to the buffer in which the convolution result will be written.
-	* \param length[in,out] The number of samples to be convolved (the length of both the inBuffer and the outBuffer). 
-	*						The convolution output should be larger than the input, but since this class uses the overlap 
+	* \param length[in,out] The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
+	*						The convolution output should be larger than the input, but since this class uses the overlap
 	*						add method, the extra length will be saved internally.
 	*						It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
 	*						written in the outBuffer.
 	*/
 	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length);
+
+	/**
+	* Convolves the data that is provided with the inpulse response
+	* \param inBuffer[in] A buffer with the input data to be convolved.
+	* \param outBuffer[in] A pointer to the buffer in which the convolution result will be written.
+	* \param length[in,out] The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
+	*						The convolution output should be larger than the input, but since this class uses the overlap
+	*						add method, the extra length will be saved internally.
+	*						It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
+	*						written in the outBuffer.
+	* \param transformedData[in] A pointer to a buffer in which the Fourier transform of the input will be written.
+	*/
+	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length, fftwf_complex* transformedData);
+
+	/**
+	* Convolves the data that is provided with the inpulse response
+	* \param inBuffer[in] A buffer with the input data to be convolved. Its length must be N/2 + 1
+	* \param outBuffer[in] A pointer to the buffer in which the convolution result will be written.
+	* \param length[in,out] The number of samples to be convolved and the length of the outBuffer.
+	*						The convolution output should be larger than the input, but since this class uses the overlap
+	*						add method, the extra length will be saved internally.
+	*						It must be equal or lower than L or the call will fail and set the value of length to 0 since no data would be
+	*						written in the outBuffer.
+	*/
+	void getNext(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length);
 	
 	/**
 	* Gets the internally stored extra data which is result of the convolution.
@@ -126,6 +151,26 @@ public:
 	* Resets the internally stored data so a new convolution can be started.
 	*/
 	void clearTail();
+
+	/**
+	* Calculates the Fast Fourier Transform of the input array.
+	* \param inBuffer[in] A buffer with the input data to be transformed.
+	* \param outBuffer[in] A pointer to the buffer in which the transform result will be written. Its length must be N/2 + 1
+	* \param length[in,out] The number of samples to be transformed and the length of the inBuffer.
+	*						It must be equal or lower than N or the call will fail and set the value of length to 0 since no data would be
+	*						written in the outBuffer.
+	*/
+	void FFT(const sample_t* inBuffer, fftwf_complex* outBuffer, int& length);
+
+	/**
+	* Calculates the Inverse Fast Fourier Transform of the input array.
+	* \param inBuffer[in] A buffer with the input data to be transformed. Its length must be N/2 + 1
+	* \param outBuffer[in] A pointer to the buffer in which the transform result will be written. 
+	* \param length[in,out] The number of samples to be transformed and the length of the outBuffer.
+	*						It must be equal or lower than N or the call will fail and set the value of length to 0 since no data would be
+	*						written in the outBuffer.
+	*/
+	void IFFT(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length);
 };
 
 AUD_NAMESPACE_END

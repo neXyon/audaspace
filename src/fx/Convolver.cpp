@@ -24,7 +24,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	m_bufLength = std::ceil((float)irLength / (float)m_L)*m_L * 2;
 	m_endPosition = m_bufLength;
 	m_outBuffer = (sample_t*)std::calloc(m_bufLength, sizeof(sample_t));
-	m_inBuffer = (sample_t*)std::malloc(m_L*sizeof(sample_t));
+	m_inBuffer = (fftwf_complex*)std::malloc(((N / 2) + 1)*sizeof(fftwf_complex));
 
 	for (int i = 0; i < m_numThreads; i++)
 		m_threads.push_back(std::thread(&Convolver::threadFunction, this, i));
@@ -56,7 +56,7 @@ void Convolver::getNext(sample_t* buffer, int& length)
 		return;
 	}
 
-	m_fftConvolvers[0]->getNext(buffer, m_fftOutBuffers[0], length);
+	m_fftConvolvers[0]->getNext(buffer, m_fftOutBuffers[0], length, m_inBuffer);
 	for (int i = 0; i < m_threads.size(); i++)
 		std::lock_guard<std::mutex> lck(m_mutexes[i]);
 	
@@ -71,7 +71,6 @@ void Convolver::getNext(sample_t* buffer, int& length)
 			std::memset(m_outBuffer, 0, (m_bufLength / 2)*sizeof(sample_t));
 
 	m_inLength = length;
-	std::memcpy(m_inBuffer, buffer, length*sizeof(sample_t));
 	for (int i = 0; i < m_threads.size(); i++)
 		m_conditions[i].notify_all();
 	

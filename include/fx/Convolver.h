@@ -91,7 +91,7 @@ private:
 	/**
 	* An input buffer for the various FFTConvolvers
 	*/
-	sample_t* m_inBuffer;
+	fftwf_complex* m_inBuffer;
 
 	/**
 	* The output buffer in which all the partial results are written and summed.
