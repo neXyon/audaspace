@@ -148,7 +148,7 @@ public:
 	*		-If true the object creation will take a long time, but convolution will be faster.
 	*		-If false the object creation will be fast, but convolution will be a bit slower.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, int nThreads = 4, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, int nThreads = 1, bool measure = false);
 
 	/**
 	* Creates a new FFTConvolver.
@@ -162,7 +162,7 @@ public:
 	*		-If true the object creation will take a long time, but convolution will be faster.
 	*		-If false the object creation will be fast, but convolution will be a bit slower.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, int nThreads=4, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, int nThreads=1, bool measure = false);
 	virtual ~Convolver();
 
 	/**

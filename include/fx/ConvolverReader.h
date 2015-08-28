@@ -116,7 +116,7 @@ public:
 	* \param ir A shared pointer to an impulseResponse object that will be used to convolve the sound.
 	* \param nThreads The number of threads per channel that can be used for convolution.
 	*/
-	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nThreads=4);
+	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nThreads=1);
 	virtual ~ConvolverReader();
 
 	virtual bool isSeekable() const;
