@@ -37,7 +37,7 @@ void FFMPEGWriter::encode()
 
 		sample_t* dbuf = m_deinterleave_buffer.getBuffer();
 		// deinterleave
-		int single_size = AUD_FORMAT_SIZE(m_specs.format);
+		int single_size = sizeof(sample_t);
 		for(int channel = 0; channel < m_specs.channels; channel++)
 		{
 			for(int i = 0; i < m_input_buffer.getSize() / AUD_SAMPLE_SIZE(m_specs); i++)
@@ -71,8 +71,9 @@ void FFMPEGWriter::encode()
 
 	frame->nb_samples = m_input_samples;
 	frame->format = m_codecCtx->sample_fmt;
+	frame->channel_layout = m_codecCtx->channel_layout;
 
-	if(avcodec_fill_audio_frame(frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_samples * AUD_DEVICE_SAMPLE_SIZE(m_specs), 1) < 0)
+	if(avcodec_fill_audio_frame(frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_buffer.getSize(), 0) < 0)
 		AUD_THROW(FileException, "File couldn't be written, filling the audio frame failed with ffmpeg.");
 
 	if(m_codecCtx->coded_frame && m_codecCtx->coded_frame->pts != AV_NOPTS_VALUE)
