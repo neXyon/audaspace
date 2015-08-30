@@ -249,15 +249,15 @@ if(WITH_STRICT_DEPENDENCIES)
 	set(PACKAGE_OPTION REQUIRED)
 endif()
 
-if(WIN32 OR APPLE)
-	set(DEFAULT_PLUGIN_PATH "." CACHE PATH "Default plugin installation and loading path.")
+if(WIN32)
+	set(DEFAULT_PLUGIN_PATH "." CACHE STRING "Default plugin installation and loading path.")
 	set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
 else()
-	set(DEFAULT_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/share/audaspace/plugins" CACHE PATH "Default plugin installation and loading path.")
+	set(DEFAULT_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/share/audaspace/plugins" CACHE STRING "Default plugin installation and loading path.")
 	set(DOCUMENTATION_INSTALL_PATH "share/doc/audaspace" CACHE PATH "Path where the documentation is installed.")
 endif()
 
-cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
@@ -649,15 +649,17 @@ endif()
 
 # bindings
 
-if(WITH_C AND SEPARATE_C)
-	add_library(audaspace-c ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
-	target_link_libraries(audaspace-c audaspace)
-	set_target_properties(audaspace-c PROPERTIES SOVERSION ${AUDASPACE_VERSION})
-	install(TARGETS audaspace-c
-		RUNTIME DESTINATION ${BIN_DESTINATION}
-		LIBRARY DESTINATION ${LIB_DESTINATION}
-		ARCHIVE DESTINATION ${LIB_DESTINATION}
-	)
+if(WITH_C)
+	if(SEPARATE_C)
+		add_library(audaspace-c ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
+		target_link_libraries(audaspace-c audaspace)
+		set_target_properties(audaspace-c PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+		install(TARGETS audaspace-c
+			RUNTIME DESTINATION ${BIN_DESTINATION}
+			LIBRARY DESTINATION ${LIB_DESTINATION}
+			ARCHIVE DESTINATION ${LIB_DESTINATION}
+		)
+	endif()
 
 	install(FILES ${C_HDR} DESTINATION include/audaspace)
 endif()
