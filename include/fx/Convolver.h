@@ -15,8 +15,9 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-AUD_NAMESPACE_BEGIN
+#include <deque>
 
+AUD_NAMESPACE_BEGIN
 /**
 * This class allows to convolve a sound with a very large impulse response.
 */
@@ -44,9 +45,9 @@ private:
 	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> m_irBuffers;
 
 	/**
-	* Output buffers into which output of the partial convolutions will be written.
+	* Accumulation buffers for the threads.
 	*/
-	std::vector<sample_t*> m_fftOutBuffers;
+	std::vector<fftwf_complex*> m_threadAccBuffers;
 
 	/**
 	* A vector of FFTConvolvers used to calculate the partial convolutions.
@@ -74,6 +75,11 @@ private:
 	std::vector<std::mutex> m_mutexes;
 
 	/**
+	* A mutex for the sum of thread accumulators.
+	*/
+	std::mutex m_sumMutex;
+
+	/**
 	* A vector condition variables, one per thread.
 	*/
 	std::vector<std::condition_variable> m_conditions;
@@ -89,14 +95,19 @@ private:
 	std::atomic_bool m_stopFlag;
 
 	/**
-	* An input buffer for the various FFTConvolvers
+	* Global accumulation buffer.
 	*/
-	fftwf_complex* m_inBuffer;
+	fftwf_complex* m_accBuffer;
 
 	/**
-	* The output buffer in which all the partial results are written and summed.
+	* Delay line.
 	*/
-	sample_t* m_outBuffer;
+	std::deque<fftwf_complex*> m_delayLine;
+
+	/**
+	* Counter for the tail;
+	*/
+	int m_tailCounter;
 
 	/**
 	* The length of the m_outBuffer.
@@ -174,7 +185,7 @@ public:
 	*						It must be equal or lower than L or the call will fail, setting this 
 	*						variable to 0 since no data would be written in the buffer.
 	*/
-	void getNext(sample_t* buffer, int& length);
+	void getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bool& eos);
 
 	/**
 	* Gets the extra data which is generated as result of the convolution. This method calls endSound() when it is used for the 

@@ -43,9 +43,14 @@ private:
 	int m_realBufLen;
 
 	/**
-	* The internal buffer.
+	* The internal buffer for the FFTS.
 	*/
 	void* m_inBuffer;
+
+	/**
+	* A shift buffer for the FDL method
+	*/
+	sample_t* m_shiftBuffer;
 
 	/**
 	* A buffer to store the extra data obtained after each partial convolution.
@@ -150,17 +155,7 @@ public:
 	/**
 	* Resets the internally stored data so a new convolution can be started.
 	*/
-	void clearTail();
-
-	/**
-	* Calculates the Fast Fourier Transform of the input array.
-	* \param inBuffer[in] A buffer with the input data to be transformed.
-	* \param outBuffer[in] A pointer to the buffer in which the transform result will be written. Its length must be N/2 + 1
-	* \param length[in,out] The number of samples to be transformed and the length of the inBuffer.
-	*						It must be equal or lower than N or the call will fail and set the value of length to 0 since no data would be
-	*						written in the outBuffer.
-	*/
-	void FFT(const sample_t* inBuffer, fftwf_complex* outBuffer, int& length);
+	void clear();
 
 	/**
 	* Calculates the Inverse Fast Fourier Transform of the input array.
@@ -170,7 +165,10 @@ public:
 	*						It must be equal or lower than N or the call will fail and set the value of length to 0 since no data would be
 	*						written in the outBuffer.
 	*/
-	void IFFT(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length);
+	void IFFT_FDL(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length);
+
+	void getNextFDL(const fftwf_complex* inBuffer, fftwf_complex* accBuffer);
+	void getNextFDL(const sample_t* inBuffer, fftwf_complex* accBuffer, int& length, fftwf_complex* transformedData);
 };
 
 AUD_NAMESPACE_END
