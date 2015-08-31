@@ -1,7 +1,7 @@
 #include "util/Barrier.h"
 
 AUD_NAMESPACE_BEGIN
-Barrier::Barrier(int count) :
+Barrier::Barrier(unsigned int count) :
 	m_threshold(count), m_count(count), m_generation(0)
 {
 }

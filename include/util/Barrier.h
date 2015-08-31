@@ -13,19 +13,46 @@
 
 AUD_NAMESPACE_BEGIN
 /**
-* This class allows to convolve a sound with a very large impulse response.
+* This represents a barrier mechanism for thread sychronization.
 */
 class Barrier 
 {
 private:
+	/**
+	* A mutex needed to use a condition variable.
+	*/
 	std::mutex m_mutex;
+
+	/**
+	* Condition varieble used to sync threads.
+	*/
 	std::condition_variable m_condition;
-	int m_threshold;
-	int m_count;
-	int m_generation;
+	
+	/**
+	* Number of threads that need to reach the barrier for it to lift.
+	*/
+	unsigned int m_threshold;
+
+	/**
+	* Conter that count from threshold to 0.
+	*/
+	unsigned int m_count;
+
+	/**
+	* Variable used for predicate check in the condition variable wait.
+	*/
+	unsigned int m_generation;
 
 public:
-	Barrier(int count);
+	/**
+	* Creates a new Barrier object.
+	* \param count the number of threads that need to reach the barrier for it to lift.
+	*/
+	Barrier(unsigned int count);
+
+	/**
+	* Makes the caller thread wait until enough threads are stopped by this method.
+	*/
 	void wait();
 };
 AUD_NAMESPACE_END
