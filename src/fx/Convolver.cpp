@@ -12,7 +12,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 }
 
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, int nThreads, bool measure) :
-	m_M(M), m_L(L), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_inLength(0), m_readPosition(0), m_writePosition(0), m_soundEnded(false), m_maxThreads(nThreads), m_numThreads(std::min(m_maxThreads, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads), m_tailCounter(0)
+	m_M(M), m_L(L), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_numThreads(std::min(nThreads, (int)m_irBuffers->size() - 1)), m_mutexes(m_numThreads), m_conditions(m_numThreads), m_tailCounter(0)
 {
 	m_resetFlag = false;
 	m_stopFlag = false;
@@ -22,8 +22,6 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 		m_delayLine.push_front((fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex)));
 	}
 
-	m_bufLength = std::ceil((float)irLength / (float)m_L)*m_L * 2;
-	m_endPosition = m_bufLength;
 	m_accBuffer = (fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex));
 
 	for (int i = 0; i < m_numThreads; i++)
@@ -57,7 +55,7 @@ Convolver::~Convolver()
 
 void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bool& eos)
 {
-	if (length > m_L || m_soundEnded)
+	if (length > m_L)
 	{
 		length = 0;
 		eos = m_tailCounter >= m_delayLine.size();
@@ -92,86 +90,16 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 			m_conditions[i].notify_all();
 }
 
-void Convolver::endSound()
-{
-	/*if (m_soundEnded)
-		return;
-
-	for (int i = 0; i < m_numThreads; i++)
-		std::lock_guard<std::mutex> lck(m_mutexes[i]);
-
-	m_soundEnded = true;
-	m_endPosition = m_readPosition + m_inLength + m_irLength - 1;
-	int length = m_M;
-	bool eos = false;
-	int pos = m_writePosition;
-	pos += m_inLength;
-
-	for (int i = 0; i < m_fftConvolvers.size(); i++)
-	{
-		m_fftConvolvers[i]->getTail(length, eos, m_fftOutBuffers[0]);
-		length = m_M;
-		if(eos)
-			m_fftConvolvers[i]->clear();
-
-		int delay = i*m_M;
-		int position = 0;
-		for (int j = 0; j < m_inLength; j++)
-		{
-			position = j + pos + delay;
-			if (position >= m_bufLength)
-				position -= m_bufLength;
-			m_outBuffer[position] += m_fftOutBuffers[0][j];
-		}
-	}*/
-}
-
-void Convolver::getRest(int& length, bool& eos, sample_t* buffer)
-{
-	/*if (length <= 0)
-	{
-		length = 0;
-		eos = m_readPosition >= m_endPosition;
-		return;
-	}
-
-	eos = false;
-	if (!m_soundEnded)
-		endSound();
-
-	for (int i = 0; i < m_numThreads; i++)
-		std::lock_guard<std::mutex> lck(m_mutexes[i]);
-
-	m_readPosition += m_inLength;	
-
-	if (m_readPosition + length > m_endPosition)
-	{
-		length = m_endPosition - m_readPosition;
-		if (length < 0)
-			length = 0;
-		eos = true;
-		m_readPosition = m_endPosition;
-	}
-	else
-		m_inLength = length;
-
-	int pos = m_readPosition;
-	if (pos >= m_bufLength)
-		pos -= m_bufLength;
-	std::memcpy(buffer, m_outBuffer + pos, length*sizeof(sample_t));*/
-}
-
 void Convolver::reset()
 {
 	m_resetFlag = true;
+
 	for (int i = 0; i < m_threads.size(); i++)
 		std::lock_guard<std::mutex> lck(m_mutexes[i]);
-
 	for (int i = 0; i < m_fftConvolvers.size(); i++)
 		m_fftConvolvers[i]->clear();
-	m_tailCounter = 0;
-	m_endPosition = m_bufLength;
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
+	m_tailCounter = 0;
 
 	m_resetFlag = false;
 }

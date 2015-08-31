@@ -55,11 +55,6 @@ private:
 	std::vector<std::unique_ptr<FFTConvolver>> m_fftConvolvers;
 
 	/**
-	* The max number of threads that can be used.
-	*/
-	int m_maxThreads;
-
-	/**
 	* The actual number of threads being used.
 	*/
 	int m_numThreads;
@@ -105,44 +100,14 @@ private:
 	std::deque<fftwf_complex*> m_delayLine;
 
 	/**
-	* Counter for the tail;
-	*/
-	int m_tailCounter;
-
-	/**
-	* The length of the m_outBuffer.
-	*/
-	int m_bufLength;
-
-	/**
 	* The complete length of the impulse response.
 	*/
 	int m_irLength;
-	
-	/**
-	* The length of the last input slice.
-	*/
-	int m_inLength;
 
 	/**
-	* The position from which the m_outBuffer is being read.
+	* Counter for the tail;
 	*/
-	int m_readPosition;
-
-	/**
-	* The position from which the m_outBuffer is being written.
-	*/
-	int m_writePosition;
-
-	/**
-	* A flag that determines if the object must be reset before convolving more data.
-	*/
-	bool m_soundEnded;
-
-	/**
-	* The buffer position that contains the end of the valid data.
-	*/
-	int m_endPosition;
+	int m_tailCounter;
 
 	// delete copy constructor and operator=
 	Convolver(const Convolver&) = delete;
@@ -178,26 +143,13 @@ public:
 
 	/**
 	* Convolves the data that is provided with the inpulse response.
-	* \param buffer[in] A buffer with the input data to be convolved and into which the convolved data will be written.
-	* \param length[in,out] The number of samples to be convolved (the length of both the buffer).
-	*						The convolution output should be larger than the input, but since the 
-	*						overlap	add method is used, the extra length will be saved internally.
-	*						It must be equal or lower than L or the call will fail, setting this 
-	*						variable to 0 since no data would be written in the buffer.
+	* \param[in] inBuffer A buffer with the input data to be convolved, nullptr if the source sound has ended (the convolved sound is larger than the source sound).
+	* \param[in] outBuffer A buffer in which the convolved data will be written.
+	* \param[in,out] length The number of samples you wish to obtain. If an inBuffer is provided this argument must match its length.
+	*						When this method returns, the value of length represent the number of samples written into the outBuffer.
+	* \param[out] eos True if the end of the sound is reached, false otherwise.
 	*/
 	void getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bool& eos);
-
-	/**
-	* Gets the extra data which is generated as result of the convolution. This method calls endSound() when it is used for the 
-	* first time after a reset, so calling reset will be needed to be able to convolve more data.
-	* \param[in,out] length The count of samples that should be read. Shall
-	*                contain the real count of samples after reading, in case
-	*                there were only fewer samples available.
-	*                A smaller value also indicates the end of the data.
-	* \param[out] eos End of stream, whether the end is reached or not.
-	* \param[in] buffer The pointer to the buffer to read into.
-	*/
-	void getRest(int& length, bool& eos, sample_t* buffer);
 
 	/**
 	* Resets all the internally stored data so the convolution of a new sound can be started. 
@@ -205,12 +157,6 @@ public:
 	void reset();
 
 private:
-	/**
-	* This method should only be called when all the sound data has already been convolved and getting the extra data
-	* generated in the convolution is needed. To convolve more data after using this method, the reset() method must be called.
-	* This method is called by getRest().
-	*/
-	void endSound();
 
 	/**
 	* The function that will be asigned to the different threads.
