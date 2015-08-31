@@ -39,6 +39,7 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 ConvolverReader::~ConvolverReader()
 {
 	m_stopFlag = true;
+	m_barrier.wait();
 	std::free(m_outBuffer);
 	for (int i = 0; i < m_inChannels; i++)
 		std::free(m_vecInOut[i]);
@@ -179,6 +180,8 @@ void ConvolverReader::threadFunction(int id)
 	{
 		m_barrier.wait();
 		m_barrier.wait();
+		if (m_stopFlag)
+			return;
 		int l=m_lastLengthIn;
 		for (int i = start; i < end; i++)
 			if(!m_eosReader)
