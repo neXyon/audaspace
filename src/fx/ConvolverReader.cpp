@@ -7,8 +7,9 @@
 #include <iostream>
 AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nConvolutionThreads, int nChannelThreads) :
-	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads, m_inChannels)), m_stopFlag(false), m_barrier(m_nChannelThreads+1)
+	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads, m_inChannels)), m_barrier(m_nChannelThreads+1)
 {
+	m_stopFlag = false;
 	m_irChannels = m_ir->getNumberOfChannels();
 
 	for (int i = 0; i < m_nChannelThreads; i++)
