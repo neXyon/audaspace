@@ -124,7 +124,6 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 
 void ConvolverReader::loadBuffer()
 {
-	static int z = 0;
 	m_lastLengthIn = m_L;
 	m_reader->read(m_lastLengthIn, m_eosReader, m_outBuffer);
 	if (!m_eosReader || m_lastLengthIn>0)
@@ -145,10 +144,6 @@ void ConvolverReader::loadBuffer()
 		joinByChannel(0, m_lastLengthOut);
 		m_eOutBufLen = m_lastLengthOut*m_inChannels;
 	}
-	if (z == 300)
-		for (int i = 0; i < m_eOutBufLen; i++)
-			std::cout << m_outBuffer[i] << std::endl;
-	z++;
 }
 
 void ConvolverReader::divideByChannel(const sample_t* buffer, int len)
