@@ -116,6 +116,7 @@ set(SRC
 	src/sequence/SequenceReader.cpp
 	src/sequence/Superpose.cpp
 	src/sequence/SuperposeReader.cpp
+	src/util/Barrier.cpp
 	src/util/Buffer.cpp
 	src/util/BufferReader.cpp
 	src/util/StreamBuffer.cpp
@@ -228,6 +229,7 @@ set(PUBLIC_HDR
 	include/sequence/SequenceReader.h
 	include/sequence/Superpose.h
 	include/sequence/SuperposeReader.h
+	include/util/Barrier.h
 	include/util/Buffer.h
 	include/util/BufferReader.h
 	include/util/ILockable.h
