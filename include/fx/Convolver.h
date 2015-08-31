@@ -65,14 +65,14 @@ private:
 	std::vector<std::thread> m_threads;
 
 	/**
-	* A vector of mutexes, one per thread.
-	*/
-	std::vector<std::mutex> m_mutexes;
-
-	/**
 	* A mutex for the sum of thread accumulators.
 	*/
 	std::mutex m_sumMutex;
+
+	/**
+	* A vector of mutexes, one per thread.
+	*/
+	std::vector<std::mutex> m_mutexes;
 
 	/**
 	* A vector condition variables, one per thread.
@@ -165,11 +165,12 @@ private:
 	void threadFunction(int id);
 
 	/**
-	* This funtion will be called from threadFunction(), and will process the input signal with a subset of the impulse 
-	* response parts, depending on the id of the thread and the total number of threads.
+	* This function will be called from threadFunction(), and will process the input signal with a subset of the impulse response parts.
 	* \param id The id of the thread, that executes this method, starting with 0.
+	* \param start The index of the first FFTConvolver object to be used.
+	* \param end The index of the last FFTConvolver object to be used +1.
 	*/
-	void processSignalFragment(int id);
+	void processSignalFragment(int id, int start, int end);
 };
 
 AUD_NAMESPACE_END

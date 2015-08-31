@@ -3,7 +3,6 @@
 #include <math.h>
 #include <algorithm>
 #include <cstring>
-#include <iostream>
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, int nThreads, bool measure) :
@@ -96,6 +95,9 @@ void Convolver::reset()
 
 	for (int i = 0; i < m_threads.size(); i++)
 		std::lock_guard<std::mutex> lck(m_mutexes[i]);
+
+	for (int i = 0; i < m_delayLine.size();i++)
+		std::memset(m_delayLine[i], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 	for (int i = 0; i < m_fftConvolvers.size(); i++)
 		m_fftConvolvers[i]->clear();
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
@@ -107,19 +109,20 @@ void Convolver::reset()
 void Convolver::threadFunction(int id)
 {
 	std::unique_lock<std::mutex> lck(m_mutexes[id]);
-	while (!m_stopFlag)
-	{
-		m_conditions[id].wait(lck);
-		processSignalFragment(id);
-	}
-}
-
-void Convolver:: processSignalFragment(int id)
-{
 	int total = m_irBuffers->size();
 	int share = std::ceil(((float)total - 1) / (float)m_numThreads);
 	int start = id*share + 1;
 	int end = std::min(start + share, total);
+
+	while (!m_stopFlag)
+	{
+		m_conditions[id].wait(lck);
+		processSignalFragment(id, start, end);
+	}
+}
+
+void Convolver:: processSignalFragment(int id, int start, int end)
+{
 	std::memset(m_threadAccBuffers[id], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 
 	for (int i = start; i < end && !m_resetFlag; i++)
