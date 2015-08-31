@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	std::shared_ptr<File> file1(std::make_shared<File>(argv[1]));
 	std::shared_ptr<File> file2(std::make_shared<File>(argv[2]));
 	std::shared_ptr<ImpulseResponse> impulseResponse(std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(file2)));
-	std::shared_ptr<ConvolverSound> convolver(std::make_shared<ConvolverSound>(file1, impulseResponse, 2));
+	std::shared_ptr<ConvolverSound> convolver(std::make_shared<ConvolverSound>(file1, impulseResponse, 1, 2));
 
 	device->lock();
 	auto handle = device->play(convolver);
