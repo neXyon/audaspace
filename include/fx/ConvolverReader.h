@@ -132,6 +132,11 @@ private:
 	*/
 	Barrier m_barrier;
 
+	/**
+	* The last channel to be processed by the main thread.
+	*/
+	int m_end;
+
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
 	ConvolverReader& operator=(const ConvolverReader&) = delete;

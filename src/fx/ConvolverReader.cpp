@@ -7,13 +7,15 @@
 
 AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nConvolutionThreads, int nChannelThreads) :
-	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads-1, m_inChannels-1)), m_barrier(m_nChannelThreads+1)
+	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads, m_inChannels)), m_barrier(m_nChannelThreads)
 {
 	m_stopFlag = false;
 	m_irChannels = m_ir->getNumberOfChannels();
 
-	for (int i = 0; i < m_nChannelThreads; i++)
+	for (int i = 1; i < m_nChannelThreads; i++)
 		m_threads.push_back(std::thread(&ConvolverReader::threadFunction, this, i));
+	int share = std::ceil((float)m_inChannels / (float)m_nChannelThreads);
+	m_end = std::min(share, m_inChannels);
 
 	int irLength = m_ir->getLength();
 	if (m_irChannels != 1 && m_irChannels != m_inChannels)
@@ -135,7 +137,8 @@ void ConvolverReader::loadBuffer()
 
 		if(m_threads.size())
 			m_barrier.wait();
-		m_convolvers[0]->getNext(m_vecInOut[0], m_vecInOut[0], len, m_eosTail);
+		for (int i = 0; i < m_end; i++)
+			m_convolvers[i]->getNext(m_vecInOut[i], m_vecInOut[i], len, m_eosTail);
 		if (m_threads.size())
 			m_barrier.wait();
 
@@ -146,7 +149,8 @@ void ConvolverReader::loadBuffer()
 	{
 		if (m_threads.size())
 			m_barrier.wait();
-		m_convolvers[0]->getNext(nullptr, m_vecInOut[0], len, m_eosTail);
+		for (int i = 0; i < m_end; i++)
+			m_convolvers[i]->getNext(nullptr, m_vecInOut[i], len, m_eosTail);
 		if (m_threads.size())
 			m_barrier.wait();
 
@@ -179,10 +183,9 @@ void ConvolverReader::joinByChannel(int start, int len)
 
 void ConvolverReader::threadFunction(int id)
 {
-	int total = m_inChannels;
-	int share = std::ceil((float)total - 1 / (float)m_nChannelThreads);
-	int start = id*share + 1;
-	int end = std::min(start + share, total);
+	int share = std::ceil((float)m_inChannels / (float)m_nChannelThreads);
+	int start = id*share;
+	int end = std::min(start + share, m_inChannels);
 	
 	while (!m_stopFlag)
 	{
