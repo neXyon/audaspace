@@ -7,7 +7,7 @@
 
 AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nConvolutionThreads, int nChannelThreads) :
-	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads, m_inChannels)), m_barrier(m_nChannelThreads+1)
+	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads-1, m_inChannels-1)), m_barrier(m_nChannelThreads+1)
 {
 	m_stopFlag = false;
 	m_irChannels = m_ir->getNumberOfChannels();
@@ -126,25 +126,32 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 
 void ConvolverReader::loadBuffer()
 {
-	m_lastLengthIn = m_L;
-	m_reader->read(m_lastLengthIn, m_eosReader, m_outBuffer);
+	int len = m_lastLengthIn = m_L;
 	if (!m_eosReader || m_lastLengthIn>0)
 	{
+		m_reader->read(m_lastLengthIn, m_eosReader, m_outBuffer);
 		divideByChannel(m_outBuffer, m_lastLengthIn*m_inChannels);
-		m_barrier.wait();
-		m_barrier.wait();
-		joinByChannel(0, m_lastLengthOut);
-		m_eOutBufLen = m_lastLengthOut*m_inChannels;
+		len = m_lastLengthIn;
+
+		if(m_threads.size())
+			m_barrier.wait();
+		m_convolvers[0]->getNext(m_vecInOut[0], m_vecInOut[0], len, m_eosTail);
+		if (m_threads.size())
+			m_barrier.wait();
+
+		joinByChannel(0, len);
+		m_eOutBufLen = len*m_inChannels;
 	}
 	else if(!m_eosTail)
 	{
-		m_lastLengthIn = m_L;
+		if (m_threads.size())
+			m_barrier.wait();
+		m_convolvers[0]->getNext(nullptr, m_vecInOut[0], len, m_eosTail);
+		if (m_threads.size())
+			m_barrier.wait();
 
-		m_barrier.wait();
-		m_barrier.wait();
-
-		joinByChannel(0, m_lastLengthOut);
-		m_eOutBufLen = m_lastLengthOut*m_inChannels;
+		joinByChannel(0, len);
+		m_eOutBufLen = len*m_inChannels;
 	}
 }
 
@@ -173,8 +180,8 @@ void ConvolverReader::joinByChannel(int start, int len)
 void ConvolverReader::threadFunction(int id)
 {
 	int total = m_inChannels;
-	int share = std::ceil((float)total / (float)m_nChannelThreads);
-	int start = id*share;
+	int share = std::ceil((float)total - 1 / (float)m_nChannelThreads);
+	int start = id*share + 1;
 	int end = std::min(start + share, total);
 	
 	while (!m_stopFlag)
@@ -189,8 +196,6 @@ void ConvolverReader::threadFunction(int id)
 				m_convolvers[i]->getNext(m_vecInOut[i], m_vecInOut[i], l, m_eosTail);
 			else
 				m_convolvers[i]->getNext(nullptr, m_vecInOut[i], l, m_eosTail);
-		if (id == 0)
-			m_lastLengthOut = l;
 	}
 }
 
