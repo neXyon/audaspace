@@ -77,6 +77,12 @@ public:
 			m_threads[i].join();
 	}
 
+	/**
+	* Enqueues a new task for the threads to realize.
+	* \param t A function that realices a task.
+	* \param args The arguments of the task.
+	* \return A future of the same type as the return type of the task.
+	*/
 	template<class T, class... Args>
 	std::future<typename std::result_of<T(Args...)>::type> enqueue(T&& t, Args&&... args)
 	{

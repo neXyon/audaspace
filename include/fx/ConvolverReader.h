@@ -134,8 +134,7 @@ public:
 	* Creates a new convolver reader.
 	* \param reader A reader of the input sound to be assigned to this reader.
 	* \param ir A shared pointer to an impulseResponse object that will be used to convolve the sound.
-	* \param nConvolutionThreads The number of threads per channel that can be used for convolution.
-	* \param nChannelThreads The number of threads that can be used for channels.
+	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	*/
 	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool);
 	virtual ~ConvolverReader();
