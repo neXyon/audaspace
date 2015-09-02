@@ -120,7 +120,6 @@ set(SRC
 	src/util/Buffer.cpp
 	src/util/BufferReader.cpp
 	src/util/StreamBuffer.cpp
-	src/util/ThreadPool.cpp
 )
 
 set(PRIVATE_HDR

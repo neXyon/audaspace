@@ -18,7 +18,7 @@
 
 AUD_NAMESPACE_BEGIN
 /**
-* This represents thread pool.
+* This represents pool of threads.
 */
 class ThreadPool
 {
@@ -48,6 +48,10 @@ private:
 	*/
 	bool m_stopFlag;
 
+	/**
+	* The number fo threads.
+	*/
+	unsigned int m_numThreads;
 
 	// delete copy constructor and operator=
 	ThreadPool(const ThreadPool&) = delete;
@@ -57,13 +61,63 @@ public:
 	* Creates a new ThreadPool object.
 	* \param count The number of threads of the pool. It must not be 0.
 	*/
-	ThreadPool(unsigned int count);
-	virtual ~ThreadPool();
+	ThreadPool(unsigned int count) :
+		m_stopFlag(false), m_numThreads(count)
+	{
+		for (unsigned int i = 0; i < count; i++)
+			m_threads.emplace_back(&ThreadPool::threadFunction, this);
+	}
+	virtual ~ThreadPool()
+	{
+		m_mutex.lock();
+		m_stopFlag = true;
+		m_mutex.unlock();
+		m_condition.notify_all();
+		for (unsigned int i = 0; i < m_threads.size(); i++)
+			m_threads[i].join();
+	}
 
 	template<class T, class... Args>
-	std::future<typename std::result_of<T(Args...)>::type> enqueue(T&& t, Args&&... args);
+	std::future<typename std::result_of<T(Args...)>::type> enqueue(T&& t, Args&&... args)
+	{
+		using pkgdTask = std::packaged_task<typename std::result_of<T(Args...)>::type()>;
+
+		std::shared_ptr<pkgdTask> task = std::make_shared<pkgdTask>(std::bind(std::forward<T>(t), std::forward<Args>(args)...));
+		auto result = task->get_future();
+
+		m_mutex.lock();
+		m_queue.emplace([task]() { (*task)(); });
+		m_mutex.unlock();
+
+		m_condition.notify_one();
+		return result;
+	}
+
+	/**
+	* Retrieves the number of threads of the pool.
+	* \return The number of threads.
+	*/
+	unsigned int getNumOfThreads()
+	{
+		return m_numThreads;
+	}
 
 private:
-	void threadFunction();
+	void threadFunction()
+	{
+		while (true)
+		{
+			std::function<void()> task;
+			{
+				std::unique_lock<std::mutex> lock(m_mutex);
+				m_condition.wait(lock, [this] { return m_stopFlag || !m_queue.empty(); });
+				if (m_stopFlag && m_queue.empty())
+					return;
+				task = std::move(m_queue.front());
+				this->m_queue.pop();
+			}
+			task();
+		}
+	}
 };
 AUD_NAMESPACE_END
