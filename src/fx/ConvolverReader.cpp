@@ -6,14 +6,11 @@
 #include <algorithm>
 
 AUD_NAMESPACE_BEGIN
-ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nConvolutionThreads, int nChannelThreads) :
-	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_nConvolutionThreads(nConvolutionThreads), m_inChannels(reader->getSpecs().channels), m_nChannelThreads(std::min(nChannelThreads, m_inChannels)), m_barrier(m_nChannelThreads)
+ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool) :
+	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_inChannels(reader->getSpecs().channels), m_threadPool(threadPool), m_nChannelThreads(std::min((int)threadPool->getNumOfThreads(), m_inChannels)), m_futures(m_nChannelThreads-1)
 {
-	m_stopFlag = false;
 	m_irChannels = m_ir->getNumberOfChannels();
 
-	for (int i = 1; i < m_nChannelThreads; i++)
-		m_threads.push_back(std::thread(&ConvolverReader::threadFunction, this, i));
 	int share = std::ceil((float)m_inChannels / (float)m_nChannelThreads);
 	m_end = std::min(share, m_inChannels);
 
@@ -26,30 +23,22 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	
 	if (m_irChannels > 1)
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(i), irLength, m_nConvolutionThreads, false)));
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(i), irLength, 1, false)));//TODO
 	else
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(0), irLength, m_nConvolutionThreads, false)));
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(0), irLength, 1, false)));//TODO
 
 	for (int i = 0; i < m_inChannels; i++)
 		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));
 	m_outBuffer = (sample_t*)std::malloc(m_L*m_inChannels*sizeof(sample_t));
 	m_outBufLen = m_eOutBufLen = m_outBufferPos = m_L*m_inChannels;
-
-	m_barrier.wait();
 }
 
 ConvolverReader::~ConvolverReader()
 {
-	m_stopFlag = true;
-	m_barrier.wait();
 	std::free(m_outBuffer);
 	for (int i = 0; i < m_inChannels; i++)
 		std::free(m_vecInOut[i]);
-
-	for (int i = 0; i < m_threads.size(); i++)
-		if (m_threads[i].joinable())
-			m_threads[i].join();
 }
 
 bool ConvolverReader::isSeekable() const
@@ -128,31 +117,32 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 
 void ConvolverReader::loadBuffer()
 {
-	int len = m_lastLengthIn = m_L;
+	m_lastLengthIn = m_L;
+	m_reader->read(m_lastLengthIn, m_eosReader, m_outBuffer);
 	if (!m_eosReader || m_lastLengthIn>0)
 	{
-		m_reader->read(m_lastLengthIn, m_eosReader, m_outBuffer);
 		divideByChannel(m_outBuffer, m_lastLengthIn*m_inChannels);
-		len = m_lastLengthIn;
+		int len = m_lastLengthIn;
 
-		if(m_threads.size())
-			m_barrier.wait();
+		for (int i = 0; i < m_futures.size(); i++)
+			m_futures[i] = m_threadPool->enqueue(&ConvolverReader::threadFunction, this, i + 1, true);
 		for (int i = 0; i < m_end; i++)
 			m_convolvers[i]->getNext(m_vecInOut[i], m_vecInOut[i], len, m_eosTail);
-		if (m_threads.size())
-			m_barrier.wait();
+		for (auto &fut : m_futures)
+			fut.get();
 
 		joinByChannel(0, len);
 		m_eOutBufLen = len*m_inChannels;
 	}
 	else if(!m_eosTail)
 	{
-		if (m_threads.size())
-			m_barrier.wait();
+		int len = m_lastLengthIn = m_L;
+		for (int i = 0; i < m_futures.size(); i++)
+			m_futures[i] = m_threadPool->enqueue(&ConvolverReader::threadFunction, this, i + 1, false);
 		for (int i = 0; i < m_end; i++)
 			m_convolvers[i]->getNext(nullptr, m_vecInOut[i], len, m_eosTail);
-		if (m_threads.size())
-			m_barrier.wait();
+		for (auto &fut : m_futures)
+			fut.get();
 
 		joinByChannel(0, len);
 		m_eOutBufLen = len*m_inChannels;
@@ -181,25 +171,19 @@ void ConvolverReader::joinByChannel(int start, int len)
 	}
 }
 
-void ConvolverReader::threadFunction(int id)
+bool ConvolverReader::threadFunction(int id, bool input)
 {
 	int share = std::ceil((float)m_inChannels / (float)m_nChannelThreads);
 	int start = id*share;
 	int end = std::min(start + share, m_inChannels);
 	
-	while (!m_stopFlag)
-	{
-		m_barrier.wait();
-		m_barrier.wait();
-		if (m_stopFlag)
-			return;
-		int l=m_lastLengthIn;
-		for (int i = start; i < end; i++)
-			if(!m_eosReader)
-				m_convolvers[i]->getNext(m_vecInOut[i], m_vecInOut[i], l, m_eosTail);
-			else
-				m_convolvers[i]->getNext(nullptr, m_vecInOut[i], l, m_eosTail);
-	}
+	int l=m_lastLengthIn;
+	for (int i = start; i < end; i++)
+		if(input)
+			m_convolvers[i]->getNext(m_vecInOut[i], m_vecInOut[i], l, m_eosTail);
+		else
+			m_convolvers[i]->getNext(nullptr, m_vecInOut[i], l, m_eosTail);
+	return true;
 }
 
 AUD_NAMESPACE_END

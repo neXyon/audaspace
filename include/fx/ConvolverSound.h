@@ -8,6 +8,7 @@
 
 #include "ISound.h"
 #include "ImpulseResponse.h"
+#include "util/ThreadPool.h"
 
 #include <memory>
 #include <vector>
@@ -31,14 +32,9 @@ private:
 	std::shared_ptr<ImpulseResponse> m_impulseResponse;
 
 	/**
-	*The max number of threads this sound will use for convolution when playing(per channel)
+	* A shared ptr to a thread pool.
 	*/
-	int m_nConvolutionThreads;
-
-	/**
-	*The max number of threads this sound will use for the channels
-	*/
-	int m_nChannelThreads;
+	std::shared_ptr<ThreadPool> m_threadPool;
 
 	// delete copy constructor and operator=
 	ConvolverSound(const ConvolverSound&) = delete;
@@ -52,7 +48,7 @@ public:
 	* \param nConvolutionThreads The max number of threads per channel that this sound can use for convolution when playing (default 1).
 	* \param nChannelThreads The max number of threads that this sound can use for the channels (default 2).
 	*/
-	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, int nConvolutionThreads = 1, int nChannelThreads = 2);
+	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, std::shared_ptr<ThreadPool> threadPool);
 
 	virtual std::shared_ptr<IReader> createReader();
 

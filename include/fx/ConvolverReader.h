@@ -11,13 +11,11 @@
 #include "Convolver.h"
 #include "ImpulseResponse.h"
 #include "util/Barrier.h"
+#include "util/ThreadPool.h"
 
 #include <memory>
 #include <vector>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <atomic>
+#include <future>
 
 AUD_NAMESPACE_BEGIN
 
@@ -103,24 +101,9 @@ private:
 	int m_irChannels;
 
 	/**
-	* The number of threads per channel that will be used for convolution.
-	*/
-	int m_nConvolutionThreads;
-
-	/**
 	* The number of threads used for channels.
 	*/
 	int m_nChannelThreads;
-
-	/**
-	* A vector of thread objects.
-	*/
-	std::vector<std::thread> m_threads;
-
-	/**
-	* Flag used to end the channel threads.
-	*/
-	std::atomic_bool m_stopFlag;
 
 	/**
 	* Length of the input data to be used by the channel threads.
@@ -128,14 +111,19 @@ private:
 	int m_lastLengthIn;
 
 	/**
-	* Barrier used to sync the channel threads.
-	*/
-	Barrier m_barrier;
-
-	/**
 	* The last channel to be processed by the main thread.
 	*/
 	int m_end;
+
+	/**
+	* A shared ptr to a thread pool.
+	*/
+	std::shared_ptr<ThreadPool> m_threadPool;
+
+	/** 
+	* A vector of futures to sync tasks.
+	*/
+	std::vector<std::future<bool>> m_futures;
 
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
@@ -149,7 +137,7 @@ public:
 	* \param nConvolutionThreads The number of threads per channel that can be used for convolution.
 	* \param nChannelThreads The number of threads that can be used for channels.
 	*/
-	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, int nConvolutionThreads=1, int nChannelThreads = 2);
+	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool);
 	virtual ~ConvolverReader();
 
 	virtual bool isSeekable() const;
@@ -182,7 +170,7 @@ private:
 	/**
 	* The tunction that the threads will run.
 	*/
-	void threadFunction(int id);
+	bool threadFunction(int id, bool input);
 };
 
 AUD_NAMESPACE_END
