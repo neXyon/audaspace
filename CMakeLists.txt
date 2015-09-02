@@ -120,6 +120,7 @@ set(SRC
 	src/util/Buffer.cpp
 	src/util/BufferReader.cpp
 	src/util/StreamBuffer.cpp
+	src/util/ThreadPool.cpp
 )
 
 set(PRIVATE_HDR
@@ -235,6 +236,7 @@ set(PUBLIC_HDR
 	include/util/ILockable.h
 	include/util/Math3D.h
 	include/util/StreamBuffer.h
+	include/util/ThreadPool.h
 )
 
 set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
