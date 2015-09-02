@@ -109,6 +109,10 @@ public:
 	}
 
 private:
+
+	/**
+	* Worker thread function.
+	*/
 	void threadFunction()
 	{
 		while (true)

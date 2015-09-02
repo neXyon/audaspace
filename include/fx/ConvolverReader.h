@@ -167,7 +167,11 @@ private:
 	void loadBuffer();
 
 	/**
-	* The tunction that the threads will run.
+	* The function that the threads will run. It will process a subset of channels.
+	* \param id An id number that will determine which subset of channels will be processed.
+	* \param input A flag that will indicate if thare is input data.
+	*		-If true there is new input data.
+	*		-If false there isn't new input data.
 	*/
 	bool threadFunction(int id, bool input);
 };
