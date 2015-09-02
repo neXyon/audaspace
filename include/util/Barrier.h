@@ -43,12 +43,16 @@ private:
 	*/
 	unsigned int m_generation;
 
+	// delete copy constructor and operator=
+	Barrier(const Barrier&) = delete;
+	Barrier& operator=(const Barrier&) = delete;
 public:
 	/**
 	* Creates a new Barrier object.
 	* \param count the number of threads that need to reach the barrier for it to lift.
 	*/
 	Barrier(unsigned int count);
+	virtual ~Barrier();
 
 	/**
 	* Makes the caller thread wait until enough threads are stopped by this method.

@@ -6,6 +6,10 @@ Barrier::Barrier(unsigned int count) :
 {
 }
 
+Barrier::~Barrier()
+{
+}
+
 void Barrier::wait() 
 {
 	std::unique_lock<std::mutex> lck(m_mutex);
