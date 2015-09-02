@@ -41,7 +41,6 @@ int main(int argc, char* argv[])
 	auto handle = device->play(convolver);
 	handle->setVolume(0.2);
 	handle->setLoopCount(-1);
-	handle->seek(95);
 	device->unlock();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
