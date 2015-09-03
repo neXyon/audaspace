@@ -20,7 +20,7 @@ AUD_NAMESPACE_BEGIN
 /**
 * This represents pool of threads.
 */
-class ThreadPool
+class AUD_API ThreadPool
 {
 private:
 	/** 
