@@ -37,10 +37,10 @@ int main(int argc, char* argv[])
 	std::shared_ptr<ImpulseResponse> impulseResponse(std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(file2)));
 	std::shared_ptr<ConvolverSound> convolver(std::make_shared<ConvolverSound>(file1, impulseResponse, threadPool));
 
-	device->lock();
+	device->lock();	
 	auto handle = device->play(convolver);
 	handle->setVolume(0.2);
-	handle->setLoopCount(-1);
+	handle->setLoopCount(-1);	
 	device->unlock();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));

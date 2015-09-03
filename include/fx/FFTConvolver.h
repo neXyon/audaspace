@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-#define FIXED_N 8192
+#define FIXED_N 2048
 
 AUD_NAMESPACE_BEGIN
 /**
