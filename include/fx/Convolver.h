@@ -7,13 +7,13 @@
 */
 
 #include "FFTConvolver.h"
+#include "util/ThreadPool.h"
 #include "fftw3.h"
 
 #include <memory>
 #include <vector>
-#include <thread>
 #include <mutex>
-#include <condition_variable>
+#include <future>
 #include <atomic>
 #include <deque>
 
@@ -60,9 +60,14 @@ private:
 	int m_numThreads;
 
 	/**
-	* A vector of thread objects.
+	* A pool of threads that will be used for convolution.
 	*/
-	std::vector<std::thread> m_threads;
+	std::shared_ptr<ThreadPool> m_threadPool;
+
+	/**
+	* A vector of futures used for thread sync
+	*/
+	std::vector<std::future<bool>> m_futures;
 
 	/**
 	* A mutex for the sum of thread accumulators.
@@ -70,24 +75,9 @@ private:
 	std::mutex m_sumMutex;
 
 	/**
-	* A vector of mutexes, one per thread.
-	*/
-	std::vector<std::mutex> m_mutexes;
-
-	/**
-	* A vector condition variables, one per thread.
-	*/
-	std::vector<std::condition_variable> m_conditions;
-
-	/**
 	* A flag to control thread execution when a reset is scheduled.
 	*/
 	std::atomic_bool m_resetFlag;
-
-	/**
-	* A flag used to make the threads end as soon as they can.
-	*/
-	std::atomic_bool m_stopFlag;
 
 	/**
 	* Global accumulation buffer.
@@ -119,12 +109,12 @@ public:
 	* Creates a new FFTConvolver. This constructor uses the default value of N
 	* \param ir A shared pointer to a vector with the data of the various impulse response parts in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
 	* \param irLength The length of the full impulse response.
-	* \param nThreads The number of threads per channel that can be used.
+	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param measure A flag that will change how the object will be instanced.
 	*		-If true the object creation will take a long time, but convolution will be faster.
 	*		-If false the object creation will be fast, but convolution will be a bit slower.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, int nThreads = 1, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, bool measure = false);
 
 	/**
 	* Creates a new FFTConvolver.
@@ -133,12 +123,12 @@ public:
 	* \paran L The max number of samples that can be processed at a time.
 	* \param N Must be at least M+L-1, but larger values are possible, the performance will be better if N is a power of 2
 	* \param irLength The length of the full impulse response.
-	* \param nThreads The number of threads per channel that can be used.
+	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param measure A flag that will change how the object will be instanced.
 	*		-If true the object creation will take a long time, but convolution will be faster.
 	*		-If false the object creation will be fast, but convolution will be a bit slower.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, int nThreads=1, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, std::shared_ptr<ThreadPool> threadPool, bool measure = false);
 	virtual ~Convolver();
 
 	/**
@@ -159,18 +149,10 @@ public:
 private:
 
 	/**
-	* The function that will be asigned to the different threads.
+	* This function will be enqueued into the thread pool, and will process the input signal with a subset of the impulse response parts.
 	* \param id The id of the thread, starting with 0.
 	*/
-	void threadFunction(int id);
-
-	/**
-	* This function will be called from threadFunction(), and will process the input signal with a subset of the impulse response parts.
-	* \param id The id of the thread, that executes this method, starting with 0.
-	* \param start The index of the first FFTConvolver object to be used.
-	* \param end The index of the last FFTConvolver object to be used +1.
-	*/
-	void processSignalFragment(int id, int start, int end);
+	bool threadFunction(int id);
 };
 
 AUD_NAMESPACE_END
