@@ -111,11 +111,6 @@ private:
 	int m_lastLengthIn;
 
 	/**
-	* The last channel to be processed by the main thread.
-	*/
-	int m_end;
-
-	/**
 	* A shared ptr to a thread pool.
 	*/
 	std::shared_ptr<ThreadPool> m_threadPool;
@@ -123,7 +118,7 @@ private:
 	/** 
 	* A vector of futures to sync tasks.
 	*/
-	std::vector<std::future<bool>> m_futures;
+	std::vector<std::future<int>> m_futures;
 
 	// delete copy constructor and operator=
 	ConvolverReader(const ConvolverReader&) = delete;
@@ -172,8 +167,9 @@ private:
 	* \param input A flag that will indicate if thare is input data.
 	*		-If true there is new input data.
 	*		-If false there isn't new input data.
+	* \return The number of samples obtained.
 	*/
-	bool threadFunction(int id, bool input);
+	int threadFunction(int id, bool input);
 };
 
 AUD_NAMESPACE_END
