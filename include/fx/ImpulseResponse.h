@@ -45,7 +45,7 @@ private:
 
 public:
 	/**
-	* Creates a new ImpulseResponse objects.
+	* Creates a new ImpulseResponse object.
 	* The impulse response will be split and transformed to the frequency domain.
 	* \param impulseResponse The impulse response sound.
 	*/
