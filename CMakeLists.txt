@@ -119,6 +119,7 @@ set(SRC
 	src/util/Barrier.cpp
 	src/util/Buffer.cpp
 	src/util/BufferReader.cpp
+	src/util/FFTPlan.cpp
 	src/util/StreamBuffer.cpp
 )
 
@@ -232,6 +233,7 @@ set(PUBLIC_HDR
 	include/util/Barrier.h
 	include/util/Buffer.h
 	include/util/BufferReader.h
+	include/util/FFTPlan.h
 	include/util/ILockable.h
 	include/util/Math3D.h
 	include/util/StreamBuffer.h
