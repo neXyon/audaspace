@@ -17,7 +17,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
-*
+* Thas class represents an plan object that allows to calculate FFTs and IFFTs.
 */
 class AUD_API FFTPlan
 {
