@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#define DEFAULT_N 2048
+#define DEFAULT_N 4096
 
 AUD_NAMESPACE_BEGIN
 
