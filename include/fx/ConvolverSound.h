@@ -9,6 +9,7 @@
 #include "ISound.h"
 #include "ImpulseResponse.h"
 #include "util/ThreadPool.h"
+#include "util/FFTPlan.h"
 
 #include <memory>
 #include <vector>
@@ -36,6 +37,11 @@ private:
 	*/
 	std::shared_ptr<ThreadPool> m_threadPool;
 
+	/**
+	* A shared ponter to an FFT plan.
+	*/
+	std::shared_ptr<FFTPlan> m_plan;
+
 	// delete copy constructor and operator=
 	ConvolverSound(const ConvolverSound&) = delete;
 	ConvolverSound& operator=(const ConvolverSound&) = delete;
@@ -43,6 +49,15 @@ private:
 public:
 	/**
 	* Creates a new ConvolverSound.
+	* \param sound The sound that will be convolved.
+	* \param impulseResponse The impulse response sound.
+	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
+	* \param plan A shared pointer to a FFTPlan object that will be used for convolution.
+	*/
+	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
+
+	/**
+	* Creates a new ConvolverSound. A default FFT plan will be created.
 	* \param sound The sound that will be convolved.
 	* \param impulseResponse The impulse response sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.

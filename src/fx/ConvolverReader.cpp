@@ -6,7 +6,7 @@
 #include <algorithm>
 
 AUD_NAMESPACE_BEGIN
-ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool) :
+ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
 	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_inChannels(reader->getSpecs().channels), m_threadPool(threadPool), m_nChannelThreads(std::min((int)threadPool->getNumOfThreads(), m_inChannels)), m_futures(m_nChannelThreads)
 {
 	m_irChannels = m_ir->getNumberOfChannels();
@@ -15,15 +15,15 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	if (m_irChannels != 1 && m_irChannels != m_inChannels)
 		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
 
-	m_N = FIXED_N;
+	m_N = plan->getSize();
 	m_M = m_L = m_N / 2;
 	
 	if (m_irChannels > 1)
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(i), irLength, m_threadPool, false)));
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(i), irLength, m_threadPool, plan)));
 	else
 		for (int i = 0; i < m_inChannels; i++)
-			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(0), irLength, m_threadPool, false)));
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(0), irLength, m_threadPool, plan)));
 
 	for (int i = 0; i < m_inChannels; i++)
 		m_vecInOut.push_back((sample_t*)std::malloc(m_L*sizeof(sample_t)));

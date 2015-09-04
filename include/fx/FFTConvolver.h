@@ -8,12 +8,10 @@
 
 #include "IReader.h"
 #include "ISound.h"
-#include "fftw3.h"
+#include "util/FFTPlan.h"
 
 #include <memory>
 #include <vector>
-
-#define FIXED_N 2048
 
 AUD_NAMESPACE_BEGIN
 /**
@@ -22,6 +20,16 @@ AUD_NAMESPACE_BEGIN
 class AUD_API FFTConvolver
 {
 private:
+	/**
+	* A shared pointer to an FFT plan.
+	*/
+	std::shared_ptr<FFTPlan> m_plan;
+
+	/**
+	* The FFT size, must be at least M+L-1.
+	*/
+	int m_N;
+
 	/**
 	* The length of the impulse response.
 	*/
@@ -33,12 +41,7 @@ private:
 	int m_L;
 
 	/**
-	* The FFT size, must be at least M+L-1.
-	*/
-	int m_N;
-
-	/**
-	* The real length of the internal buffer.
+	* The real length of the internal buffer in fftwf_complex elements.
 	*/
 	int m_realBufLen;
 
@@ -63,16 +66,6 @@ private:
 	std::shared_ptr<std::vector<fftwf_complex>> m_irBuffer;
 
 	/**
-	* The plan to transform the input to the frequency domain (FFTW specific).
-	*/
-	fftwf_plan m_fftPlanR2C;
-
-	/**
-	* The plan to transform the input to the time domain again (FFTW specific).
-	*/
-	fftwf_plan m_fftPlanC2R;
-
-	/**
 	* If the tail is being read, this marks the current position.
 	*/
 	int m_tailPos;
@@ -85,23 +78,9 @@ public:
 	/**
 	* Creates a new FFTConvolver. This constructor uses the default value of N (FIXED_N constant)
 	* \param ir A shared pointer to a vector with the impulse response data in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
-	* \param measure A flag that will change how the object will be instanced.
-	*		-If true the object creation will take a long time, but convolution will be faster.
-	*		-If false the object creation will be fast, but convolution will be a bit slower.
+	* \param plan A shared pointer to and FFT plan.
 	*/
-	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, bool measure = false);
-
-	/**
-	* Creates a new FFTConvolver.
-	* \param ir A shared pointer to a vector with the impulse response datas in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
-	* \param M The number of samples of the impulse response.
-	* \paran L The max number of samples that can be processed at a time.
-	* \param N Must be at least M+L-1, but larger values are possible, the performance will be better if N is a power of 2
-	* \param measure A flag that will change how the object will be instanced.
-	*		-If true the object creation will take a long time, but convolution will be faster.
-	*		-If false the object creation will be fast, but convolution will be a bit slower.
-	*/
-	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, int M, int L, int N, bool measure = false);
+	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, std::shared_ptr<FFTPlan> plan);
 	virtual ~FFTConvolver();
 
 	/**

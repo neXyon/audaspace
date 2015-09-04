@@ -5,25 +5,21 @@
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
-Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, bool measure) :
-	Convolver(ir, FIXED_N/2, FIXED_N/2, FIXED_N, irLength, threadPool, measure)
-{
-}
-
-Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, std::shared_ptr<ThreadPool> threadPool, bool measure) :
-	m_M(M), m_L(L), m_N(N), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), m_irBuffers->size() - 1)), m_futures(m_numThreads), m_tailCounter(0)
+Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
+	m_N(plan->getSize()), m_M(plan->getSize()/2), m_L(plan->getSize()/2), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), m_irBuffers->size()-1)), m_futures(m_numThreads), m_tailCounter(0)
+	
 {
 	m_resetFlag = false;
 	for (int i = 0; i < m_irBuffers->size(); i++)
 	{
-		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], M, L, N, measure)));
+		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], plan)));
 		m_delayLine.push_front((fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex)));
 	}
 
 	m_accBuffer = (fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex));
 
 	for (int i = 0; i < m_numThreads; i++)
-		m_threadAccBuffers.push_back((fftwf_complex*)std::calloc((m_N/2)+1, sizeof(fftwf_complex)));
+		m_threadAccBuffers.push_back((fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex)));
 }
 
 Convolver::~Convolver()

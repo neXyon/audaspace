@@ -8,7 +8,7 @@
 
 #include "FFTConvolver.h"
 #include "util/ThreadPool.h"
-#include "fftw3.h"
+#include "util/FFTPlan.h"
 
 #include <memory>
 #include <vector>
@@ -25,6 +25,11 @@ class AUD_API Convolver
 {
 private:
 	/**
+	* The FFT size, must be at least M+L-1.
+	*/
+	int m_N;
+
+	/**
 	* The length of the impulse response parts.
 	*/
 	int m_M;
@@ -33,11 +38,6 @@ private:
 	* The max length of the input slices.
 	*/
 	int m_L;
-
-	/**
-	* The FFT size, must be at least M+L-1.
-	*/
-	int m_N;
 
 	/**
 	* The impulse response divided in parts.
@@ -106,29 +106,14 @@ private:
 public:
 
 	/**
-	* Creates a new FFTConvolver. This constructor uses the default value of N
-	* \param ir A shared pointer to a vector with the data of the various impulse response parts in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
-	* \param irLength The length of the full impulse response.
-	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
-	* \param measure A flag that will change how the object will be instanced.
-	*		-If true the object creation will take a long time, but convolution will be faster.
-	*		-If false the object creation will be fast, but convolution will be a bit slower.
-	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, bool measure = false);
-
-	/**
 	* Creates a new FFTConvolver.
 	* \param ir A shared pointer to a vector with the data of the various impulse response parts in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
-	* \param M The number of samples of the impulse response parts.
-	* \paran L The max number of samples that can be processed at a time.
-	* \param N Must be at least M+L-1, but larger values are possible, the performance will be better if N is a power of 2
 	* \param irLength The length of the full impulse response.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
-	* \param measure A flag that will change how the object will be instanced.
-	*		-If true the object creation will take a long time, but convolution will be faster.
-	*		-If false the object creation will be fast, but convolution will be a bit slower.
+	* \param plan A shared pointer to a FFT plan that will be used for convolution.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int M, int L, int N, int irLength, std::shared_ptr<ThreadPool> threadPool, bool measure = false);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> m_plan);
+
 	virtual ~Convolver();
 
 	/**

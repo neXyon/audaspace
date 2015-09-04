@@ -10,7 +10,7 @@
 #include "ISound.h"
 #include "Convolver.h"
 #include "ImpulseResponse.h"
-#include "util/Barrier.h"
+#include "util/FFTPlan.h"
 #include "util/ThreadPool.h"
 
 #include <memory>
@@ -36,6 +36,11 @@ private:
 	std::shared_ptr<ImpulseResponse> m_ir;
 	
 	/**
+	* The FFT size, FIXED_N value will be used.
+	*/
+	int m_N;
+
+	/**
 	* The length of the impulse response fragments, FIXED_N/2 will be used.
 	*/
 	int m_M;
@@ -44,11 +49,6 @@ private:
 	* The max length of the input slices, FIXED_N/2 will be used.
 	*/
 	int m_L;
-
-	/**
-	* The FFT size, FIXED_N value will be used.
-	*/
-	int m_N;
 
 	/**
 	* The array of convolvers that will be used, one per channel.
@@ -130,8 +130,9 @@ public:
 	* \param reader A reader of the input sound to be assigned to this reader.
 	* \param ir A shared pointer to an impulseResponse object that will be used to convolve the sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
+	* \param plan A shared pointer to and FFT plan that will be used for convolution.
 	*/
-	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool);
+	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 	virtual ~ConvolverReader();
 
 	virtual bool isSeekable() const;
