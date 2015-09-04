@@ -76,7 +76,7 @@ private:
 
 public:
 	/**
-	* Creates a new FFTConvolver. This constructor uses the default value of N (FIXED_N constant)
+	* Creates a new FFTConvolver.
 	* \param ir A shared pointer to a vector with the impulse response data in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
 	* \param plan A shared pointer to and FFT plan.
 	*/
