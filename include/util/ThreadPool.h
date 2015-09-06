@@ -13,7 +13,6 @@
 #include <vector>
 #include <thread>
 #include <queue>
-#include <atomic>
 #include <future>
 
 AUD_NAMESPACE_BEGIN
