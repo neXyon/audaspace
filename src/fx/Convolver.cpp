@@ -10,7 +10,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	
 {
 	m_resetFlag = false;
-	m_futures.reserve(m_numThreads);
+	m_futures.resize(m_numThreads);
 	for (int i = 0; i < m_irBuffers->size(); i++)
 	{
 		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], plan)));
