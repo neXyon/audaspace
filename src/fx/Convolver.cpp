@@ -6,10 +6,10 @@
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
-	m_N(plan->getSize()), m_M(plan->getSize()/2), m_L(plan->getSize()/2), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), m_irBuffers->size()-1)), m_futures(m_numThreads), m_tailCounter(0)
+	m_N(plan->getSize()), m_M(plan->getSize()/2), m_L(plan->getSize()/2), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), m_irBuffers->size()-1)), m_resetFlag(false), m_tailCounter(0)
 	
 {
-	m_resetFlag = false;
+	m_futures.reserve(m_numThreads);
 	for (int i = 0; i < m_irBuffers->size(); i++)
 	{
 		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], plan)));

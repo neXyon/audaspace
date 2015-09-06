@@ -2,20 +2,19 @@
 #include "Exception.h"
 
 #include <cstring>
-#include <math.h>
 #include <algorithm>
 
 AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
-	m_reader(reader), m_ir(ir), m_eosReader(false), m_eosTail(false), m_inChannels(reader->getSpecs().channels), m_threadPool(threadPool), m_nChannelThreads(std::min((int)threadPool->getNumOfThreads(), m_inChannels)), m_futures(m_nChannelThreads)
+	m_reader(reader), m_ir(ir), m_N(plan->getSize()), m_eosReader(false), m_eosTail(false), m_inChannels(reader->getSpecs().channels), m_irChannels(ir->getNumberOfChannels()), m_threadPool(threadPool)
 {
-	m_irChannels = m_ir->getNumberOfChannels();
+	m_nChannelThreads = std::min((int)threadPool->getNumOfThreads(), m_inChannels);
+	m_futures.resize(m_nChannelThreads);
 
 	int irLength = m_ir->getLength();
 	if (m_irChannels != 1 && m_irChannels != m_inChannels)
 		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
 
-	m_N = plan->getSize();
 	m_M = m_L = m_N / 2;
 	
 	if (m_irChannels > 1)
