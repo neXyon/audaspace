@@ -90,7 +90,7 @@ public:
 	* \param[in,out] length The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
 	*						The convolution output should be larger than the input, but since this class uses the overlap
 	*						add method, the extra length will be saved internally.
-	*						It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
+	*						It must be equal or lower than N/2 (N=size of the FFTPlan) or the call will fail, setting this variable to 0 since no data would be
 	*						written in the outBuffer.
 	*/
 	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length);
@@ -102,7 +102,7 @@ public:
 	* \param[in,out] length The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
 	*						The convolution output should be larger than the input, but since this class uses the overlap
 	*						add method, the extra length will be saved internally.
-	*						It must be equal or lower than L or the call will fail, setting this variable to 0 since no data would be
+	*						It must be equal or lower than N/2 (N=size of the FFTPlan) or the call will fail, setting this variable to 0 since no data would be
 	*						written in the outBuffer.
 	* \param [in]transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
 	*/
@@ -115,7 +115,7 @@ public:
 	* \param[in,out] length The number of samples to be convolved and the length of the outBuffer.
 	*						The convolution output should be larger than the input, but since this class uses the overlap
 	*						add method, the extra length will be saved internally.
-	*						It must be equal or lower than L or the call will fail and set the value of length to 0 since no data would be
+	*						It must be equal or lower than N/2 (N=size of the FFTPlan) or the call will fail and set the value of length to 0 since no data would be
 	*						written in the outBuffer.
 	*/
 	void getNext(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length);
@@ -141,7 +141,7 @@ public:
 	* \param[in] inBuffer A buffer with the input data to be transformed. Its length must be N/2 + 1
 	* \param[in] outBuffer A pointer to the buffer in which the transform result will be written. 
 	* \param[in,out] length The number of samples to be transformed and the length of the outBuffer.
-	*						It must be equal or lower than N or the call will fail and the value 
+	*						It must be equal or lower than N, but tipically N/2 should be used (N=size of the FFTPlan) or the call will fail and the value 
 	*						of length will be setted to 0, since no data would be written in the outBuffer.
 	*/
 	void IFFT_FDL(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length);
@@ -158,7 +158,7 @@ public:
 	* \param[in] inBuffer A buffer of real numbers, samples in the time domain, that will be multiplied by the impulse response.
 	* \param[in] accBuffer A pointer to the buffer into which the result of the multiplication will be summed. Its length must be N/2 + 1.
 	* \param[in,out] length The number of samples to be transformed and the length of the inBuffer.
-	*						It must be equal or lower than N/2 or the call will fail and the value
+	*						It must be equal or lower than N/2 (N=size of the FFTPlan) or the call will fail and the value
 	*						of length will be setted to 0, since no data would be written in the outBuffer.
 	* \param [in]transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
 	*/

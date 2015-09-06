@@ -118,6 +118,7 @@ public:
 
 	/**
 	* Convolves the data that is provided with the inpulse response.
+	* Given a plan of size N, the max amount of samples convolved by one call to this method will be N/2.
 	* \param[in] inBuffer A buffer with the input data to be convolved, nullptr if the source sound has ended (the convolved sound is larger than the source sound).
 	* \param[in] outBuffer A buffer in which the convolved data will be written.
 	* \param[in,out] length The number of samples you wish to obtain. If an inBuffer is provided this argument must match its length.
