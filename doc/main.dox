@@ -29,7 +29,7 @@ Utilities such as Buffer.
 
 @mainpage Audaspace
 
-Audaspace (pronounced "outer space") is a high level audio library written in C++ with language bindings for Python for example. It started out as the audio engine of the 3D modelling application Blender. It's currently under heavy development to be released as a standalone library.
+Audaspace (pronounced "outer space") is a high level audio library written in C++ with language bindings for Python for example. It started out as the audio engine of the 3D modelling application Blender and is now released as a standalone library.
 
 @note The documentation is basic and not too evolved, so if any documentation is unclear or lacks detail, please tell us!
 

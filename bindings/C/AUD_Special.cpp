@@ -398,3 +398,21 @@ AUD_API void AUD_exit(AUD_Device* device)
 	delete device;
 	DeviceManager::releaseDevice();
 }
+
+
+AUD_API char** AUD_getDeviceNames()
+{
+	std::vector<std::string> v_names = DeviceManager::getAvailableDeviceNames();
+	char** names = (char**) malloc(sizeof(char*) * (v_names.size() + 1));
+
+	for(int i = 0; i < v_names.size(); i++)
+	{
+		std::string name = v_names[i];
+		names[i] = (char*) malloc(sizeof(char) * (name.length() + 1));
+		strcpy(names[i], name.c_str());
+	}
+
+	names[v_names.size()] = nullptr;
+
+	return names;
+}

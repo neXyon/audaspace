@@ -210,6 +210,13 @@ extern AUD_API int AUD_Device_read(AUD_Device* device, unsigned char* buffer, in
 extern AUD_API void AUD_Device_free(AUD_Device* device);
 
 /**
+ * Retrieves the current device of the DeviceManager.
+ * \return A pointer to the current device, which needs to be freed with
+ *         AUD_Device_free.
+ */
+extern AUD_API AUD_Device* AUD_Device_getCurrent();
+
+/**
  * Seeks sequenced sound scene playback.
  * \param handle Playback handle.
  * \param time Time in seconds to seek to.

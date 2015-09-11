@@ -72,7 +72,8 @@ void PluginManager::loadPlugins(const std::string& path)
 
 		if(filename.length() >= end.length() && filename.substr(filename.length() - end.length()) == end)
 		{
-			loadPlugin(readpath + "/" + filename);
+			if(!loadPlugin(readpath + "/" + filename + ".@AUDASPACE_VERSION@"))
+				loadPlugin(readpath + "/" + filename);
 		}
 	}
 

@@ -6,7 +6,7 @@
 #  FFMPEG_LIBRARIES - link these to use FFMPEG
 
 # Use pkg-config to get hints about paths
-#find_package(PkgConfig)
+#find_package(PkgConfig QUIET)
 #if(PKG_CONFIG_FOUND)
 #	pkg_check_modules(FFMPEG_PKGCONF ffmpeg)
 #endif(PKG_CONFIG_FOUND)

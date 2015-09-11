@@ -1,8 +1,7 @@
-/**
+Audaspace Installation Guide
+============================
 
-@page setup Building and Installation
-
-This page describes how to build and install audaspace.
+This document guides through the building and installation of audaspace.
 
 The build system used to build audaspace is CMake and it allows very building the library for very different application scenarios from a very general shared library build with plugins that is suitable for system wide installations to building everything into a single static library to be linked into a standalone program.
 
@@ -77,5 +76,3 @@ Using the library
 When audaspace is installed to the system, the required configuration for _pkgconfig_ is also installed and pkgconfig can then be used to compile projects with audaspace.
 
 It is also possible to build audaspace as a static library and use it directly in a project. For this the library has to be configured accordingly with ccmake and after building the resulting library file can be added to the project's build system.
-
-*/

@@ -25,6 +25,7 @@
 #include "Audaspace.h"
 
 #include <memory>
+#include <vector>
 #include <unordered_map>
 
 AUD_NAMESPACE_BEGIN
@@ -117,6 +118,12 @@ public:
 	 *         or the registered device is not an I3DDevice.
 	 */
 	static std::shared_ptr<I3DDevice> get3DDevice();
+
+	/**
+	 * Returns a list of available devices.
+	 * @return A list of strings with the names of available devices.
+	 */
+	static std::vector<std::string> getAvailableDeviceNames();
 };
 
 AUD_NAMESPACE_END
