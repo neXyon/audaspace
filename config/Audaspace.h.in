@@ -47,15 +47,21 @@
  * Used for hiding symbols from export in the shared library.
  */
 
+// the following two defines and undefines are a hack to silence an error by doxygen
+
 /**
  * \def AUD_SHARED_LIBRARY
  * Defined when audaspace was built as a shared library.
  */
+#define AUD_SHARED_LIBRARY
+#undef AUD_SHARED_LIBRARY
 
 /**
  * \def AUD_STATIC_LIBRARY
  * Defined when audaspace was built as a static library.
  */
+ #define AUD_STATIC_LIBRARY
+ #undef AUD_STATIC_LIBRARY
 
 #define @AUD_LIBRARY_TYPE@
 
