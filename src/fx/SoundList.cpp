@@ -44,17 +44,9 @@ std::shared_ptr<IReader> SoundList::createReader()
 		AUD_THROW(FileException, "The sound list is empty");
 }
 
-int SoundList::addSound(std::shared_ptr<ISound> sound)
+void SoundList::addSound(std::shared_ptr<ISound> sound)
 {
 	m_list.push_back(sound);
-	return m_list.size() - 1;
-}
-
-void SoundList::removeSound(int index)
-{
-	m_list.erase(m_list.begin() + index);
-	if (m_index >= index)
-		m_index--;
 }
 
 void SoundList::setRandomMode(bool random)

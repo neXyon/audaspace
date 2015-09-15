@@ -64,15 +64,8 @@ public:
 	* The added sounds can be played sequentially or randomly dependig 
 	* on the m_random flag
 	* \param sound A shared_ptr to the sound.
-	* \return The index of the added sound.
 	*/
-	int addSound(std::shared_ptr<ISound> sound);
-
-	/**
-	* Removes a sound from the list.
-	* \param index The index of the sound.
-	*/
-	void removeSound(int index);
+	void addSound(std::shared_ptr<ISound> sound);
 
 	/**
 	* Sets the playback mode of the sound list.
