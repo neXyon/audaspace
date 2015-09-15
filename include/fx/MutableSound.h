@@ -31,6 +31,8 @@ public:
 	/**
 	* Creates a new MutableSound.
 	* \param The sound in which the MutabeReaders created with the createReader() method will be based.
+	*		If shared pointer to a SoundList object is used in several mutable sounds the sequential
+	*		playback will not work properly. A copy of the SoundList object must be made in this case.
 	*/
 	MutableSound(std::shared_ptr<ISound> sound);
 
