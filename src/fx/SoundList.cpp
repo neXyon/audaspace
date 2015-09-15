@@ -36,9 +36,9 @@ std::shared_ptr<IReader> SoundList::createReader()
 			} while (temp == m_index);
 			m_index = temp;
 		}
-		m_mutex.unlock();
-
 		return m_list[m_index]->createReader();
+
+		m_mutex.unlock();
 	}
 	else
 		AUD_THROW(FileException, "The sound list is empty");
