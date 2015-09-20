@@ -269,6 +269,23 @@ extern AUD_API void AUD_Sound_free(AUD_Sound* sound);
  */
 extern AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound);
 
+/**
+ * Creates a sound which contains a several sounds.
+ * \param list An array of sound handles.
+ * \param length The length of the list array.
+ * \param random A flag that indicates how the list will be played: Randomly or sequentially.
+ *				if 0 the playback will be sequential, if not 0 the playback will be random.
+ * \return A handle of the sound list.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_list(AUD_Sound* list[], unsigned int length, int random);
+
+/**
+ * Creates a sound that will be restarted when sought backwards. If the original sound is a sound list, the playing sound can change.
+ * \param sound The handle of the sound.
+ * \return A handle of the mutable sound.
+*/
+extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
+
 #ifdef __cplusplus
 }
 #endif
