@@ -6,13 +6,14 @@
 
 AUD_NAMESPACE_BEGIN
 
-SoundList::SoundList()
+SoundList::SoundList(bool random) :
+m_random(random)
 {
 	srand(time(NULL));
 }
 
-SoundList::SoundList(std::vector<std::shared_ptr<ISound>>& list) :
-m_list(list)
+SoundList::SoundList(std::vector<std::shared_ptr<ISound>>& list, bool random) :
+m_list(list), m_random(random)
 {
 	srand(time(NULL));
 }

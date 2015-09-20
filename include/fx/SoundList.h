@@ -49,13 +49,13 @@ public:
 	* Creates a new, empty sound list.
 	* Sounds must be added to the list using the addSound() method. 
 	*/
-	SoundList();
+	SoundList(bool random = false);
 
 	/**
 	* Creates a new sound list and initializes it.
 	* \param list A vector with sounds to initialize the list.
 	*/
-	SoundList(std::vector<std::shared_ptr<ISound>>& list);
+	SoundList(std::vector<std::shared_ptr<ISound>>& list, bool random = false);
 
 	virtual std::shared_ptr<IReader> createReader();
 
