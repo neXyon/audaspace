@@ -333,6 +333,7 @@ if(WITH_C)
 	set(C_SRC
 		bindings/C/AUD_Device.cpp
 		bindings/C/AUD_Handle.cpp
+		bindings/C/AUD_PlaybackManager.cpp
 		bindings/C/AUD_Sequence.cpp
 		bindings/C/AUD_Sound.cpp
 		bindings/C/AUD_Special.cpp
@@ -340,6 +341,7 @@ if(WITH_C)
 	set(C_HDR
 		bindings/C/AUD_Device.h
 		bindings/C/AUD_Handle.h
+		bindings/C/AUD_PlaybackManager.h
 		bindings/C/AUD_Sequence.h
 		bindings/C/AUD_Sound.h
 		bindings/C/AUD_Special.h
