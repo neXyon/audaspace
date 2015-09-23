@@ -32,21 +32,21 @@ int main(int argc, char* argv[])
 	{
 		file = (std::make_shared<File>(argv[i]));
 		if (i <= 2)
-			manager.play(file, "cat1");
+			manager.play(file, 0);
 		else
-			manager.play(file, "cat2");
+			manager.play(file, 1);
 	}
-	manager.setVolume(0.2f, "cat1");
+	manager.setVolume(0.2f, 0);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.setVolume(0.0f, "cat2");
+	manager.setVolume(0.0f, 1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.pause("cat1");
+	manager.pause(0);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.setVolume(0.5f, "cat2");
-	manager.setVolume(1.0f, "cat1");
+	manager.setVolume(0.5f, 1);
+	manager.setVolume(1.0f, 0);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	manager.stop("cat2");
-	manager.resume("cat1");
+	manager.stop(1);
+	manager.resume(0);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 
 	return 0;
