@@ -1,4 +1,4 @@
-#include "fx/DynamicMusicPlayer.h"
+#include "fx/DynamicMusic.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDevice.h"
 #include "devices/IDeviceFactory.h"
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 
 	auto factory = DeviceManager::getDefaultDeviceFactory();
 	auto device = factory->openDevice();
-	DynamicMusicPlayer manager (device);
+	DynamicMusic manager (device);
 	std::shared_ptr<File> file;
 	for (int i = 1; i < argc; i++)
 	{

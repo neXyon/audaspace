@@ -23,7 +23,7 @@ AUD_NAMESPACE_BEGIN
 * This class allows to play music depending on a current "scene", scene changes are managed by the class.
 * The default scene is silent and has id 0.
 */
-class AUD_API DynamicMusicPlayer
+class AUD_API DynamicMusic
 {
 private:
 	/**
@@ -82,17 +82,17 @@ private:
 	std::thread m_fadeThread;
 
 	// delete copy constructor and operator=
-	DynamicMusicPlayer(const DynamicMusicPlayer&) = delete;
-	DynamicMusicPlayer& operator=(const DynamicMusicPlayer&) = delete;
+	DynamicMusic(const DynamicMusic&) = delete;
+	DynamicMusic& operator=(const DynamicMusic&) = delete;
 
 public:
 	/**
 	* Creates a new dynamic music manager with the default silent scene (id: 0).
 	* \param device The device that will be used to play sounds.
 	*/
-	DynamicMusicPlayer(std::shared_ptr<IDevice> device);
+	DynamicMusic(std::shared_ptr<IDevice> device);
 
-	virtual ~DynamicMusicPlayer();
+	virtual ~DynamicMusic();
 
 	/**
 	* Adds a new scene to the manager.

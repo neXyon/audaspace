@@ -1,4 +1,4 @@
-#include "fx/DynamicMusicPlayer.h"
+#include "fx/DynamicMusic.h"
 #include "generator/Silence.h"
 #include "fx/Fader.h"
 #include "fx/Limiter.h"
@@ -8,7 +8,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-DynamicMusicPlayer::DynamicMusicPlayer(std::shared_ptr<IDevice> device) :
+DynamicMusic::DynamicMusic(std::shared_ptr<IDevice> device) :
 m_device(device), m_fadeTime(1.0f)
 {
 	m_id = 0;
@@ -18,12 +18,12 @@ m_device(device), m_fadeTime(1.0f)
 	m_scenes.push_back(std::vector<std::shared_ptr<ISound>>(1, nullptr));
 }
 
-DynamicMusicPlayer::~DynamicMusicPlayer()
+DynamicMusic::~DynamicMusic()
 {
 	stop();
 }
 
-int DynamicMusicPlayer::addScene(std::shared_ptr<ISound> sound)
+int DynamicMusic::addScene(std::shared_ptr<ISound> sound)
 {
 	std::vector<std::shared_ptr<ISound>> v;
 	m_scenes.push_back(v);
@@ -36,7 +36,7 @@ int DynamicMusicPlayer::addScene(std::shared_ptr<ISound> sound)
 	return m_scenes.size() - 1;
 }
 
-bool DynamicMusicPlayer::changeScene(int id)
+bool DynamicMusic::changeScene(int id)
 {
 	if (id >= m_scenes.size() || m_transitioning)
 		return false;
@@ -66,7 +66,7 @@ bool DynamicMusicPlayer::changeScene(int id)
 						m_currentHandle->setVolume(0.0f);
 						m_currentHandle->setLoopCount(-1);
 						m_device->unlock();
-						m_fadeThread = std::thread(&DynamicMusicPlayer::fadeInThread, this);
+						m_fadeThread = std::thread(&DynamicMusic::fadeInThread, this);
 					}
 					else
 					{
@@ -78,13 +78,13 @@ bool DynamicMusicPlayer::changeScene(int id)
 							m_currentHandle->setVolume(0.0f);
 							m_currentHandle->setLoopCount(-1);
 							m_device->unlock();
-							m_fadeThread = std::thread(&DynamicMusicPlayer::crossfadeThread, this);
+							m_fadeThread = std::thread(&DynamicMusic::crossfadeThread, this);
 						}
 						else
 						{
 							m_transitionHandle = m_currentHandle;
 							m_currentHandle = nullptr;
-							m_fadeThread = std::thread(&DynamicMusicPlayer::fadeOutThread, this);
+							m_fadeThread = std::thread(&DynamicMusic::fadeOutThread, this);
 						}
 					}
 				}
@@ -105,30 +105,30 @@ bool DynamicMusicPlayer::changeScene(int id)
 	}
 }
 
-int DynamicMusicPlayer::getScene()
+int DynamicMusic::getScene()
 {
 	return m_id;
 }
 
-void DynamicMusicPlayer::addTransition(int init, int end, std::shared_ptr<ISound> sound)
+void DynamicMusic::addTransition(int init, int end, std::shared_ptr<ISound> sound)
 {
 	if (init != end && init < m_scenes.size() && end < m_scenes.size() && init >= 0 && end >= 0)
 		m_scenes[init][end] = sound;
 }
 
-void DynamicMusicPlayer::setFadeTime(float seconds)
+void DynamicMusic::setFadeTime(float seconds)
 {
 	m_device->lock();
 	m_fadeTime = seconds;
 	m_device->unlock();
 }
 
-float DynamicMusicPlayer::getFadeTime()
+float DynamicMusic::getFadeTime()
 {
 	return m_fadeTime;
 }
 
-bool DynamicMusicPlayer::resume()
+bool DynamicMusic::resume()
 {
 	bool result = false, resultTrans = false;
 
@@ -140,7 +140,7 @@ bool DynamicMusicPlayer::resume()
 	return result || resultTrans;
 }
 
-bool DynamicMusicPlayer::pause()
+bool DynamicMusic::pause()
 {
 	bool result = false, resultTrans = false;
 
@@ -152,7 +152,7 @@ bool DynamicMusicPlayer::pause()
 	return result || resultTrans;
 }
 
-bool DynamicMusicPlayer::seek(float position)
+bool DynamicMusic::seek(float position)
 {
 	bool result;
 
@@ -166,7 +166,7 @@ bool DynamicMusicPlayer::seek(float position)
 	return result;
 }
 
-float DynamicMusicPlayer::getPosition()
+float DynamicMusic::getPosition()
 {
 	float result = 0.0f;
 
@@ -176,12 +176,12 @@ float DynamicMusicPlayer::getPosition()
 	return result;
 }
 
-float DynamicMusicPlayer::getVolume()
+float DynamicMusic::getVolume()
 {
 	return m_volume;
 }
 
-bool DynamicMusicPlayer::setVolume(float volume)
+bool DynamicMusic::setVolume(float volume)
 {
 	m_volume = volume;
 	bool result = false, resultTrans = false;
@@ -199,7 +199,7 @@ bool DynamicMusicPlayer::setVolume(float volume)
 	return result || resultTrans;
 }
 
-Status DynamicMusicPlayer::getStatus()
+Status DynamicMusic::getStatus()
 {
 	if (m_currentHandle != nullptr)
 	{
@@ -210,7 +210,7 @@ Status DynamicMusicPlayer::getStatus()
 		return STATUS_INVALID;
 }
 
-bool DynamicMusicPlayer::stop()
+bool DynamicMusic::stop()
 {
 	m_stopThread = true;
 	bool result = false, resultTrans = false;
@@ -228,9 +228,9 @@ bool DynamicMusicPlayer::stop()
 	return result || resultTrans;
 }
 
-void DynamicMusicPlayer::transitionCallback(void* player)
+void DynamicMusic::transitionCallback(void* player)
 {
-	auto dat = reinterpret_cast<DynamicMusicPlayer*>(player);
+	auto dat = reinterpret_cast<DynamicMusic*>(player);
 	dat->m_transitioning = true;
 	dat->m_device->lock();
 	dat->m_currentHandle = dat->m_device->play(dat->m_scenes[dat->m_id][dat->m_soundTarget]);
@@ -240,9 +240,9 @@ void DynamicMusicPlayer::transitionCallback(void* player)
 	dat->m_device->unlock();
 }
 
-void DynamicMusicPlayer::sceneCallback(void* player)
+void DynamicMusic::sceneCallback(void* player)
 {
-	auto dat = reinterpret_cast<DynamicMusicPlayer*>(player);
+	auto dat = reinterpret_cast<DynamicMusic*>(player);
 	dat->m_device->lock();
 	dat->m_currentHandle = dat->m_device->play(dat->m_scenes[dat->m_soundTarget][dat->m_soundTarget]);
 	dat->m_currentHandle->setVolume(dat->m_volume);
@@ -253,7 +253,7 @@ void DynamicMusicPlayer::sceneCallback(void* player)
 	dat->m_transitioning = false;
 }
 
-void DynamicMusicPlayer::crossfadeThread()
+void DynamicMusic::crossfadeThread()
 {
 	float currentVol = m_transitionHandle->getVolume();
 	float nextVol = m_currentHandle->getVolume();
@@ -281,7 +281,7 @@ void DynamicMusicPlayer::crossfadeThread()
 	m_transitioning = false;
 }
 
-void DynamicMusicPlayer::fadeInThread()
+void DynamicMusic::fadeInThread()
 {
 	float nextVol = m_currentHandle->getVolume();
 	float increment;
@@ -302,7 +302,7 @@ void DynamicMusicPlayer::fadeInThread()
 	m_transitioning = false;
 }
 
-void DynamicMusicPlayer::fadeOutThread()
+void DynamicMusic::fadeOutThread()
 {
 	float currentVol = m_transitionHandle->getVolume();
 	float increment;
