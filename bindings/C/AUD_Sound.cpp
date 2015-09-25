@@ -416,23 +416,32 @@ AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound)
 	return new std::shared_ptr<ISound>(*sound);
 }
 
-extern AUD_API AUD_Sound* AUD_Sound_list(AUD_Sound* list[], int length, int random)
+extern AUD_API AUD_Sound* AUD_Sound_list(int random)
 {
-	std::vector<AUD_Sound> vec;
-	for (int i = 0; i < length; i++)
-	{
-		assert(list[i]);
-		vec.push_back(*(list[i]));
-	}
-
 	try
 	{
-		return new AUD_Sound(new SoundList(vec, random));
+		return new AUD_Sound(new SoundList(random));
 	}
 	catch (Exception&)
 	{
 		return nullptr;
 	}
+}
+
+extern AUD_API bool AUD_Sound_list_assSound(AUD_Sound* list, AUD_Sound* sound)
+{
+	assert(sound);
+	assert(list);
+
+	std::shared_ptr<SoundList> s = std::dynamic_pointer_cast<SoundList>(*list);
+	if (s.get())
+	{
+		s->addSound(*sound);
+		return true;
+	}
+	else
+		return false;
+
 }
 
 extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)

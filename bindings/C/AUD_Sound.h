@@ -270,14 +270,20 @@ extern AUD_API void AUD_Sound_free(AUD_Sound* sound);
 extern AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound);
 
 /**
- * Creates a sound which contains a several sounds.
- * \param list An array of sound handles.
- * \param length The length of the list array.
+ * Creates an empty sound list that can contain several sounds.
  * \param random A flag that indicates how the list will be played: Randomly or sequentially.
  *				if 0 the playback will be sequential, if not 0 the playback will be random.
  * \return A handle of the sound list.
  */
-extern AUD_API AUD_Sound* AUD_Sound_list(AUD_Sound* list[], unsigned int length, int random);
+extern AUD_API AUD_Sound* AUD_Sound_list(int random);
+
+/**
+* Adds a new sound to a sound list.
+ * \param list The sound list in which the sound will be added.
+ * \param sound The sound that will be added to the list.
+ * \return true if the sound was added, false if the sound couldn't be added (the list parameter isn't a sound list).
+*/
+extern AUD_API bool AUD_Sound_list_addSound(AUD_Sound* list, AUD_Sound* sound);
 
 /**
  * Creates a sound that will be restarted when sought backwards. If the original sound is a sound list, the playing sound can change.
