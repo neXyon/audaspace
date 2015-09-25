@@ -24,18 +24,21 @@
 #include "devices/IDevice.h"
 #include "sequence/SequenceEntry.h"
 #include "fx/PlaybackManager.h"
+#include "fx/DynamicMusic.h"
 
 typedef std::shared_ptr<aud::ISound> AUD_Sound;
 typedef std::shared_ptr<aud::IHandle> AUD_Handle;
 typedef std::shared_ptr<aud::IDevice> AUD_Device;
 typedef std::shared_ptr<aud::SequenceEntry> AUD_SequenceEntry;
 typedef std::shared_ptr<aud::PlaybackManager> AUD_PlaybackManager;
+typedef std::shared_ptr<aud::DynamicMusic> AUD_DynamicMusic;
 #else
 typedef void AUD_Sound;
 typedef void AUD_Handle;
 typedef void AUD_Device;
 typedef void AUD_SequenceEntry;
 typedef void AUD_PlaybackManager;
+typedef void AUD_DynamicMusic;
 #endif
 
 /// Container formats for writers.
