@@ -428,7 +428,7 @@ extern AUD_API AUD_Sound* AUD_Sound_list(int random)
 	}
 }
 
-extern AUD_API bool AUD_Sound_list_assSound(AUD_Sound* list, AUD_Sound* sound)
+extern AUD_API int AUD_Sound_list_addSound(AUD_Sound* list, AUD_Sound* sound)
 {
 	assert(sound);
 	assert(list);
@@ -437,10 +437,10 @@ extern AUD_API bool AUD_Sound_list_assSound(AUD_Sound* list, AUD_Sound* sound)
 	if (s.get())
 	{
 		s->addSound(*sound);
-		return true;
+		return 1;
 	}
 	else
-		return false;
+		return 0;
 
 }
 
