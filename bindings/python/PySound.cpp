@@ -34,8 +34,10 @@
 #include "fx/Limiter.h"
 #include "fx/Loop.h"
 #include "fx/Lowpass.h"
+#include "fx/MutableSound.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
+#include "fx/SoundList.h"
 #include "fx/Sum.h"
 #include "fx/Threshold.h"
 #include "fx/Volume.h"
@@ -1174,11 +1176,11 @@ Sound_mix(Sound* self, PyObject* object)
 }
 
 PyDoc_STRVAR(M_aud_Sound_pingpong_doc,
-			 "pingpong()\n\n"
-			 "Plays a sound forward and then backward.\n"
-			 "This is like joining a sound with its reverse.\n\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
+	"pingpong()\n\n"
+	"Plays a sound forward and then backward.\n"
+	"This is like joining a sound with its reverse.\n\n"
+	":return: The created :class:`Sound` object.\n"
+	":rtype: :class:`Sound`");
 
 static PyObject *
 Sound_pingpong(Sound* self)
@@ -1186,13 +1188,13 @@ Sound_pingpong(Sound* self)
 	PyTypeObject* type = Py_TYPE(self);
 	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
-	if(parent != nullptr)
+	if (parent != nullptr)
 	{
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new PingPong(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
 		}
-		catch(Exception& e)
+		catch (Exception& e)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.what());
@@ -1201,6 +1203,103 @@ Sound_pingpong(Sound* self)
 	}
 
 	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_list_doc,
+	"list()\n\n"
+	"Creates an empty sound list that can contain several sounds.\n\n"
+	":arg random: wether the playback will be random or not.\n"
+	":type random: int\n"
+	":return: The created :class:`Sound` object.\n"
+	":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_list(PyTypeObject* type, PyObject* args)
+{
+	int random;
+
+	if (!PyArg_ParseTuple(args, "i:random", &random))
+		return nullptr;
+
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if (self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<ISound>(new SoundList(random));
+		}
+		catch (Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
+PyDoc_STRVAR(M_aud_Sound_mutable_doc,
+	"mutable()\n\n"
+	"Creates a sound that will be restarted when sought backwards.\n"
+	"If the original sound is a sound list, the playing sound can change.\n\n"
+	":return: The created :class:`Sound` object.\n"
+	":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_mutable(Sound* self)
+{
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if (parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new MutableSound(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
+		}
+		catch (Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_list_addSound_doc,
+	"addSound(sound)\n\n"
+	"Adds a new sound to a sound list.\n\n"
+	":arg sound: The sound that will be added to the list.\n"
+	":type sound: :class:`Sound`\n"
+	".. note:: You can only add a sound to a sound list.");
+
+static PyObject *
+Sound_list_addSound(Sound* self, PyObject* object)
+{
+	PyTypeObject* type = Py_TYPE(self);
+
+	if (!PyObject_TypeCheck(object, type))
+	{
+		PyErr_SetString(PyExc_TypeError, "Object has to be of type Sound!");
+		return nullptr;
+	}
+
+	Sound* child = (Sound*)object;
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<SoundList>*>(self->sound))->addSound(*reinterpret_cast<std::shared_ptr<ISound>*>(child->sound));
+		Py_RETURN_NONE;
+	}
+	catch (Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
 }
 
 static PyMethodDef Sound_methods[] = {
@@ -1282,8 +1381,17 @@ static PyMethodDef Sound_methods[] = {
 	{"mix", (PyCFunction)Sound_mix, METH_O,
 	 M_aud_Sound_mix_doc
 	},
-	{"pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
+	{ "pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
 	 M_aud_Sound_pingpong_doc
+	},
+	{ "list", (PyCFunction)Sound_list, METH_VARARGS,
+	 M_aud_Sound_list_doc
+	},
+	{ "mutable", (PyCFunction)Sound_mutable, METH_NOARGS,
+	 M_aud_Sound_mutable_doc
+	},
+	{ "addSound", (PyCFunction)Sound_list_addSound, METH_O,
+	 M_aud_Sound_list_addSound_doc
 	},
 	{nullptr}  /* Sentinel */
 };
