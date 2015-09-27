@@ -8,10 +8,10 @@ typedef void Reference_PlaybackManager;
 typedef struct {
 	PyObject_HEAD
 	Reference_PlaybackManager* playbackManager;
-} PPlaybackManager;
+} PlaybackManager;
 
 extern AUD_API PyObject* PlaybackManager_empty();
-extern AUD_API PPlaybackManager* checkPlaybackManager(PyObject* playbackManager);
+extern AUD_API PlaybackManager* checkPlaybackManager(PyObject* playbackManager);
 
 bool initializePlaybackManager();
 void addPlaybackManagerToModule(PyObject* module);

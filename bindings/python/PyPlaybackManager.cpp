@@ -6,13 +6,12 @@
 #include "Exception.h"
 #include "fx/PlaybackManager.h"
 
-using namespace aud;
 extern PyObject* AUDError;
 
 static PyObject *
 PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
-	PPlaybackManager* self = (PPlaybackManager*)type->tp_alloc(type, 0);
+	PlaybackManager* self = (PlaybackManager*)type->tp_alloc(type, 0);
 
 	if (self != nullptr)
 	{
@@ -23,9 +22,9 @@ PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 		try
 		{
-			self->playbackManager = new std::shared_ptr<PlaybackManager>(new PlaybackManager(*reinterpret_cast<std::shared_ptr<IDevice>*>(device->device)));
+			self->playbackManager = new std::shared_ptr<aud::PlaybackManager>(new aud::PlaybackManager(*reinterpret_cast<std::shared_ptr<aud::IDevice>*>(device->device)));
 		}
-		catch (Exception& e)
+		catch (aud::Exception& e)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.what());
@@ -37,10 +36,10 @@ PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 }
 
 static void
-PlaybackManager_dealloc(PPlaybackManager* self)
+PlaybackManager_dealloc(PlaybackManager* self)
 {
 	if (self->playbackManager)
-		delete reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager);
+		delete reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -48,7 +47,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_play_doc,
 	"");
 
 static PyObject *
-PlaybackManager_play(PPlaybackManager* self, PyObject* args)
+PlaybackManager_play(PlaybackManager* self, PyObject* args)
 {
 	PyObject* object;
 	unsigned int cat;
@@ -67,9 +66,9 @@ PlaybackManager_play(PPlaybackManager* self, PyObject* args)
 	{
 		try
 		{
-			handle->handle = new std::shared_ptr<IHandle>((*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->play(*reinterpret_cast<std::shared_ptr<ISound>*>(sound->sound), cat));
+			handle->handle = new std::shared_ptr<aud::IHandle>((*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->play(*reinterpret_cast<std::shared_ptr<aud::ISound>*>(sound->sound), cat));
 		}
-		catch (Exception& e)
+		catch (aud::Exception& e)
 		{
 			Py_DECREF(handle);
 			PyErr_SetString(AUDError, e.what());
@@ -84,7 +83,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_resume_doc,
 	"");
 
 static PyObject *
-PlaybackManager_resume(PPlaybackManager* self, PyObject* args)
+PlaybackManager_resume(PlaybackManager* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -93,9 +92,9 @@ PlaybackManager_resume(PPlaybackManager* self, PyObject* args)
 
 	try
 	{
-		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->resume(cat));
+		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->resume(cat));
 	}
-	catch (Exception& e)
+	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -106,7 +105,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_pause_doc,
 	"");
 
 static PyObject *
-PlaybackManager_pause(PPlaybackManager* self, PyObject* args)
+PlaybackManager_pause(PlaybackManager* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -115,9 +114,9 @@ PlaybackManager_pause(PPlaybackManager* self, PyObject* args)
 
 	try
 	{
-		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->pause(cat));
+		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->pause(cat));
 	}
-	catch (Exception& e)
+	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -128,7 +127,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_get_volume_doc,
 	"");
 
 static PyObject *
-PlaybackManager_get_volume(PPlaybackManager* self, PyObject* args)
+PlaybackManager_get_volume(PlaybackManager* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -137,9 +136,9 @@ PlaybackManager_get_volume(PPlaybackManager* self, PyObject* args)
 
 	try
 	{
-		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->getVolume(cat));
+		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->getVolume(cat));
 	}
-	catch (Exception& e)
+	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -150,7 +149,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_set_volume_doc,
 	"");
 
 static int
-PlaybackManager_set_volume(PPlaybackManager* self, PyObject* args)
+PlaybackManager_set_volume(PlaybackManager* self, PyObject* args)
 {
 	float volume;
 	unsigned int cat;
@@ -160,11 +159,11 @@ PlaybackManager_set_volume(PPlaybackManager* self, PyObject* args)
 
 	try
 	{
-		if ((*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->setVolume(volume, cat))
+		if ((*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->setVolume(volume, cat))
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't set the sound volume!");
 	}
-	catch (Exception& e)
+	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 	}
@@ -176,7 +175,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_stop_doc,
 	"");
 
 static PyObject *
-PlaybackManager_stop(PPlaybackManager* self, PyObject* args)
+PlaybackManager_stop(PlaybackManager* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -185,9 +184,9 @@ PlaybackManager_stop(PPlaybackManager* self, PyObject* args)
 
 	try
 	{
-		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->stop(cat));
+		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->stop(cat));
 	}
-	catch (Exception& e)
+	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -198,14 +197,14 @@ PyDoc_STRVAR(M_aud_PlaybackManager_clean_doc,
 	"");
 
 static PyObject *
-PlaybackManager_clean(PPlaybackManager* self)
+PlaybackManager_clean(PlaybackManager* self)
 {
 	try
 	{
-		(*reinterpret_cast<std::shared_ptr<PlaybackManager>*>(self->playbackManager))->clean();
+		(*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->clean();
 		Py_RETURN_NONE;
 	}
-	catch (Exception& e)
+	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -243,7 +242,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_doc,
 PyTypeObject PlaybackManagerType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.PlaybackManager",					/* tp_name */
-	sizeof(PPlaybackManager),				/* tp_basicsize */
+	sizeof(PlaybackManager),				/* tp_basicsize */
 	0,										/* tp_itemsize */
 	(destructor)PlaybackManager_dealloc,	/* tp_dealloc */
 	0,										/* tp_print */
@@ -287,7 +286,7 @@ AUD_API PyObject* PlaybackManager_empty()
 }
 
 
-AUD_API PPlaybackManager* checkPlaybackManager(PyObject* playbackManager)
+AUD_API PlaybackManager* checkPlaybackManager(PyObject* playbackManager)
 {
 	if (!PyObject_TypeCheck(playbackManager, &PlaybackManagerType))
 	{
@@ -295,7 +294,7 @@ AUD_API PPlaybackManager* checkPlaybackManager(PyObject* playbackManager)
 		return nullptr;
 	}
 
-	return (PPlaybackManager*)playbackManager;
+	return (PlaybackManager*)playbackManager;
 }
 
 
