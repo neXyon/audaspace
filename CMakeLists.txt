@@ -716,6 +716,7 @@ if(WITH_PYTHON)
 		bindings/python/PyAPI.cpp
 		bindings/python/PyDevice.cpp
 		bindings/python/PyHandle.cpp
+		bindings/python/PyPlaybackManager.cpp
 		bindings/python/PySequence.cpp
 		bindings/python/PySequenceEntry.cpp
 		bindings/python/PySound.cpp
@@ -724,6 +725,7 @@ if(WITH_PYTHON)
 		bindings/python/PyAPI.h
 		bindings/python/PyDevice.h
 		bindings/python/PyHandle.h
+		bindings/python/PyPlaybackManager.h
 		bindings/python/PySequence.h
 		bindings/python/PySequenceEntry.h
 		bindings/python/PySound.h
