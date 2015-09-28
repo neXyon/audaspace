@@ -715,6 +715,7 @@ if(WITH_PYTHON)
 	set(PYTHON_SRC
 		bindings/python/PyAPI.cpp
 		bindings/python/PyDevice.cpp
+		bindings/python/PyDynamicMusic.cpp
 		bindings/python/PyHandle.cpp
 		bindings/python/PyPlaybackManager.cpp
 		bindings/python/PySequence.cpp
@@ -724,6 +725,7 @@ if(WITH_PYTHON)
 	set(PYTHON_HDR
 		bindings/python/PyAPI.h
 		bindings/python/PyDevice.h
+		bindings/python/PyDynamicMusic.h
 		bindings/python/PyHandle.h
 		bindings/python/PyPlaybackManager.h
 		bindings/python/PySequence.h
