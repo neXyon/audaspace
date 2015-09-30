@@ -20,6 +20,8 @@
 #include "PyDevice.h"
 #include "PySequenceEntry.h"
 #include "PySequence.h"
+#include "PyPlaybackManager.h"
+#include "PyDynamicMusic.h"
 
 #include "respec/Specification.h"
 #include "devices/IHandle.h"
@@ -77,7 +79,13 @@ PyInit_aud()
 	if(!initializeSequenceEntry())
 		return nullptr;
 
-	if(!initializeSequence())
+	if (!initializeSequence())
+		return nullptr;
+
+	if (!initializeDynamicMusic())
+		return nullptr;
+
+	if (!initializePlaybackManager())
 		return nullptr;
 
 	module = PyModule_Create(&audmodule);
@@ -89,6 +97,8 @@ PyInit_aud()
 	addDeviceToModule(module);
 	addSequenceEntryToModule(module);
 	addSequenceToModule(module);
+	addDynamicMusicToModule(module);
+	addPlaybackManagerToModule(module);
 
 	AUDError = PyErr_NewException("aud.error", nullptr, nullptr);
 	Py_INCREF(AUDError);
