@@ -44,7 +44,12 @@ DynamicMusic_dealloc(DynamicMusic* self)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_addScene_doc,
-	"");
+	"addScene(scene)\n\n"
+	"Adds a new scene.\n\n"
+	":arg scene: The scene sound.\n"
+	":type scene: :class:`Sound`\n"
+	":return: The new scene id.\n"
+	":rtype: int");
 
 static PyObject *
 DynamicMusic_addScene(DynamicMusic* self, PyObject* args)
@@ -68,7 +73,16 @@ DynamicMusic_addScene(DynamicMusic* self, PyObject* args)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_addTransition_doc,
-	"");
+	"addTransition(ini, end, transition)\n\n"
+	"Adds a new scene.\n\n"
+	":arg ini: the initial scene foor the transition.\n"
+	":type ini: int\n"
+	":arg end: The final scene for the transition.\n"
+	":type end: int\n"
+	":arg transition: The transition sound.\n"
+	":type transition: :class:`Sound`\n"
+	":return: false if the ini or end scenes don't exist, true othrwise.\n"
+	":rtype: bool");
 
 static PyObject *
 DynamicMusic_addTransition(DynamicMusic* self, PyObject* args)
@@ -94,7 +108,10 @@ DynamicMusic_addTransition(DynamicMusic* self, PyObject* args)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_resume_doc,
-	"");
+	"resume()\n\n"
+	"Resumes playback of the scene.\n\n"
+	":return: Whether the action succeeded.\n"
+	":rtype: bool");
 
 static PyObject *
 DynamicMusic_resume(DynamicMusic* self)
@@ -111,7 +128,10 @@ DynamicMusic_resume(DynamicMusic* self)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_pause_doc,
-	"");
+	"pause()\n\n"
+	"Pauses playback of the scene.\n\n"
+	":return: Whether the action succeeded.\n"
+	":rtype: bool");
 
 static PyObject *
 DynamicMusic_pause(DynamicMusic* self)
@@ -128,7 +148,10 @@ DynamicMusic_pause(DynamicMusic* self)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_stop_doc,
-	"");
+	"stop()\n\n"
+	"Stops playback of the scene.\n\n"
+	":return: Whether the action succeeded.\n"
+	":rtype: bool\n\n");
 
 static PyObject *
 DynamicMusic_stop(DynamicMusic* self)
@@ -166,7 +189,7 @@ static PyMethodDef DynamicMusic_methods[] = {
 /////////////////////////////////////////////////////
 
 PyDoc_STRVAR(M_aud_DynamicMusic_status_doc,
-	"");
+	"Whether the scene is playing, paused or stopped (=invalid).");
 
 static PyObject *
 DynamicMusic_get_status(DynamicMusic* self, void* nothing)
@@ -183,7 +206,7 @@ DynamicMusic_get_status(DynamicMusic* self, void* nothing)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_position_doc,
-	"");
+	"The playback position of the scene in seconds.");
 
 static int
 DynamicMusic_set_position(DynamicMusic* self, PyObject* args, void* nothing)
@@ -222,14 +245,14 @@ DynamicMusic_get_position(DynamicMusic* self, void* nothing)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_fadeTime_doc,
-	"");
+	"The length in seconds of the crossfade transition");
 
 static int
 DynamicMusic_set_fadeTime(DynamicMusic* self, PyObject* args, void* nothing)
 {
 	float fadeTime;
 
-	if (!PyArg_Parse(args, "f:position", &fadeTime))
+	if (!PyArg_Parse(args, "f:fadeTime", &fadeTime))
 		return -1;
 
 	try
@@ -260,14 +283,14 @@ DynamicMusic_get_fadeTime(DynamicMusic* self, void* nothing)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_scene_doc,
-	"");
+	"The current scene");
 
 static int
 DynamicMusic_set_scene(DynamicMusic* self, PyObject* args, void* nothing)
 {
 	int scene;
 
-	if (!PyArg_Parse(args, "i:position", &scene))
+	if (!PyArg_Parse(args, "i:scene", &scene))
 		return -1;
 
 	try
@@ -299,14 +322,14 @@ DynamicMusic_get_scene(DynamicMusic* self, void* nothing)
 }
 
 PyDoc_STRVAR(M_aud_DynamicMusic_volume_doc,
-	"");
+	"The volume of the scene.");
 
 static int
 DynamicMusic_set_volume(DynamicMusic* self, PyObject* args, void* nothing)
 {
 	float volume;
 
-	if (!PyArg_Parse(args, "f:position", &volume))
+	if (!PyArg_Parse(args, "f:volume", &volume))
 		return -1;
 
 	try
@@ -352,7 +375,8 @@ static PyGetSetDef DynamicMusic_properties[] = {
 };
 
 PyDoc_STRVAR(M_aud_DynamicMusic_doc,
-	"");
+	"The DynamicMusic object allows to play music depending on a current scene, scene changes are managed by the class, with the possibility of custom transitions.\n"
+	"The default transition is a crossfade effect, and the default scene is silent and has id 0");
 
 PyTypeObject DynamicMusicType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
