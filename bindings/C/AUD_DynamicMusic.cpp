@@ -49,12 +49,12 @@ AUD_API int AUD_DynamicMusic_getScene(AUD_DynamicMusic* player)
 	return (*player)->getScene();
 }
 
-AUD_API void AUD_DynamicMusic_addTransition(AUD_DynamicMusic* player, int ini, int end, AUD_Sound* transition)
+AUD_API int AUD_DynamicMusic_addTransition(AUD_DynamicMusic* player, int ini, int end, AUD_Sound* transition)
 {
 	assert(player);
 	assert(transition);
 
-	(*player)->addTransition(ini, end, *transition);
+	return (*player)->addTransition(ini, end, *transition);
 }
 
 AUD_API void AUD_DynamicMusic_setFadeTime(AUD_DynamicMusic* player, float seconds)
