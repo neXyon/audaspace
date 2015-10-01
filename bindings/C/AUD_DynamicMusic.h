@@ -9,7 +9,7 @@ extern "C" {
 
 /**
 * Creates a new dynamic music player.
-* \param device The device taht will be used to play sounds.
+* \param device The device that will be used to play sounds.
 * \return The new DynamicMusic object.
 */
 extern AUD_API AUD_DynamicMusic* AUD_DynamicMusic_create(AUD_Device* device);
