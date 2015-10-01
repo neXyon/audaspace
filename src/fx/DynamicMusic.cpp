@@ -110,10 +110,14 @@ int DynamicMusic::getScene()
 	return m_id;
 }
 
-void DynamicMusic::addTransition(int init, int end, std::shared_ptr<ISound> sound)
+bool DynamicMusic::addTransition(int init, int end, std::shared_ptr<ISound> sound)
 {
-	if (init != end && init < m_scenes.size() && end < m_scenes.size() && init >= 0 && end >= 0)
+	if (init != end && init < m_scenes.size() && end < m_scenes.size() && init >= 0 && end >= 0) 
+	{
 		m_scenes[init][end] = sound;
+		return true;
+	}
+	return false;
 }
 
 void DynamicMusic::setFadeTime(float seconds)

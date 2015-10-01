@@ -121,8 +121,9 @@ public:
 	* \param init The id of the initial scene that will allow the transition to play.
 	* \param end The id if the target scene for the transition.
 	* \param sound The sound that will play when the scene changes from init to end.
+	* \return false if the init or end scenes don't exist.
 	*/
-	void addTransition(int init, int end, std::shared_ptr<ISound> sound);
+	bool addTransition(int init, int end, std::shared_ptr<ISound> sound);
 
 	/**
 	* Sets the length of the crossfade transition (default 1 second).
