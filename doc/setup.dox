@@ -25,7 +25,7 @@ The audaspace source code or binary releases can be downloaded from https://gith
 
 For the most recent version you can use git to get the source code.
 
-    git clone https://github.com:audaspace/audaspace.git
+    git clone https://github.com/audaspace/audaspace.git
 
 Configuration
 -------------
