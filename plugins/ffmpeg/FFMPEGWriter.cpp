@@ -76,10 +76,8 @@ void FFMPEGWriter::encode()
 	if(avcodec_fill_audio_frame(frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_buffer.getSize(), 0) < 0)
 		AUD_THROW(FileException, "File couldn't be written, filling the audio frame failed with ffmpeg.");
 
-	if(m_codecCtx->coded_frame && m_codecCtx->coded_frame->pts != AV_NOPTS_VALUE)
-		frame->pts = av_rescale_q(m_codecCtx->coded_frame->pts, m_codecCtx->time_base, m_stream->time_base);
-	else
-		frame->pts = AV_NOPTS_VALUE;
+	AVRational sample_time = { 1, static_cast<int>(m_specs.rate) };
+	frame->pts = av_rescale_q(m_position - m_input_samples, m_codecCtx->time_base, sample_time);
 
 	if(avcodec_encode_audio2(m_codecCtx, &packet, frame, &got_packet))
 	{
@@ -420,9 +418,9 @@ void FFMPEGWriter::write(unsigned int length, sample_t* buffer)
 
 		m_input_samples = length;
 
-		encode();
-
 		m_position += length;
+
+		encode();
 	}
 }
 
