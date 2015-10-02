@@ -4,7 +4,7 @@ import sys
 import os
 import codecs
 
-from setuptools import setup, Extension
+from distutils.core import setup, Extension
 
 # the following line is not working due to https://bugs.python.org/issue9023
 #source_directory = os.path.relpath('@PYTHON_SOURCE_DIRECTORY@')
