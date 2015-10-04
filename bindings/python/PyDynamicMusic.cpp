@@ -11,7 +11,7 @@ extern PyObject* AUDError;
 static PyObject *
 DynamicMusic_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
-	DynamicMusic* self = (DynamicMusic*)type->tp_alloc(type, 0);
+	DynamicMusicP* self = (DynamicMusicP*)type->tp_alloc(type, 0);
 
 	if (self != nullptr)
 	{
@@ -36,7 +36,7 @@ DynamicMusic_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 }
 
 static void
-DynamicMusic_dealloc(DynamicMusic* self)
+DynamicMusic_dealloc(DynamicMusicP* self)
 {
 	if (self->dynamicMusic)
 		delete reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic);
@@ -52,7 +52,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_addScene_doc,
 	":rtype: int");
 
 static PyObject *
-DynamicMusic_addScene(DynamicMusic* self, PyObject* args)
+DynamicMusic_addScene(DynamicMusicP* self, PyObject* args)
 {
 	PyObject* object;
 	if (!PyArg_ParseTuple(args, "O:catKey", &object))
@@ -85,7 +85,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_addTransition_doc,
 	":rtype: bool");
 
 static PyObject *
-DynamicMusic_addTransition(DynamicMusic* self, PyObject* args)
+DynamicMusic_addTransition(DynamicMusicP* self, PyObject* args)
 {
 	PyObject* object;
 	int ini, end;
@@ -114,7 +114,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_resume_doc,
 	":rtype: bool");
 
 static PyObject *
-DynamicMusic_resume(DynamicMusic* self)
+DynamicMusic_resume(DynamicMusicP* self)
 {
 	try
 	{
@@ -134,7 +134,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_pause_doc,
 	":rtype: bool");
 
 static PyObject *
-DynamicMusic_pause(DynamicMusic* self)
+DynamicMusic_pause(DynamicMusicP* self)
 {
 	try
 	{
@@ -154,7 +154,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_stop_doc,
 	":rtype: bool\n\n");
 
 static PyObject *
-DynamicMusic_stop(DynamicMusic* self)
+DynamicMusic_stop(DynamicMusicP* self)
 {
 	try
 	{
@@ -192,7 +192,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_status_doc,
 	"Whether the scene is playing, paused or stopped (=invalid).");
 
 static PyObject *
-DynamicMusic_get_status(DynamicMusic* self, void* nothing)
+DynamicMusic_get_status(DynamicMusicP* self, void* nothing)
 {
 	try
 	{
@@ -209,7 +209,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_position_doc,
 	"The playback position of the scene in seconds.");
 
 static int
-DynamicMusic_set_position(DynamicMusic* self, PyObject* args, void* nothing)
+DynamicMusic_set_position(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	float position;
 
@@ -231,7 +231,7 @@ DynamicMusic_set_position(DynamicMusic* self, PyObject* args, void* nothing)
 }
 
 static PyObject *
-DynamicMusic_get_position(DynamicMusic* self, void* nothing)
+DynamicMusic_get_position(DynamicMusicP* self, void* nothing)
 {
 	try
 	{
@@ -248,7 +248,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_fadeTime_doc,
 	"The length in seconds of the crossfade transition");
 
 static int
-DynamicMusic_set_fadeTime(DynamicMusic* self, PyObject* args, void* nothing)
+DynamicMusic_set_fadeTime(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	float fadeTime;
 
@@ -269,7 +269,7 @@ DynamicMusic_set_fadeTime(DynamicMusic* self, PyObject* args, void* nothing)
 }
 
 static PyObject *
-DynamicMusic_get_fadeTime(DynamicMusic* self, void* nothing)
+DynamicMusic_get_fadeTime(DynamicMusicP* self, void* nothing)
 {
 	try
 	{
@@ -286,7 +286,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_scene_doc,
 	"The current scene");
 
 static int
-DynamicMusic_set_scene(DynamicMusic* self, PyObject* args, void* nothing)
+DynamicMusic_set_scene(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	int scene;
 
@@ -308,7 +308,7 @@ DynamicMusic_set_scene(DynamicMusic* self, PyObject* args, void* nothing)
 }
 
 static PyObject *
-DynamicMusic_get_scene(DynamicMusic* self, void* nothing)
+DynamicMusic_get_scene(DynamicMusicP* self, void* nothing)
 {
 	try
 	{
@@ -325,7 +325,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_volume_doc,
 	"The volume of the scene.");
 
 static int
-DynamicMusic_set_volume(DynamicMusic* self, PyObject* args, void* nothing)
+DynamicMusic_set_volume(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	float volume;
 
@@ -347,7 +347,7 @@ DynamicMusic_set_volume(DynamicMusic* self, PyObject* args, void* nothing)
 }
 
 static PyObject *
-DynamicMusic_get_volume(DynamicMusic* self, void* nothing)
+DynamicMusic_get_volume(DynamicMusicP* self, void* nothing)
 {
 	try
 	{
@@ -381,7 +381,7 @@ PyDoc_STRVAR(M_aud_DynamicMusic_doc,
 PyTypeObject DynamicMusicType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.DynamicMusic",						/* tp_name */
-	sizeof(DynamicMusic),					/* tp_basicsize */
+	sizeof(DynamicMusicP),					/* tp_basicsize */
 	0,										/* tp_itemsize */
 	(destructor)DynamicMusic_dealloc,		/* tp_dealloc */
 	0,										/* tp_print */
@@ -425,7 +425,7 @@ AUD_API PyObject* DynamicMusic_empty()
 }
 
 
-AUD_API DynamicMusic* checkDynamicMusic(PyObject* dynamicMusic)
+AUD_API DynamicMusicP* checkDynamicMusic(PyObject* dynamicMusic)
 {
 	if (!PyObject_TypeCheck(dynamicMusic, &DynamicMusicType))
 	{
@@ -433,7 +433,7 @@ AUD_API DynamicMusic* checkDynamicMusic(PyObject* dynamicMusic)
 		return nullptr;
 	}
 
-	return (DynamicMusic*)dynamicMusic;
+	return (DynamicMusicP*)dynamicMusic;
 }
 
 

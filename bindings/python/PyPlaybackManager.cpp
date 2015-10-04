@@ -11,7 +11,7 @@ extern PyObject* AUDError;
 static PyObject *
 PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
-	PlaybackManager* self = (PlaybackManager*)type->tp_alloc(type, 0);
+	PlaybackManagerP* self = (PlaybackManagerP*)type->tp_alloc(type, 0);
 
 	if (self != nullptr)
 	{
@@ -36,7 +36,7 @@ PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 }
 
 static void
-PlaybackManager_dealloc(PlaybackManager* self)
+PlaybackManager_dealloc(PlaybackManagerP* self)
 {
 	if (self->playbackManager)
 		delete reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager);
@@ -54,7 +54,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_play_doc,
 	":rtype: :class:`Handle`");
 
 static PyObject *
-PlaybackManager_play(PlaybackManager* self, PyObject* args)
+PlaybackManager_play(PlaybackManagerP* self, PyObject* args)
 {
 	PyObject* object;
 	unsigned int cat;
@@ -95,7 +95,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_resume_doc,
 	":rtype: bool");
 
 static PyObject *
-PlaybackManager_resume(PlaybackManager* self, PyObject* args)
+PlaybackManager_resume(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -122,7 +122,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_pause_doc,
 	":rtype: bool");
 
 static PyObject *
-PlaybackManager_pause(PlaybackManager* self, PyObject* args)
+PlaybackManager_pause(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -149,7 +149,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_get_volume_doc,
 	":rtype: float\n\n");
 
 static PyObject *
-PlaybackManager_get_volume(PlaybackManager* self, PyObject* args)
+PlaybackManager_get_volume(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -178,7 +178,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_set_volume_doc,
 	":rtype: int\n\n");
 
 static int
-PlaybackManager_set_volume(PlaybackManager* self, PyObject* args)
+PlaybackManager_set_volume(PlaybackManagerP* self, PyObject* args)
 {
 	float volume;
 	unsigned int cat;
@@ -209,7 +209,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_stop_doc,
 	":rtype: bool\n\n");
 
 static PyObject *
-PlaybackManager_stop(PlaybackManager* self, PyObject* args)
+PlaybackManager_stop(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
@@ -232,7 +232,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_clean_doc,
 	"Cleans all the invalid and finished sound from the playback manager.\n\n");
 
 static PyObject *
-PlaybackManager_clean(PlaybackManager* self)
+PlaybackManager_clean(PlaybackManagerP* self)
 {
 	try
 	{
@@ -277,7 +277,7 @@ PyDoc_STRVAR(M_aud_PlaybackManager_doc,
 PyTypeObject PlaybackManagerType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"aud.PlaybackManager",					/* tp_name */
-	sizeof(PlaybackManager),				/* tp_basicsize */
+	sizeof(PlaybackManagerP),				/* tp_basicsize */
 	0,										/* tp_itemsize */
 	(destructor)PlaybackManager_dealloc,	/* tp_dealloc */
 	0,										/* tp_print */
@@ -321,7 +321,7 @@ AUD_API PyObject* PlaybackManager_empty()
 }
 
 
-AUD_API PlaybackManager* checkPlaybackManager(PyObject* playbackManager)
+AUD_API PlaybackManagerP* checkPlaybackManager(PyObject* playbackManager)
 {
 	if (!PyObject_TypeCheck(playbackManager, &PlaybackManagerType))
 	{
@@ -329,7 +329,7 @@ AUD_API PlaybackManager* checkPlaybackManager(PyObject* playbackManager)
 		return nullptr;
 	}
 
-	return (PlaybackManager*)playbackManager;
+	return (PlaybackManagerP*)playbackManager;
 }
 
 

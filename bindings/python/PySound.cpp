@@ -46,7 +46,6 @@
 #include "sequence/PingPong.h"
 #include "sequence/Superpose.h"
 
-
 #include <structmember.h>
 
 using namespace aud;
