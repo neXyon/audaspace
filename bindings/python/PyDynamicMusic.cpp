@@ -16,7 +16,7 @@ DynamicMusic_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	if (self != nullptr)
 	{
 		PyObject* object;
-		if (!PyArg_ParseTuple(args, "O:catKey", &object))
+		if (!PyArg_ParseTuple(args, "O:device", &object))
 			return nullptr;
 		Device* device = checkDevice(object);
 
@@ -55,8 +55,9 @@ static PyObject *
 DynamicMusic_addScene(DynamicMusicP* self, PyObject* args)
 {
 	PyObject* object;
-	if (!PyArg_ParseTuple(args, "O:catKey", &object))
+	if (!PyArg_Parse(args, "O:sound", &object))
 		return nullptr;
+
 	Sound* sound = checkSound(object);
 	if (!sound)
 		return nullptr;
@@ -89,7 +90,7 @@ DynamicMusic_addTransition(DynamicMusicP* self, PyObject* args)
 {
 	PyObject* object;
 	int ini, end;
-	if (!PyArg_ParseTuple(args, "iiO:catKey", &ini, &end, object))
+	if (!PyArg_ParseTuple(args, "iiO:sound", &ini, &end, &object))
 		return nullptr;
 	Sound* sound = checkSound(object);
 	if (!sound)

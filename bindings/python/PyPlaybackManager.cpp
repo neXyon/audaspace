@@ -177,27 +177,24 @@ PyDoc_STRVAR(M_aud_PlaybackManager_set_volume_doc,
 	":return: Whether the action succeeded.\n"
 	":rtype: int\n\n");
 
-static int
+static PyObject *
 PlaybackManager_set_volume(PlaybackManagerP* self, PyObject* args)
 {
 	float volume;
 	unsigned int cat;
 
 	if (!PyArg_ParseTuple(args, "fI:volume", &volume, &cat))
-		return -1;
+		return nullptr;
 
 	try
 	{
-		if ((*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->setVolume(volume, cat))
-			return 0;
-		PyErr_SetString(AUDError, "Couldn't set the sound volume!");
+		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->setVolume(volume, cat));
 	}
 	catch (aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
+		return nullptr;
 	}
-
-	return -1;
 }
 
 PyDoc_STRVAR(M_aud_PlaybackManager_stop_doc,

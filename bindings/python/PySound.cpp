@@ -1383,7 +1383,7 @@ static PyMethodDef Sound_methods[] = {
 	{ "pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
 	 M_aud_Sound_pingpong_doc
 	},
-	{ "list", (PyCFunction)Sound_list, METH_VARARGS,
+	{ "list", (PyCFunction)Sound_list, METH_VARARGS | METH_CLASS,
 	 M_aud_Sound_list_doc
 	},
 	{ "mutable", (PyCFunction)Sound_mutable, METH_NOARGS,
