@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	device->lock(); 
 	auto handle = device->play(mtSound);
 	handle->setStopCallback(release, &condition);
-	handle->setLoopCount(2);
+	handle->setLoopCount(-1);
 	device->unlock();
 
 	condition.wait(lock);
