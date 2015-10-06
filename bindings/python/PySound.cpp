@@ -95,6 +95,270 @@ Sound_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	return (PyObject *)self;
 }
 
+PyDoc_STRVAR(M_aud_Sound_specs_doc,
+			 "specs()\n\n"
+			 "Retrieves the specs of the sound.\n\n"
+			 ":return: A tuple with rate and channel count.\n"
+			 ":rtype: tuple");
+
+static PyObject *
+Sound_specs(Sound* self)
+{
+	try
+	{
+		Specs specs = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader()->getSpecs();
+		return Py_BuildValue("(di)", specs.rate, specs.channels);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sound_data_doc,
+			 "data()\n\n"
+			 "Retrieves the data of the sound as numpy array.\n\n"
+			 ":return: A two dimensional numpy float array.\n"
+			 ":rtype: :class:`numpy.ndarray`\n\n"
+			 ".. note:: Best efficiency with cached sounds.");
+
+static PyObject *
+Sound_data(Sound* self)
+{
+	std::shared_ptr<ISound> sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
+
+	auto stream_buffer = std::dynamic_pointer_cast<StreamBuffer>(sound);
+	if(!stream_buffer)
+		stream_buffer = std::make_shared<StreamBuffer>(sound);
+	Specs specs = stream_buffer->getSpecs();
+	auto buffer = stream_buffer->getBuffer();
+
+	npy_intp dimensions[2];
+	dimensions[0] = buffer->getSize() / AUD_SAMPLE_SIZE(specs);
+	dimensions[1] = specs.channels;
+
+	PyObject* array = PyArray_SimpleNew(2, dimensions, NPY_FLOAT);
+
+	sample_t* data = reinterpret_cast<sample_t*>(PyArray_DATA(array));
+
+	std::memcpy(data, buffer->getBuffer(), buffer->getSize());
+
+	Py_INCREF(array);
+
+	return array;
+
+	//Py_RETURN_NONE;
+
+	/*PyErr_SetString(AUDError, "Not implemented.");
+	return nullptr;*/
+}
+
+PyDoc_STRVAR(M_aud_Sound_write_doc,
+			 "write(filename, rate, channels, format, container, codec, bitrate, buffersize)\n\n"
+			 "Writes the sound to a file.\n\n"
+			 ":arg filename: The path to write to.\n"
+			 ":type filename: string\n"
+			 ":arg rate: The sample rate to write with.\n"
+			 ":type rate: int\n"
+			 ":arg channels: The number of channels to write with.\n"
+			 ":type channels: int\n"
+			 ":arg format: The sample format to write with.\n"
+			 ":type format: int\n"
+			 ":arg container: The container format for the file.\n"
+			 ":type container: int\n"
+			 ":arg codec: The codec to use in the file.\n"
+			 ":type codec: int\n"
+			 ":arg bitrate: The bitrate to write with.\n"
+			 ":type bitrate: int\n"
+			 ":arg buffersize: The size of the writing buffer.\n"
+			 ":type buffersize: int\n");
+
+static PyObject *
+Sound_write(Sound* self, PyObject* args, PyObject* kwds)
+{
+	const char* filename = nullptr;
+	int rate = RATE_INVALID;
+	Channels channels = CHANNELS_INVALID;
+	SampleFormat format = FORMAT_INVALID;
+	Container container = CONTAINER_INVALID;
+	Codec codec = CODEC_INVALID;
+	int bitrate = 0;
+	int buffersize = 0;
+
+	static const char* kwlist[] = {"filename", "rate", "channels", "format", "container", "codec", "bitrate", "buffersize", nullptr};
+
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "s|iiiiiii:write", const_cast<char**>(kwlist), &filename, &rate, &channels, &format, &container, &codec, &bitrate, &buffersize))
+		return nullptr;
+
+	try
+	{
+		std::shared_ptr<IReader> reader = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader();
+
+		DeviceSpecs specs;
+		specs.specs = reader->getSpecs();
+
+		if((rate != RATE_INVALID) && (specs.rate != rate))
+		{
+			specs.rate = rate;
+			reader = std::make_shared<JOSResampleReader>(reader, rate);
+		}
+
+		if((channels != CHANNELS_INVALID) && (specs.channels != channels))
+		{
+			specs.channels = channels;
+			reader = std::make_shared<ChannelMapperReader>(reader, channels);
+		}
+
+		if(format == FORMAT_INVALID)
+			format = FORMAT_S16;
+		specs.format = format;
+
+		const char* invalid_container_error = "Container could not be determined from filename.";
+
+		if(container == CONTAINER_INVALID)
+		{
+			std::string path = filename;
+
+			if(path.length() < 4)
+			{
+				PyErr_SetString(AUDError, invalid_container_error);
+				return nullptr;
+			}
+
+			std::string extension = path.substr(path.length() - 4);
+
+			if(extension == ".ac3")
+				container = CONTAINER_AC3;
+			else if(extension == "flac")
+				container = CONTAINER_FLAC;
+			else if(extension == ".mkv")
+				container = CONTAINER_MATROSKA;
+			else if(extension == ".mp2")
+				container = CONTAINER_MP2;
+			else if(extension == ".mp3")
+				container = CONTAINER_MP3;
+			else if(extension == ".ogg")
+				container = CONTAINER_OGG;
+			else if(extension == ".wav")
+				container = CONTAINER_WAV;
+			else
+			{
+				PyErr_SetString(AUDError, invalid_container_error);
+				return nullptr;
+			}
+		}
+
+		if(codec == CODEC_INVALID)
+		{
+			switch(container)
+			{
+			case CONTAINER_AC3:
+				codec = CODEC_AC3;
+				break;
+			case CONTAINER_FLAC:
+				codec = CODEC_FLAC;
+				break;
+			case CONTAINER_MATROSKA:
+				codec = CODEC_OPUS;
+				break;
+			case CONTAINER_MP2:
+				codec = CODEC_MP2;
+				break;
+			case CONTAINER_MP3:
+				codec = CODEC_MP3;
+				break;
+			case CONTAINER_OGG:
+				codec = CODEC_VORBIS;
+				break;
+			case CONTAINER_WAV:
+				codec = CODEC_PCM;
+				break;
+			default:
+				PyErr_SetString(AUDError, "Unknown container, cannot select default codec.");
+				return nullptr;
+			}
+		}
+
+		if(buffersize <= 0)
+			buffersize = AUD_DEFAULT_BUFFER_SIZE;
+
+		std::shared_ptr<IWriter> writer = FileWriter::createWriter(filename, specs, container, codec, bitrate);
+		FileWriter::writeReader(reader, writer, 0, buffersize);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+
+	Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(M_aud_Sound_buffer_doc,
+			 "buffer(data, rate)\n\n"
+			 "Creates a sound from a data buffer.\n\n"
+			 ":arg data: The data as two dimensional numpy array.\n"
+			 ":type data: numpy.ndarray\n"
+			 ":arg rate: The sample rate.\n"
+			 ":type rate: double\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_buffer(PyTypeObject* type, PyObject* args)
+{
+	PyObject* array = nullptr;
+	double rate = RATE_INVALID;
+
+	if(!PyArg_ParseTuple(args, "Od:buffer", &array, &rate))
+		return nullptr;
+
+	if((!PyObject_TypeCheck(array, &PyArray_Type)) || (PyArray_TYPE(array) != NPY_FLOAT))
+	{
+		PyErr_SetString(PyExc_TypeError, "The data needs to be supplied as float32 numpy array!");
+		return nullptr;
+	}
+
+	if(PyArray_NDIM(array) > 2)
+	{
+		PyErr_SetString(PyExc_TypeError, "The array needs to have one or two dimensions!");
+		return nullptr;
+	}
+
+	Specs specs;
+	specs.rate = rate;
+	specs.channels = CHANNELS_MONO;
+
+	if(PyArray_NDIM(array) == 2)
+		specs.channels = static_cast<Channels>(PyArray_DIM(array, 1));
+
+	int size = PyArray_DIM(array, 0) * AUD_SAMPLE_SIZE(specs);
+
+	std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(size);
+
+	std::memcpy(buffer->getBuffer(), PyArray_DATA(array), size);
+
+	Sound* self;
+
+	self = (Sound*)type->tp_alloc(type, 0);
+	if(self != nullptr)
+	{
+		try
+		{
+			self->sound = new std::shared_ptr<StreamBuffer>(new StreamBuffer(buffer, specs));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(self);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)self;
+}
+
 PyDoc_STRVAR(M_aud_Sound_cache_doc,
 			 "cache()\n\n"
 			 "Caches a sound into RAM.\n"
@@ -1207,271 +1471,19 @@ Sound_pingpong(Sound* self)
 	return (PyObject *)parent;
 }
 
-PyDoc_STRVAR(M_aud_Sound_write_doc,
-			 "write(filename, rate, channels, format, container, codec, bitrate, buffersize)\n\n"
-			 "Writes the sound to a file.\n\n"
-			 ":arg filename: The path to write to.\n"
-			 ":type filename: string\n"
-			 ":arg rate: The sample rate to write with.\n"
-			 ":type rate: int\n"
-			 ":arg channels: The number of channels to write with.\n"
-			 ":type channels: int\n"
-			 ":arg format: The sample format to write with.\n"
-			 ":type format: int\n"
-			 ":arg container: The container format for the file.\n"
-			 ":type container: int\n"
-			 ":arg codec: The codec to use in the file.\n"
-			 ":type codec: int\n"
-			 ":arg bitrate: The bitrate to write with.\n"
-			 ":type bitrate: int\n"
-			 ":arg buffersize: The size of the writing buffer.\n"
-			 ":type buffersize: int\n");
-
-static PyObject *
-Sound_write(Sound* self, PyObject* args, PyObject* kwds)
-{
-	const char* filename = nullptr;
-	int rate = RATE_INVALID;
-	Channels channels = CHANNELS_INVALID;
-	SampleFormat format = FORMAT_INVALID;
-	Container container = CONTAINER_INVALID;
-	Codec codec = CODEC_INVALID;
-	int bitrate = 0;
-	int buffersize = 0;
-
-	static const char* kwlist[] = {"filename", "rate", "channels", "format", "container", "codec", "bitrate", "buffersize", nullptr};
-
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "s|iiiiiii:write", const_cast<char**>(kwlist), &filename, &rate, &channels, &format, &container, &codec, &bitrate, &buffersize))
-		return nullptr;
-
-	try
-	{
-		std::shared_ptr<IReader> reader = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader();
-
-		DeviceSpecs specs;
-		specs.specs = reader->getSpecs();
-
-		if((rate != RATE_INVALID) && (specs.rate != rate))
-		{
-			specs.rate = rate;
-			reader = std::make_shared<JOSResampleReader>(reader, rate);
-		}
-
-		if((channels != CHANNELS_INVALID) && (specs.channels != channels))
-		{
-			specs.channels = channels;
-			reader = std::make_shared<ChannelMapperReader>(reader, channels);
-		}
-
-		if(format == FORMAT_INVALID)
-			format = FORMAT_S16;
-		specs.format = format;
-
-		const char* invalid_container_error = "Container could not be determined from filename.";
-
-		if(container == CONTAINER_INVALID)
-		{
-			std::string path = filename;
-
-			if(path.length() < 4)
-			{
-				PyErr_SetString(AUDError, invalid_container_error);
-				return nullptr;
-			}
-
-			std::string extension = path.substr(path.length() - 4);
-
-			if(extension == ".ac3")
-				container = CONTAINER_AC3;
-			else if(extension == "flac")
-				container = CONTAINER_FLAC;
-			else if(extension == ".mkv")
-				container = CONTAINER_MATROSKA;
-			else if(extension == ".mp2")
-				container = CONTAINER_MP2;
-			else if(extension == ".mp3")
-				container = CONTAINER_MP3;
-			else if(extension == ".ogg")
-				container = CONTAINER_OGG;
-			else if(extension == ".wav")
-				container = CONTAINER_WAV;
-			else
-			{
-				PyErr_SetString(AUDError, invalid_container_error);
-				return nullptr;
-			}
-		}
-
-		if(codec == CODEC_INVALID)
-		{
-			switch(container)
-			{
-			case CONTAINER_AC3:
-				codec = CODEC_AC3;
-				break;
-			case CONTAINER_FLAC:
-				codec = CODEC_FLAC;
-				break;
-			case CONTAINER_MATROSKA:
-				codec = CODEC_OPUS;
-				break;
-			case CONTAINER_MP2:
-				codec = CODEC_MP2;
-				break;
-			case CONTAINER_MP3:
-				codec = CODEC_MP3;
-				break;
-			case CONTAINER_OGG:
-				codec = CODEC_VORBIS;
-				break;
-			case CONTAINER_WAV:
-				codec = CODEC_PCM;
-				break;
-			default:
-				PyErr_SetString(AUDError, "Unknown container, cannot select default codec.");
-				return nullptr;
-			}
-		}
-
-		if(buffersize <= 0)
-			buffersize = AUD_DEFAULT_BUFFER_SIZE;
-
-		std::shared_ptr<IWriter> writer = FileWriter::createWriter(filename, specs, container, codec, bitrate);
-		FileWriter::writeReader(reader, writer, 0, buffersize);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-
-	Py_RETURN_NONE;
-}
-
-PyDoc_STRVAR(M_aud_Sound_data_doc,
-			 "data()\n\n"
-			 "Retrieves the data of the sound as numpy array.\n\n"
-			 ":return: A two dimensional numpy float array.\n"
-			 ":rtype: :class:`numpy.ndarray`\n\n"
-			 ".. note:: Best efficiency with cached sounds.");
-
-static PyObject *
-Sound_data(Sound* self)
-{
-	std::shared_ptr<ISound> sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
-
-	auto stream_buffer = std::dynamic_pointer_cast<StreamBuffer>(sound);
-	if(!stream_buffer)
-		stream_buffer = std::make_shared<StreamBuffer>(sound);
-	Specs specs = stream_buffer->getSpecs();
-	auto buffer = stream_buffer->getBuffer();
-
-	npy_intp dimensions[2];
-	dimensions[0] = buffer->getSize() / AUD_SAMPLE_SIZE(specs);
-	dimensions[1] = specs.channels;
-
-	PyObject* array = PyArray_SimpleNew(2, dimensions, NPY_FLOAT);
-
-	sample_t* data = reinterpret_cast<sample_t*>(PyArray_DATA(array));
-
-	std::memcpy(data, buffer->getBuffer(), buffer->getSize());
-
-	Py_INCREF(array);
-
-	return array;
-
-	//Py_RETURN_NONE;
-
-	/*PyErr_SetString(AUDError, "Not implemented.");
-	return nullptr;*/
-}
-
-PyDoc_STRVAR(M_aud_Sound_buffer_doc,
-			 "buffer(data, rate)\n\n"
-			 "Creates a sound from a data buffer.\n\n"
-			 ":arg data: The data as two dimensional numpy array.\n"
-			 ":type data: numpy.ndarray\n"
-			 ":arg rate: The sample rate.\n"
-			 ":type rate: double\n"
-			 ":return: The created :class:`Sound` object.\n"
-			 ":rtype: :class:`Sound`");
-
-static PyObject *
-Sound_buffer(PyTypeObject* type, PyObject* args)
-{
-	PyObject* array = nullptr;
-	double rate = RATE_INVALID;
-
-	if(!PyArg_ParseTuple(args, "Od:buffer", &array, &rate))
-		return nullptr;
-
-	if((!PyObject_TypeCheck(array, &PyArray_Type)) || (PyArray_TYPE(array) != NPY_FLOAT))
-	{
-		PyErr_SetString(PyExc_TypeError, "The data needs to be supplied as float32 numpy array!");
-		return nullptr;
-	}
-
-	if(PyArray_NDIM(array) > 2)
-	{
-		PyErr_SetString(PyExc_TypeError, "The array needs to have one or two dimensions!");
-		return nullptr;
-	}
-
-	Specs specs;
-	specs.rate = rate;
-	specs.channels = CHANNELS_MONO;
-
-	if(PyArray_NDIM(array) == 2)
-		specs.channels = static_cast<Channels>(PyArray_DIM(array, 1));
-
-	int size = PyArray_DIM(array, 0) * AUD_SAMPLE_SIZE(specs);
-
-	std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(size);
-
-	std::memcpy(buffer->getBuffer(), PyArray_DATA(array), size);
-
-	Sound* self;
-
-	self = (Sound*)type->tp_alloc(type, 0);
-	if(self != nullptr)
-	{
-		try
-		{
-			self->sound = new std::shared_ptr<StreamBuffer>(new StreamBuffer(buffer, specs));
-		}
-		catch(Exception& e)
-		{
-			Py_DECREF(self);
-			PyErr_SetString(AUDError, e.what());
-			return nullptr;
-		}
-	}
-
-	return (PyObject *)self;
-}
-
-PyDoc_STRVAR(M_aud_Sound_specs_doc,
-			 "specs()\n\n"
-			 "Retrieves the specs of the sound.\n\n"
-			 ":return: A tuple with rate and channel count.\n"
-			 ":rtype: tuple");
-
-static PyObject *
-Sound_specs(Sound* self)
-{
-	try
-	{
-		Specs specs = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader()->getSpecs();
-		return Py_BuildValue("(di)", specs.rate, specs.channels);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-}
-
 static PyMethodDef Sound_methods[] = {
+	{"specs", (PyCFunction)Sound_specs, METH_NOARGS,
+	 M_aud_Sound_specs_doc
+	},
+	{"data", (PyCFunction)Sound_data, METH_NOARGS,
+	 M_aud_Sound_data_doc
+	},
+	{"write", (PyCFunction)Sound_write, METH_VARARGS | METH_KEYWORDS,
+	 M_aud_Sound_write_doc
+	},
+	{"buffer", (PyCFunction)Sound_buffer, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_buffer_doc
+	},
 	{"cache", (PyCFunction)Sound_cache, METH_NOARGS,
 	 M_aud_Sound_cache_doc
 	},
@@ -1552,18 +1564,6 @@ static PyMethodDef Sound_methods[] = {
 	},
 	{"pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
 	 M_aud_Sound_pingpong_doc
-	},
-	{"write", (PyCFunction)Sound_write, METH_VARARGS | METH_KEYWORDS,
-	 M_aud_Sound_write_doc
-	},
-	{"data", (PyCFunction)Sound_data, METH_NOARGS,
-	 M_aud_Sound_data_doc
-	},
-	{"buffer", (PyCFunction)Sound_buffer, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_buffer_doc
-	},
-	{"specs", (PyCFunction)Sound_specs, METH_NOARGS,
-	 M_aud_Sound_specs_doc
 	},
 	{nullptr}  /* Sentinel */
 };
