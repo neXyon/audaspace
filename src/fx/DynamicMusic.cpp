@@ -199,6 +199,8 @@ bool DynamicMusic::setVolume(float volume)
 			resultTrans = m_transitionHandle->setVolume(0.0f);
 		m_device->unlock();
 	}
+	if (m_currentHandle == nullptr && m_transitionHandle == nullptr)
+		result = true;
 
 	return result || resultTrans;
 }
