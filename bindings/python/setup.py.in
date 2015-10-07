@@ -3,6 +3,7 @@
 import sys
 import os
 import codecs
+import numpy
 
 from distutils.core import setup, Extension
 
@@ -37,7 +38,7 @@ else:
 
 audaspace = Extension(
                       'aud',
-                      include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include')],
+                      include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include'), numpy.get_include()],
                       libraries = ['audaspace'],
                       library_dirs = ['.', 'Debug', 'Release'],
                       language = 'c++',
