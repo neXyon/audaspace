@@ -98,7 +98,7 @@ Sound_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 PyDoc_STRVAR(M_aud_Sound_specs_doc,
 			 "specs()\n\n"
-			 "Retrieves the specs of the sound.\n\n"
+			 "Retrieves the sample specification of the sound.\n\n"
 			 ":return: A tuple with rate and channel count.\n"
 			 ":rtype: tuple");
 

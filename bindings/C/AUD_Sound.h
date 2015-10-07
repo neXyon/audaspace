@@ -23,6 +23,57 @@ extern "C" {
 #endif
 
 /**
+ * Retrieves the sample specification of the sound.
+ * \param sound The sound to retrieve from.
+ * \return The sample specification of the sound.
+ * \note This function creates a reader from the sound and deletes it again.
+ */
+extern AUD_API AUD_Specs AUD_Sound_specs(AUD_Sound* sound);
+
+/**
+ * Reads a sound's samples into memory.
+ * \param sound The sound to read.
+ * \param length Pointer to store the length of memory read.
+ * \param specs Pointer to store the data's sample specification.
+ * \return A pointer to the sample data.
+ * \warning The data has to be freed with AUD_Sound_freeData.
+ */
+extern AUD_API sample_t* AUD_Sound_data(AUD_Sound* sound, int* length, AUD_Specs* specs);
+
+/**
+ * Frees a buffer previously allocated with AUD_Sound_data.
+ * \param data The buffer to be freed.
+ */
+extern AUD_API void AUD_Sound_freeData(sample_t* data);
+
+/**
+ * Writes the sound to a file.
+ * \param sound The sound to write.
+ * \param filename The path to write to..
+ * \param rate The sample rate to write with.
+ * \param channels The number of channels to write with.
+ * \param format The sample format to write with.
+ * \param container The container format for the file.
+ * \param codec The codec to use in the file.
+ * \param bitrate The bitrate to write with.
+ * \param buffersize The size of the writing buffer.
+ * \return A nullptr or an error message in case of error.
+ * \note Most parameters can be set to zero for default values.
+ */
+extern AUD_API const char* AUD_Sound_write(AUD_Sound* sound, const char* filename, AUD_SampleRate rate, AUD_Channels channels, AUD_SampleFormat format, AUD_Container container, AUD_Codec codec, int bitrate, int buffersize);
+
+/**
+ * Creates a sound from a data buffer.
+ * \param data The data as interleaved samples.
+ * \param length The data's length in samples.
+ * \param specs The data's sample specification.
+ * \return A handle of the sound.
+ * \note The data gets copied to an internal memory buffer.
+ *       The pointer does not need to stay valid for the lifetime of the object.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_buffer(sample_t* data, int length, AUD_Specs specs);
+
+/**
  * Loads a sound file from a memory buffer.
  * \param buffer The buffer which contains the sound file.
  * \param size The size of the buffer.

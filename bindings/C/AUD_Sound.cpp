@@ -20,6 +20,7 @@
 #include "generator/Square.h"
 #include "generator/Triangle.h"
 #include "file/File.h"
+#include "file/FileWriter.h"
 #include "util/StreamBuffer.h"
 #include "fx/Accumulator.h"
 #include "fx/ADSR.h"
@@ -40,16 +41,194 @@
 #include "sequence/Superpose.h"
 #include "sequence/PingPong.h"
 #include "respec/LinearResample.h"
+#include "respec/JOSResampleReader.h"
 #include "respec/ChannelMapper.h"
+#include "respec/ChannelMapperReader.h"
 #include "util/Buffer.h"
 #include "Exception.h"
 
 #include <cassert>
+#include <cstring>
 
 using namespace aud;
 
 #define AUD_CAPI_IMPLEMENTATION
 #include "AUD_Sound.h"
+
+static inline AUD_Specs convSpecToC(aud::Specs specs)
+{
+	AUD_Specs s;
+	s.channels = static_cast<AUD_Channels>(specs.channels);
+	s.rate = static_cast<AUD_SampleRate>(specs.rate);
+	return s;
+}
+
+static inline aud::Specs convCToSpec(AUD_Specs specs)
+{
+	aud::Specs s;
+	s.channels = static_cast<Channels>(specs.channels);
+	s.rate = static_cast<SampleRate>(specs.rate);
+	return s;
+}
+
+AUD_API AUD_Specs AUD_Sound_specs(AUD_Sound* sound)
+{
+	assert(sound);
+
+	return convSpecToC((*sound)->createReader()->getSpecs());
+}
+
+AUD_API sample_t* AUD_Sound_data(AUD_Sound* sound, int* length, AUD_Specs* specs)
+{
+	assert(sound);
+	assert(length);
+	assert(specs);
+
+	auto stream_buffer = std::dynamic_pointer_cast<StreamBuffer>(*sound);
+	if(!stream_buffer)
+		stream_buffer = std::make_shared<StreamBuffer>(*sound);
+	*specs = convSpecToC(stream_buffer->getSpecs());
+	auto buffer = stream_buffer->getBuffer();
+
+	*length = buffer->getSize() / AUD_SAMPLE_SIZE((*specs));
+
+	sample_t* data = new sample_t[buffer->getSize()];
+
+	std::memcpy(data, buffer->getBuffer(), buffer->getSize());
+
+	return data;
+}
+
+AUD_API void AUD_Sound_freeData(sample_t* data)
+{
+	delete[] data;
+}
+
+AUD_API const char* AUD_Sound_write(AUD_Sound* sound, const char* filename, AUD_SampleRate rate, AUD_Channels channels, AUD_SampleFormat format, AUD_Container container, AUD_Codec codec, int bitrate, int buffersize)
+{
+	assert(sound);
+	assert(filename);
+
+	try
+	{
+		std::shared_ptr<IReader> reader = (*sound)->createReader();
+
+		DeviceSpecs specs;
+		specs.specs = reader->getSpecs();
+
+		if((rate != RATE_INVALID) && (specs.rate != rate))
+		{
+			specs.rate = rate;
+			reader = std::make_shared<JOSResampleReader>(reader, rate);
+		}
+
+		if((channels != AUD_CHANNELS_INVALID) && (specs.channels != static_cast<Channels>(channels)))
+		{
+			specs.channels = static_cast<Channels>(channels);
+			reader = std::make_shared<ChannelMapperReader>(reader, specs.channels);
+		}
+
+		if(format == AUD_FORMAT_INVALID)
+			format = AUD_FORMAT_S16;
+		specs.format = static_cast<SampleFormat>(format);
+
+		const char* invalid_container_error = "Container could not be determined from filename.";
+
+		if(container == AUD_CONTAINER_INVALID)
+		{
+			std::string path = filename;
+
+			if(path.length() < 4)
+				return invalid_container_error;
+
+			std::string extension = path.substr(path.length() - 4);
+
+			if(extension == ".ac3")
+				container = AUD_CONTAINER_AC3;
+			else if(extension == "flac")
+				container = AUD_CONTAINER_FLAC;
+			else if(extension == ".mkv")
+				container = AUD_CONTAINER_MATROSKA;
+			else if(extension == ".mp2")
+				container = AUD_CONTAINER_MP2;
+			else if(extension == ".mp3")
+				container = AUD_CONTAINER_MP3;
+			else if(extension == ".ogg")
+				container = AUD_CONTAINER_OGG;
+			else if(extension == ".wav")
+				container = AUD_CONTAINER_WAV;
+			else
+				return invalid_container_error;
+		}
+
+		if(codec == AUD_CODEC_INVALID)
+		{
+			switch(container)
+			{
+			case AUD_CONTAINER_AC3:
+				codec = AUD_CODEC_AC3;
+				break;
+			case AUD_CONTAINER_FLAC:
+				codec = AUD_CODEC_FLAC;
+				break;
+			case AUD_CONTAINER_MATROSKA:
+				codec = AUD_CODEC_OPUS;
+				break;
+			case AUD_CONTAINER_MP2:
+				codec = AUD_CODEC_MP2;
+				break;
+			case AUD_CONTAINER_MP3:
+				codec = AUD_CODEC_MP3;
+				break;
+			case AUD_CONTAINER_OGG:
+				codec = AUD_CODEC_VORBIS;
+				break;
+			case AUD_CONTAINER_WAV:
+				codec = AUD_CODEC_PCM;
+				break;
+			default:
+				return "Unknown container, cannot select default codec.";
+			}
+		}
+
+		if(buffersize <= 0)
+			buffersize = AUD_DEFAULT_BUFFER_SIZE;
+
+		std::shared_ptr<IWriter> writer = FileWriter::createWriter(filename, specs, static_cast<Container>(container), static_cast<Codec>(codec), bitrate);
+		FileWriter::writeReader(reader, writer, 0, buffersize);
+	}
+	catch(Exception& e)
+	{
+		return "An exception occured while writing.";
+	}
+
+	return nullptr;
+}
+
+AUD_API AUD_Sound* AUD_Sound_buffer(sample_t* data, int length, AUD_Specs specs)
+{
+	assert(data);
+
+	if(length <= 0 || specs.rate <= 0 || specs.channels <= 0)
+	{
+		return nullptr;
+	}
+
+	int size = length * AUD_SAMPLE_SIZE(specs);
+
+	std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(size);
+
+	std::memcpy(buffer->getBuffer(), data, size);
+
+	try
+	{
+		return new AUD_Sound(new StreamBuffer(buffer, convCToSpec(specs)));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
 
 AUD_API AUD_Sound* AUD_Sound_bufferFile(unsigned char* buffer, int size)
 {
