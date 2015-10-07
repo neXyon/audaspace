@@ -49,6 +49,7 @@
 
 #include <cstring>
 #include <structmember.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/ndarrayobject.h>
 
 using namespace aud;
@@ -138,7 +139,7 @@ Sound_data(Sound* self)
 	dimensions[0] = buffer->getSize() / AUD_SAMPLE_SIZE(specs);
 	dimensions[1] = specs.channels;
 
-	PyObject* array = PyArray_SimpleNew(2, dimensions, NPY_FLOAT);
+	PyArrayObject* array = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNew(2, dimensions, NPY_FLOAT));
 
 	sample_t* data = reinterpret_cast<sample_t*>(PyArray_DATA(array));
 
@@ -146,7 +147,7 @@ Sound_data(Sound* self)
 
 	Py_INCREF(array);
 
-	return array;
+	return reinterpret_cast<PyObject*>(array);
 }
 
 PyDoc_STRVAR(M_aud_Sound_write_doc,
@@ -303,13 +304,13 @@ PyDoc_STRVAR(M_aud_Sound_buffer_doc,
 static PyObject *
 Sound_buffer(PyTypeObject* type, PyObject* args)
 {
-	PyObject* array = nullptr;
+	PyArrayObject* array = nullptr;
 	double rate = RATE_INVALID;
 
 	if(!PyArg_ParseTuple(args, "Od:buffer", &array, &rate))
 		return nullptr;
 
-	if((!PyObject_TypeCheck(array, &PyArray_Type)) || (PyArray_TYPE(array) != NPY_FLOAT))
+	if((!PyObject_TypeCheck(reinterpret_cast<PyObject*>(array), &PyArray_Type)) || (PyArray_TYPE(array) != NPY_FLOAT))
 	{
 		PyErr_SetString(PyExc_TypeError, "The data needs to be supplied as float32 numpy array!");
 		return nullptr;
