@@ -147,11 +147,6 @@ Sound_data(Sound* self)
 	Py_INCREF(array);
 
 	return array;
-
-	//Py_RETURN_NONE;
-
-	/*PyErr_SetString(AUDError, "Not implemented.");
-	return nullptr;*/
 }
 
 PyDoc_STRVAR(M_aud_Sound_write_doc,
@@ -323,6 +318,12 @@ Sound_buffer(PyTypeObject* type, PyObject* args)
 	if(PyArray_NDIM(array) > 2)
 	{
 		PyErr_SetString(PyExc_TypeError, "The array needs to have one or two dimensions!");
+		return nullptr;
+	}
+
+	if(rate <= 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "The sample rate has to be positive!");
 		return nullptr;
 	}
 
