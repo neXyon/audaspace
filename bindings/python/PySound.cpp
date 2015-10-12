@@ -98,27 +98,6 @@ Sound_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	return (PyObject *)self;
 }
 
-PyDoc_STRVAR(M_aud_Sound_specs_doc,
-			 "specs()\n\n"
-			 "Retrieves the sample specification of the sound.\n\n"
-			 ":return: A tuple with rate and channel count.\n"
-			 ":rtype: tuple");
-
-static PyObject *
-Sound_specs(Sound* self)
-{
-	try
-	{
-		Specs specs = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader()->getSpecs();
-		return Py_BuildValue("(di)", specs.rate, specs.channels);
-	}
-	catch(Exception& e)
-	{
-		PyErr_SetString(AUDError, e.what());
-		return nullptr;
-	}
-}
-
 PyDoc_STRVAR(M_aud_Sound_data_doc,
 			 "data()\n\n"
 			 "Retrieves the data of the sound as numpy array.\n\n"
@@ -1531,9 +1510,6 @@ Sound_pingpong(Sound* self)
 }
 
 static PyMethodDef Sound_methods[] = {
-	{"specs", (PyCFunction)Sound_specs, METH_NOARGS,
-	 M_aud_Sound_specs_doc
-	},
 	{"data", (PyCFunction)Sound_data, METH_NOARGS,
 	 M_aud_Sound_data_doc
 	},
@@ -1630,6 +1606,50 @@ static PyMethodDef Sound_methods[] = {
 	{nullptr}  /* Sentinel */
 };
 
+PyDoc_STRVAR(M_aud_Sound_specs_doc,
+			 "The sample specification of the sound as a tuple with rate and channel count.");
+
+static PyObject *
+Sound_get_specs(Sound* self, void* nothing)
+{
+	try
+	{
+		Specs specs = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader()->getSpecs();
+		return Py_BuildValue("(di)", specs.rate, specs.channels);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_Sound_length_doc,
+			 "The sample specification of the sound as a tuple with rate and channel count.");
+
+static PyObject *
+Sound_get_length(Sound* self, void* nothing)
+{
+	try
+	{
+		int length = (*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound))->createReader()->getLength();
+		return Py_BuildValue("i", length);
+	}
+	catch(Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+static PyGetSetDef Sound_properties[] = {
+	{(char*)"specs", (getter)Sound_get_specs, nullptr,
+	 M_aud_Sound_specs_doc, nullptr },
+	{(char*)"length", (getter)Sound_get_length, nullptr,
+	 M_aud_Sound_length_doc, nullptr },
+	{nullptr}  /* Sentinel */
+};
+
 PyDoc_STRVAR(M_aud_Sound_doc,
 			 "Sound objects are immutable and represent a sound that can be "
 			 "played simultaneously multiple times. They are called factories "
@@ -1666,7 +1686,7 @@ PyTypeObject SoundType = {
 	0,		                   /* tp_iternext */
 	Sound_methods,             /* tp_methods */
 	0,                         /* tp_members */
-	0,                         /* tp_getset */
+	Sound_properties,          /* tp_getset */
 	0,                         /* tp_base */
 	0,                         /* tp_dict */
 	0,                         /* tp_descr_get */

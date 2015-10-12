@@ -28,7 +28,15 @@ extern "C" {
  * \return The sample specification of the sound.
  * \note This function creates a reader from the sound and deletes it again.
  */
-extern AUD_API AUD_Specs AUD_Sound_specs(AUD_Sound* sound);
+extern AUD_API AUD_Specs AUD_Sound_getSpecs(AUD_Sound* sound);
+
+/**
+ * Retrieves the approximate length of the sound.
+ * \param sound The sound to retrieve from.
+ * \return The length of the sound in samples.
+ * \note This function creates a reader from the sound and deletes it again.
+ */
+extern AUD_API int AUD_getLength(AUD_Sound* sound);
 
 /**
  * Reads a sound's samples into memory.

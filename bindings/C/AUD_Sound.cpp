@@ -72,11 +72,18 @@ static inline aud::Specs convCToSpec(AUD_Specs specs)
 	return s;
 }
 
-AUD_API AUD_Specs AUD_Sound_specs(AUD_Sound* sound)
+AUD_API AUD_Specs AUD_Sound_getSpecs(AUD_Sound* sound)
 {
 	assert(sound);
 
 	return convSpecToC((*sound)->createReader()->getSpecs());
+}
+
+AUD_API int AUD_Sound_getLength(AUD_Sound* sound)
+{
+	assert(sound);
+
+	return (*sound)->createReader()->getLength();
 }
 
 AUD_API sample_t* AUD_Sound_data(AUD_Sound* sound, int* length, AUD_Specs* specs)
