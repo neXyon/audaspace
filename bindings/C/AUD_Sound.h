@@ -255,6 +255,15 @@ extern AUD_API AUD_Sound* AUD_Sound_pitch(AUD_Sound* sound, float factor);
 extern AUD_API AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels);
 
 /**
+ * Resamples the sound.
+ * \param sound The sound to resample.
+ * \param rate The new sample rate.
+ * \param high_quality When true use a higher quality but slower resampler.
+ * \return The resampled sound.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_resample(AUD_Sound* sound, AUD_SampleRate rate, bool high_quality = false);
+
+/**
  * Reverses a sound. Make sure the sound source can be reversed.
  * \param sound The sound to reverse.
  * \return A handle of the reversed sound.

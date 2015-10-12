@@ -41,6 +41,7 @@
 #include "sequence/Superpose.h"
 #include "sequence/PingPong.h"
 #include "respec/LinearResample.h"
+#include "respec/JOSResample.h"
 #include "respec/JOSResampleReader.h"
 #include "respec/ChannelMapper.h"
 #include "respec/ChannelMapperReader.h"
@@ -475,6 +476,27 @@ AUD_API AUD_Sound* AUD_Sound_rechannel(AUD_Sound* sound, AUD_Channels channels)
 		specs.rate = RATE_INVALID;
 		specs.format = FORMAT_INVALID;
 		return new AUD_Sound(new ChannelMapper(*sound, specs));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API AUD_Sound* AUD_Sound_resample(AUD_Sound* sound, AUD_SampleRate rate, bool high_quality)
+{
+	assert(sound);
+
+	try
+	{
+		DeviceSpecs specs;
+		specs.channels = CHANNELS_INVALID;
+		specs.rate = rate;
+		specs.format = FORMAT_INVALID;
+		if(high_quality)
+			return new AUD_Sound(new JOSResample(*sound, specs));
+		else
+			return new AUD_Sound(new LinearResample(*sound, specs));
 	}
 	catch(Exception&)
 	{

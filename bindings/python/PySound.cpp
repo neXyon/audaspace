@@ -42,6 +42,8 @@
 #include "fx/Volume.h"
 #include "respec/ChannelMapper.h"
 #include "respec/ChannelMapperReader.h"
+#include "respec/LinearResample.h"
+#include "respec/JOSResample.h"
 #include "respec/JOSResampleReader.h"
 #include "sequence/Double.h"
 #include "sequence/PingPong.h"
@@ -1217,6 +1219,61 @@ Sound_rechannel(Sound* self, PyObject* args)
 	return (PyObject *)parent;
 }
 
+PyDoc_STRVAR(M_aud_Sound_resample_doc,
+			 "resample(rate, high_quality)\n\n"
+			 "Resamples the sound.\n\n"
+			 ":arg rate: The new sample rate.\n"
+			 ":type rate: double\n"
+			 ":arg high_quality: When true use a higher quality but slower resampler.\n"
+			 ":type high_quality: bool\n"
+			 ":return: The created :class:`Sound` object.\n"
+			 ":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_resample(Sound* self, PyObject* args)
+{
+	double rate;
+	PyObject* high_qualityo;
+	bool high_quality = false;
+
+	if(!PyArg_ParseTuple(args, "d|O:resample", &rate, &high_qualityo))
+		return nullptr;
+
+	if(!PyBool_Check(high_qualityo))
+	{
+		PyErr_SetString(PyExc_TypeError, "high_quality is not a boolean!");
+		return nullptr;
+	}
+
+	high_quality = high_qualityo == Py_True;
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			DeviceSpecs specs;
+			specs.channels = CHANNELS_INVALID;
+			specs.rate = rate;
+			specs.format = FORMAT_INVALID;
+			if(high_quality)
+				parent->sound = new std::shared_ptr<ISound>(new JOSResample(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), specs));
+			else
+				parent->sound = new std::shared_ptr<ISound>(new LinearResample(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), specs));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
 PyDoc_STRVAR(M_aud_Sound_reverse_doc,
 			 "reverse()\n\n"
 			 "Plays a sound reversed.\n\n"
@@ -1545,6 +1602,9 @@ static PyMethodDef Sound_methods[] = {
 	},
 	{"rechannel", (PyCFunction)Sound_rechannel, METH_VARARGS,
 	 M_aud_Sound_rechannel_doc
+	},
+	{"resample", (PyCFunction)Sound_resample, METH_VARARGS,
+	 M_aud_Sound_resample_doc
 	},
 	{"reverse", (PyCFunction)Sound_reverse, METH_NOARGS,
 	 M_aud_Sound_reverse_doc
