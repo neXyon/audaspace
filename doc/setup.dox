@@ -96,10 +96,11 @@ Open the project in Visual Studio and set the configuration to Release. Then you
 ### Installation ###
 
 To install audaspace to your target folder, build the INSTALL target.
+Note that if you don't use the libraries folder provided on the website, the INSTALL target might fail and you need to copy the files manually, including the dlls of the dependencies.
 
 ### Using the library ###
 
-You might need to put the dlls of the dependencies you use in the application directory of your project. For the build dependencies from the website you can find these in the bin folder of each dependency. If you use the built of audaspace from the website, the dlls will be in the main folder. To use audaspace in your project, configure the include path and the libraries that you need, which you can find in the include and lib directories in your installation path.
+To use audaspace in your project, configure the include path and the libraries that you need, which you can find in the include and lib directories in your installation path.
 
 ### Notes for plugins on windows ###
 
