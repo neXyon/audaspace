@@ -1,3 +1,54 @@
+Audaspace 1.1
+=============
+
+- Bug fixes:
+ - pkgconfig uses cmake configured library directory
+ - FFMPEG file writing crashed, also corrected pts for encoding
+ - silenced Doxygen warnings about undefined defines
+- C++ API:
+ - ResampleReader uses specs instead of sample rate
+- Bindings API:
+ - writing sounds to files
+ - reading sound data, specs and length
+ - resampling sounds
+- CMake/Building:
+ - first steps towards building for Mac
+ - windows builds copy dlls automatically
+- Python module:
+ - using distutils instead of setuptools
+ - added numpy as dependency
+- Documentation:
+ - added windows building and plugin documentation
+ - disabled html timestamps in doxygen
+ - updated sphinx template
+ - build binding documentation without installing the python module
+
+Detailed list of changes:
+
+326a300 Documentation: windows, dll copying now done automatically.
+54cac4f Windows: install dlls.
+65c2d78 Bindings: Sound length and specs properties.
+c38da70 Bindings API: adding resampling.
+374822f Documentation: Added windows and plugin documentation.
+a9dc5b9 Python module: add numpy as dependency.
+c933a02 C API: implement new API based on the python API.
+ac54c52 Python API: silence numpy warnings.
+c9491bb Python API: checking for a positive sample rate.
+4eb1fa8 Python API: reorder functions.
+ec7c00b Sphinx update and fixes.
+e16d979 FFMPEG: correct pts during encoding.
+7ab3935 Documentation: git path fix.
+28d77bb Python: use distutils directly instead of setuptools.
+1f43284 Silence doxygen warning about undefined defines.
+0d52458 CMake: improvements and fixes for building on Mac.
+37daedf FFMPEG: bugfixes for file writing.
+780ca2a ResampleReader API change
+4d9863d Python API: Optimization for cached sounds' data access.
+ea04fee Python API: read sound data and create sound buffers as well as getting the specs of a sound.
+335b293 Python sound writing API.
+36a7252 Pkgconfig: use cmake configured library directory.
+5503908 Doxygen: disable html timestamps.
+
 Initial Release of Audaspace 1.0 
 ================================
 

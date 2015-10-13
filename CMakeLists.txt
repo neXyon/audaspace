@@ -23,7 +23,7 @@ endif()
 
 project(audaspace)
 
-set(AUDASPACE_VERSION 1.0)
+set(AUDASPACE_VERSION 1.1)
 set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION})
 
 # sources

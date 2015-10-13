@@ -8,7 +8,7 @@ The build system used to build audaspace is CMake and it allows very building th
 Build Dependencies
 ------------------
 
-Audaspace is written in C++ 11 so a fairly recent compiler (g++ 4.8.2, clang 3.3, MSVC 2013) is needed to build it. The following build dependencies are all optional, but without any it's neither possible to open sound files nor play back through the speakers.
+Audaspace is written in C++ 11 so a fairly recent compiler (g++ 4.8.2, clang 3.3, MSVC 2013) is needed to build it. The build system used is CMake and you need at least version 3.0. The following build dependencies are all optional, but without any it's neither possible to open sound files nor play back through the speakers. For windows a library folder called build-dependencies can be downloaded from https://github.com/audaspace/audaspace/releases.
 
 - OpenAL (input/output device)
 - SDL (output device)
@@ -24,10 +24,17 @@ The audaspace source code or binary releases can be downloaded from https://gith
 
 For the most recent version you can use git to get the source code.
 
-    git clone https://github.com:audaspace/audaspace.git
+    git clone https://github.com/audaspace/audaspace.git
 
-Configuration
--------------
+Plugins
+-------
+
+Before diving into the exact build steps for each platform, we will have a look at plugins. There are so far two types of plugins: input and output plugins. Input plugins are for reading audio files in many different formats and output plugins are for output devices on different platforms. During the configuration audaspace's standard plugins can be enabled with their repsective `WITH_*` and `PLUGIN_*` configuration option. Plugins are built as shared libraries. By default audaspace looks in the `DEFAULT_PLUGIN_PATH` for shared libraries it can load. Building with a dependency (`WITH_*`) but without enabling the respective `PLUGIN_*` option will compile the plugin directly into the library, so the plugin always gets loaded when the plugins are initialised.
+
+Building for Linux
+------------------
+
+### Configuration ###
 
 It is highly recommended to build audaspace outside of the actual source code in a specific build directory.
 
@@ -56,23 +63,45 @@ __or__ it can be done by defining variables directly during the run of cmake.
 
 This specific configuration is recommended for a system wide installation of audaspace where all build dependencies are required.
 
-Building
---------
+### Building ###
 
 After configuration the building is as easy as running
 
     make
 
-Installation
-------------
+### Installation ###
 
 Installation is then also simple using
 
     make install
 
-Using the library
------------------
+### Using the library ###
 
 When audaspace is installed to the system, the required configuration for _pkgconfig_ is also installed and pkgconfig can then be used to compile projects with audaspace.
 
 It is also possible to build audaspace as a static library and use it directly in a project. For this the library has to be configured accordingly with ccmake and after building the resulting library file can be added to the project's build system.
+
+Building for Windows
+--------------------
+
+### Configuration ###
+
+Using cmake-gui select Visual Studio 2013 or 2015 for the architecture you want to build for and choose audaspace's source directory and a build directory. It is highly recommended to build audaspace outside of the source directory. During the first configuration cmake tries to find the dependencies. Dependencies that are not installed on the system are automatically disabled. To prevent this, enable `WITH_STRICT_DEPENDENCIES`. To use the build dependencies folder from the website, set the `LIBRARY_PATH` to point to the extracted directory. Also don't forget to set the `CMAKE_INSTALL_PREFIX` to a path where your user account can install to. Finally enable the dependencies that you want to use (`WITH_*`), configure and generate.
+
+### Building ###
+
+Open the project in Visual Studio and set the configuration to Release. Then you can simply hit the build button.
+
+### Installation ###
+
+To install audaspace to your target folder, build the INSTALL target.
+Note that if you don't use the libraries folder provided on the website, the INSTALL target might fail and you need to copy the files manually, including the dlls of the dependencies.
+
+### Using the library ###
+
+To use audaspace in your project, configure the include path and the libraries that you need, which you can find in the include and lib directories in your installation path.
+
+### Notes for plugins on windows ###
+
+- FFMPEG: Due to a problem with FFMPEG's 32 bit libraries, it is necessary to disable SAFESEH for the audffmpeg build target inside Visual Studio (Properties, Linker, Advanced). This has to be done after each generate step of CMake.
+- Jack: If no jack server is running on windows and your application or one of the demos tries to use the jack plugin, this adds a long delay to the device initialisation. In case you don't need jack, make sure to disable the plugin or for the prebuilt version of audaspace simply delete audjack.dll (and any files with jack in the name to clean up).
