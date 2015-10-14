@@ -59,6 +59,26 @@ public:
 	 */
 	StreamBuffer(std::shared_ptr<ISound> sound);
 
+	/**
+	 * Creates the sound from an preexisting buffer.
+	 * \param buffer The buffer to stream from.
+	 * \param specs The specification of the data in the buffer.
+	 * \exception Exception Thrown if the reader cannot be created.
+	 */
+	StreamBuffer(std::shared_ptr<Buffer> buffer, Specs specs);
+
+	/**
+	 * Returns the buffer to be streamed.
+	 * @return The buffer to stream.
+	 */
+	std::shared_ptr<Buffer> getBuffer();
+
+	/**
+	 * Returns the specification of the buffer.
+	 * @return The specification of the buffer.
+	 */
+	Specs getSpecs();
+
 	virtual std::shared_ptr<IReader> createReader();
 };
 

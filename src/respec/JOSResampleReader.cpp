@@ -31,8 +31,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-JOSResampleReader::JOSResampleReader(std::shared_ptr<IReader> reader, Specs specs) :
-	ResampleReader(reader, specs.rate),
+JOSResampleReader::JOSResampleReader(std::shared_ptr<IReader> reader, SampleRate rate) :
+	ResampleReader(reader, rate),
 	m_channels(CHANNELS_INVALID),
 	m_n(0),
 	m_P(0),

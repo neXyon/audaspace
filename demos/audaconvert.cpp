@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 	if(writer->getSpecs().rate != specs.rate)
 	{
 		specs.rate = writer->getSpecs().rate;
-		reader = std::shared_ptr<IReader>(new JOSResampleReader(reader, specs.specs));
+		reader = std::shared_ptr<IReader>(new JOSResampleReader(reader, specs.rate));
 	}
 
 	FileWriter::writeReader(reader, writer, 0, AUD_DEFAULT_BUFFER_SIZE);

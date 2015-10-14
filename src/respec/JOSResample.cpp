@@ -27,7 +27,7 @@ JOSResample::JOSResample(std::shared_ptr<ISound> sound,
 
 std::shared_ptr<IReader> JOSResample::createReader()
 {
-	return std::shared_ptr<IReader>(new JOSResampleReader(getReader(), m_specs.specs));
+	return std::shared_ptr<IReader>(new JOSResampleReader(getReader(), m_specs.rate));
 }
 
 AUD_NAMESPACE_END

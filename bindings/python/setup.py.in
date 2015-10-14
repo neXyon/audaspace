@@ -3,8 +3,26 @@
 import sys
 import os
 import codecs
+import numpy
 
-from setuptools import setup, Extension
+from distutils.core import setup, Extension
+
+if len(sys.argv) > 2 and sys.argv[1] == '--build-docs':
+	import subprocess
+	from distutils.core import Distribution
+	from distutils.command.build import build
+
+	dist = Distribution()
+	cmd = build(dist)
+	cmd.finalize_options()
+	#print(cmd.build_platlib)
+
+	os.environ['PYTHONPATH'] = os.path.join(os.getcwd(), cmd.build_platlib)
+	os.environ['LD_LIBRARY_PATH'] = os.getcwd()
+
+	ret = subprocess.call(sys.argv[2:])
+	sys.exit(ret)
+
 
 # the following line is not working due to https://bugs.python.org/issue9023
 #source_directory = os.path.relpath('@PYTHON_SOURCE_DIRECTORY@')
@@ -20,7 +38,7 @@ else:
 
 audaspace = Extension(
                       'aud',
-                      include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include')],
+                      include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include'), numpy.get_include()],
                       libraries = ['audaspace'],
                       library_dirs = ['.', 'Debug', 'Release'],
                       language = 'c++',

@@ -26,7 +26,7 @@ LinearResample::LinearResample(std::shared_ptr<ISound> sound, DeviceSpecs specs)
 
 std::shared_ptr<IReader> LinearResample::createReader()
 {
-	return std::shared_ptr<IReader>(new LinearResampleReader(getReader(), m_specs.specs));
+	return std::shared_ptr<IReader>(new LinearResampleReader(getReader(), m_specs.rate));
 }
 
 AUD_NAMESPACE_END
