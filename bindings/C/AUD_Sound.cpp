@@ -416,7 +416,7 @@ AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound)
 	return new std::shared_ptr<ISound>(*sound);
 }
 
-extern AUD_API AUD_Sound* AUD_Sound_list(int random)
+AUD_API AUD_Sound* AUD_Sound_list(int random)
 {
 	try
 	{
@@ -428,7 +428,7 @@ extern AUD_API AUD_Sound* AUD_Sound_list(int random)
 	}
 }
 
-extern AUD_API int AUD_Sound_list_addSound(AUD_Sound* list, AUD_Sound* sound)
+AUD_API int AUD_Sound_list_addSound(AUD_Sound* list, AUD_Sound* sound)
 {
 	assert(sound);
 	assert(list);
@@ -444,7 +444,7 @@ extern AUD_API int AUD_Sound_list_addSound(AUD_Sound* list, AUD_Sound* sound)
 
 }
 
-extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
+AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
 {
 	assert(sound);
 
