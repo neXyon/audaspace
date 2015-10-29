@@ -61,6 +61,7 @@ set(SRC
 	src/fx/FFTConvolver.cpp
 	src/fx/HighpassCalculator.cpp
 	src/fx/Highpass.cpp
+	src/fx/HRTF.cpp
 	src/fx/IIRFilter.cpp
 	src/fx/IIRFilterReader.cpp
 	src/fx/ImpulseResponse.cpp
@@ -172,6 +173,7 @@ set(PUBLIC_HDR
 	include/fx/FFTConvolver.h
 	include/fx/HighpassCalculator.h
 	include/fx/Highpass.h
+	include/fx/HRTF.h
 	include/fx/IDynamicIIRFilterCalculator.h
 	include/fx/IIRFilter.h
 	include/fx/IIRFilterReader.h
