@@ -1,9 +1,9 @@
 #pragma once
 
 /**
-* @file ImpulseResponse.h
+* @file HRTF.h
 * @ingroup fx
-* The ImpulseResponse class.
+* The HRTF class.
 */
 
 #include "util/StreamBuffer.h"
