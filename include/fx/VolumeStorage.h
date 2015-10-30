@@ -1,9 +1,9 @@
 #pragma once
 
 /**
-* @file PlaybackManager.h
+* @file VolumeStorage.h
 * @ingroup fx
-* The PlaybackManager class.
+* The VolumeStorage class.
 */
 
 #include "Audaspace.h"
@@ -41,7 +41,7 @@ public:
 
 	/**
 	* Retrieves the current volume value.
-	* \return the current volume.
+	* \return The current volume.
 	*/
 	float getVolume();
 

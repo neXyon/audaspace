@@ -17,7 +17,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
-* This class represents a sound that can be modified depending on a given impulse response
+* This class represents a sound that can be modified depending on a given impulse response.
 */
 class AUD_API ConvolverSound : public ISound
 {

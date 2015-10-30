@@ -20,7 +20,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
-* This class represents a reader for a sound that has its own shared volume
+* This class represents a reader for a sound that can be modified depending on a given impulse response.
 */
 class AUD_API ConvolverReader : public IReader
 {
@@ -36,17 +36,17 @@ private:
 	std::shared_ptr<ImpulseResponse> m_ir;
 	
 	/**
-	* The FFT size, FIXED_N value will be used.
+	* The FFT size, given by the FFTPlan.
 	*/
 	int m_N;
 
 	/**
-	* The length of the impulse response fragments, FIXED_N/2 will be used.
+	* The length of the impulse response fragments, m_N/2 will be used.
 	*/
 	int m_M;
 
 	/**
-	* The max length of the input slices, FIXED_N/2 will be used.
+	* The max length of the input slices, m_N/2 will be used.
 	*/
 	int m_L;
 
