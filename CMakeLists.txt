@@ -42,6 +42,8 @@ set(SRC
 	src/fx/ADSR.cpp
 	src/fx/ADSRReader.cpp
 	src/fx/BaseIIRFilterReader.cpp
+	src/fx/BinauralSound.cpp
+	src/fx/BinauralReader.cpp
 	src/fx/ButterworthCalculator.cpp
 	src/fx/Butterworth.cpp
 	src/fx/CallbackIIRFilterReader.cpp
@@ -80,6 +82,7 @@ set(SRC
 	src/fx/Reverse.cpp
 	src/fx/ReverseReader.cpp
 	src/fx/SoundList.cpp
+	src/fx/Source.cpp
 	src/fx/Sum.cpp
 	src/fx/Threshold.cpp
 	src/fx/Volume.cpp
@@ -154,6 +157,8 @@ set(PUBLIC_HDR
 	include/fx/ADSR.h
 	include/fx/ADSRReader.h
 	include/fx/BaseIIRFilterReader.h
+	include/fx/BinauralSound.h
+	include/fx/BinauralReader.h
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
@@ -193,6 +198,7 @@ set(PUBLIC_HDR
 	include/fx/Reverse.h
 	include/fx/ReverseReader.h
 	include/fx/SoundList.h
+	include/fx/Source.h
 	include/fx/Sum.h
 	include/fx/Threshold.h
 	include/fx/Volume.h
