@@ -132,6 +132,18 @@ public:
 	*/
 	void reset();
 
+	/**
+	* Retrieves the current impulse response being used.
+	* \return The current impulse response.
+	*/
+	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> getImpulseResponse();
+
+	/**
+	* Changes the impulse response and resets the convolver.
+	* \param ir A shared pointer to a vector with the data of the various impulse response parts in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
+	*/
+	void setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir);
+
 private:
 
 	/**
