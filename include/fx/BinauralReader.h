@@ -42,6 +42,26 @@ private:
 	std::shared_ptr<Source> m_source;
 
 	/**
+	* The intended azimuth.
+	*/
+	float m_Azimuth;
+
+	/**
+	* The intended elevation.
+	*/
+	float m_Elevation;
+
+	/**
+	* The real azimuth being used.
+	*/
+	float m_RealAzimuth;
+
+	/**
+	* The real elevation being used.
+	*/
+	float m_RealElevation;
+
+	/**
 	* The FFT size, given by the FFTPlan.
 	*/
 	int m_N;
@@ -57,7 +77,7 @@ private:
 	int m_L;
 
 	/**
-	* The array of convolvers that will be used.
+	* The array of convolvers that will be used, one per channel.
 	*/
 	std::vector<std::unique_ptr<Convolver>> m_convolvers;
 
@@ -75,6 +95,11 @@ private:
 	* A shared ptr to a thread pool.
 	*/
 	std::shared_ptr<ThreadPool> m_threadPool;
+
+	/**
+	* The number of threads used for the various convolvers.
+	*/
+	int m_convolverThreads;
 
 	/**
 	* A vector of futures to sync tasks.
