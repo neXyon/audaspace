@@ -92,9 +92,34 @@ private:
 	sample_t* m_outBuffer;
 
 	/**
+	* The input buffer that will hold the data to be convolved.
+	*/
+	sample_t* m_inBuffer;
+
+	/**
+	* Length of rhe m_outBuffer.
+	*/
+	int m_outBufLen;
+
+	/**
+	* Effective length of rhe m_outBuffer.
+	*/
+	int m_eOutBufLen;
+
+	/**
+	* Flag indicating whether the end of the sound has been reached or not.
+	*/
+	bool m_eosReader;
+
+	/**
+	* Flag indicating whether the end of the extra data generated in the convolution has been reached or not.
+	*/
+	bool m_eosTail;
+
+	/**
 	* A vector of buffers (one per channel) on which the audio signal will be separated per channel so it can be convolved.
 	*/
-	std::vector<sample_t*> m_vecInOut;
+	std::vector<sample_t*> m_vecOut;
 
 	/**
 	* A shared ptr to a thread pool.
@@ -139,13 +164,16 @@ private:
 	* Joins several buffers (one per channel) into the m_outBuffer.
 	* \param start The starting position from which the m_outBuffer will be written.
 	* \param len The amout of samples that will be joined.
+	* \param nConvolvers The number of convolvers that have been used. Only use 2 or 4 as possible values.
+						 If the value is 4 the result will be interpolated.
 	*/
-	void joinByChannel(int start, int len);
+	void joinByChannel(int start, int len, int nConvolvers);
 
 	/**
 	* Loads the m_outBuffer with data.
+	* \param nConvolvers The number of convolver objects that will be used. Only 2 or 4 should be used.
 	*/
-	void loadBuffer();
+	void loadBuffer(int nConvolvers);
 
 	/**
 	* The function that the threads will run. It will process a subset of channels.
@@ -156,6 +184,8 @@ private:
 	* \return The number of samples obtained.
 	*/
 	int threadFunction(int id, bool input);
+
+	bool checkSource();
 };
 
 AUD_NAMESPACE_END

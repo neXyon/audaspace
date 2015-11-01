@@ -4,11 +4,12 @@
 #include <cstring>
 #include <algorithm>
 
+#define NUM_OUTCHANNELS 2
 #define NUM_CONVOLVERS 4
 
 AUD_NAMESPACE_BEGIN
 BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
-	m_reader(reader), m_hrtfs(hrtfs), m_source(source), m_N(plan->getSize()), m_threadPool(threadPool), m_position(0)
+	m_reader(reader), m_hrtfs(hrtfs), m_source(source), m_N(plan->getSize()), m_threadPool(threadPool), m_position(0), m_eosReader(false), m_eosTail(false)
 {
 	if(m_reader->getSpecs().channels!=1)
 		AUD_THROW(StateException, "The sound must have only one channel");
@@ -20,15 +21,21 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	int irLength = ir->getLength();
 	for (int i = 0; i < NUM_CONVOLVERS; i++)
 		m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(i % 2), irLength, m_threadPool, plan)));
-	m_convolverThreads = std::min((int)threadPool->getNumOfThreads(), NUM_CONVOLVERS);
-	m_futures.reserve(m_convolverThreads);
+	m_futures.reserve(NUM_CONVOLVERS);
 
 	m_outBuffer = (sample_t*)std::malloc(m_L*2*sizeof(sample_t));
+	m_eOutBufLen = m_outBufLen = m_L * 2 * sizeof(sample_t);
+	m_inBuffer = (sample_t*)std::malloc(m_L * sizeof(sample_t));
+	for (int i = 0; i < NUM_CONVOLVERS; i++)
+		m_vecOut.push_back((sample_t*)std::malloc(m_L * sizeof(sample_t)));
 }
 
 BinauralReader::~BinauralReader()
 {
 	std::free(m_outBuffer);
+	std::free(m_inBuffer);
+	for (int i = 0; i < m_vecOut.size(); i++)
+		std::free(m_vecOut[i]);
 }
 
 bool BinauralReader::isSeekable() const
@@ -64,6 +71,18 @@ Specs BinauralReader::getSpecs() const
 
 void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 {
+	if (checkSource())
+	{
+		//TODO interpolate
+	}
+	else
+	{
+		//TODO
+	}
+}
+
+bool BinauralReader::checkSource()
+{
 	std::shared_ptr<ImpulseResponse> ir;
 	if (m_Azimuth != m_source->getAzimuth() || m_Elevation != m_source->getElevation())
 	{
@@ -74,25 +93,57 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 		{
 			m_RealAzimuth = az;
 			m_RealElevation = el;
-			for (int i = 0; i < NUM_CONVOLVERS; i++)
-				m_convolvers[i]->();
+			auto lastIR = m_convolvers[0]->getImpulseResponse();
+			for (int i = NUM_OUTCHANNELS; i < NUM_CONVOLVERS; i++)
+				m_convolvers[i]->setImpulseResponse(lastIR);
+			for (int i = 0; i < NUM_OUTCHANNELS; i++)
+				m_convolvers[i]->setImpulseResponse(ir->getChannel(i));
+			return true;
 		}
+	}
+	return false;
+}
+
+void BinauralReader::loadBuffer(int nConvolvers)
+{
+	int len = m_L;
+	m_reader->read(len, m_eosReader, m_outBuffer);
+	if (!m_eosReader || len>0)
+	{
+		for (int i = 0; i < nConvolvers; i++)
+			m_futures[i] = m_threadPool->enqueue(&BinauralReader::threadFunction, this, i, true);
+		for (int i = 0; i < nConvolvers; i++)
+			len = m_futures[i].get();
+
+		joinByChannel(0, len, nConvolvers);
+		m_eOutBufLen = len*NUM_OUTCHANNELS;
+	}
+	else if (!m_eosTail)
+	{
+		len = m_L;
+		for (int i = 0; i < nConvolvers; i++)
+			m_futures[i] = m_threadPool->enqueue(&BinauralReader::threadFunction, this, i, false);
+		for (int i = 0; i < nConvolvers; i++)
+			len = m_futures[i].get();
+
+		joinByChannel(0, len, nConvolvers);
+		m_eOutBufLen = len*NUM_OUTCHANNELS;
 	}
 }
 
-void BinauralReader::loadBuffer()
+void BinauralReader::joinByChannel(int start, int len, int nConvolvers)
 {
-
-}
-
-void BinauralReader::joinByChannel(int start, int len)
-{
-
+	//TODO
 }
 
 int BinauralReader::threadFunction(int id, bool input)
 {
-	return 0;
+	int l = m_L;
+	if (input)
+		m_convolvers[id]->getNext(m_inBuffer, m_vecOut[id], l, m_eosTail);
+	else
+		m_convolvers[id]->getNext(nullptr, m_vecOut[id], l, m_eosTail);
+	return l;
 }
 
 AUD_NAMESPACE_END
