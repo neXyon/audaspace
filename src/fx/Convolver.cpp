@@ -95,6 +95,17 @@ void Convolver::reset()
 	m_resetFlag = false;
 }
 
+std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> Convolver::getImpulseResponse()
+{
+	return m_irBuffers;
+}
+
+void Convolver::setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir)
+{
+	reset();
+	m_irBuffers = ir;
+}
+
 bool Convolver::threadFunction(int id)
 {
 	int total = m_irBuffers->size();

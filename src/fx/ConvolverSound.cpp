@@ -2,8 +2,6 @@
 #include "fx/ConvolverReader.h"
 #include "Exception.h"
 
-#include "fftw3.h"
-
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
