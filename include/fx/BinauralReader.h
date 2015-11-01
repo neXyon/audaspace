@@ -97,6 +97,11 @@ private:
 	sample_t* m_inBuffer;
 
 	/**
+	* Current position in which the m_outBuffer is being read.
+	*/
+	int m_outBufferPos;
+
+	/**
 	* Length of rhe m_outBuffer.
 	*/
 	int m_outBufLen;

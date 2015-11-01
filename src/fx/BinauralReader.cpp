@@ -24,7 +24,7 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	m_futures.reserve(NUM_CONVOLVERS);
 
 	m_outBuffer = (sample_t*)std::malloc(m_L*2*sizeof(sample_t));
-	m_eOutBufLen = m_outBufLen = m_L * 2 * sizeof(sample_t);
+	m_eOutBufLen = m_outBufLen = m_outBufferPos = m_L * 2 * sizeof(sample_t);
 	m_inBuffer = (sample_t*)std::malloc(m_L * sizeof(sample_t));
 	for (int i = 0; i < NUM_CONVOLVERS; i++)
 		m_vecOut.push_back((sample_t*)std::malloc(m_L * sizeof(sample_t)));
@@ -73,12 +73,56 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	if (checkSource())
 	{
-		//TODO interpolate
+		//TODO
 	}
 	else
 	{
 		//TODO
 	}
+
+	if (length <= 0)
+	{
+		length = 0;
+		eos = (m_eosTail && m_outBufferPos >= m_eOutBufLen);
+		return;
+	}
+
+	eos = false;
+	int writePos = 0;
+	do
+	{
+		int writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen);
+		int l = m_L;
+		int bufRest = m_eOutBufLen - m_outBufferPos;
+		if (bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
+		{
+			if (bufRest > 0)
+				std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
+			if (!m_eosTail)
+			{
+				loadBuffer(NUM_OUTCHANNELS); //TODO
+				writeLength = std::min(writeLength, m_eOutBufLen);
+				int len = std::min(writeLength, std::abs(writeLength - bufRest));
+				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
+				m_outBufferPos = len;
+			}
+			else
+			{
+				m_outBufferPos += bufRest;
+				length = (writePos + bufRest) / NUM_OUTCHANNELS;
+				eos = true;
+				return;
+			}
+		}
+		else
+		{
+			std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, writeLength*sizeof(sample_t));
+			m_outBufferPos += writeLength;
+		}
+		writePos += writeLength;
+	} while (writePos < length*NUM_OUTCHANNELS);
+	m_position += length;
+
 }
 
 bool BinauralReader::checkSource()
@@ -133,7 +177,13 @@ void BinauralReader::loadBuffer(int nConvolvers)
 
 void BinauralReader::joinByChannel(int start, int len, int nConvolvers)
 {
-	//TODO
+	int k = 0;
+	for (int i = 0; i < len*NUM_OUTCHANNELS; i += NUM_OUTCHANNELS)
+	{
+		for (int j = 0; j < m_vecOut.size(); j++)
+			m_outBuffer[i + j + start] = m_vecOut[j][k];
+		k++;
+	}
 }
 
 int BinauralReader::threadFunction(int id, bool input)
