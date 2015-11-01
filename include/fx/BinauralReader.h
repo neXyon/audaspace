@@ -27,6 +27,11 @@ class AUD_API BinauralReader : public IReader
 {
 private:
 	/**
+	* The current position.
+	*/
+	int m_position;
+
+	/**
 	* The reader of the input sound.
 	*/
 	std::shared_ptr<IReader> m_reader;
