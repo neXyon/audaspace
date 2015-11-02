@@ -163,6 +163,18 @@ public:
 	* \param [in]transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
 	*/
 	void getNextFDL(const sample_t* inBuffer, fftwf_complex* accBuffer, int& length, fftwf_complex* transformedData);
+
+	/**
+	* Changes the impulse response and resets the FFTConvolver.
+	* \param ir A shared pointer to a vector with the data of the impulse response in the frequency domain.
+	*/
+	void setImpulseResponse(std::shared_ptr<std::vector<fftwf_complex>> ir);
+
+	/**
+	* Retrieves the current impulse response being used.
+	* \return The current impulse response.
+	*/
+	std::shared_ptr<std::vector<fftwf_complex>> getImpulseResponse();
 };
 
 AUD_NAMESPACE_END

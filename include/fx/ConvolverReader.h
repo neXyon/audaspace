@@ -76,7 +76,7 @@ private:
 	int m_outBufferPos;
 	
 	/**
-	* Effective length of rhe m_outBuffer.
+	* Effective length of the m_outBuffer.
 	*/
 	int m_eOutBufLen;
 
