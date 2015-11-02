@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
 	std::shared_ptr<ThreadPool> threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()));
 	std::shared_ptr<File> file1(std::make_shared<File>(argv[1]));
 	std::shared_ptr<HRTF> hrtfs(std::make_shared<HRTF>(plan));
-	std::shared_ptr<Source> source = std::make_shared<Source>(0, 0);
-	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev0/H0e000a.wav")), 0, 0);
-	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev0/H0e090a.wav")), 90, 0);
+	std::shared_ptr<Source> source = std::make_shared<Source>(0, 90);
+	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev90/H90e000a.wav")), 0, 90);
+	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev-40/H-40e090a.wav")), 90, -40);
 	std::shared_ptr<BinauralSound> convolver(std::make_shared<BinauralSound>(file1, hrtfs, source, threadPool, plan));
 
 	device->lock();
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	source->setAzimuth(90);
-
+	source->setElevation(-40);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 
 	return 0;
