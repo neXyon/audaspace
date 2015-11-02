@@ -725,6 +725,9 @@ if(BUILD_DEMOS)
 	add_executable(convolution demos/convolution.cpp)
 	target_link_libraries(convolution audaspace)
 
+	add_executable(binaural demos/binaural.cpp)
+	target_link_libraries(binaural audaspace)
+
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
 
