@@ -187,4 +187,16 @@ void FFTConvolver::getNextFDL(const sample_t* inBuffer, fftwf_complex* accBuffer
 		accBuffer[i][1] += ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][1]) + (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][0])) / m_N;
 	}
 }
+
+
+void FFTConvolver::setImpulseResponse(std::shared_ptr<std::vector<fftwf_complex>> ir)
+{
+	clear();
+	m_irBuffer = ir;
+}
+
+std::shared_ptr<std::vector<fftwf_complex>> FFTConvolver::getImpulseResponse()
+{
+	return m_irBuffer;
+}
 AUD_NAMESPACE_END

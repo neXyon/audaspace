@@ -104,6 +104,8 @@ void Convolver::setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<s
 {
 	reset();
 	m_irBuffers = ir;
+	for (int i = 0; i < m_irBuffers->size(); i++)
+		m_fftConvolvers[i]->setImpulseResponse((*m_irBuffers)[i]);
 }
 
 bool Convolver::threadFunction(int id)
