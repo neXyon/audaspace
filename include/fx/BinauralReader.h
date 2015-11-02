@@ -137,6 +137,11 @@ private:
 	int m_convolverThreads;
 
 	/**
+	* Length of the input data to be used by the channel threads.
+	*/
+	int m_lastLengthIn;
+
+	/**
 	* A vector of futures to sync tasks.
 	*/
 	std::vector<std::future<int>> m_futures;
