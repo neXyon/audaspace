@@ -344,9 +344,11 @@ AUD_API AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequ
 		device->setQuality(true);
 		device->setVolume(volume);
 
-		dynamic_cast<Sequence *>(sequencer->get())->setSpecs(convCToSpec(specs.specs));
+		Sequence* f = dynamic_cast<Sequence*>(sequencer->get());
 
-		AUD_Handle handle = device->play(*sequencer);
+		f->setSpecs(convCToSpec(specs.specs));
+
+		AUD_Handle handle = device->play(f->createQualityReader());
 		if(handle.get())
 		{
 			handle->seek(start);
