@@ -92,6 +92,16 @@ private:
 	sample_t* m_outBuffer;
 
 	/**
+	* True if a transition is happening.
+	*/
+	bool m_transition;
+
+	/**
+	* An extra bouufer using while transitioning between HRTFs.
+	*/
+	sample_t* m_transBuffer;
+
+	/**
 	* The input buffer that will hold the data to be convolved.
 	*/
 	sample_t* m_inBuffer;
@@ -130,11 +140,6 @@ private:
 	* A shared ptr to a thread pool.
 	*/
 	std::shared_ptr<ThreadPool> m_threadPool;
-
-	/**
-	* The number of threads used for the various convolvers.
-	*/
-	int m_convolverThreads;
 
 	/**
 	* Length of the input data to be used by the channel threads.
@@ -196,6 +201,8 @@ private:
 	int threadFunction(int id, bool input);
 
 	bool checkSource();
+
+	void writeOutput(sample_t* target, int pos, int len);
 };
 
 AUD_NAMESPACE_END
