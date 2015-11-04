@@ -59,7 +59,7 @@ public:
 	* Creates a new FFTPlan object with a custom size.
 	* \param n The size of the FFT plan. Values that are a power of two are faster. 
 	*		The useful range usually is between 2048 and 8192, but bigger values can be useful
-	*		in certain situations (when using the StranBuffer class per example). 
+	*		in certain situations (when using the StreamBuffer class per example). 
 	*		Generally, low values use more CPU power and are a bit faster than large ones, 
 	*		there is also a huge decrease in efficiency when n is lower than 2048.
 	* \param measure A flag that will change how the plan will be created.
