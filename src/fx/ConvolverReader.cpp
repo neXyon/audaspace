@@ -55,7 +55,7 @@ void ConvolverReader::seek(int position)
 
 int ConvolverReader::getLength() const
 {
-	return m_reader->getLength() + m_ir->getLength() - 1;
+	return m_reader->getLength();
 }
 
 int ConvolverReader::getPosition() const
