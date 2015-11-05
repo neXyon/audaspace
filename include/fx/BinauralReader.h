@@ -87,19 +87,19 @@ private:
 	std::vector<std::unique_ptr<Convolver>> m_convolvers;
 
 	/**
-	* The output buffer in which the convolved data will be written and from which the reader will read.
-	*/
-	sample_t* m_outBuffer;
-
-	/**
 	* True if a transition is happening.
 	*/
 	bool m_transition;
 
 	/**
-	* An extra bouufer using while transitioning between HRTFs.
+	* The position of the current transition (decreasing)
 	*/
-	sample_t* m_transBuffer;
+	int m_transPos;
+
+	/**
+	* The output buffer in which the convolved data will be written and from which the reader will read.
+	*/
+	sample_t* m_outBuffer;
 
 	/**
 	* The input buffer that will hold the data to be convolved.
@@ -201,8 +201,6 @@ private:
 	int threadFunction(int id, bool input);
 
 	bool checkSource();
-
-	void writeOutput(sample_t* target, int pos, int len);
 };
 
 AUD_NAMESPACE_END

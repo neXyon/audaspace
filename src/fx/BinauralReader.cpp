@@ -7,15 +7,16 @@
 
 #define NUM_OUTCHANNELS 2
 #define NUM_CONVOLVERS 4
+#define CROSSFADE_SAMPLES 256
 
 AUD_NAMESPACE_BEGIN
 BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
-	m_reader(reader), m_hrtfs(hrtfs), m_source(source), m_N(plan->getSize()), m_threadPool(threadPool), m_position(0), m_eosReader(false), m_eosTail(false), m_transition(false)
+	m_reader(reader), m_hrtfs(hrtfs), m_source(source), m_N(plan->getSize()), m_threadPool(threadPool), m_position(0), m_eosReader(false), m_eosTail(false), m_transition(false), m_transPos(CROSSFADE_SAMPLES*NUM_OUTCHANNELS)
 {
-	if(m_reader->getSpecs().channels!=1)
+	if (m_reader->getSpecs().channels != 1) 
 		AUD_THROW(StateException, "The sound must have only one channel");
 	m_M = m_L = m_N / 2;
-
+	
 	m_RealAzimuth = m_Azimuth = m_source->getAzimuth();
 	m_RealElevation = m_Elevation = m_source->getElevation();
 	auto ir = m_hrtfs->getImpulseResponse(m_RealAzimuth, m_RealElevation);
@@ -25,7 +26,6 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	m_futures.resize(NUM_CONVOLVERS);
 
 	m_outBuffer = (sample_t*)std::malloc(m_L*NUM_OUTCHANNELS*sizeof(sample_t));
-	m_transBuffer = (sample_t*)std::malloc(m_L*NUM_OUTCHANNELS*sizeof(sample_t));
 	m_eOutBufLen = m_outBufLen = m_outBufferPos = m_L * NUM_OUTCHANNELS;
 	m_inBuffer = (sample_t*)std::malloc(m_L * sizeof(sample_t));
 	for (int i = 0; i < NUM_CONVOLVERS; i++)
@@ -35,7 +35,6 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 BinauralReader::~BinauralReader()
 {
 	std::free(m_outBuffer);
-	std::free(m_transBuffer);
 	std::free(m_inBuffer);
 	for (int i = 0; i < m_vecOut.size(); i++)
 		std::free(m_vecOut[i]);
@@ -55,6 +54,8 @@ void BinauralReader::seek(int position)
 	m_eosTail = false;
 	m_eosReader = false;
 	m_outBufferPos = m_eOutBufLen = m_outBufLen;
+	m_transition = false;
+	m_transPos = CROSSFADE_SAMPLES*NUM_OUTCHANNELS;
 }
 
 int BinauralReader::getLength() const
@@ -93,19 +94,19 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 		if (bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
 		{
 			if (bufRest > 0)
-				writeOutput(buffer + writePos, m_outBufferPos, bufRest);
+				std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
 			if (!m_eosTail)
 			{
 				int n = NUM_OUTCHANNELS;
 				if (m_transition)
 					n = NUM_CONVOLVERS;
-				else
-					if (m_transition = checkSource())
-						n = NUM_CONVOLVERS;
+				else if(checkSource())
+					n = NUM_CONVOLVERS;
 				loadBuffer(n);
+
 				writeLength = std::min(writeLength, m_eOutBufLen);
 				int len = std::min(writeLength, std::abs(writeLength - bufRest));
-				writeOutput(buffer + writePos + bufRest, 0, len);
+				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
 				m_outBufferPos = len;
 			}
 			else
@@ -118,7 +119,7 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 		}
 		else
 		{
-			writeOutput(buffer + writePos, m_outBufferPos, writeLength);
+			std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, writeLength*sizeof(sample_t));
 			m_outBufferPos += writeLength;
 		}
 		writePos += writeLength;
@@ -128,14 +129,13 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 
 bool BinauralReader::checkSource()
 {
-	std::shared_ptr<ImpulseResponse> ir;
-	if (m_Azimuth != m_source->getAzimuth() || m_Elevation != m_source->getElevation())
+	if ((m_Azimuth != m_source->getAzimuth() || m_Elevation != m_source->getElevation()) && (!m_eosReader && !m_eosTail))
 	{
 		float az = m_Azimuth = m_source->getAzimuth();
 		float el = m_Elevation = m_source->getElevation();
-		ir = m_hrtfs->getImpulseResponse(az, el);
+		std::shared_ptr<ImpulseResponse> ir = m_hrtfs->getImpulseResponse(az, el);
 		if (az != m_RealAzimuth || el != m_RealElevation)
-		{	
+		{
 			m_RealAzimuth = az;
 			m_RealElevation = el;
 			for (int i = 0; i < NUM_OUTCHANNELS; i++)
@@ -147,49 +147,12 @@ bool BinauralReader::checkSource()
 			for (int i = 0; i < NUM_OUTCHANNELS; i++)
 				m_convolvers[i]->setImpulseResponse(ir->getChannel(i));
 
-			/*int pos = m_reader->getPosition() - ((m_eOutBufLen - m_outBufferPos) / NUM_OUTCHANNELS);
-			if (pos>=0)
-				m_reader->seek(m_reader->getPosition() - ((m_eOutBufLen - m_outBufferPos) / NUM_OUTCHANNELS));
-			m_outBufferPos = m_eOutBufLen = m_outBufLen;*/
+			m_transPos = CROSSFADE_SAMPLES*NUM_OUTCHANNELS;
+			m_transition = true;
 			return true;
 		}
 	}
 	return false;
-}
-
-void BinauralReader::writeOutput(sample_t* target, int pos, int len)
-{
-	const int l = 512;
-	float volume = 1.0f;
-	SampleRate rate = m_reader->getSpecs().rate;
-	static int position = 0;
-
-	if (m_transition)
-	{
-		for (int i = 0; i < len; i++)
-		{
-			if (i % NUM_OUTCHANNELS == 0)
-			{
-				volume = (position + i) / (float)l;
-				if (volume > 1.0f)
-					volume = 1.0f;
-				else if (volume < 0.0f)
-					volume = 0.0f;
-			}
-
-			//std::memcpy(target, m_outBuffer + pos, len*sizeof(sample_t));
-			target[i] = (m_outBuffer[i + pos] * (volume)) + (m_transBuffer[i + pos] * (1.0f - volume));
-			float a = target[i];
-		}
-		position += len;
-		if (position >= l)
-		{
-			m_transition = false;
-			position = 0;
-		}
-	}
-	else
-		std::memcpy(target, m_outBuffer + pos, len*sizeof(sample_t));
 }
 
 void BinauralReader::loadBuffer(int nConvolvers)
@@ -223,40 +186,33 @@ void BinauralReader::loadBuffer(int nConvolvers)
 void BinauralReader::joinByChannel(int start, int len, int nConvolvers)
 {
 	int k = 0;
+	float vol = 0;
+	const int l = CROSSFADE_SAMPLES*NUM_OUTCHANNELS;
 	for (int i = 0; i < len*NUM_OUTCHANNELS; i += NUM_OUTCHANNELS)
 	{
-		for (int j = 0; j < NUM_OUTCHANNELS; j++)
+		if (m_transition)
 		{
-			m_outBuffer[i + j + start] = m_vecOut[j][k];
-			if (nConvolvers == NUM_CONVOLVERS)
-				m_transBuffer[i + j + start] = m_vecOut[j+NUM_OUTCHANNELS][k];
+			vol = (m_transPos - i) / (float)l;
+			if (vol > 1.0f)
+				vol = 1.0f;
+			else if (vol < 0.0f)
+				vol = 0.0f;
 		}
+
+		for (int j = 0; j < NUM_OUTCHANNELS; j++)
+			m_outBuffer[i + j + start] = (m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol);
 		k++;
 	}
 
-	/*int k = 0;
-	if (nConvolvers == 4)
+	if (m_transition)
 	{
-		float step = 1.0f / len;
-		for (int i = 0; i < len*NUM_OUTCHANNELS; i += NUM_OUTCHANNELS)
+		m_transPos -= len*NUM_OUTCHANNELS;
+		if (m_transPos <= 0)
 		{
-			for (int j = 0; j < NUM_OUTCHANNELS; j++)
-				m_outBuffer[i + j + start] = (m_vecOut[j][k] * (step*k)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * (1 - (step*k)));
-			if (step*k>=1)
-			std::cout << step*k;
-			k++;
+			m_transition = false;
+			m_transPos = l;
 		}
 	}
-	else
-	{
-		int k = 0;
-		for (int i = 0; i < len*NUM_OUTCHANNELS; i += NUM_OUTCHANNELS)
-		{
-			for (int j = 0; j < NUM_OUTCHANNELS; j++)
-				m_outBuffer[i + j + start] = m_vecOut[j][k];
-			k++;
-		}
-	}*/
 }
 
 int BinauralReader::threadFunction(int id, bool input)
