@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
 	std::shared_ptr<File> file1(std::make_shared<File>(argv[1]));
 	std::shared_ptr<HRTF> hrtfs(std::make_shared<HRTF>(plan));
 	std::shared_ptr<Source> source = std::make_shared<Source>(0, 0);
+
 	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev0/H0e000a.wav")), 0, 0);
 	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev0/H0e005a.wav")), 5, 0);
 	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("compact/elev0/H0e010a.wav")), 10, 0);
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
 	while (true)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		x += 1;
+		x += 3;
 		if (x > 180)
 			return 0;
 		source->setAzimuth(x);
