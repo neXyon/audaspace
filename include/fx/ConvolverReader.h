@@ -136,6 +136,7 @@ public:
 	* \param ir A shared pointer to an impulseResponse object that will be used to convolve the sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to and FFT plan that will be used for convolution.
+	* \exception Exception thrown if impulse response doesn't match the specs (number fo channels and rate) of the input reader.
 	*/
 	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 	virtual ~ConvolverReader();
