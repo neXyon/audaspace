@@ -16,12 +16,8 @@ HRTF::HRTF(std::shared_ptr<FFTPlan> plan) :
 
 bool HRTF::addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, float azimuth, float elevation)
 {
-	if (azimuth >= 360)
-		return false;
 	Specs spec = impulseResponse->getSpecs();
-	if (spec.channels != CHANNELS_MONO)
-		return false;
-	if (spec.rate != m_specs.rate && m_specs.rate > 0.0)
+	if ((azimuth >= 360 || azimuth<0) || (spec.channels != CHANNELS_MONO) || (spec.rate != m_specs.rate && m_specs.rate > 0.0))
 		return false;
 
 	m_hrtfs[elevation][azimuth] = std::make_shared<ImpulseResponse>(impulseResponse, m_plan);
