@@ -24,17 +24,17 @@ class AUD_API HRTF
 {
 private:
 	/**
-	*
+	* An unordered map of unordered maps containing the ImpulseResponse objects of the HRTFs.
 	*/
 	std::unordered_map<float, std::unordered_map<float, std::shared_ptr<ImpulseResponse>>> m_hrtfs;
 
 	/**
-	*
+	* The FFTPlan used to create the ImpulseResponses.
 	*/
 	std::shared_ptr<FFTPlan> m_plan;
 
 	/**
-	*
+	* The specifications of the HRTFs.
 	*/
 	Specs m_specs;
 
@@ -44,28 +44,36 @@ private:
 
 public:
 	/**
-	*
+	* Creates a new empty HRTF object that will instance it own FFTPlan with default size.
 	*/
 	HRTF();
 
 	/**
-	*
+	* Creates a new empty HRTF object.
+	* \param plan A shared pointer to a FFT plan used to transform the impulse responses added.
 	*/
 	HRTF(std::shared_ptr<FFTPlan> plan);
 
 	/**
-	*
-	* \exception
+	* Adds a new HRTF to the class.
+	* \param impulseResponse A shared pointer to an StreamBuffer with the HRTF.
+	* \param azimuth The azimuth angle of the HRTF.
+	* \param elevation The elevation angle of the HRTF.
+	* \return True if the impulse response was added successfully, false otherwise (the specs weren't correct or the azimuth wasn't in the interval [0,360))
 	*/
 	bool addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, float azimuth, float elevation);
 
 	/**
-	*
+	* Retrieves a pair of HRTFs for a certain azimuth and elevation. If no exact match is found, the closest ones will be chosen (the elevation has priority over the azimuth).
+	* \param[in,out] azimuth The desired azimuth angle. If no exact match is found, the value of azimuth will represent the actual azimuth elevation of the chosen HRTF.
+	* \param[in,out] elevation The desired elevation angle. If no exact match is found, the value of elevation will represent the actual elevation angle of the chosen HRTF.
+	* \return A pair of shared pointers to ImpulseResponse objects containing the HRTFs for the left (first element) and right (second element) ears.
 	*/
 	std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> getImpulseResponse(float &azimuth, float &elevation);
 
 	/**
-	*
+	* Retrieves the specs shared by all the HRTFs.
+	* \return The shared specs of all the HRTFs.
 	*/
 	Specs getSpecs();
 };
