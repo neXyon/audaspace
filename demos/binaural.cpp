@@ -61,9 +61,9 @@ int main(int argc, char* argv[])
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		x += 3;
 		y += yInc;
-		if (y >= 90)
+		if (y >= 80)
 		{
-			y = 90;
+			y = 80;
 			yInc = -1;
 		}
 		else if (y <= -40)
