@@ -15,14 +15,18 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 {
 	if (m_reader->getSpecs().channels != 1) 
 		AUD_THROW(StateException, "The sound must have only one channel");
+	if (m_reader->getSpecs().rate != m_hrtfs->getSpecs().rate)
+		AUD_THROW(StateException, "The sound and the HRTFs must have the same rate");
 	m_M = m_L = m_N / 2;
 	
 	m_RealAzimuth = m_Azimuth = m_source->getAzimuth();
 	m_RealElevation = m_Elevation = m_source->getElevation();
-	auto ir = m_hrtfs->getImpulseResponse(m_RealAzimuth, m_RealElevation);
-	int irLength = ir->getLength();
-	for (int i = 0; i < NUM_CONVOLVERS; i++)
-		m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(ir->getChannel(i % 2), irLength, m_threadPool, plan)));
+	auto irs = m_hrtfs->getImpulseResponse(m_RealAzimuth, m_RealElevation);
+	for (unsigned int i = 0; i < NUM_CONVOLVERS; i++)
+		if (i%NUM_OUTCHANNELS==0)
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(irs.first->getChannel(0), irs.first->getLength(), m_threadPool, plan)));
+		else
+			m_convolvers.push_back(std::unique_ptr<Convolver>(new Convolver(irs.second->getChannel(0), irs.second->getLength(), m_threadPool, plan)));
 	m_futures.resize(NUM_CONVOLVERS);
 
 	m_outBuffer = (sample_t*)std::malloc(m_L*NUM_OUTCHANNELS*sizeof(sample_t));
@@ -133,7 +137,7 @@ bool BinauralReader::checkSource()
 	{
 		float az = m_Azimuth = m_source->getAzimuth();
 		float el = m_Elevation = m_source->getElevation();
-		std::shared_ptr<ImpulseResponse> ir = m_hrtfs->getImpulseResponse(az, el);
+		auto irs = m_hrtfs->getImpulseResponse(az, el);
 		if (az != m_RealAzimuth || el != m_RealElevation)
 		{
 			m_RealAzimuth = az;
@@ -145,7 +149,10 @@ bool BinauralReader::checkSource()
 				m_convolvers[i + NUM_OUTCHANNELS] = std::move(temp);
 			}
 			for (int i = 0; i < NUM_OUTCHANNELS; i++)
-				m_convolvers[i]->setImpulseResponse(ir->getChannel(i));
+				if (i%NUM_OUTCHANNELS == 0)
+					m_convolvers[i]->setImpulseResponse(irs.first->getChannel(0));
+				else
+					m_convolvers[i]->setImpulseResponse(irs.second->getChannel(0));
 
 			m_transPos = CROSSFADE_SAMPLES*NUM_OUTCHANNELS;
 			m_transition = true;
