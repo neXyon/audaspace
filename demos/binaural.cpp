@@ -1,3 +1,4 @@
+#include "fx/ConvolverSound.h"
 #include "fx/BinauralSound.h"
 #include "fx/Source.h"
 #include "fx/HRTF.h"
@@ -112,7 +113,9 @@ int main(int argc, char* argv[])
 	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev0/L0e010a.wav")), 350, 0);
 	hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev0/L0e005a.wav")), 355, 0);
 
-	std::shared_ptr<BinauralSound> convolver(std::make_shared<BinauralSound>(file1, hrtfs, source, threadPool, plan));
+	std::shared_ptr<BinauralSound> binaural(std::make_shared<BinauralSound>(file1, hrtfs, source, threadPool, plan));
+	std::shared_ptr<ImpulseResponse> ir = std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>("full/headphones+spkr/Opti-inverse.wav")));
+	std::shared_ptr<ConvolverSound> convolver = std::make_shared<ConvolverSound>(binaural, ir, threadPool, plan);
 
 	device->lock();
 	auto handle = device->play(convolver);
