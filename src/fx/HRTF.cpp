@@ -24,7 +24,7 @@ bool HRTF::addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, flo
 	if (spec.rate != m_specs.rate && m_specs.rate > 0.0)
 		return false;
 
-	m_hrtfs[azimuth][elevation] = std::make_shared<ImpulseResponse>(impulseResponse, m_plan);
+	m_hrtfs[elevation][azimuth] = std::make_shared<ImpulseResponse>(impulseResponse, m_plan);
 	m_specs.channels = CHANNELS_MONO;
 	m_specs.rate = spec.rate;
 
@@ -39,18 +39,6 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 	float az = 0, el = 0, dif=0, minDif=360;
 	for (auto elem : m_hrtfs)
 	{
-		dif = abs(azimuth - elem.first);
-		if (dif < minDif)
-		{
-			minDif = dif;
-			az = elem.first;
-		}
-	}
-	azimuth = az;
-	dif = 0; 
-	minDif = 360;
-	for (auto elem : m_hrtfs[azimuth])
-	{
 		dif = abs(elevation - elem.first);
 		if (dif < minDif)
 		{
@@ -59,12 +47,24 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 		}
 	}
 	elevation = el;
-
+	dif = 0; 
+	minDif = 360;
+	
+	for (auto elem : m_hrtfs[elevation])
+	{
+		dif = abs(azimuth - elem.first);
+		if (dif < minDif)
+		{
+			minDif = dif;
+			az = elem.first;
+		}
+	}
+	azimuth = az;
 	float azL = 360 - azimuth;
 	if (azL == 360)
 		azL = 0;
 
-	return std::make_pair(m_hrtfs[azL][elevation], m_hrtfs[azimuth][elevation]);
+	return std::make_pair(m_hrtfs[elevation][azL], m_hrtfs[elevation][azimuth]);
 }
 
 Specs HRTF::getSpecs()
