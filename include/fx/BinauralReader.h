@@ -1,15 +1,16 @@
 #pragma once
 
 /**
-* @file ConvolverReader.h
+* @file BinauralReader.h
 * @ingroup fx
-* The ConvolverReader class.
+* The BinauralReader class.
 */
 
 #include "IReader.h"
 #include "ISound.h"
 #include "Convolver.h"
-#include "ImpulseResponse.h"
+#include "HRTF.h"
+#include "Source.h"
 #include "util/FFTPlan.h"
 #include "util/ThreadPool.h"
 
@@ -20,9 +21,9 @@
 AUD_NAMESPACE_BEGIN
 
 /**
-* This class represents a reader for a sound that can be modified depending on a given impulse response.
+* This class represents a reader for a sound that can sound different depending on its realtive position with the listener.
 */
-class AUD_API ConvolverReader : public IReader
+class AUD_API BinauralReader : public IReader
 {
 private:
 	/**
@@ -36,10 +37,35 @@ private:
 	std::shared_ptr<IReader> m_reader;
 
 	/**
-	* The impulse response in the frequency domain.
+	* The HRTF set.
 	*/
-	std::shared_ptr<ImpulseResponse> m_ir;
-	
+	std::shared_ptr<HRTF> m_hrtfs;
+
+	/**
+	* A Source object that will be used to change the source position of the sound.
+	*/
+	std::shared_ptr<Source> m_source;
+
+	/**
+	* The intended azimuth.
+	*/
+	float m_Azimuth;
+
+	/**
+	* The intended elevation.
+	*/
+	float m_Elevation;
+
+	/**
+	* The real azimuth being used.
+	*/
+	float m_RealAzimuth;
+
+	/**
+	* The real elevation being used.
+	*/
+	float m_RealElevation;
+
 	/**
 	* The FFT size, given by the FFTPlan.
 	*/
@@ -61,29 +87,39 @@ private:
 	std::vector<std::unique_ptr<Convolver>> m_convolvers;
 
 	/**
+	* True if a transition is happening.
+	*/
+	bool m_transition;
+
+	/**
+	* The position of the current transition (decreasing)
+	*/
+	int m_transPos;
+
+	/**
 	* The output buffer in which the convolved data will be written and from which the reader will read.
 	*/
 	sample_t* m_outBuffer;
 
 	/**
-	* A vector of buffers (one per channel) on which the audio signal will be separated per channel so it can be convolved.
+	* The input buffer that will hold the data to be convolved.
 	*/
-	std::vector<sample_t*> m_vecInOut;
+	sample_t* m_inBuffer;
 
 	/**
 	* Current position in which the m_outBuffer is being read.
 	*/
 	int m_outBufferPos;
-	
-	/**
-	* Effective length of the m_outBuffer.
-	*/
-	int m_eOutBufLen;
 
 	/**
-	* Real length of the m_outBuffer.
+	* Length of rhe m_outBuffer.
 	*/
 	int m_outBufLen;
+
+	/**
+	* Effective length of rhe m_outBuffer.
+	*/
+	int m_eOutBufLen;
 
 	/**
 	* Flag indicating whether the end of the sound has been reached or not.
@@ -96,19 +132,14 @@ private:
 	bool m_eosTail;
 
 	/**
-	* The number of channels of the sound to be convolved.
+	* A vector of buffers (one per channel) on which the audio signal will be separated per channel so it can be convolved.
 	*/
-	int m_inChannels;
+	std::vector<sample_t*> m_vecOut;
 
 	/**
-	* The number of channels of the impulse response.
+	* A shared ptr to a thread pool.
 	*/
-	int m_irChannels;
-
-	/**
-	* The number of threads used for channels.
-	*/
-	int m_nChannelThreads;
+	std::shared_ptr<ThreadPool> m_threadPool;
 
 	/**
 	* Length of the input data to be used by the channel threads.
@@ -116,30 +147,26 @@ private:
 	int m_lastLengthIn;
 
 	/**
-	* A shared ptr to a thread pool.
-	*/
-	std::shared_ptr<ThreadPool> m_threadPool;
-
-	/** 
 	* A vector of futures to sync tasks.
 	*/
 	std::vector<std::future<int>> m_futures;
 
 	// delete copy constructor and operator=
-	ConvolverReader(const ConvolverReader&) = delete;
-	ConvolverReader& operator=(const ConvolverReader&) = delete;
+	BinauralReader(const BinauralReader&) = delete;
+	BinauralReader& operator=(const BinauralReader&) = delete;
 
 public:
 	/**
 	* Creates a new convolver reader.
-	* \param reader A reader of the input sound to be assigned to this reader.
-	* \param ir A shared pointer to an impulseResponse object that will be used to convolve the sound.
+	* \param reader A reader of the input sound to be assigned to this reader. It must have one channel.
+	* \param hrtfs A shared pointer to an HRTF object that will be used to get a particular impulse response depending on the source.
+	* \param source A shared pointer to a Source object that will be used to change the source position of the sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to and FFT plan that will be used for convolution.
-	* \exception Exception thrown if impulse response doesn't match the specs (number fo channels and rate) of the input reader.
+	* \exception Exception thrown if HRTFs don't match the rate of the input reader or if the input reader has more than one channel.
 	*/
-	ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
-	virtual ~ConvolverReader();
+	BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
+	virtual ~BinauralReader();
 
 	virtual bool isSeekable() const;
 	virtual void seek(int position);
@@ -150,23 +177,19 @@ public:
 
 private:
 	/**
-	* Divides a sound buffer in several buffers, one per channel.
-	* \param buffer The buffer that will be divided.
-	* \param len The length of the buffer.
-	*/
-	void divideByChannel(const sample_t* buffer, int len);
-
-	/**
 	* Joins several buffers (one per channel) into the m_outBuffer.
 	* \param start The starting position from which the m_outBuffer will be written.
 	* \param len The amout of samples that will be joined.
+	* \param nConvolvers The number of convolvers that have been used. Only use 2 or 4 as possible values.
+						 If the value is 4 the result will be interpolated.
 	*/
-	void joinByChannel(int start, int len);
+	void joinByChannel(int start, int len, int nConvolvers);
 
 	/**
 	* Loads the m_outBuffer with data.
+	* \param nConvolvers The number of convolver objects that will be used. Only 2 or 4 should be used.
 	*/
-	void loadBuffer();
+	void loadBuffer(int nConvolvers);
 
 	/**
 	* The function that the threads will run. It will process a subset of channels.
@@ -177,6 +200,8 @@ private:
 	* \return The number of samples obtained.
 	*/
 	int threadFunction(int id, bool input);
+
+	bool checkSource();
 };
 
 AUD_NAMESPACE_END

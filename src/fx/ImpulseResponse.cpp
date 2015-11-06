@@ -16,9 +16,9 @@ ImpulseResponse::ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, 
 	processImpulseResponse(impulseResponse->createReader(), plan);
 }
 
-int ImpulseResponse::getNumberOfChannels()
+Specs ImpulseResponse::getSpecs()
 {
-	return m_channels;
+	return m_specs;
 }
 
 int ImpulseResponse::getLength()
@@ -33,14 +33,15 @@ std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> Impuls
 
 void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, std::shared_ptr<FFTPlan> plan)
 {
-	m_channels = reader->getSpecs().channels;
+	m_specs.channels = reader->getSpecs().channels;
+	m_specs.rate = reader->getSpecs().rate;
 	int N = plan->getSize();
 	bool eos = false;
 	int length = reader->getLength();
-	sample_t* buffer = (sample_t*)std::malloc(length * m_channels * sizeof(sample_t));
+	sample_t* buffer = (sample_t*)std::malloc(length * m_specs.channels * sizeof(sample_t));
 	int numParts = ceil((float)length / (plan->getSize() / 2));
 
-	for (int i = 0; i < m_channels; i++)
+	for (int i = 0; i < m_specs.channels; i++)
 	{
 		m_processedIR.push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>());
 		for (int j = 0; j < numParts; j++)
@@ -51,15 +52,15 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 
 
 	void* bufferFFT = plan->getBuffer();
-	for (int i = 0; i < m_channels; i++)
+	for (int i = 0; i < m_specs.channels; i++)
 	{
 		int partStart = 0;
 		for (int h = 0; h < numParts; h++)
 		{
 			int k = 0;
-			int len = std::min(partStart + ((N / 2)*m_channels), length*m_channels);
+			int len = std::min(partStart + ((N / 2)*m_specs.channels), length*m_specs.channels);
 			std::memset(bufferFFT, 0, ((N / 2) + 1) * 2 * sizeof(fftwf_complex));
-			for (int j = partStart; j < len; j += m_channels)
+			for (int j = partStart; j < len; j += m_specs.channels)
 			{
 				((float*)bufferFFT)[k] = buffer[j + i];
 				k++;
@@ -70,7 +71,7 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 				(*(*m_processedIR[i])[h])[j][0] = ((fftwf_complex*)bufferFFT)[j][0];
 				(*(*m_processedIR[i])[h])[j][1] = ((fftwf_complex*)bufferFFT)[j][1];
 			}
-			partStart += N / 2 * m_channels;
+			partStart += N / 2 * m_specs.channels;
 		}
 	}
 	plan->freeBuffer(bufferFFT);

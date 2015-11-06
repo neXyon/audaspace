@@ -42,6 +42,8 @@ set(SRC
 	src/fx/ADSR.cpp
 	src/fx/ADSRReader.cpp
 	src/fx/BaseIIRFilterReader.cpp
+	src/fx/BinauralSound.cpp
+	src/fx/BinauralReader.cpp
 	src/fx/ButterworthCalculator.cpp
 	src/fx/Butterworth.cpp
 	src/fx/CallbackIIRFilterReader.cpp
@@ -61,6 +63,7 @@ set(SRC
 	src/fx/FFTConvolver.cpp
 	src/fx/HighpassCalculator.cpp
 	src/fx/Highpass.cpp
+	src/fx/HRTF.cpp
 	src/fx/IIRFilter.cpp
 	src/fx/IIRFilterReader.cpp
 	src/fx/ImpulseResponse.cpp
@@ -79,6 +82,7 @@ set(SRC
 	src/fx/Reverse.cpp
 	src/fx/ReverseReader.cpp
 	src/fx/SoundList.cpp
+	src/fx/Source.cpp
 	src/fx/Sum.cpp
 	src/fx/Threshold.cpp
 	src/fx/Volume.cpp
@@ -153,6 +157,8 @@ set(PUBLIC_HDR
 	include/fx/ADSR.h
 	include/fx/ADSRReader.h
 	include/fx/BaseIIRFilterReader.h
+	include/fx/BinauralSound.h
+	include/fx/BinauralReader.h
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
@@ -172,6 +178,7 @@ set(PUBLIC_HDR
 	include/fx/FFTConvolver.h
 	include/fx/HighpassCalculator.h
 	include/fx/Highpass.h
+	include/fx/HRTF.h
 	include/fx/IDynamicIIRFilterCalculator.h
 	include/fx/IIRFilter.h
 	include/fx/IIRFilterReader.h
@@ -191,6 +198,7 @@ set(PUBLIC_HDR
 	include/fx/Reverse.h
 	include/fx/ReverseReader.h
 	include/fx/SoundList.h
+	include/fx/Source.h
 	include/fx/Sum.h
 	include/fx/Threshold.h
 	include/fx/Volume.h
@@ -716,6 +724,9 @@ if(BUILD_DEMOS)
 
 	add_executable(convolution demos/convolution.cpp)
 	target_link_libraries(convolution audaspace)
+
+	add_executable(binaural demos/binaural.cpp)
+	target_link_libraries(binaural audaspace)
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
