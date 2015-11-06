@@ -32,9 +32,9 @@ private:
 	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> m_processedIR;
 
 	/**
-	* The number of channels of the impulse response.
+	* The specification of the samples.
 	*/
-	int m_channels;
+	Specs m_specs;
 
 	/**
 	* The length of the impulse response.
@@ -62,10 +62,10 @@ public:
 	ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse);
 
 	/**
-	* Retrieves the number of channels of the impulse response.
-	* \return The number of channels of the impulse response.
+	* Returns the specification of the impulse response.
+	* \return The specification of the impulse response.
 	*/
-	int getNumberOfChannels();
+	Specs getSpecs();
 
 	/**
 	* Retrieves the length of the impulse response.
