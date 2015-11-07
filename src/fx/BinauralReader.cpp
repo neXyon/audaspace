@@ -34,6 +34,8 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	if (m_reader->getSpecs().rate != m_hrtfs->getSpecs().rate)
 		AUD_THROW(StateException, "The sound and the HRTFs must have the same rate");
 	m_M = m_L = m_N / 2;
+	m_specs.channels = CHANNELS_STEREO;
+	m_specs.rate = m_reader->getSpecs().rate;
 	
 	m_RealAzimuth = m_Azimuth = m_source->getAzimuth();
 	m_RealElevation = m_Elevation = m_source->getElevation();
@@ -90,9 +92,7 @@ int BinauralReader::getPosition() const
 
 Specs BinauralReader::getSpecs() const
 {
-	Specs spcs = m_reader->getSpecs();
-	spcs.channels = CHANNELS_STEREO;
-	return spcs;
+	return m_specs;
 }
 
 void BinauralReader::read(int& length, bool& eos, sample_t* buffer)

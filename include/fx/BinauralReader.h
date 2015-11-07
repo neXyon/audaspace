@@ -43,6 +43,11 @@ class AUD_API BinauralReader : public IReader
 {
 private:
 	/**
+	* The specifications of the sound.
+	*/
+	Specs m_specs;
+
+	/**
 	* The current position.
 	*/
 	int m_position;
