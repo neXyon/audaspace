@@ -56,12 +56,12 @@ int main(int argc, char* argv[])
 	std::shared_ptr<ThreadPool> threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()));
 	std::shared_ptr<File> file1(std::make_shared<File>(argv[1]));
 	std::shared_ptr<HRTF> hrtfs(std::make_shared<HRTF>(plan));
-	std::shared_ptr<Source> source = std::make_shared<Source>(0, 40);
+	std::shared_ptr<Source> source = std::make_shared<Source>(0, 0);
 
 	loadHRTFs(hrtfs);
 
 	std::shared_ptr<BinauralSound> binaural(std::make_shared<BinauralSound>(file1, hrtfs, source, threadPool, plan));
-	std::shared_ptr<ImpulseResponse> ir = std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>("full/headphones+spkr/Opti-inverse.wav")));
+	std::shared_ptr<ImpulseResponse> ir = std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>("full/headphones+spkr/Opti-inverse.wav")), plan);
 	std::shared_ptr<ConvolverSound> convolver = std::make_shared<ConvolverSound>(binaural, ir, threadPool, plan);
 
 	device->lock();
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 		if (x >= 360)
 			x = 0;
 		source->setAzimuth(x);
-		source->setElevation(y);
+		//source->setElevation(y);
 	}
 
 	return 0;
