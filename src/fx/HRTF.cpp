@@ -17,6 +17,8 @@
 #include "fx/HRTF.h"
 #include "Exception.h"
 
+#include <cmath>
+
 AUD_NAMESPACE_BEGIN
 HRTF::HRTF() :
 	HRTF(std::make_shared<FFTPlan>(false))
@@ -33,7 +35,12 @@ HRTF::HRTF(std::shared_ptr<FFTPlan> plan) :
 bool HRTF::addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, float azimuth, float elevation)
 {
 	Specs spec = impulseResponse->getSpecs();
-	if ((azimuth >= 360 || azimuth<0) || (spec.channels != CHANNELS_MONO) || (spec.rate != m_specs.rate && m_specs.rate > 0.0))
+
+	azimuth = std::fmod(azimuth, 360);
+	if (azimuth < 0)
+		azimuth += 360;
+
+	if ((spec.channels != CHANNELS_MONO) || (spec.rate != m_specs.rate && m_specs.rate > 0.0))
 		return false;
 
 	m_hrtfs[elevation][azimuth] = std::make_shared<ImpulseResponse>(impulseResponse, m_plan);
@@ -47,6 +54,9 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 {
 	if (m_hrtfs.empty())
 		return std::make_pair(nullptr, nullptr);
+	azimuth = std::fmod(azimuth, 360);
+	if (azimuth < 0)
+		azimuth += 360;
 
 	float az = 0, el = 0, dif=0, minDif=360;
 	for (auto elem : m_hrtfs)

@@ -74,15 +74,15 @@ public:
 	* Adds a new HRTF to the class.
 	* \param impulseResponse A shared pointer to an StreamBuffer with the HRTF.
 	* \param azimuth The azimuth angle of the HRTF. Interval [0,360).
-	* \param elevation The elevation angle of the HRTF. Interval [-90,90]
-	* \return True if the impulse response was added successfully, false otherwise (the specs weren't correct or the azimuth wasn't in the interval [0,360))
+	* \param elevation The elevation angle of the HRTF. Generally interval [-90,90]
+	* \return True if the impulse response was added successfully, false otherwise (the specs weren't correct).
 	*/
 	bool addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, float azimuth, float elevation);
 
 	/**
 	* Retrieves a pair of HRTFs for a certain azimuth and elevation. If no exact match is found, the closest ones will be chosen (the elevation has priority over the azimuth).
 	* \param[in,out] azimuth The desired azimuth angle. If no exact match is found, the value of azimuth will represent the actual azimuth elevation of the chosen HRTF. Interval [0,360)
-	* \param[in,out] elevation The desired elevation angle. If no exact match is found, the value of elevation will represent the actual elevation angle of the chosen HRTF. Interval [-90,90]
+	* \param[in,out] elevation The desired elevation angle. If no exact match is found, the value of elevation will represent the actual elevation angle of the chosen HRTF.
 	* \return A pair of shared pointers to ImpulseResponse objects containing the HRTFs for the left (first element) and right (second element) ears.
 	*/
 	std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> getImpulseResponse(float &azimuth, float &elevation);
