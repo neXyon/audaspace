@@ -74,7 +74,7 @@ public:
 	* Adds a new HRTF to the class.
 	* \param impulseResponse A shared pointer to an StreamBuffer with the HRTF.
 	* \param azimuth The azimuth angle of the HRTF. Interval [0,360).
-	* \param elevation The elevation angle of the HRTF. Generally interval [-90,90]
+	* \param elevation The elevation angle of the HRTF.
 	* \return True if the impulse response was added successfully, false otherwise (the specs weren't correct).
 	*/
 	bool addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, float azimuth, float elevation);
