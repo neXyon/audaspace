@@ -125,11 +125,13 @@ public:
 
 	/**
 	* Removes all the invalid handles of all the categories.
+	* Only needed if individual sounds are stopped with their handles.
 	*/
 	void clean();
 
 	/**
 	* Removes all the invalid handles of a category.
+	* Only needed if individual sounds are stopped with their handles.
 	* \param catKey Key of the category.
 	* \return
 	*        - true if succesful.

@@ -115,6 +115,7 @@ public:
 
 	/**
 	* Cleans the category erasing all the invalid handles.
+	* Only needed if individual sounds are stopped with their handles.
 	*/
 	void cleanHandles();
 
