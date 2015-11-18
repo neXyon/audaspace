@@ -100,7 +100,7 @@ public:
 	virtual ~FFTConvolver();
 
 	/**
-	* Convolves the data that is provided with the inpulse response
+	* Convolves the data that is provided with the inpulse response.
 	* \param[in] inBuffer A buffer with the input data to be convolved.
 	* \param[in] outBuffer A pointer to the buffer in which the convolution result will be written.
 	* \param[in,out] length The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
@@ -112,7 +112,7 @@ public:
 	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length);
 
 	/**
-	* Convolves the data that is provided with the inpulse response
+	* Convolves the data that is provided with the inpulse response.
 	* \param[in] inBufferA buffer with the input data to be convolved.
 	* \param[in] outBuffer A pointer to the buffer in which the convolution result will be written.
 	* \param[in,out] length The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
@@ -125,7 +125,7 @@ public:
 	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length, fftwf_complex* transformedData);
 
 	/**
-	* Convolves the data that is provided with the inpulse response
+	* Convolves the data that is provided with the inpulse response.
 	* \param[in] inBuffer A buffer with the input data to be convolved. Its length must be N/2 + 1
 	* \param[in] outBuffer A pointer to the buffer in which the convolution result will be written.
 	* \param[in,out] length The number of samples to be convolved and the length of the outBuffer.

@@ -75,6 +75,7 @@ public:
 	* \param hrtfs The HRTF set that will be used.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to a FFTPlan object that will be used for convolution.
+	* \warning The same FFTPlan object must be used to construct both this and the HRTF object provided.
 	*/
 	BinauralSound(std::shared_ptr<ISound> sound, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 
@@ -83,6 +84,7 @@ public:
 	* \param sound The sound that will be convolved. Must have only one channel.
 	* \param hrtfs The HRTF set that will be used.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
+	* \warning To use this constructor no FFTPlan object must have been provided to the hrtfs.
 	*/
 	BinauralSound(std::shared_ptr<ISound> sound, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool);
 

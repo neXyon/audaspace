@@ -69,6 +69,7 @@ public:
 	* \param impulseResponse The impulse response sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to a FFTPlan object that will be used for convolution.
+	* \warning The same FFTPlan object must be used to construct both this and the ImpulseResponse object provided.
 	*/
 	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 
@@ -77,6 +78,7 @@ public:
 	* \param sound The sound that will be convolved.
 	* \param impulseResponse The impulse response sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
+	* \warning To use this constructor no FFTPlan object must have been provided to the inpulseResponse.
 	*/
 	ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, std::shared_ptr<ThreadPool> threadPool);
 
