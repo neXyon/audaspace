@@ -40,7 +40,7 @@ DynamicMusic_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 		{
 			self->dynamicMusic = new std::shared_ptr<aud::DynamicMusic>(new aud::DynamicMusic(*reinterpret_cast<std::shared_ptr<aud::IDevice>*>(device->device)));
 		}
-		catch (aud::Exception& e)
+		catch(aud::Exception& e)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.what());
@@ -82,7 +82,7 @@ DynamicMusic_addScene(DynamicMusicP* self, PyObject* args)
 	{
 		return Py_BuildValue("i", (*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->addScene(*reinterpret_cast<std::shared_ptr<aud::ISound>*>(sound->sound)));
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -117,7 +117,7 @@ DynamicMusic_addTransition(DynamicMusicP* self, PyObject* args)
 		(*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->addTransition(ini, end, *reinterpret_cast<std::shared_ptr<aud::ISound>*>(sound->sound));
 		Py_RETURN_NONE;
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -137,7 +137,7 @@ DynamicMusic_resume(DynamicMusicP* self)
 	{
 		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->resume());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -157,7 +157,7 @@ DynamicMusic_pause(DynamicMusicP* self)
 	{
 		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->pause());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -177,7 +177,7 @@ DynamicMusic_stop(DynamicMusicP* self)
 	{
 		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->stop());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -215,7 +215,7 @@ DynamicMusic_get_status(DynamicMusicP* self, void* nothing)
 	{
 		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->getStatus());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -239,7 +239,7 @@ DynamicMusic_set_position(DynamicMusicP* self, PyObject* args, void* nothing)
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't seek the sound!");
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 	}
@@ -254,7 +254,7 @@ DynamicMusic_get_position(DynamicMusicP* self, void* nothing)
 	{
 		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->getPosition());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -277,7 +277,7 @@ DynamicMusic_set_fadeTime(DynamicMusicP* self, PyObject* args, void* nothing)
 		(*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->setFadeTime(fadeTime);
 		return 0;
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 	}
@@ -292,7 +292,7 @@ DynamicMusic_get_fadeTime(DynamicMusicP* self, void* nothing)
 	{
 		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->getFadeTime());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -316,7 +316,7 @@ DynamicMusic_set_scene(DynamicMusicP* self, PyObject* args, void* nothing)
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't change the scene!");
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 	}
@@ -331,7 +331,7 @@ DynamicMusic_get_scene(DynamicMusicP* self, void* nothing)
 	{
 		return Py_BuildValue("i", (*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->getScene());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
@@ -355,7 +355,7 @@ DynamicMusic_set_volume(DynamicMusicP* self, PyObject* args, void* nothing)
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't change the volume!");
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 	}
@@ -370,7 +370,7 @@ DynamicMusic_get_volume(DynamicMusicP* self, void* nothing)
 	{
 		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->getVolume());
 	}
-	catch (aud::Exception& e)
+	catch(aud::Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;

@@ -31,7 +31,7 @@ AUD_API AUD_PlaybackManager* AUD_PlaybackManager_create(AUD_Device* device)
 	{
 		return new AUD_PlaybackManager(new PlaybackManager(*device));
 	}
-	catch (Exception&)
+	catch(Exception&)
 	{
 		return nullptr;
 	}

@@ -31,7 +31,7 @@ AUD_API AUD_DynamicMusic* AUD_DynamicMusic_create(AUD_Device* device)
 	{
 		return new AUD_DynamicMusic(new DynamicMusic(*device));
 	}
-	catch (Exception&)
+	catch(Exception&)
 	{
 		return nullptr;
 	}

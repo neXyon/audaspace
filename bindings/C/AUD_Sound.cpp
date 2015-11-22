@@ -630,7 +630,7 @@ AUD_API AUD_Sound* AUD_Sound_list(int random)
 	{
 		return new AUD_Sound(new SoundList(random));
 	}
-	catch (Exception&)
+	catch(Exception&)
 	{
 		return nullptr;
 	}
@@ -660,7 +660,7 @@ AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
 	{
 		return new AUD_Sound(new MutableSound(*sound));
 	}
-	catch (Exception&)
+	catch(Exception&)
 	{
 		return nullptr;
 	}

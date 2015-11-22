@@ -1500,7 +1500,7 @@ Sound_pingpong(Sound* self)
 		{
 			parent->sound = new std::shared_ptr<ISound>(new PingPong(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
 		}
-		catch (Exception& e)
+		catch(Exception& e)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.what());
@@ -1536,7 +1536,7 @@ Sound_list(PyTypeObject* type, PyObject* args)
 		{
 			self->sound = new std::shared_ptr<ISound>(new SoundList(random));
 		}
-		catch (Exception& e)
+		catch(Exception& e)
 		{
 			Py_DECREF(self);
 			PyErr_SetString(AUDError, e.what());
@@ -1566,7 +1566,7 @@ Sound_mutable(Sound* self)
 		{
 			parent->sound = new std::shared_ptr<ISound>(new MutableSound(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
 		}
-		catch (Exception& e)
+		catch(Exception& e)
 		{
 			Py_DECREF(parent);
 			PyErr_SetString(AUDError, e.what());
@@ -1601,7 +1601,7 @@ Sound_list_addSound(Sound* self, PyObject* object)
 		(*reinterpret_cast<std::shared_ptr<SoundList>*>(self->sound))->addSound(*reinterpret_cast<std::shared_ptr<ISound>*>(child->sound));
 		Py_RETURN_NONE;
 	}
-	catch (Exception& e)
+	catch(Exception& e)
 	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;

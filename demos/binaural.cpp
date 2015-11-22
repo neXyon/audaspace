@@ -142,7 +142,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 			hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev40/L40e" + ss.str() + "a.wav")), az, 40);
 			hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev-40/L-40e" + ss.str() + "a.wav")), az, -40);
 		}
-		catch (Exception& e)
+		catch(Exception& e)
 		{
 		}
 
