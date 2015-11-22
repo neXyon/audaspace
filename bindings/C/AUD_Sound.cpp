@@ -636,7 +636,7 @@ AUD_API AUD_Sound* AUD_Sound_list(int random)
 	}
 }
 
-AUD_API int AUD_Sound_list_addSound(AUD_Sound* list, AUD_Sound* sound)
+AUD_API int AUD_SoundList_addSound(AUD_Sound* list, AUD_Sound* sound)
 {
 	assert(sound);
 	assert(list);
