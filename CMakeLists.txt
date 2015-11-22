@@ -750,14 +750,14 @@ endif()
 
 if(WITH_C)
 	if(SEPARATE_C)
-	add_library(audaspace-c ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
-	target_link_libraries(audaspace-c audaspace)
-	set_target_properties(audaspace-c PROPERTIES SOVERSION ${AUDASPACE_VERSION})
-	install(TARGETS audaspace-c
-		RUNTIME DESTINATION ${BIN_DESTINATION}
-		LIBRARY DESTINATION ${LIB_DESTINATION}
-		ARCHIVE DESTINATION ${LIB_DESTINATION}
-	)
+		add_library(audaspace-c ${LIBRARY_TYPE} ${C_SRC} ${C_HDR})
+		target_link_libraries(audaspace-c audaspace)
+		set_target_properties(audaspace-c PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+		install(TARGETS audaspace-c
+			RUNTIME DESTINATION ${BIN_DESTINATION}
+			LIBRARY DESTINATION ${LIB_DESTINATION}
+			ARCHIVE DESTINATION ${LIB_DESTINATION}
+		)
 	endif()
 
 	install(FILES ${C_HDR} DESTINATION include/audaspace)
