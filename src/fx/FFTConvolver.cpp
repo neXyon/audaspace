@@ -33,35 +33,35 @@ FFTConvolver::~FFTConvolver()
 {
 	std::free(m_tail);
 	std::free(m_shiftBuffer);
-	if (m_inBuffer != nullptr)
+	if(m_inBuffer != nullptr)
 		m_plan->freeBuffer(m_inBuffer);
 }
 
 void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length)
 {
-	if (length > m_L || length <= 0)
+	if(length > m_L || length <= 0)
 	{
 		length = 0;
 		return;
 	}
-	if (m_inBuffer == nullptr)
+	if(m_inBuffer == nullptr)
 		m_inBuffer = m_plan->getBuffer();
 
 	std::memset(m_inBuffer, 0, m_realBufLen * sizeof(fftwf_complex));
 	std::memcpy(m_inBuffer, inBuffer, length*sizeof(sample_t));
 
 	m_plan->FFT(m_inBuffer);
-	for (int i = 0; i < m_realBufLen / 2; i++)
+	for(int i = 0; i < m_realBufLen / 2; i++)
 	{
 		((fftwf_complex*)m_inBuffer)[i][0] = ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][0]) - (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][1])) / m_N;
 		((fftwf_complex*)m_inBuffer)[i][1] = ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][1]) + (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][0])) / m_N;
 	}
 	m_plan->IFFT(m_inBuffer);
 
-	for (int i = 0; i < m_M - 1; i++)
+	for(int i = 0; i < m_M - 1; i++)
 		((float*)m_inBuffer)[i] += m_tail[i];
 
-	for (int i = 0; i < m_M - 1; i++)
+	for(int i = 0; i < m_M - 1; i++)
 		m_tail[i] = ((float*)m_inBuffer)[i + length];
 
 	std::memcpy(outBuffer, m_inBuffer, length * sizeof(sample_t));
@@ -69,12 +69,12 @@ void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int& l
 
 void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length, fftwf_complex* transformedData)
 {
-	if (length > m_L || length <= 0)
+	if(length > m_L || length <= 0)
 	{
 		length = 0;
 		return;
 	}
-	if (m_inBuffer == nullptr)
+	if(m_inBuffer == nullptr)
 		m_inBuffer = m_plan->getBuffer();
 
 	std::memset(m_inBuffer, 0, m_realBufLen * sizeof(fftwf_complex));
@@ -82,17 +82,17 @@ void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int& l
 
 	m_plan->FFT(m_inBuffer);
 	std::memcpy(transformedData, m_inBuffer, (m_realBufLen / 2)*sizeof(fftwf_complex));
-	for (int i = 0; i < m_realBufLen / 2; i++)
+	for(int i = 0; i < m_realBufLen / 2; i++)
 	{
 		((fftwf_complex*)m_inBuffer)[i][0] = ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][0]) - (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][1])) / m_N;
 		((fftwf_complex*)m_inBuffer)[i][1] = ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][1]) + (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][0])) / m_N;
 	}
 	m_plan->IFFT(m_inBuffer);
 
-	for (int i = 0; i < m_M - 1; i++)
+	for(int i = 0; i < m_M - 1; i++)
 		((float*)m_inBuffer)[i] += m_tail[i];
 
-	for (int i = 0; i < m_M - 1; i++)
+	for(int i = 0; i < m_M - 1; i++)
 		m_tail[i] = ((float*)m_inBuffer)[i + length];
 
 	std::memcpy(outBuffer, m_inBuffer, length * sizeof(sample_t));
@@ -100,26 +100,26 @@ void FFTConvolver::getNext(const sample_t* inBuffer, sample_t* outBuffer, int& l
 
 void FFTConvolver::getNext(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length)
 {
-	if (length > m_L || length <= 0)
+	if(length > m_L || length <= 0)
 	{
 		length = 0;
 		return;
 	}
-	if (m_inBuffer == nullptr)
+	if(m_inBuffer == nullptr)
 		m_inBuffer = m_plan->getBuffer();
 
 	std::memset(m_inBuffer, 0, m_realBufLen * sizeof(fftwf_complex));
-	for (int i = 0; i < m_realBufLen / 2; i++)
+	for(int i = 0; i < m_realBufLen / 2; i++)
 	{
 		((fftwf_complex*)m_inBuffer)[i][0] = ((inBuffer[i][0] * (*m_irBuffer)[i][0]) - (inBuffer[i][1] * (*m_irBuffer)[i][1])) / m_N;
 		((fftwf_complex*)m_inBuffer)[i][1] = ((inBuffer[i][0] * (*m_irBuffer)[i][1]) + (inBuffer[i][1] * (*m_irBuffer)[i][0])) / m_N;
 	}
 	m_plan->IFFT(m_inBuffer);
 
-	for (int i = 0; i < m_M - 1; i++)
+	for(int i = 0; i < m_M - 1; i++)
 		((float*)m_inBuffer)[i] += m_tail[i];
 
-	for (int i = 0; i < m_M - 1; i++)
+	for(int i = 0; i < m_M - 1; i++)
 		m_tail[i] = ((float*)m_inBuffer)[i + length];
 
 	std::memcpy(outBuffer, m_inBuffer, length * sizeof(sample_t));
@@ -127,7 +127,7 @@ void FFTConvolver::getNext(const fftwf_complex* inBuffer, sample_t* outBuffer, i
 
 void FFTConvolver::getTail(int& length, bool& eos, sample_t* buffer)
 {
-	if (length <= 0)
+	if(length <= 0)
 	{
 		length = 0;
 		eos = m_tailPos >= m_M - 1;
@@ -135,10 +135,10 @@ void FFTConvolver::getTail(int& length, bool& eos, sample_t* buffer)
 	}
 
 	eos = false;
-	if (m_tailPos + length > m_M - 1)
+	if(m_tailPos + length > m_M - 1)
 	{
 		length = m_M - 1 - m_tailPos;
-		if (length < 0)
+		if(length < 0)
 			length = 0;
 		eos = true;
 		m_tailPos = m_M - 1;
@@ -156,12 +156,12 @@ void FFTConvolver::clear()
 
 void FFTConvolver::IFFT_FDL(const fftwf_complex* inBuffer, sample_t* outBuffer, int& length)
 {
-	if (length > m_L || length <= 0)
+	if(length > m_L || length <= 0)
 	{
 		length = 0;
 		return;
 	}
-	if (m_inBuffer == nullptr)
+	if(m_inBuffer == nullptr)
 		m_inBuffer = m_plan->getBuffer();
 
 	std::memset(m_inBuffer, 0, m_realBufLen * sizeof(fftwf_complex));
@@ -172,7 +172,7 @@ void FFTConvolver::IFFT_FDL(const fftwf_complex* inBuffer, sample_t* outBuffer, 
 
 void FFTConvolver::getNextFDL(const fftwf_complex* inBuffer, fftwf_complex* accBuffer)
 {
-	for (int i = 0; i < m_realBufLen / 2; i++)
+	for(int i = 0; i < m_realBufLen / 2; i++)
 	{
 		accBuffer[i][0] += ((inBuffer[i][0] * (*m_irBuffer)[i][0]) - (inBuffer[i][1] * (*m_irBuffer)[i][1])) / m_N;
 		accBuffer[i][1] += ((inBuffer[i][0] * (*m_irBuffer)[i][1]) + (inBuffer[i][1] * (*m_irBuffer)[i][0])) / m_N;
@@ -181,12 +181,12 @@ void FFTConvolver::getNextFDL(const fftwf_complex* inBuffer, fftwf_complex* accB
 
 void FFTConvolver::getNextFDL(const sample_t* inBuffer, fftwf_complex* accBuffer, int& length, fftwf_complex* transformedData)
 {
-	if (length > m_L || length <= 0)
+	if(length > m_L || length <= 0)
 	{
 		length = 0;
 		return;
 	}
-	if (m_inBuffer == nullptr)
+	if(m_inBuffer == nullptr)
 		m_inBuffer = m_plan->getBuffer();
 
 	std::memcpy(m_shiftBuffer, m_shiftBuffer + m_L, m_L*sizeof(sample_t));
@@ -197,7 +197,7 @@ void FFTConvolver::getNextFDL(const sample_t* inBuffer, fftwf_complex* accBuffer
 
 	m_plan->FFT(m_inBuffer);
 	std::memcpy(transformedData, m_inBuffer, (m_realBufLen / 2)*sizeof(fftwf_complex));
-	for (int i = 0; i < m_realBufLen / 2; i++)
+	for(int i = 0; i < m_realBufLen / 2; i++)
 	{
 		accBuffer[i][0] += ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][0]) - (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][1])) / m_N;
 		accBuffer[i][1] += ((((fftwf_complex*)m_inBuffer)[i][0] * (*m_irBuffer)[i][1]) + (((fftwf_complex*)m_inBuffer)[i][1] * (*m_irBuffer)[i][0])) / m_N;

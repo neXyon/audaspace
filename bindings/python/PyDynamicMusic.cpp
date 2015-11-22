@@ -29,10 +29,10 @@ DynamicMusic_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
 	DynamicMusicP* self = (DynamicMusicP*)type->tp_alloc(type, 0);
 
-	if (self != nullptr)
+	if(self != nullptr)
 	{
 		PyObject* object;
-		if (!PyArg_ParseTuple(args, "O:device", &object))
+		if(!PyArg_ParseTuple(args, "O:device", &object))
 			return nullptr;
 		Device* device = checkDevice(object);
 
@@ -54,7 +54,7 @@ DynamicMusic_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 static void
 DynamicMusic_dealloc(DynamicMusicP* self)
 {
-	if (self->dynamicMusic)
+	if(self->dynamicMusic)
 		delete reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
@@ -71,11 +71,11 @@ static PyObject *
 DynamicMusic_addScene(DynamicMusicP* self, PyObject* args)
 {
 	PyObject* object;
-	if (!PyArg_Parse(args, "O:sound", &object))
+	if(!PyArg_Parse(args, "O:sound", &object))
 		return nullptr;
 
 	Sound* sound = checkSound(object);
-	if (!sound)
+	if(!sound)
 		return nullptr;
 
 	try
@@ -106,10 +106,10 @@ DynamicMusic_addTransition(DynamicMusicP* self, PyObject* args)
 {
 	PyObject* object;
 	int ini, end;
-	if (!PyArg_ParseTuple(args, "iiO:sound", &ini, &end, &object))
+	if(!PyArg_ParseTuple(args, "iiO:sound", &ini, &end, &object))
 		return nullptr;
 	Sound* sound = checkSound(object);
-	if (!sound)
+	if(!sound)
 		return nullptr;
 
 	try
@@ -230,12 +230,12 @@ DynamicMusic_set_position(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	float position;
 
-	if (!PyArg_Parse(args, "f:position", &position))
+	if(!PyArg_Parse(args, "f:position", &position))
 		return -1;
 
 	try
 	{
-		if ((*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->seek(position))
+		if((*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->seek(position))
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't seek the sound!");
 	}
@@ -269,7 +269,7 @@ DynamicMusic_set_fadeTime(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	float fadeTime;
 
-	if (!PyArg_Parse(args, "f:fadeTime", &fadeTime))
+	if(!PyArg_Parse(args, "f:fadeTime", &fadeTime))
 		return -1;
 
 	try
@@ -307,12 +307,12 @@ DynamicMusic_set_scene(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	int scene;
 
-	if (!PyArg_Parse(args, "i:scene", &scene))
+	if(!PyArg_Parse(args, "i:scene", &scene))
 		return -1;
 
 	try
 	{
-		if ((*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->changeScene(scene))
+		if((*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->changeScene(scene))
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't change the scene!");
 	}
@@ -346,12 +346,12 @@ DynamicMusic_set_volume(DynamicMusicP* self, PyObject* args, void* nothing)
 {
 	float volume;
 
-	if (!PyArg_Parse(args, "f:volume", &volume))
+	if(!PyArg_Parse(args, "f:volume", &volume))
 		return -1;
 
 	try
 	{
-		if ((*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->setVolume(volume))
+		if((*reinterpret_cast<std::shared_ptr<aud::DynamicMusic>*>(self->dynamicMusic))->setVolume(volume))
 			return 0;
 		PyErr_SetString(AUDError, "Couldn't change the volume!");
 	}
@@ -444,7 +444,7 @@ AUD_API PyObject* DynamicMusic_empty()
 
 AUD_API DynamicMusicP* checkDynamicMusic(PyObject* dynamicMusic)
 {
-	if (!PyObject_TypeCheck(dynamicMusic, &DynamicMusicType))
+	if(!PyObject_TypeCheck(dynamicMusic, &DynamicMusicType))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object is not of type DynamicMusic!");
 		return nullptr;

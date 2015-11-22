@@ -914,7 +914,7 @@ Sound_filter(Sound* self, PyObject* args)
 		value= (float)PyFloat_AsDouble(py_value);
 		Py_DECREF(py_value);
 
-		if (value == -1.0f && PyErr_Occurred()) {
+		if(value == -1.0f && PyErr_Occurred()) {
 			return nullptr;
 		}
 
@@ -929,7 +929,7 @@ Sound_filter(Sound* self, PyObject* args)
 			value= (float)PyFloat_AsDouble(py_value);
 			Py_DECREF(py_value);
 
-			if (value == -1.0f && PyErr_Occurred()) {
+			if(value == -1.0f && PyErr_Occurred()) {
 				return nullptr;
 			}
 
@@ -1494,7 +1494,7 @@ Sound_pingpong(Sound* self)
 	PyTypeObject* type = Py_TYPE(self);
 	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
-	if (parent != nullptr)
+	if(parent != nullptr)
 	{
 		try
 		{
@@ -1524,13 +1524,13 @@ Sound_list(PyTypeObject* type, PyObject* args)
 {
 	int random;
 
-	if (!PyArg_ParseTuple(args, "i:random", &random))
+	if(!PyArg_ParseTuple(args, "i:random", &random))
 		return nullptr;
 
 	Sound* self;
 
 	self = (Sound*)type->tp_alloc(type, 0);
-	if (self != nullptr)
+	if(self != nullptr)
 	{
 		try
 		{
@@ -1560,7 +1560,7 @@ Sound_mutable(Sound* self)
 	PyTypeObject* type = Py_TYPE(self);
 	Sound* parent = (Sound*)type->tp_alloc(type, 0);
 
-	if (parent != nullptr)
+	if(parent != nullptr)
 	{
 		try
 		{
@@ -1589,7 +1589,7 @@ Sound_list_addSound(Sound* self, PyObject* object)
 {
 	PyTypeObject* type = Py_TYPE(self);
 
-	if (!PyObject_TypeCheck(object, type))
+	if(!PyObject_TypeCheck(object, type))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object has to be of type Sound!");
 		return nullptr;

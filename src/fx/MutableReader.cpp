@@ -33,7 +33,7 @@ bool MutableReader::isSeekable() const
 
 void MutableReader::seek(int position)
 {
-	if (position < m_reader->getPosition())
+	if(position < m_reader->getPosition())
 	{
 		m_reader = m_sound->createReader();
 	}

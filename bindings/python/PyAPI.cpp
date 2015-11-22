@@ -79,13 +79,13 @@ PyInit_aud()
 	if(!initializeSequenceEntry())
 		return nullptr;
 
-	if (!initializeSequence())
+	if(!initializeSequence())
 		return nullptr;
 
-	if (!initializeDynamicMusic())
+	if(!initializeDynamicMusic())
 		return nullptr;
 
-	if (!initializePlaybackManager())
+	if(!initializePlaybackManager())
 		return nullptr;
 
 	module = PyModule_Create(&audmodule);

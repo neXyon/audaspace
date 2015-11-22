@@ -226,7 +226,7 @@ Sequence_setAnimationData(Sequence* self, PyObject* args)
 		value= (float)PyFloat_AsDouble(py_value);
 		Py_DECREF(py_value);
 
-		if (value == -1.0f && PyErr_Occurred()) {
+		if(value == -1.0f && PyErr_Occurred()) {
 			return nullptr;
 		}
 

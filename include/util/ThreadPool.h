@@ -79,7 +79,7 @@ public:
 	ThreadPool(unsigned int count) :
 		m_stopFlag(false), m_numThreads(count)
 	{
-		for (unsigned int i = 0; i < count; i++)
+		for(unsigned int i = 0; i < count; i++)
 			m_threads.emplace_back(&ThreadPool::threadFunction, this);
 	}
 	virtual ~ThreadPool()
@@ -88,7 +88,7 @@ public:
 		m_stopFlag = true;
 		m_mutex.unlock();
 		m_condition.notify_all();
-		for (unsigned int i = 0; i < m_threads.size(); i++)
+		for(unsigned int i = 0; i < m_threads.size(); i++)
 			m_threads[i].join();
 	}
 
@@ -130,13 +130,13 @@ private:
 	*/
 	void threadFunction()
 	{
-		while (true)
+		while(true)
 		{
 			std::function<void()> task;
 			{
 				std::unique_lock<std::mutex> lock(m_mutex);
 				m_condition.wait(lock, [this] { return m_stopFlag || !m_queue.empty(); });
-				if (m_stopFlag && m_queue.empty())
+				if(m_stopFlag && m_queue.empty())
 					return;
 				task = std::move(m_queue.front());
 				this->m_queue.pop();

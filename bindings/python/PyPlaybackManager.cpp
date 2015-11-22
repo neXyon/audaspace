@@ -29,10 +29,10 @@ PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
 	PlaybackManagerP* self = (PlaybackManagerP*)type->tp_alloc(type, 0);
 
-	if (self != nullptr)
+	if(self != nullptr)
 	{
 		PyObject* object;
-		if (!PyArg_ParseTuple(args, "O:catKey", &object))
+		if(!PyArg_ParseTuple(args, "O:catKey", &object))
 			return nullptr;
 		Device* device = checkDevice(object);
 
@@ -54,7 +54,7 @@ PlaybackManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 static void
 PlaybackManager_dealloc(PlaybackManagerP* self)
 {
-	if (self->playbackManager)
+	if(self->playbackManager)
 		delete reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
@@ -75,17 +75,17 @@ PlaybackManager_play(PlaybackManagerP* self, PyObject* args)
 	PyObject* object;
 	unsigned int cat;
 
-	if (!PyArg_ParseTuple(args, "OI:catKey", &object, &cat))
+	if(!PyArg_ParseTuple(args, "OI:catKey", &object, &cat))
 		return nullptr;
 
 	Sound* sound = checkSound(object);
-	if (!sound)
+	if(!sound)
 		return nullptr;
 
 	Handle* handle;
 
 	handle = (Handle*)Handle_empty();
-	if (handle != nullptr)
+	if(handle != nullptr)
 	{
 		try
 		{
@@ -115,7 +115,7 @@ PlaybackManager_resume(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
-	if (!PyArg_ParseTuple(args, "I:catKey", &cat))
+	if(!PyArg_ParseTuple(args, "I:catKey", &cat))
 		return nullptr;
 
 	try
@@ -142,7 +142,7 @@ PlaybackManager_pause(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
-	if (!PyArg_ParseTuple(args, "I:catKey", &cat))
+	if(!PyArg_ParseTuple(args, "I:catKey", &cat))
 		return nullptr;
 
 	try
@@ -169,7 +169,7 @@ PlaybackManager_get_volume(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
-	if (!PyArg_ParseTuple(args, "I:catKey", &cat))
+	if(!PyArg_ParseTuple(args, "I:catKey", &cat))
 		return nullptr;
 
 	try
@@ -199,7 +199,7 @@ PlaybackManager_set_volume(PlaybackManagerP* self, PyObject* args)
 	float volume;
 	unsigned int cat;
 
-	if (!PyArg_ParseTuple(args, "fI:volume", &volume, &cat))
+	if(!PyArg_ParseTuple(args, "fI:volume", &volume, &cat))
 		return nullptr;
 
 	try
@@ -226,7 +226,7 @@ PlaybackManager_stop(PlaybackManagerP* self, PyObject* args)
 {
 	unsigned int cat;
 
-	if (!PyArg_ParseTuple(args, "I:catKey", &cat))
+	if(!PyArg_ParseTuple(args, "I:catKey", &cat))
 		return nullptr;
 
 	try
@@ -336,7 +336,7 @@ AUD_API PyObject* PlaybackManager_empty()
 
 AUD_API PlaybackManagerP* checkPlaybackManager(PyObject* playbackManager)
 {
-	if (!PyObject_TypeCheck(playbackManager, &PlaybackManagerType))
+	if(!PyObject_TypeCheck(playbackManager, &PlaybackManagerType))
 	{
 		PyErr_SetString(PyExc_TypeError, "Object is not of type PlaybackManager!");
 		return nullptr;

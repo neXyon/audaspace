@@ -36,13 +36,13 @@ m_list(list), m_random(random)
 
 std::shared_ptr<IReader> SoundList::createReader()
 {
-	if (m_list.size() > 0)
+	if(m_list.size() > 0)
 	{
 		m_mutex.lock();
 
-		if (!m_random){
+		if(!m_random){
 			m_index++;
-			if (m_index >= m_list.size())
+			if(m_index >= m_list.size())
 				m_index = 0;
 		}
 		else
@@ -50,7 +50,7 @@ std::shared_ptr<IReader> SoundList::createReader()
 			int temp;
 			do{
 				temp = rand() % m_list.size();
-			} while (temp == m_index);
+			} while(temp == m_index);
 			m_index = temp;
 		}
 		auto reader = m_list[m_index]->createReader();

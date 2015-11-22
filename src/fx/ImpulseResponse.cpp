@@ -57,10 +57,10 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 	sample_t* buffer = (sample_t*)std::malloc(length * m_specs.channels * sizeof(sample_t));
 	int numParts = ceil((float)length / (plan->getSize() / 2));
 
-	for (int i = 0; i < m_specs.channels; i++)
+	for(int i = 0; i < m_specs.channels; i++)
 	{
 		m_processedIR.push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>());
-		for (int j = 0; j < numParts; j++)
+		for(int j = 0; j < numParts; j++)
 			(*m_processedIR[i]).push_back(std::make_shared<std::vector<fftwf_complex>>((N / 2) + 1));
 	}
 	length += reader->getSpecs().rate;
@@ -68,21 +68,21 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 
 
 	void* bufferFFT = plan->getBuffer();
-	for (int i = 0; i < m_specs.channels; i++)
+	for(int i = 0; i < m_specs.channels; i++)
 	{
 		int partStart = 0;
-		for (int h = 0; h < numParts; h++)
+		for(int h = 0; h < numParts; h++)
 		{
 			int k = 0;
 			int len = std::min(partStart + ((N / 2)*m_specs.channels), length*m_specs.channels);
 			std::memset(bufferFFT, 0, ((N / 2) + 1) * 2 * sizeof(fftwf_complex));
-			for (int j = partStart; j < len; j += m_specs.channels)
+			for(int j = partStart; j < len; j += m_specs.channels)
 			{
 				((float*)bufferFFT)[k] = buffer[j + i];
 				k++;
 			}
 			plan->FFT(bufferFFT);
-			for (int j = 0; j < (N / 2) + 1; j++)
+			for(int j = 0; j < (N / 2) + 1; j++)
 			{
 				(*(*m_processedIR[i])[h])[j][0] = ((fftwf_complex*)bufferFFT)[j][0];
 				(*(*m_processedIR[i])[h])[j][1] = ((fftwf_complex*)bufferFFT)[j][1];

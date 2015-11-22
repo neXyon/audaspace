@@ -41,7 +41,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs);
 
 int main(int argc, char* argv[])
 {
-	if (argc != 2)
+	if(argc != 2)
 	{
 		std::cerr << "Usage: " << argv[0] << " <sound>"  << std::endl;
 		return 1;
@@ -72,22 +72,22 @@ int main(int argc, char* argv[])
 	float x = 0;
 	float y = 0;
 	float yInc = 1;
-	while (true)
+	while(true)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		x += 3;
 		y += yInc;
-		if (y >= 80)
+		if(y >= 80)
 		{
 			y = 80;
 			yInc = -1;
 		}
-		else if (y <= -40)
+		else if(y <= -40)
 		{
 			y = -40;
 			yInc = 1;
 		}
-		if (x >= 360)
+		if(x >= 360)
 			x = 0;
 		source->setAzimuth(x);
 		//source->setElevation(y);
@@ -103,7 +103,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	int step = 5;
 	int az = 0; 
 	int azF = 355;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev0/L0e" + ss.str() + "a.wav")), az, 0);
@@ -120,7 +120,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	step = 6;
 	az = 0;
 	azF = 354;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev30/L30e" + ss.str() + "a.wav")), az, 30);
@@ -134,7 +134,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	step = 1;
 	az = 0;
 	azF = 360;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		try
@@ -155,7 +155,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	step = 8;
 	az = 0;
 	azF = 352;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev50/L50e" + ss.str() + "a.wav")), az, 50);
@@ -168,7 +168,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	step = 10;
 	az = 0;
 	azF = 350;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev60/L60e" + ss.str() + "a.wav")), az, 60);
@@ -181,7 +181,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	step = 15;
 	az = 0;
 	azF = 345;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev70/L70e" + ss.str() + "a.wav")), az, 70);
@@ -194,7 +194,7 @@ void loadHRTFs(std::shared_ptr<HRTF> hrtfs)
 	step = 30;
 	az = 0;
 	azF = 330;
-	while (azF >= 0)
+	while(azF >= 0)
 	{
 		ss << std::setw(3) << std::setfill('0') << azF;
 		hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>("full/elev80/L80e" + ss.str() + "a.wav")), az, 80);

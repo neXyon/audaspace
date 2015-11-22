@@ -30,7 +30,7 @@ void Barrier::wait()
 {
 	std::unique_lock<std::mutex> lck(m_mutex);
 	int gen = m_generation;
-	if (!--m_count) 
+	if(!--m_count) 
 	{
 		m_count = m_threshold;
 		m_generation++;

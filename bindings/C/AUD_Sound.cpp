@@ -642,7 +642,7 @@ AUD_API int AUD_SoundList_addSound(AUD_Sound* list, AUD_Sound* sound)
 	assert(list);
 
 	std::shared_ptr<SoundList> s = std::dynamic_pointer_cast<SoundList>(*list);
-	if (s.get())
+	if(s.get())
 	{
 		s->addSound(*sound);
 		return 1;

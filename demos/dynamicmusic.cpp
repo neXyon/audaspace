@@ -32,7 +32,7 @@ using namespace aud;
 
 int main(int argc, char* argv[])
 {
-	if (argc < 3)
+	if(argc < 3)
 	{
 		std::cerr << "Usage: " << argv[0] << " <scene 1>" << " <scene 2>" << " [<transition 1-2>]" << std::endl;
 		return 1;
@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
 	auto device = factory->openDevice();
 	DynamicMusic manager (device);
 	std::shared_ptr<File> file;
-	for (int i = 1; i < argc; i++)
+	for(int i = 1; i < argc; i++)
 	{
 		file = (std::make_shared<File>(argv[i]));
-		if (i == 3)
+		if(i == 3)
 			manager.addTransition(1, 2, file);
 		else
 			manager.addScene(file);

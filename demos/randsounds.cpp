@@ -33,7 +33,7 @@ using namespace aud;
 
 int main(int argc, char* argv[])
 {
-	if (argc == 1){
+	if(argc == 1){
 		std::cerr << "Usage: " << argv[0] << " <filename>" << " <filename>" << " ..." << std::endl;
 		return 1;
 	}
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 
 	std::shared_ptr<SoundList> list(std::make_shared<SoundList>());
 	std::shared_ptr<File> file;
-	for (int i = 1; i < argc; i++)
+	for(int i = 1; i < argc; i++)
 	{
 		file = std::make_shared<File>(argv[i]);
 		list->addSound(file);

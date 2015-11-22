@@ -32,7 +32,7 @@ using namespace aud;
 
 int main(int argc, char* argv[])
 {
-	if (argc != 5)
+	if(argc != 5)
 	{
 		std::cerr << "Usage: " << argv[0] << " <sound 1 category 1>" << " <sound 2 category 1>" << " <sound 1 category 2>" << " <sound 2 category 2>" << std::endl;
 		return 1;
@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
 	auto device = factory->openDevice();
 	PlaybackManager manager(device);
 	std::shared_ptr<File> file;
-	for (int i = 1; i < argc; i++)
+	for(int i = 1; i < argc; i++)
 	{
 		file = (std::make_shared<File>(argv[i]));
-		if (i <= 2)
+		if(i <= 2)
 			manager.play(file, 0);
 		else
 			manager.play(file, 1);

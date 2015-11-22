@@ -115,7 +115,7 @@ bool PlaybackManager::stop(unsigned int catKey)
 
 void PlaybackManager::clean()
 {
-	for (auto cat : m_categories)
+	for(auto cat : m_categories)
 		cat.second->cleanHandles();
 }
 

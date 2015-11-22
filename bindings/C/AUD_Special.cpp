@@ -224,7 +224,7 @@ AUD_API int AUD_readSound(AUD_Sound* sound, float* buffer, int length, int sampl
 	{
 		len = floor(samplejump * (i+1)) - floor(samplejump * i);
 
-		if (*interrupt)
+		if(*interrupt)
 			return 0;
 
 		aBuffer.assureSize(len * AUD_SAMPLE_SIZE(specs));

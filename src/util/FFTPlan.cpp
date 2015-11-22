@@ -10,7 +10,7 @@ FFTPlan::FFTPlan(int n, bool measure) :
 	m_N(n), m_bufferSize(((n/2)+1)*2*sizeof(fftwf_complex))
 {
 	int flag;
-	if (measure)
+	if(measure)
 		flag = FFTW_MEASURE;
 	else
 		flag = FFTW_ESTIMATE;

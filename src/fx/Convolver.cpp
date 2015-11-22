@@ -27,7 +27,7 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 {
 	m_resetFlag = false;
 	m_futures.resize(m_numThreads);
-	for (int i = 0; i < m_irBuffers->size(); i++)
+	for(int i = 0; i < m_irBuffers->size(); i++)
 	{
 		m_fftConvolvers.push_back(std::unique_ptr<FFTConvolver>(new FFTConvolver((*m_irBuffers)[i], plan)));
 		m_delayLine.push_front((fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex)));
@@ -35,21 +35,21 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 
 	m_accBuffer = (fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex));
 
-	for (int i = 0; i < m_numThreads; i++)
+	for(int i = 0; i < m_numThreads; i++)
 		m_threadAccBuffers.push_back((fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex)));
 }
 
 Convolver::~Convolver()
 {
 	m_resetFlag = true;
-	for (auto &fut : m_futures)
-		if (fut.valid())
+	for(auto &fut : m_futures)
+		if(fut.valid())
 			fut.get();
 
 	std::free(m_accBuffer);
-	for (auto buf : m_threadAccBuffers)
+	for(auto buf : m_threadAccBuffers)
 		std::free(buf);
-	while (!m_delayLine.empty())
+	while(!m_delayLine.empty())
 	{
 		std::free(m_delayLine.front());
 		m_delayLine.pop_front();
@@ -58,7 +58,7 @@ Convolver::~Convolver()
 
 void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bool& eos)
 {
-	if (length > m_L)
+	if(length > m_L)
 	{
 		length = 0;
 		eos = m_tailCounter >= m_delayLine.size();
@@ -66,11 +66,11 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 	}
 
 	eos = false;
-	for (auto &fut : m_futures)
+	for(auto &fut : m_futures)
 		if(fut.valid())
 			fut.get();
 	
-	if (inBuffer != nullptr)
+	if(inBuffer != nullptr)
 		m_fftConvolvers[0]->getNextFDL(inBuffer, m_accBuffer, length, m_delayLine[0]);
 	else
 	{
@@ -82,28 +82,28 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 	m_fftConvolvers[0]->IFFT_FDL(m_accBuffer, outBuffer, length);
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 
-	if (m_tailCounter >= m_delayLine.size() - 1 && inBuffer == nullptr)
+	if(m_tailCounter >= m_delayLine.size() - 1 && inBuffer == nullptr)
 	{
 		eos = true;
 		length = m_irLength%m_M;
-		if (m_tailCounter > m_delayLine.size() - 1)
+		if(m_tailCounter > m_delayLine.size() - 1)
 			length = 0;
 	}
 	else
-		for (int i = 0; i < m_futures.size(); i++)
+		for(int i = 0; i < m_futures.size(); i++)
 			m_futures[i] = m_threadPool->enqueue(&Convolver::threadFunction, this, i);
 }
 
 void Convolver::reset()
 {
 	m_resetFlag = true;
-	for (auto &fut : m_futures)
-		if (fut.valid())
+	for(auto &fut : m_futures)
+		if(fut.valid())
 			fut.get();
 
-	for (int i = 0; i < m_delayLine.size();i++)
+	for(int i = 0; i < m_delayLine.size();i++)
 		std::memset(m_delayLine[i], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
-	for (int i = 0; i < m_fftConvolvers.size(); i++)
+	for(int i = 0; i < m_fftConvolvers.size(); i++)
 		m_fftConvolvers[i]->clear();
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 	m_tailCounter = 0;
@@ -120,7 +120,7 @@ void Convolver::setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<s
 {
 	reset();
 	m_irBuffers = ir;
-	for (int i = 0; i < m_irBuffers->size(); i++)
+	for(int i = 0; i < m_irBuffers->size(); i++)
 		m_fftConvolvers[i]->setImpulseResponse((*m_irBuffers)[i]);
 }
 
@@ -133,11 +133,11 @@ bool Convolver::threadFunction(int id)
 
 	std::memset(m_threadAccBuffers[id], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 
-	for (int i = start; i < end && !m_resetFlag; i++)
+	for(int i = start; i < end && !m_resetFlag; i++)
 		m_fftConvolvers[i]->getNextFDL(m_delayLine[i], m_threadAccBuffers[id]);
 
 	m_sumMutex.lock();
-	for (int i = 0; (i < m_N / 2 + 1) && !m_resetFlag; i++)
+	for(int i = 0; (i < m_N / 2 + 1) && !m_resetFlag; i++)
 	{
 		m_accBuffer[i][0] += m_threadAccBuffers[id][i][0];
 		m_accBuffer[i][1] += m_threadAccBuffers[id][i][1];
