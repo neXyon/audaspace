@@ -699,7 +699,7 @@ endif()
 if(BUILD_DEMOS)
 	include_directories(${INCLUDE})
 
-	set(DEMOS audaplay audaconvert audaremap signalgen randsounds)
+	set(DEMOS audaplay audaconvert audaremap signalgen randsounds dynamicmusic playbackmanager convolution binaural)
 
 	add_executable(audaplay demos/audaplay.cpp)
 	target_link_libraries(audaplay audaspace)
