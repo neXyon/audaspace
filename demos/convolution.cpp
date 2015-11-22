@@ -16,7 +16,6 @@
 
 #include "fx/ConvolverSound.h"
 #include "fx/ImpulseResponse.h"
-#include "util/StreamBuffer.h"
 #include "util/ThreadPool.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDevice.h"
@@ -24,13 +23,10 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "file/File.h"
-#include "IReader.h"
 
 #include <iostream>
-#include <condition_variable>
 #include <thread>
 #include <chrono>
-#include <mutex>
 
 using namespace aud;
 

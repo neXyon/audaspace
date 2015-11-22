@@ -21,8 +21,6 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "file/File.h"
-#include "Exception.h"
-#include "IReader.h"
 #include "fx/MutableSound.h"
 
 #include <iostream>

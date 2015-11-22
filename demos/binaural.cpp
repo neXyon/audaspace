@@ -18,7 +18,6 @@
 #include "fx/BinauralSound.h"
 #include "fx/Source.h"
 #include "fx/HRTF.h"
-#include "util/StreamBuffer.h"
 #include "util/ThreadPool.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDevice.h"
@@ -26,7 +25,6 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "file/File.h"
-#include "IReader.h"
 #include "Exception.h"
 
 #include <iostream>
@@ -91,6 +89,7 @@ int main(int argc, char* argv[])
 			x = 0;
 		source->setAzimuth(x);
 		//source->setElevation(y);
+		std::cout << "Azimuth: " << x << "Elevation: " << y << std::endl;
 	}
 
 	return 0;
