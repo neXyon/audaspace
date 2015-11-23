@@ -18,7 +18,7 @@
 
 /**
 * @file FFTPlan.h
-* @ingroup fx
+* @ingroup util
 * The FFTPlan class.
 */
 
