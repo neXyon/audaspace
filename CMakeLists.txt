@@ -605,9 +605,13 @@ endif()
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 
 # directories
+
 find_package(FFTW REQUIRED)
 list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
 list(APPEND LIBRARIES ${FFTW_LIBRARY})
+
+include_directories(${INCLUDE})
+link_directories()
 
 # install configuration
 
@@ -621,9 +625,9 @@ set(LIB_DESTINATION "lib${LIB_SUFFIX}")
 
 # library
 
-
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
-target_link_libraries(audaspace ${LIBRARIES} ${FFTW_LIBRARIES})
+target_link_libraries(audaspace ${LIBRARIES})  
+set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})  
 
 install(TARGETS audaspace
 	RUNTIME DESTINATION ${BIN_DESTINATION}
