@@ -107,11 +107,9 @@ int main(int argc, char* argv[])
 
 void loadHRTFs(std::string path, std::shared_ptr<HRTF> hrtfs)
 {
-	std::string readpath = path;
-
 	WIN32_FIND_DATA entry;
 	bool found_file = true;
-	std::string search = readpath + "\\*";
+	std::string search = path + "\\*";
 	HANDLE dir = FindFirstFile(search.c_str(), &entry);
 	float azim, elev;
 
