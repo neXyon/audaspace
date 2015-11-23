@@ -119,7 +119,7 @@ void loadHRTFs(std::string path, std::shared_ptr<HRTF> hrtfs)
 	{
 		std::string filename = entry.cFileName;
 		
-		if (filename.front() == 'R')
+		if(filename.front() == 'R')
 		{
 			elev = std::stof(filename.substr(1, filename.find("e") - 1));
 			azim = std::stof(filename.substr(filename.find("e") + 1, filename.find("a") - filename.find("e") - 1));
