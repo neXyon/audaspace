@@ -120,7 +120,6 @@ void loadHRTFs(std::string path, std::shared_ptr<HRTF> hrtfs)
 			azim = std::stof(filename.substr(filename.find("e") + 1, filename.find("a") - filename.find("e") - 1));
 			hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>(path + "/" + filename)), azim, elev);
 		}
-		found_file = FindNextFile(dir, &entry);
 	}
 	closedir(dir);
 }
