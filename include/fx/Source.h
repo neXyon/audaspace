@@ -30,6 +30,7 @@ AUD_NAMESPACE_BEGIN
 
 /**
 * This class stores the azimuth and elevation angles of a sound and allows to change them dynamically.
+* The azimuth angle goes clockwise. For a sound source situated at the right of the listener the azimuth angle is 90.
 */
 class AUD_API Source
 {
