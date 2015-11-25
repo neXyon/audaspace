@@ -184,7 +184,7 @@ public:
 	* \param source A shared pointer to a Source object that will be used to change the source position of the sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to and FFT plan that will be used for convolution.
-	* \exception Exception thrown if HRTFs don't match the rate of the input reader or if the input reader has more than one channel.
+	* \exception Exception thrown if the specs of the HRTFs and the sound don't match or if the provided HRTF object is empty.
 	*/
 	BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 	virtual ~BinauralReader();
