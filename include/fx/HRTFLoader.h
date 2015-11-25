@@ -49,10 +49,33 @@ private:
 	HRTFLoader() = delete;
 
 public:
+	/**
+	* Loads all the left ear HRTFs in the directory.Onle one ear HRTFs for all azimuths [0,360) are needed for binaural sound.
+	* \param plan The plan that will be used to create the HRTF object.
+	* \param fileExtension The extension of the HRTF files.
+	* \param path The path to the folder containing the HRTFs.
+	* \return A shared pointer to a loaded HRTF object.
+	*/
 	static std::shared_ptr<HRTF> loadLeftHRTFs(std::shared_ptr<FFTPlan> plan, const std::string& fileExtension, const std::string& path = "");
+
+	/**
+	* Loads all the right ear HRTFs in the directory. Onle one ear HRTFs for all azimuths [0,360) are needed for binaural sound.
+	* \param plan The plan that will be used to create the HRTF object.
+	* \param fileExtension The extension of the HRTF files.
+	* \param path The path to the folder containing the HRTFs.
+	* \return A shared pointer to a loaded HRTF object.
+	*/
 	static std::shared_ptr<HRTF> loadRightHRTFs(std::shared_ptr<FFTPlan> plan, const std::string& fileExtension, const std::string& path = "");
 
 private:
+
+	/**
+	* Loads all the HRTFs in the directory and subdirectories.
+	* \param hrtfs An HRTF object in which to load the HRTFs.
+	* \param ear 'L' to load left ear HRTFs, 'R' to load right ear HRTFs.
+	* \param fileExtension The extension of the HRTF files.
+	* \param path The path to the folder containing the HRTFs.
+	*/
 	static void loadHRTFs(std::shared_ptr<HRTF>hrtfs, char ear, const std::string& fileExtension, const std::string& path = "");
 };
 
