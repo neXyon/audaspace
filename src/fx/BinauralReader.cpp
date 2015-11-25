@@ -29,6 +29,8 @@ AUD_NAMESPACE_BEGIN
 BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
 	m_reader(reader), m_hrtfs(hrtfs), m_source(source), m_N(plan->getSize()), m_threadPool(threadPool), m_position(0), m_eosReader(false), m_eosTail(false), m_transition(false), m_transPos(CROSSFADE_SAMPLES*NUM_OUTCHANNELS)
 {
+	if(m_hrtfs->isEmpty())
+		AUD_THROW(StateException, "The provided HRTF object is empty");
 	if(m_reader->getSpecs().channels != 1) 
 		AUD_THROW(StateException, "The sound must have only one channel");
 	if(m_reader->getSpecs().rate != m_hrtfs->getSpecs().rate)

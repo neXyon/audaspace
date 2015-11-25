@@ -30,6 +30,7 @@ HRTF::HRTF(std::shared_ptr<FFTPlan> plan) :
 {
 	m_specs.channels = CHANNELS_INVALID;
 	m_specs.rate = 0;
+	m_empty = true;
 }
 
 bool HRTF::addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, float azimuth, float elevation)
@@ -46,7 +47,7 @@ bool HRTF::addImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse, flo
 	m_hrtfs[elevation][azimuth] = std::make_shared<ImpulseResponse>(impulseResponse, m_plan);
 	m_specs.channels = CHANNELS_MONO;
 	m_specs.rate = spec.rate;
-
+	m_empty = false;
 	return true;
 }
 
@@ -92,5 +93,10 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 Specs HRTF::getSpecs()
 {
 	return m_specs;
+}
+
+bool HRTF::isEmpty()
+{
+	return m_empty;
 }
 AUD_NAMESPACE_END

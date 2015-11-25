@@ -54,6 +54,11 @@ private:
 	*/
 	Specs m_specs;
 
+	/**
+	* True if the HRTF object is empty.
+	*/
+	bool m_empty;
+
 	// delete copy constructor and operator=
 	HRTF(const HRTF&) = delete;
 	HRTF& operator=(const HRTF&) = delete;
@@ -92,6 +97,12 @@ public:
 	* \return The shared specs of all the HRTFs.
 	*/
 	Specs getSpecs();
+
+	/**
+	* Retrieves the state of the HRTF object.
+	* \return True if it is empty, false otherwise.
+	*/
+	bool isEmpty();
 };
 
 AUD_NAMESPACE_END
