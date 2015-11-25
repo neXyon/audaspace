@@ -179,6 +179,7 @@ set(PUBLIC_HDR
 	include/fx/HighpassCalculator.h
 	include/fx/Highpass.h
 	include/fx/HRTF.h
+	include/fx/HRTFLoader.h
 	include/fx/IDynamicIIRFilterCalculator.h
 	include/fx/IIRFilter.h
 	include/fx/IIRFilterReader.h
@@ -598,11 +599,14 @@ string(CONCAT STATIC_PLUGIN_REGISTERS ${STATIC_PLUGIN_REGISTERS})
 
 if(WIN32)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
 else()
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
 endif()
 
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
+list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp)
 
 # directories
 
@@ -729,11 +733,7 @@ if(BUILD_DEMOS)
 	add_executable(convolution demos/convolution.cpp)
 	target_link_libraries(convolution audaspace)
 
-	if(WIN32)
-		add_executable(binaural demos/binauralWindows.cpp)
-	else()
-		add_executable(binaural demos/binauralUnix.cpp)
-	endif()
+	add_executable(binaural demos/binaural.cpp)
 	target_link_libraries(binaural audaspace)
 
 	if(WITH_OPENAL)
