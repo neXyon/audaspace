@@ -55,26 +55,21 @@ void HRTFLoader::loadHRTFs(std::shared_ptr<HRTF> hrtfs, char ear, const std::str
 	while(found_file)
 	{
 		std::string filename = entry.cFileName;
-		if((entry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && filename != "." && filename != "..")
-			loadHRTFs(hrtfs, ear, fileExtension, path + "/" + entry.cFileName);
-		else
+		if(filename.front() == ear && filename.length() >= fileExtension.length() && filename.substr(filename.length() - fileExtension.length()) == fileExtension)
 		{
-			if(filename.front() == ear && filename.length() >= fileExtension.length() && filename.substr(filename.length() - fileExtension.length()) == fileExtension)
+			try
 			{
-				try
-				{
-					elev = std::stof(filename.substr(1, filename.find("e") - 1));
-					azim = std::stof(filename.substr(filename.find("e") + 1, filename.find("a") - filename.find("e") - 1));
-					if(ear == 'L')
-						azim = 360 - azim;
-				}
-				catch(std::exception& e)
-				{
-					AUD_THROW(FileException, "The HRTF name doesn't follow the naming scheme: " + filename);
-				}
-				hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>(readpath + "/" + filename)), azim, elev);
+				elev = std::stof(filename.substr(1, filename.find("e") - 1));
+				azim = std::stof(filename.substr(filename.find("e") + 1, filename.find("a") - filename.find("e") - 1));
+				if(ear == 'L')
+					azim = 360 - azim;
 			}
-		}
+			catch(std::exception& e)
+			{
+				AUD_THROW(FileException, "The HRTF name doesn't follow the naming scheme: " + filename);
+			}
+			hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>(readpath + "/" + filename)), azim, elev);
+		}	
 		found_file = FindNextFile(dir, &entry);
 	}
 	FindClose(dir);

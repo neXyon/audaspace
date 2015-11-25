@@ -75,43 +75,14 @@ int main(int argc, char* argv[])
 	device->lock();
 	if (argc == 4)
 	{
-		std::shared_ptr<ImpulseResponse> ir;
-		try
-		{
-			ir = std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>(argv[3])), plan);
-		}
-		catch (Exception& e)
-		{
-			std::cerr << "Error loading the inverse speaker impulse response - " << e.getMessage() << std::endl;
-			return 2;
-		}
+		std::shared_ptr<ImpulseResponse> ir(std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>(argv[3])), plan));
 		std::shared_ptr<ConvolverSound> convolver = std::make_shared<ConvolverSound>(binaural, ir, threadPool, plan);
-		std::shared_ptr<IHandle> handle;
-		try
-		{
-			handle = device->play(convolver);
-		}
-		catch (Exception& e)
-		{
-			std::cerr << "Error playing the sound - " << e.getMessage() << std::endl;
-			device->unlock();
-			return 2;
-		}
+		auto handle = device->play(convolver);
 		handle->setLoopCount(-1);
 	}
 	else
 	{
-		std::shared_ptr<IHandle> handle;
-		try
-		{
-			handle = device->play(binaural);
-		}
-		catch (Exception& e)
-		{
-			std::cerr << "Error playing the sound - " << e.getMessage() << std::endl;
-			device->unlock();
-			return 2;
-		}
+		auto handle = device->play(binaural);
 		handle->setLoopCount(-1);
 	}
 	device->unlock();
