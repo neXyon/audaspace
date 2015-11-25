@@ -17,7 +17,7 @@
 #include "fx/ConvolverSound.h"
 #include "fx/BinauralSound.h"
 #include "fx/Source.h"
-#include "fx/HRTF.h"
+#include "fx/HRTFLoader.h"
 #include "util/ThreadPool.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDevice.h"
@@ -25,17 +25,17 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "file/File.h"
+#include "respec/ChannelMapper.h"
+#include "respec/JOSResample.h"
 #include "Exception.h"
 
-#include <dirent.h>
+#include <windows.h>
 #include <string>
 #include <iostream>
 #include <thread>
 #include <chrono>
 
 using namespace aud;
-
-void loadHRTFs(std::string path, std::shared_ptr<HRTF> hrtfs);
 
 int main(int argc, char* argv[])
 {
@@ -53,25 +53,63 @@ int main(int argc, char* argv[])
 
 	std::shared_ptr<FFTPlan> plan(std::make_shared<FFTPlan>(4096, true));
 	std::shared_ptr<ThreadPool> threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()));
-	std::shared_ptr<File> file1(std::make_shared<File>(argv[1]));
-	std::shared_ptr<HRTF> hrtfs(std::make_shared<HRTF>(plan));
 	std::shared_ptr<Source> source = std::make_shared<Source>(0, 0);
+	std::shared_ptr<HRTF> hrtfs;
+	try
+	{
+		hrtfs = HRTFLoader::loadRightHRTFs(plan, ".wav", argv[2]);
+	}
+	catch (Exception& e)
+	{
+		std::cerr << "Error loading hrtfs - " << e.getMessage() << std::endl;
+		return 2;
+	}
 
-	loadHRTFs(argv[2], hrtfs);
+	DeviceSpecs specs;
+	specs.channels = CHANNELS_MONO;
+	specs.rate = hrtfs->getSpecs().rate;
+	std::shared_ptr<JOSResample> sound(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>(argv[1]), specs), specs));
 
-	std::shared_ptr<BinauralSound> binaural(std::make_shared<BinauralSound>(file1, hrtfs, source, threadPool, plan));
+	std::shared_ptr<BinauralSound> binaural(std::make_shared<BinauralSound>(sound, hrtfs, source, threadPool, plan));
 
 	device->lock();
 	if (argc == 4)
 	{
-		std::shared_ptr<ImpulseResponse> ir = std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>(argv[3])), plan);
+		std::shared_ptr<ImpulseResponse> ir;
+		try
+		{
+			ir = std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>(argv[3])), plan);
+		}
+		catch (Exception& e)
+		{
+			std::cerr << "Error loading the inverse speaker impulse response - " << e.getMessage() << std::endl;
+			return 2;
+		}
 		std::shared_ptr<ConvolverSound> convolver = std::make_shared<ConvolverSound>(binaural, ir, threadPool, plan);
-		auto handle = device->play(convolver);
+		std::shared_ptr<IHandle> handle;
+		try
+		{
+			handle = device->play(convolver);
+		}
+		catch (Exception& e)
+		{
+			std::cerr << "Error playing the sound - " << e.getMessage() << std::endl;
+			return 2;
+		}
 		handle->setLoopCount(-1);
 	}
 	else
 	{
-		auto handle = device->play(binaural);
+		std::shared_ptr<IHandle> handle;
+		try
+		{
+			handle = device->play(binaural);
+		}
+		catch (Exception& e)
+		{
+			std::cerr << "Error playing the sound - " << e.getMessage() << std::endl;
+			return 2;
+		}
 		handle->setLoopCount(-1);
 	}
 	device->unlock();
@@ -103,23 +141,4 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;
-}
-
-void loadHRTFs(std::string path, std::shared_ptr<HRTF> hrtfs)
-{
-	DIR* dir = opendir(path.c_str());
-	float azim, elev;
-
-	while(dirent* entry = readdir(dir))
-	{
-		std::string filename = entry->d_name;
-		
-		if(filename.front() == 'R')
-		{
-			elev = std::stof(filename.substr(1, filename.find("e") - 1));
-			azim = std::stof(filename.substr(filename.find("e") + 1, filename.find("a") - filename.find("e") - 1));
-			hrtfs->addImpulseResponse(std::make_shared<StreamBuffer>(std::make_shared<File>(path + "/" + filename)), azim, elev);
-		}
-	}
-	closedir(dir);
 }
