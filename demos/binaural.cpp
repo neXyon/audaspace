@@ -94,6 +94,7 @@ int main(int argc, char* argv[])
 		catch (Exception& e)
 		{
 			std::cerr << "Error playing the sound - " << e.getMessage() << std::endl;
+			device->unlock();
 			return 2;
 		}
 		handle->setLoopCount(-1);
@@ -108,6 +109,7 @@ int main(int argc, char* argv[])
 		catch (Exception& e)
 		{
 			std::cerr << "Error playing the sound - " << e.getMessage() << std::endl;
+			device->unlock();
 			return 2;
 		}
 		handle->setLoopCount(-1);
