@@ -76,21 +76,9 @@ public:
 	* Creates a new ThreadPool object.
 	* \param count The number of threads of the pool. It must not be 0.
 	*/
-	ThreadPool(unsigned int count) :
-		m_stopFlag(false), m_numThreads(count)
-	{
-		for(unsigned int i = 0; i < count; i++)
-			m_threads.emplace_back(&ThreadPool::threadFunction, this);
-	}
-	virtual ~ThreadPool()
-	{
-		m_mutex.lock();
-		m_stopFlag = true;
-		m_mutex.unlock();
-		m_condition.notify_all();
-		for(unsigned int i = 0; i < m_threads.size(); i++)
-			m_threads[i].join();
-	}
+	ThreadPool(unsigned int count);
+
+	virtual ~ThreadPool();
 
 	/**
 	* Enqueues a new task for the threads to realize.
@@ -118,31 +106,13 @@ public:
 	* Retrieves the number of threads of the pool.
 	* \return The number of threads.
 	*/
-	unsigned int getNumOfThreads()
-	{
-		return m_numThreads;
-	}
+	unsigned int getNumOfThreads();
 
 private:
 
 	/**
 	* Worker thread function.
 	*/
-	void threadFunction()
-	{
-		while(true)
-		{
-			std::function<void()> task;
-			{
-				std::unique_lock<std::mutex> lock(m_mutex);
-				m_condition.wait(lock, [this] { return m_stopFlag || !m_queue.empty(); });
-				if(m_stopFlag && m_queue.empty())
-					return;
-				task = std::move(m_queue.front());
-				this->m_queue.pop();
-			}
-			task();
-		}
-	}
+	void threadFunction();
 };
 AUD_NAMESPACE_END

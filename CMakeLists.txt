@@ -128,6 +128,7 @@ set(SRC
 	src/util/BufferReader.cpp
 	src/util/FFTPlan.cpp
 	src/util/StreamBuffer.cpp
+	src/util/ThreadPool.cpp
 )
 
 set(PRIVATE_HDR
