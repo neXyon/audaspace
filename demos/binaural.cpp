@@ -29,7 +29,6 @@
 #include "respec/JOSResample.h"
 #include "Exception.h"
 
-#include <windows.h>
 #include <string>
 #include <iostream>
 #include <thread>
