@@ -42,35 +42,53 @@ set(SRC
 	src/fx/ADSR.cpp
 	src/fx/ADSRReader.cpp
 	src/fx/BaseIIRFilterReader.cpp
+	src/fx/BinauralSound.cpp
+	src/fx/BinauralReader.cpp
 	src/fx/ButterworthCalculator.cpp
 	src/fx/Butterworth.cpp
 	src/fx/CallbackIIRFilterReader.cpp
+	src/fx/Convolver.cpp
+	src/fx/ConvolverReader.cpp
+	src/fx/ConvolverSound.cpp
 	src/fx/Delay.cpp
 	src/fx/DelayReader.cpp
 	src/fx/DynamicIIRFilter.cpp
 	src/fx/DynamicIIRFilterReader.cpp
+	src/fx/DynamicMusic.cpp
 	src/fx/Effect.cpp
 	src/fx/EffectReader.cpp
 	src/fx/Envelope.cpp
 	src/fx/Fader.cpp
 	src/fx/FaderReader.cpp
+	src/fx/FFTConvolver.cpp
 	src/fx/HighpassCalculator.cpp
 	src/fx/Highpass.cpp
+	src/fx/HRTF.cpp
 	src/fx/IIRFilter.cpp
 	src/fx/IIRFilterReader.cpp
+	src/fx/ImpulseResponse.cpp
 	src/fx/Limiter.cpp
 	src/fx/LimiterReader.cpp
 	src/fx/Loop.cpp
 	src/fx/LoopReader.cpp
 	src/fx/LowpassCalculator.cpp
 	src/fx/Lowpass.cpp
+	src/fx/MutableReader.cpp
+	src/fx/MutableSound.cpp
 	src/fx/Pitch.cpp
 	src/fx/PitchReader.cpp
+	src/fx/PlaybackManager.cpp
+	src/fx/PlaybackCategory.cpp
 	src/fx/Reverse.cpp
 	src/fx/ReverseReader.cpp
+	src/fx/SoundList.cpp
+	src/fx/Source.cpp
 	src/fx/Sum.cpp
 	src/fx/Threshold.cpp
 	src/fx/Volume.cpp
+	src/fx/VolumeReader.cpp
+	src/fx/VolumeSound.cpp
+	src/fx/VolumeStorage.cpp	
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -105,9 +123,12 @@ set(SRC
 	src/sequence/SequenceReader.cpp
 	src/sequence/Superpose.cpp
 	src/sequence/SuperposeReader.cpp
+	src/util/Barrier.cpp
 	src/util/Buffer.cpp
 	src/util/BufferReader.cpp
+	src/util/FFTPlan.cpp
 	src/util/StreamBuffer.cpp
+	src/util/ThreadPool.cpp
 )
 
 set(PRIVATE_HDR
@@ -137,36 +158,55 @@ set(PUBLIC_HDR
 	include/fx/ADSR.h
 	include/fx/ADSRReader.h
 	include/fx/BaseIIRFilterReader.h
+	include/fx/BinauralSound.h
+	include/fx/BinauralReader.h
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
+	include/fx/Convolver.h
+	include/fx/ConvolverReader.h
+	include/fx/ConvolverSound.h
 	include/fx/Delay.h
 	include/fx/DelayReader.h
 	include/fx/DynamicIIRFilter.h
 	include/fx/DynamicIIRFilterReader.h
+	include/fx/DynamicMusic.h
 	include/fx/Effect.h
 	include/fx/EffectReader.h
 	include/fx/Envelope.h
 	include/fx/Fader.h
 	include/fx/FaderReader.h
+	include/fx/FFTConvolver.h
 	include/fx/HighpassCalculator.h
 	include/fx/Highpass.h
+	include/fx/HRTF.h
+	include/fx/HRTFLoader.h
 	include/fx/IDynamicIIRFilterCalculator.h
 	include/fx/IIRFilter.h
 	include/fx/IIRFilterReader.h
+	include/fx/ImpulseResponse.h
 	include/fx/Limiter.h
 	include/fx/LimiterReader.h
 	include/fx/Loop.h
 	include/fx/LoopReader.h
 	include/fx/LowpassCalculator.h
 	include/fx/Lowpass.h
+	include/fx/MutableReader.h
+	include/fx/MutableSound.h
 	include/fx/Pitch.h
 	include/fx/PitchReader.h
+	include/fx/PlaybackManager.h
+	include/fx/PlaybackCategory.h
 	include/fx/Reverse.h
 	include/fx/ReverseReader.h
+	include/fx/SoundList.h
+	include/fx/Source.h
 	include/fx/Sum.h
 	include/fx/Threshold.h
 	include/fx/Volume.h
+	include/fx/VolumeReader.h
+	include/fx/VolumeSound.h
+	include/fx/VolumeStorage.h
 	include/generator/Sawtooth.h
 	include/generator/SawtoothReader.h
 	include/generator/Silence.h
@@ -203,11 +243,14 @@ set(PUBLIC_HDR
 	include/sequence/SequenceReader.h
 	include/sequence/Superpose.h
 	include/sequence/SuperposeReader.h
+	include/util/Barrier.h
 	include/util/Buffer.h
 	include/util/BufferReader.h
+	include/util/FFTPlan.h
 	include/util/ILockable.h
 	include/util/Math3D.h
 	include/util/StreamBuffer.h
+	include/util/ThreadPool.h
 )
 
 set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
@@ -300,14 +343,18 @@ endif()
 if(WITH_C)
 	set(C_SRC
 		bindings/C/AUD_Device.cpp
+		bindings/C/AUD_DynamicMusic.cpp
 		bindings/C/AUD_Handle.cpp
+		bindings/C/AUD_PlaybackManager.cpp
 		bindings/C/AUD_Sequence.cpp
 		bindings/C/AUD_Sound.cpp
 		bindings/C/AUD_Special.cpp
 	)
 	set(C_HDR
 		bindings/C/AUD_Device.h
+		bindings/C/AUD_DynamicMusic.h
 		bindings/C/AUD_Handle.h
+		bindings/C/AUD_PlaybackManager.h
 		bindings/C/AUD_Sequence.h
 		bindings/C/AUD_Sound.h
 		bindings/C/AUD_Special.h
@@ -554,13 +601,20 @@ string(CONCAT STATIC_PLUGIN_REGISTERS ${STATIC_PLUGIN_REGISTERS})
 
 if(WIN32)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
 else()
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
 endif()
 
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
+list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp)
 
 # directories
+
+find_package(FFTW REQUIRED)
+list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
+list(APPEND LIBRARIES ${FFTW_LIBRARY})
 
 include_directories(${INCLUDE})
 link_directories()
@@ -578,8 +632,8 @@ set(LIB_DESTINATION "lib${LIB_SUFFIX}")
 # library
 
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
-target_link_libraries(audaspace ${LIBRARIES})
-set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+target_link_libraries(audaspace ${LIBRARIES})  
+set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})  
 
 install(TARGETS audaspace
 	RUNTIME DESTINATION ${BIN_DESTINATION}
@@ -655,7 +709,7 @@ endif()
 if(BUILD_DEMOS)
 	include_directories(${INCLUDE})
 
-	set(DEMOS audaplay audaconvert audaremap signalgen)
+	set(DEMOS audaplay audaconvert audaremap signalgen randsounds dynamicmusic playbackmanager convolution binaural)
 
 	add_executable(audaplay demos/audaplay.cpp)
 	target_link_libraries(audaplay audaspace)
@@ -668,6 +722,21 @@ if(BUILD_DEMOS)
 
 	add_executable(signalgen demos/signalgen.cpp)
 	target_link_libraries(signalgen audaspace)
+
+	add_executable(randsounds demos/randsounds.cpp)
+	target_link_libraries(randsounds audaspace)
+
+	add_executable(dynamicmusic demos/dynamicmusic.cpp)
+	target_link_libraries(dynamicmusic audaspace)
+
+	add_executable(playbackmanager demos/playbackmanager.cpp)
+	target_link_libraries(playbackmanager audaspace)
+
+	add_executable(convolution demos/convolution.cpp)
+	target_link_libraries(convolution audaspace)
+
+	add_executable(binaural demos/binaural.cpp)
+	target_link_libraries(binaural audaspace)
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
@@ -708,7 +777,9 @@ if(WITH_PYTHON)
 	set(PYTHON_SRC
 		bindings/python/PyAPI.cpp
 		bindings/python/PyDevice.cpp
+		bindings/python/PyDynamicMusic.cpp
 		bindings/python/PyHandle.cpp
+		bindings/python/PyPlaybackManager.cpp
 		bindings/python/PySequence.cpp
 		bindings/python/PySequenceEntry.cpp
 		bindings/python/PySound.cpp
@@ -716,7 +787,9 @@ if(WITH_PYTHON)
 	set(PYTHON_HDR
 		bindings/python/PyAPI.h
 		bindings/python/PyDevice.h
+		bindings/python/PyDynamicMusic.h
 		bindings/python/PyHandle.h
+		bindings/python/PyPlaybackManager.h
 		bindings/python/PySequence.h
 		bindings/python/PySequenceEntry.h
 		bindings/python/PySound.h

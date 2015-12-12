@@ -37,6 +37,8 @@
 #include "fx/Sum.h"
 #include "fx/Threshold.h"
 #include "fx/Volume.h"
+#include "fx/SoundList.h"
+#include "fx/MutableSound.h"
 #include "sequence/Double.h"
 #include "sequence/Superpose.h"
 #include "sequence/PingPong.h"
@@ -620,4 +622,46 @@ AUD_API void AUD_Sound_free(AUD_Sound* sound)
 AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound)
 {
 	return new std::shared_ptr<ISound>(*sound);
+}
+
+AUD_API AUD_Sound* AUD_Sound_list(int random)
+{
+	try
+	{
+		return new AUD_Sound(new SoundList(random));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API int AUD_SoundList_addSound(AUD_Sound* list, AUD_Sound* sound)
+{
+	assert(sound);
+	assert(list);
+
+	std::shared_ptr<SoundList> s = std::dynamic_pointer_cast<SoundList>(*list);
+	if(s.get())
+	{
+		s->addSound(*sound);
+		return 1;
+	}
+	else
+		return 0;
+
+}
+
+AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new MutableSound(*sound));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
 }
