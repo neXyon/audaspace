@@ -26,7 +26,6 @@ extern AUD_API AUD_ThreadPool* AUD_ThreadPool_create(int nThreads);
 extern AUD_API void AUD_ThreadPool_free(AUD_ThreadPool* threadPool);
 extern AUD_API AUD_ImpulseResponse* AUD_ImpulseResponse_create(AUD_Sound* sound);
 extern AUD_API void AUD_ImpulseResponse_free(AUD_ImpulseResponse* filter);
-extern AUD_API AUD_Sound* AUD_Sound_Convolver_create(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool);
 
 #ifdef __cplusplus
 }

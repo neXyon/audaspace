@@ -25,8 +25,6 @@ using namespace aud;
 
 AUD_API AUD_ThreadPool* AUD_ThreadPool_create(int nThreads)
 {
-	assert(nThreads);
-
 	try
 	{
 		return new AUD_ThreadPool(new ThreadPool(nThreads));
