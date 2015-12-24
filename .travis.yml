@@ -1,0 +1,18 @@
+language: cpp
+
+compiler:
+ - clang
+ - gcc
+
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq python3-all-dev python3-numpy libopenal-dev libsdl2-dev libsndfile1-dev libavcodec-ffmpeg-dev libavformat-ffmpeg-dev libavutil-ffmpeg-dev libjack-dev
+
+before_script:
+ - mkdir build
+ - cd build
+ - cmake ..
+
+script:
+ - make
+
