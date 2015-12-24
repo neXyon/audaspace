@@ -22,6 +22,7 @@
 #include "PySequence.h"
 #include "PyPlaybackManager.h"
 #include "PyDynamicMusic.h"
+#include "PyThreadPool.h"
 
 #include "respec/Specification.h"
 #include "devices/IHandle.h"
@@ -88,6 +89,9 @@ PyInit_aud()
 	if(!initializePlaybackManager())
 		return nullptr;
 
+	if(!initializeThreadPool())
+		return nullptr;
+
 	module = PyModule_Create(&audmodule);
 	if(module == nullptr)
 		return nullptr;
@@ -99,6 +103,7 @@ PyInit_aud()
 	addSequenceToModule(module);
 	addDynamicMusicToModule(module);
 	addPlaybackManagerToModule(module);
+	addThreadPoolToModule(module);
 
 	AUDError = PyErr_NewException("aud.error", nullptr, nullptr);
 	Py_INCREF(AUDError);

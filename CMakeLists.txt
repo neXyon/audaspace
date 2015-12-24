@@ -783,20 +783,24 @@ if(WITH_PYTHON)
 		bindings/python/PyDevice.cpp
 		bindings/python/PyDynamicMusic.cpp
 		bindings/python/PyHandle.cpp
+		bindings/python/PyImpulseResponse.cpp
 		bindings/python/PyPlaybackManager.cpp
 		bindings/python/PySequence.cpp
 		bindings/python/PySequenceEntry.cpp
 		bindings/python/PySound.cpp
+		bindings/python/PyThreadPool.cpp
 	)
 	set(PYTHON_HDR
 		bindings/python/PyAPI.h
 		bindings/python/PyDevice.h
 		bindings/python/PyDynamicMusic.h
 		bindings/python/PyHandle.h
+		bindings/python/PyImpulseResponse.h
 		bindings/python/PyPlaybackManager.h
 		bindings/python/PySequence.h
 		bindings/python/PySequenceEntry.h
 		bindings/python/PySound.h
+		bindings/python/PyThreadPool.h
 	)
 
 	add_library(audaspace-py ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
