@@ -342,6 +342,7 @@ endif()
 # C
 if(WITH_C)
 	set(C_SRC
+		bindings/C/AUD_Convolution.cpp
 		bindings/C/AUD_Device.cpp
 		bindings/C/AUD_DynamicMusic.cpp
 		bindings/C/AUD_Handle.cpp
@@ -351,6 +352,7 @@ if(WITH_C)
 		bindings/C/AUD_Special.cpp
 	)
 	set(C_HDR
+		bindings/C/AUD_Convolution.h
 		bindings/C/AUD_Device.h
 		bindings/C/AUD_DynamicMusic.h
 		bindings/C/AUD_Handle.h

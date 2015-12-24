@@ -359,6 +359,7 @@ extern AUD_API int AUD_SoundList_addSound(AUD_Sound* list, AUD_Sound* sound);
  * \return A handle of the mutable sound.
 */
 extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
+extern AUD_API AUD_Sound* AUD_Sound_Convolver_create(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool);
 
 #ifdef __cplusplus
 }
