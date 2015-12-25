@@ -47,6 +47,8 @@ std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 	case STATUS_PAUSED:
 		handle->pause();
 		break;
+	default:
+		break;
 	};
 	m_handles[m_currentID] = handle;
 	HandleData* data = new HandleData;
