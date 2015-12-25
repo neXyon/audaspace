@@ -28,7 +28,6 @@ before_install:
 before_script:
  - mkdir build
  - cd build
- - ls -R /usr/local/lib/python*
  - export PYTHONPATH="/usr/local/lib/python3.5/site-packages:$PYTHONPATH"
  - cmake ..
 
