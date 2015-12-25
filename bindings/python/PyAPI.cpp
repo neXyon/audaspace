@@ -25,6 +25,7 @@
 #include "PyThreadPool.h"
 #include "PyImpulseResponse.h"
 #include "PyHRTF.h"
+#include "PySource.h"
 
 #include "respec/Specification.h"
 #include "devices/IHandle.h"
@@ -100,6 +101,9 @@ PyInit_aud()
 	if(!initializeHRTF())
 		return nullptr;
 
+	if(!initializeSource())
+		return nullptr;
+
 	module = PyModule_Create(&audmodule);
 	if(module == nullptr)
 		return nullptr;
@@ -114,6 +118,7 @@ PyInit_aud()
 	addThreadPoolToModule(module);
 	addImpulseResponseToModule(module);
 	addHRTFToModule(module);
+	addSourceToModule(module);
 
 	AUDError = PyErr_NewException("aud.error", nullptr, nullptr);
 	Py_INCREF(AUDError);
