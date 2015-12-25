@@ -58,7 +58,7 @@ private:
 	/**
 	* The impulse response divided in parts.
 	*/
-	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> m_irBuffers;
+	std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> m_irBuffers;
 
 	/**
 	* Accumulation buffers for the threads.
@@ -128,7 +128,7 @@ public:
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to a FFT plan that will be used for convolution.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> m_plan);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> m_plan);
 
 	virtual ~Convolver();
 
@@ -152,13 +152,13 @@ public:
 	* Retrieves the current impulse response being used.
 	* \return The current impulse response.
 	*/
-	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> getImpulseResponse();
+	std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> getImpulseResponse();
 
 	/**
 	* Changes the impulse response and resets the convolver.
 	* \param ir A shared pointer to a vector with the data of the various impulse response parts in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
 	*/
-	void setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir);
+	void setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir);
 
 private:
 

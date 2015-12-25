@@ -22,7 +22,7 @@
 #include <cstring>
 
 AUD_NAMESPACE_BEGIN
-Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
+Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
 	m_N(plan->getSize()), m_M(plan->getSize()/2), m_L(plan->getSize()/2), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), static_cast<unsigned int>(m_irBuffers->size() - 1))), m_tailCounter(0)
 	
 {
@@ -72,7 +72,7 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 			fut.get();
 	
 	if(inBuffer != nullptr)
-		m_fftConvolvers[0]->getNextFDL(inBuffer, m_accBuffer, length, m_delayLine[0]);
+		m_fftConvolvers[0]->getNextFDL(inBuffer, reinterpret_cast<std::complex<sample_t>*>(m_accBuffer), length, m_delayLine[0]);
 	else
 	{
 		m_tailCounter++;
@@ -112,12 +112,12 @@ void Convolver::reset()
 	m_resetFlag = false;
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> Convolver::getImpulseResponse()
+std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> Convolver::getImpulseResponse()
 {
 	return m_irBuffers;
 }
 
-void Convolver::setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir)
+void Convolver::setImpulseResponse(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir)
 {
 	reset();
 	m_irBuffers = ir;
@@ -135,7 +135,7 @@ bool Convolver::threadFunction(int id)
 	std::memset(m_threadAccBuffers[id], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 
 	for(int i = start; i < end && !m_resetFlag; i++)
-		m_fftConvolvers[i]->getNextFDL(m_delayLine[i], m_threadAccBuffers[id]);
+		m_fftConvolvers[i]->getNextFDL(reinterpret_cast<std::complex<sample_t>*>(m_delayLine[i]), reinterpret_cast<std::complex<sample_t>*>(m_threadAccBuffers[id]));
 
 	m_sumMutex.lock();
 	for(int i = 0; (i < m_N / 2 + 1) && !m_resetFlag; i++)

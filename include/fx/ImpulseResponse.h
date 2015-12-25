@@ -45,7 +45,7 @@ private:
 	* in parts of N/2 samples. Those parts are transformed to the frequency domain transform which generates uni-dimensional 
 	* arrays of fftwtf_complex data (complex numbers).
 	*/
-	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>> m_processedIR;
+	std::vector<std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>>> m_processedIR;
 
 	/**
 	* The specification of the samples.
@@ -94,7 +94,7 @@ public:
 	* \param n The desired channel number (from 0 to channels-1).
 	* \return The desired channel of the impulse response.
 	*/
-	std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> getChannel(int n);
+	std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> getChannel(int n);
 
 private:
 	/**
