@@ -1,12 +1,9 @@
 language: cpp
 
-osx_image: xcode7.2
+#osx_image: xcode7.2
 
 os:
  - osx
-
-python:
-- '3.5.1'
 
 compiler:
  - clang
@@ -28,8 +25,8 @@ before_install:
 before_script:
  - mkdir build
  - cd build
- - export PYTHONPATH="/usr/local/lib/python3.5/site-packages:$PYTHONPATH"
- - cmake ..
+ - ls /usr/local/lib/python3.5
+ - cmake -DPYTHON_INCLUDE_DIR=/usr/local/lib/python3.5/include -DPYTHON_LIBRARY=/usr/local/lib/python3.5/libpython3.5.dylib ..
 
 script:
  - make
