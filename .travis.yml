@@ -14,7 +14,7 @@ compiler:
 
 before_install:
  - brew update
- - brew outdated cmake || brew upgrade cmake
+ - brew install cmake || brew outdated cmake || brew upgrade cmake
  - brew install ffmpeg
  - brew install python3
  - brew install sdl2
