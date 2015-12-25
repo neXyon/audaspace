@@ -1,12 +1,22 @@
 language: cpp
 
+os:
+ - osx
+
 compiler:
  - clang
- - gcc
+# - gcc
 
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq python3-all-dev python3-numpy libopenal-dev libsdl2-dev libsndfile1-dev libavcodec-ffmpeg-dev libavformat-ffmpeg-dev libavutil-ffmpeg-dev libjack-dev
+ - brew update
+ - brew outdated cmake || brew upgrade cmake
+ - brew install ffmpeg
+ - brew install python3
+ - brew install sdl2
+ - brew install libsndfile
+ - brew install jack
+# - sudo apt-get update -qq
+# - sudo apt-get install -qq python3-all-dev python3-numpy libopenal-dev libsdl2-dev libsndfile1-dev libavcodec-ffmpeg-dev libavformat-ffmpeg-dev libavutil-ffmpeg-dev libjack-dev
 
 before_script:
  - mkdir build
