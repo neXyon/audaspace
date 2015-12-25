@@ -56,6 +56,6 @@ setup(
       license = 'Apache License 2.0',
       long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
       ext_modules = [audaspace],
-      headers = [os.path.join(source_directory, file) for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PyImpulseResponse.h']] + ['Audaspace.h']
+      headers = [os.path.join(source_directory, file) for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PyImpulseResponse.h']] + ['Audaspace.h'] + ['@FFTW_INCLUDE_DIR@/fftw3.h']
 )
 
