@@ -18,6 +18,8 @@
 
 #include <algorithm>
 #include <cstring>
+#include <cstdlib>
+#include <cmath>
 
 AUD_NAMESPACE_BEGIN
 ImpulseResponse::ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse) :
@@ -55,7 +57,7 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 	bool eos = false;
 	int length = reader->getLength();
 	sample_t* buffer = (sample_t*)std::malloc(length * m_specs.channels * sizeof(sample_t));
-	int numParts = ceil((float)length / (plan->getSize() / 2));
+	int numParts = std::ceil((float)length / (plan->getSize() / 2));
 
 	for(int i = 0; i < m_specs.channels; i++)
 	{

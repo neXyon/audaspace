@@ -19,6 +19,8 @@
 
 #include <cstring>
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 
 AUD_NAMESPACE_BEGIN
 ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_ptr<ImpulseResponse> ir, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :

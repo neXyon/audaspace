@@ -17,6 +17,7 @@
 #include "fx/FFTConvolver.h"
 
 #include <cstring>
+#include <cstdlib>
 
 AUD_NAMESPACE_BEGIN
 

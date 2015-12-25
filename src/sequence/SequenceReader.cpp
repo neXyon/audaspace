@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <mutex>
+#include <cmath>
 
 AUD_NAMESPACE_BEGIN
 
@@ -159,9 +160,9 @@ void SequenceReader::read(int& length, bool& eos, sample_t* buffer)
 	while(pos < length)
 	{
 		frame = time * m_sequence->m_fps;
-		cfra = int(floor(frame));
+		cfra = int(std::floor(frame));
 
-		len = int(ceil((cfra + 1) / m_sequence->m_fps * specs.rate)) - m_position;
+		len = int(std::ceil((cfra + 1) / m_sequence->m_fps * specs.rate)) - m_position;
 		len = std::min(length - pos, len);
 		len = std::max(len, 1);
 

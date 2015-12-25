@@ -240,7 +240,7 @@ RESAMPLE_METHOD(resample_stereo, {
 
 void JOSResampleReader::seek(int position)
 {
-	position = floor(position * double(m_reader->getSpecs().rate) / double(m_rate));
+	position = std::floor(position * double(m_reader->getSpecs().rate) / double(m_rate));
 	m_reader->seek(position);
 	reset();
 }
@@ -325,9 +325,9 @@ void JOSResampleReader::read(int& length, bool& eos, sample_t* buffer)
 	double factor = std::min(target_factor, m_last_factor);
 
 	if(factor >= 1)
-		len = (int(m_n) - m_cache_valid) + int(ceil(length / factor)) + ceil(num_samples);
+		len = (int(m_n) - m_cache_valid) + int(std::ceil(length / factor)) + std::ceil(num_samples);
 	else
-		len = (int(m_n) - m_cache_valid) + int(ceil(length / factor) + ceil(num_samples / factor));
+		len = (int(m_n) - m_cache_valid) + int(std::ceil(length / factor) + std::ceil(num_samples / factor));
 
 	if(len > 0)
 	{
