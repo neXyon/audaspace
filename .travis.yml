@@ -25,8 +25,8 @@ before_install:
 before_script:
  - mkdir build
  - cd build
- - ls /usr/local/lib/python3.5
- - cmake -DPYTHON_INCLUDE_DIR=/usr/local/lib/python3.5/include -DPYTHON_LIBRARY=/usr/local/lib/python3.5/libpython3.5.dylib ..
+ - find /usr/local/ -iname "*python3.5*"
+ - cmake -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.5/include/python3.5m -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5.dylib ..
 
 script:
  - make
