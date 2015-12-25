@@ -62,7 +62,7 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 	float az = 0, el = 0, dif=0, minDif=360;
 	for(auto elem : m_hrtfs)
 	{
-		dif = abs(elevation - elem.first);
+		dif = std::fabs(elevation - elem.first);
 		if(dif < minDif)
 		{
 			minDif = dif;
@@ -75,7 +75,7 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 	
 	for(auto elem : m_hrtfs[elevation])
 	{
-		dif = abs(azimuth - elem.first);
+		dif = std::fabs(azimuth - elem.first);
 		if(dif < minDif)
 		{
 			minDif = dif;
