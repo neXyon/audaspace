@@ -3,6 +3,9 @@ language: cpp
 os:
  - osx
 
+python:
+- '3.5.1'
+
 compiler:
  - clang
 # - gcc
@@ -15,6 +18,7 @@ before_install:
  - brew install sdl2
  - brew install libsndfile
  - brew install jack
+ - brew install fftw
  - sudo pip3 install numpy
 # - sudo apt-get update -qq
 # - sudo apt-get install -qq python3-all-dev python3-numpy libopenal-dev libsdl2-dev libsndfile1-dev libavcodec-ffmpeg-dev libavformat-ffmpeg-dev libavutil-ffmpeg-dev libjack-dev
