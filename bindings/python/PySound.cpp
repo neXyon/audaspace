@@ -14,8 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "PySound.h"
+#include "PyHRTF.h"
 #include "PyImpulseResponse.h"
+#include "PySound.h"
+#include "PySource.h"
 #include "PyThreadPool.h"
 
 #include "Exception.h"
@@ -29,6 +31,7 @@
 #include "generator/Triangle.h"
 #include "fx/Accumulator.h"
 #include "fx/ADSR.h"
+#include "fx/BinauralSound.h"
 #include "fx/ConvolverSound.h"
 #include "fx/Delay.h"
 #include "fx/Envelope.h"
@@ -1616,7 +1619,7 @@ PyDoc_STRVAR(M_aud_Sound_convolver_doc,
 	"Creates a sound that will apply convolution to another sound.\n\n"
 	":arg impulseResponse: The filter with which convolve the sound.\n"
 	":type impulseResponse: :class:`ImpulseResponse`\n"
-	":arg threadPool: A thread pool used to parallelize convolition.\n"
+	":arg threadPool: A thread pool used to parallelize convolution.\n"
 	":type threadPool: :class:`ThreadPool`\n"
 	":return: The created :class:`Sound` object.\n"
 	":rtype: :class:`Sound`");
@@ -1648,6 +1651,62 @@ Sound_convolver(Sound* self, PyObject* args)
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new ConvolverSound(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<ImpulseResponse>*>(filter->impulseResponse), *reinterpret_cast<std::shared_ptr<ThreadPool>*>(threadPool->threadPool)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject *)parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_binaural_doc,
+	"convolver()\n\n"
+	"Creates a binaural sound using another sound as source. The original sound must be mono\n\n"
+	":arg hrtfs: An HRTF set.\n"
+	":type hrtf: :class:`HRTF`\n"
+	":arg source: An object representing the source position of the sound.\n"
+	":type source: :class:`Source`\n"
+	":arg threadPool: A thread pool used to parallelize convolution.\n"
+	":type threadPool: :class:`ThreadPool`\n"
+	":return: The created :class:`Sound` object.\n"
+	":rtype: :class:`Sound`");
+
+static PyObject *
+Sound_binaural(Sound* self, PyObject* args)
+{
+	PyTypeObject* type = Py_TYPE(self);
+
+	PyObject* object1;
+	PyObject* object2;
+	PyObject* object3;
+
+	if(!PyArg_ParseTuple(args, "OOO:bunaural", &object1, &object2, &object3))
+		return nullptr;
+
+	HRTFP* hrtfs = checkHRTF(object1);
+	if(!hrtfs)
+		return nullptr;
+
+	SourceP* source = checkSource(object2);
+	if(!hrtfs)
+		return nullptr;
+
+	ThreadPoolP* threadPool = checkThreadPool(object3);
+	if(!threadPool)
+		return nullptr;
+
+	Sound* parent;
+	parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new BinauralSound(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), *reinterpret_cast<std::shared_ptr<HRTF>*>(hrtfs->hrtf), *reinterpret_cast<std::shared_ptr<Source>*>(source->source), *reinterpret_cast<std::shared_ptr<ThreadPool>*>(threadPool->threadPool)));
 		}
 		catch(Exception& e)
 		{
@@ -1765,6 +1824,9 @@ static PyMethodDef Sound_methods[] = {
 	},
 	{ "convolver", (PyCFunction)Sound_convolver, METH_O,
 	M_aud_Sound_convolver_doc
+	},
+	{ "binaural", (PyCFunction)Sound_binaural, METH_O,
+	M_aud_Sound_binaural_doc
 	},
 	{nullptr}  /* Sentinel */
 };
