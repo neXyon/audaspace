@@ -16,7 +16,8 @@
 
 #include "fx/Convolver.h"
 
-#include <math.h>
+#include <cmath>
+#include <cstdlib>
 #include <algorithm>
 #include <cstring>
 
