@@ -137,11 +137,51 @@ Source_get_elevation(SourceP* self, void* nothing)
 	}
 }
 
+PyDoc_STRVAR(M_aud_Source_distance_doc,
+	"The distance value. 0 is min, 1 is max.");
+
+static int
+Source_set_distance(SourceP* self, PyObject* args, void* nothing)
+{
+	float distance;
+
+	if(!PyArg_Parse(args, "f:distance", &distance))
+		return -1;
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::Source>*>(self->source))->setDistance(distance);
+		PyErr_SetString(AUDError, "Couldn't change the distance!");
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	return -1;
+}
+
+static PyObject *
+Source_get_distance(SourceP* self, void* nothing)
+{
+	try
+	{
+		return Py_BuildValue("f", (*reinterpret_cast<std::shared_ptr<aud::Source>*>(self->source))->getDistance());
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
 static PyGetSetDef Source_properties[] = {
 	{ (char*)"azimuth", (getter)Source_get_azimuth, (setter)Source_set_azimuth,
 	M_aud_Source_azimuth_doc, nullptr },
 	{ (char*)"elevation", (getter)Source_get_elevation, (setter)Source_set_elevation,
 	M_aud_Source_elevation_doc, nullptr },
+	{ (char*)"distance", (getter)Source_get_distance, (setter)Source_set_distance,
+	M_aud_Source_distance_doc, nullptr },
 	{ nullptr }  /* Sentinel */
 };
 
