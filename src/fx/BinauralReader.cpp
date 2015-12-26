@@ -225,7 +225,7 @@ void BinauralReader::joinByChannel(int start, int len, int nConvolvers)
 		}
 
 		for(int j = 0; j < NUM_OUTCHANNELS; j++)
-			m_outBuffer[i + j + start] = (m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol);
+			m_outBuffer[i + j + start] = ((m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol))*m_source->getDistance();
 		k++;
 	}
 
