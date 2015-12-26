@@ -16,10 +16,14 @@
 
 #include "fx/Source.h"
 
+#include <cmath>
+
 AUD_NAMESPACE_BEGIN
-Source::Source(float azimuth, float elevation) :
-	m_azimuth(azimuth), m_elevation(elevation)
+Source::Source(float azimuth, float elevation, float distance) :
+	m_azimuth(azimuth), m_elevation(elevation), m_distance(1.0 - distance)
 {
+	if(m_distance < 0)
+		m_distance = 0.0;
 }
 
 float Source::getAzimuth()
@@ -32,6 +36,11 @@ float Source::getElevation()
 	return m_elevation;
 }
 
+float Source::getDistance()
+{
+	return m_distance;
+}
+
 void Source::setAzimuth(float azimuth)
 {
 	m_azimuth = azimuth;
@@ -40,5 +49,12 @@ void Source::setAzimuth(float azimuth)
 void Source::setElevation(float elevation)
 {
 	m_elevation = elevation;
+}
+
+void Source::setDistance(float distance)
+{
+	m_distance = 1.0 - distance;
+	if(m_distance < 0)
+		m_distance = 0.0;
 }
 AUD_NAMESPACE_END
