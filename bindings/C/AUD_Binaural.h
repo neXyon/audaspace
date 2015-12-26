@@ -29,8 +29,10 @@ extern AUD_API AUD_Source* AUD_Source_create(float azimuth, float elevation);
 extern AUD_API void AUD_Source_free(AUD_Source* source);
 extern AUD_API float AUD_Source_getAzimuth(AUD_Source* source);
 extern AUD_API float AUD_Source_getElevation(AUD_Source* source);
+extern AUD_API float AUD_Source_getDistance(AUD_Source* distance);
 extern AUD_API void AUD_Source_setAzimuth(AUD_Source* source, float azimuth);
 extern AUD_API void AUD_Source_setElevation(AUD_Source* source, float elevation);
+extern AUD_API void AUD_Source_setDistance(AUD_Source* source, float distance);
 
 #ifdef __cplusplus
 }

@@ -78,6 +78,13 @@ extern AUD_API float AUD_Source_getElevation(AUD_Source* source)
 	return (*source)->getElevation();
 }
 
+extern AUD_API float AUD_Source_getDistance(AUD_Source* source)
+{
+	assert(source);
+
+	return (*source)->getDistance();
+}
+
 extern AUD_API void AUD_Source_setAzimuth(AUD_Source* source, float azimuth)
 {
 	assert(source);
@@ -90,4 +97,11 @@ extern AUD_API void AUD_Source_setElevation(AUD_Source* source, float elevation)
 	assert(source);
 
 	(*source)->setElevation(elevation);
+}
+
+extern AUD_API void AUD_Source_setDistance(AUD_Source* source, float distance)
+{
+	assert(source);
+
+	(*source)->setDistance(distance);
 }
