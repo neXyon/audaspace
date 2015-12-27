@@ -49,7 +49,7 @@ Device_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 	static const char* kwlist[] = {"type", "rate", "channels", "format", "buffer_size", "name", nullptr};
 	const char* device = nullptr;
-	double rate = RATE_44100;
+	double rate = RATE_48000;
 	int channels = CHANNELS_STEREO;
 	int format = FORMAT_FLOAT32;
 	int buffersize = AUD_DEFAULT_BUFFER_SIZE;

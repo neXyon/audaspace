@@ -53,7 +53,7 @@ public:
 	 * \param frequency The desired frequency.
 	 * \param sampleRate The target sample rate for playback.
 	 */
-	Sawtooth(float frequency, SampleRate sampleRate = RATE_44100);
+	Sawtooth(float frequency, SampleRate sampleRate = RATE_48000);
 
 	/**
 	 * Returns the frequency of the sawtooth wave.

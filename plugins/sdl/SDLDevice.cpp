@@ -41,7 +41,7 @@ SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
 	if(specs.format == FORMAT_INVALID)
 		specs.format = FORMAT_S16;
 	if(specs.rate == RATE_INVALID)
-		specs.rate = RATE_44100;
+		specs.rate = RATE_48000;
 
 	m_specs = specs;
 

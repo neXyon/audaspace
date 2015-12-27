@@ -31,7 +31,7 @@ AUD_API AUD_Sound* AUD_Sequence_create(float fps, int muted)
 	// specs are changed at a later point!
 	Specs specs;
 	specs.channels = CHANNELS_STEREO;
-	specs.rate = RATE_44100;
+	specs.rate = RATE_48000;
 	AUD_Sound* sequence = new AUD_Sound(std::shared_ptr<Sequence>(new Sequence(specs, fps, muted)));
 	return sequence;
 }
