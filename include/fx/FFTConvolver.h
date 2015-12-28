@@ -31,7 +31,7 @@
 
 AUD_NAMESPACE_BEGIN
 /**
-* This class allows to easily convolve a sound using the Fourier transform and the overlap add method.
+* This class allows to easily convolve a sound using the Fourier transform.
 */
 class AUD_API FFTConvolver
 {
