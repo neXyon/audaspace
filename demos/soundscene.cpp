@@ -55,9 +55,9 @@ int main(int argc, char* argv[])
 	auto threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()));
 	auto hrtfs = HRTFLoader::loadRightHRTFs(fftPlan, ".wav", "hrtfs");
 	auto i_ir(std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>("Opti-inverse.wav")), fftPlan));
-	auto source1 = std::make_shared<Source>(350, 0);
-	auto source2 = std::make_shared<Source>(10, 0);
-	auto source3 = std::make_shared<Source>(0, 0);
+	auto source1 = std::make_shared<Source>(10, -10, 0.75);
+	auto source2 = std::make_shared<Source>(30, -10, 0.75);
+	auto source3 = std::make_shared<Source>(20, -10, 0.75);
 	DeviceSpecs specs;
 	specs.channels = CHANNELS_MONO;
 	specs.rate = hrtfs->getSpecs().rate;
@@ -68,17 +68,17 @@ int main(int argc, char* argv[])
 	loadSounds("sw/saberWield", ".wav", saberWield);
 	auto saberSList = std::make_shared<SoundList>(true);
 	for(auto s : saberClash)
-		saberSList->addSound(std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(s, specs), specs), hrtfs, source3, threadPool, fftPlan), i_ir, threadPool, fftPlan));
+		saberSList->addSound(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(s, specs), specs), hrtfs, source3, threadPool, fftPlan));
 	int i = 0;
 	for(auto s : saberWield)
 	{
 		if(i % 2 == 0)
-			saberSList->addSound(std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(s, specs), specs), hrtfs, source1, threadPool, fftPlan), i_ir, threadPool, fftPlan));
+			saberSList->addSound(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(s, specs), specs), hrtfs, source1, threadPool, fftPlan));
 		if(i % 2 != 0)
-			saberSList->addSound(std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(s, specs), specs), hrtfs, source2, threadPool, fftPlan), i_ir, threadPool, fftPlan));
+			saberSList->addSound(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(s, specs), specs), hrtfs, source2, threadPool, fftPlan));
 		i++;
 	}
-	auto saberMutableSound = std::make_shared<MutableSound>(saberSList);
+	auto saberMutableSound = std::make_shared<ConvolverSound>(std::make_shared<MutableSound>(saberSList), i_ir, threadPool, fftPlan);
 
 	device->lock();
 	auto handle = device->play(saberMutableSound);
