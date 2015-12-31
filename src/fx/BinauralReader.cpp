@@ -19,7 +19,6 @@
 
 #include <cstring>
 #include <algorithm>
-#include <iostream>
 
 #define NUM_OUTCHANNELS 2
 #define NUM_CONVOLVERS 4
@@ -116,7 +115,10 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 		if(bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
 		{
 			if(bufRest > 0)
+			{
 				std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
+				//writePos += bufRest;
+			}
 			if(!m_eosTail)
 			{
 				int n = NUM_OUTCHANNELS;
@@ -126,15 +128,14 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 					n = NUM_CONVOLVERS;
 				loadBuffer(n);
 
-				writeLength = std::min(writeLength, m_eOutBufLen);
-				int len = std::min(writeLength, std::abs(writeLength - bufRest));
+				int len = std::min(std::abs(writeLength - bufRest), m_eOutBufLen);
 				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
 				m_outBufferPos = len;
 			}
 			else
 			{
 				m_outBufferPos += bufRest;
-				length = (writePos + bufRest) / NUM_OUTCHANNELS;
+				length = (writePos+bufRest) / NUM_OUTCHANNELS;
 				eos = true;
 				return;
 			}
@@ -225,10 +226,9 @@ void BinauralReader::joinByChannel(int start, int len, int nConvolvers)
 		}
 
 		for(int j = 0; j < NUM_OUTCHANNELS; j++)
-			m_outBuffer[i + j + start] = ((m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol))*m_source->getDistance();
+			m_outBuffer[i + j + start] = ((m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol))*m_source->getVolume();
 		k++;
 	}
-
 	if(m_transition)
 	{
 		m_transPos -= len*NUM_OUTCHANNELS;

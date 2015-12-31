@@ -106,8 +106,7 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 			if(!m_eosTail)
 			{
 				loadBuffer();
-				writeLength = std::min(writeLength, m_eOutBufLen);
-				int len = std::min(writeLength, std::abs(writeLength - bufRest));
+				int len = std::min(std::abs(writeLength - bufRest), m_eOutBufLen);
 				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
 				m_outBufferPos = len;
 			}
