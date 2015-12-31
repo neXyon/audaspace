@@ -30,13 +30,13 @@ Source_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 	if(self != nullptr)
 	{
-		float azimuth, elevation;
-		if(!PyArg_ParseTuple(args, "ff:angles", &azimuth, &elevation))
+		float azimuth, elevation, distance;
+		if(!PyArg_ParseTuple(args, "fff:angles", &azimuth, &elevation, &distance))
 			return nullptr;
 
 		try
 		{
-			self->source = new std::shared_ptr<aud::Source>(new aud::Source(azimuth, elevation));
+			self->source = new std::shared_ptr<aud::Source>(new aud::Source(azimuth, elevation, distance));
 		}
 		catch(aud::Exception& e)
 		{
