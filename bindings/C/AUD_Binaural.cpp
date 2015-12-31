@@ -41,16 +41,19 @@ extern AUD_API void AUD_HRTF_free(AUD_HRTF* hrtfs)
 	delete hrtfs;
 }
 
-extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_ImpulseResponse* filter)
+extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation)
 {
+	assert(hrtfs);
+	assert(filter);
 
+	(*hrtfs)->addImpulseResponse(std::make_shared<StreamBuffer>(*sound), azimuth, elevation);
 }
 
-extern AUD_API AUD_Source* AUD_Source_create(float azimuth, float elevation)
+extern AUD_API AUD_Source* AUD_Source_create(float azimuth, float elevation, float distance)
 {
 	try
 	{
-		return new AUD_Source(new Source(azimuth, elevation));
+		return new AUD_Source(new Source(azimuth, elevation, distance));
 	}
 	catch(Exception&)
 	{
