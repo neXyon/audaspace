@@ -82,6 +82,12 @@ public:
 	float getDistance();
 
 	/**
+	* Retrieves the current volume value based on the distance.
+	* \return The current volume based on the Distance.
+	*/
+	float getVolume();
+
+	/**
 	* Changes the azimuth value.
 	* \param azimuth The new value for the azimuth.
 	*/

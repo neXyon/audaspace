@@ -20,10 +20,12 @@
 
 AUD_NAMESPACE_BEGIN
 Source::Source(float azimuth, float elevation, float distance) :
-	m_azimuth(azimuth), m_elevation(elevation), m_distance(1.0 - distance)
+	m_elevation(elevation), m_distance(distance)
 {
-	if(m_distance < 0)
-		m_distance = 0.0;
+	azimuth = std::fmod(azimuth, 360);
+	if(azimuth < 0)
+		azimuth += 360;
+	m_azimuth = azimuth;
 }
 
 float Source::getAzimuth()
@@ -41,8 +43,19 @@ float Source::getDistance()
 	return m_distance;
 }
 
+float Source::getVolume()
+{
+	float volume = 1.0f - m_distance;
+	if(volume < 0.0f)
+		volume = 0.0f;
+	return volume;
+}
+
 void Source::setAzimuth(float azimuth)
 {
+	azimuth = std::fmod(azimuth, 360);
+	if(azimuth < 0)
+		azimuth += 360;
 	m_azimuth = azimuth;
 }
 
@@ -53,8 +66,6 @@ void Source::setElevation(float elevation)
 
 void Source::setDistance(float distance)
 {
-	m_distance = 1.0 - distance;
-	if(m_distance < 0)
-		m_distance = 0.0;
+	m_distance = distance;
 }
 AUD_NAMESPACE_END
