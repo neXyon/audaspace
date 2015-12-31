@@ -22,16 +22,82 @@
 extern "C" {
 #endif
 
+/**
+* Creates a new HRTF object.
+* \return The new HRTF object.
+*/
 extern AUD_API AUD_HRTF* AUD_HRTF_create();
+
+/**
+* Deletes a HRTF object.
+* \param hrtfs The HRTF object to be deleted.
+*/
 extern AUD_API void AUD_HRTF_free(AUD_HRTF* hrtfs);
-extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_ImpulseResponse* filter);
-extern AUD_API AUD_Source* AUD_Source_create(float azimuth, float elevation);
+
+/**
+* Adds a new impulse response to an HRTF object.
+* \param hrtfs The HRTF object.
+* \param sound A Sound object representing an HRTF.
+* \param azimuth The azimuth angle of the HRTF.
+* \param elevation The elevation angle of the HRTF.
+*/
+extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation);
+
+/**
+* Creates a new Source object.
+* \param azimuth The azimuth angle.
+* \param elevation The elevation angle.
+* \param elevation The distance value. [0,1]
+* \return The new Source object.
+*/
+extern AUD_API AUD_Source* AUD_Source_create(float azimuth, float elevation, float distance);
+
+/**
+* Deletes a Source object.
+* \param hrtfs The Source object to be deleted.
+*/
 extern AUD_API void AUD_Source_free(AUD_Source* source);
+
+/**
+* Retrieves the azimuth angle of a Source object.
+* \param source The Source object.
+* \return The azimuth angle.
+*/
 extern AUD_API float AUD_Source_getAzimuth(AUD_Source* source);
+
+/**
+* Retrieves the elevation angle oa a Source object.
+* \param source The Source object.
+* \return The elevation angle.
+*/
 extern AUD_API float AUD_Source_getElevation(AUD_Source* source);
+
+/**
+* Retrieves the distance of a Source object. [0,1]
+* \param source The Source object.
+* \return The distance.
+*/
 extern AUD_API float AUD_Source_getDistance(AUD_Source* distance);
+
+/**
+* Changes the azimuth angle of a Source object.
+* \param source The Source object.
+* \param azimuth The azimuth angle.
+*/
 extern AUD_API void AUD_Source_setAzimuth(AUD_Source* source, float azimuth);
+
+/**
+* Changes the elevation angle of a Source object.
+* \param source The Source object.
+* \param elevation The elevation angle.
+*/
 extern AUD_API void AUD_Source_setElevation(AUD_Source* source, float elevation);
+
+/**
+* Changes the distance of a Source object. [0,1]
+* \param source The Source object.
+* \param distance The distance.
+*/
 extern AUD_API void AUD_Source_setDistance(AUD_Source* source, float distance);
 
 #ifdef __cplusplus

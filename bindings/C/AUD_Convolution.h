@@ -22,9 +22,30 @@
 extern "C" {
 #endif
 
+/**
+* Creates a new ThreadPool object.
+* \param nThreads The number of threads of the pool.
+* \return The new ThreadPool object.
+*/
 extern AUD_API AUD_ThreadPool* AUD_ThreadPool_create(int nThreads);
+
+/**
+* Deletes a ThreadPool object.
+* \param threadPool The ThreadPool object to be deleted.
+*/
 extern AUD_API void AUD_ThreadPool_free(AUD_ThreadPool* threadPool);
+
+/**
+* Creates a new ImpulseResponse object.
+* \param sound A Sound object representing a impulse response.
+* \return The new ImpulseResponse object.
+*/
 extern AUD_API AUD_ImpulseResponse* AUD_ImpulseResponse_create(AUD_Sound* sound);
+
+/**
+* Deletes a ImpulseResponse object.
+* \param threadPool The ImpulseResponse object to be deleted.
+*/
 extern AUD_API void AUD_ImpulseResponse_free(AUD_ImpulseResponse* filter);
 
 #ifdef __cplusplus
