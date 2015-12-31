@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 	specs.channels = CHANNELS_MONO;
 	specs.rate = hrtfs->getSpecs().rate;
 
-	auto sourceDoor = std::make_shared<Source>(150, 0, 0.95);
+	auto sourceDoor = std::make_shared<Source>(150, 0, 0.70);
 	auto sourcePeople = std::make_shared<Source>(150, 0, 0.95);
 	auto sourcePerson = std::make_shared<Source>(150, -40, 0.85);
 
@@ -81,8 +81,9 @@ int main(int argc, char* argv[])
 	handle1= device->play(soundOpenDoor);
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	handle1 = device->play(soundPersonSteps);
-	handle2 = device->play(soundCreackDoor);
 	device->lock();
+	handle2 = device->play(soundCreackDoor);
+	handle2->setVolume(0.2);
 	handle3 = device->play(soundPeople);
 	handle3->setVolume(0.05);
 	handle3->setLoopCount(-1);
@@ -97,7 +98,10 @@ int main(int argc, char* argv[])
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	}
 	handle1->stop();
+	device->lock();
 	handle2 = device->play(soundCreackDoor);
+	handle2->setVolume(0.2);
+	device->unlock();
 	for(int i = 0;i < 10;i++)
 	{
 		float volume = handle3->getVolume();
