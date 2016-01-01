@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 	auto fftPlan(std::make_shared<FFTPlan>(2048, true));
 	auto threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()));
 	auto hrtfs = HRTFLoader::loadRightHRTFs(fftPlan, ".wav", "hrtfs");
-	auto i_ir(std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>("In The Silo Revised.wav")), fftPlan));
+	auto i_ir(std::make_shared<ImpulseResponse>(std::make_shared<StreamBuffer>(std::make_shared<File>("effects/ir/Highly Damped Large Room.wav")), fftPlan));
 	DeviceSpecs specs;
 	specs.channels = CHANNELS_MONO;
 	specs.rate = hrtfs->getSpecs().rate;
@@ -66,12 +66,21 @@ int main(int argc, char* argv[])
 	auto sourceDoor = std::make_shared<Source>(150, 0, 0.70);
 	auto sourcePeople = std::make_shared<Source>(150, 0, 0.95);
 	auto sourcePerson = std::make_shared<Source>(150, -40, 0.85);
+	auto sourceHands = std::make_shared<Source>(150, 0, 0.85);
+	auto sourceFan = std::make_shared<Source>(0, 90, 0.8);
+	auto sourceCClock = std::make_shared<Source>(0, 90, 0.8);
 
 	auto soundCreackDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/creaking-door-2.wav"), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 	auto soundOpenDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/door-2-open.wav"), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 	auto soundCloseDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/door-2-close.wav"), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundLightSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/switch-1.wav"), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 	auto soundPeople = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/crowd-talking-1.wav"), specs), specs), hrtfs, sourcePeople, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 	auto soundPersonSteps = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/footsteps-1.wav"), specs), specs), hrtfs, sourcePerson, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundFanSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/switch-19.wav"), specs), specs), hrtfs, sourceHands, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundFan = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/fan.mp3"), specs), specs), hrtfs, sourceFan, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundClockWinding = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/clock-winding-1.wav"), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundClockTicking = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/clock-ticking-5.wav"), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundClockAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<File>("effects/alarm-clock-01.wav"), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 
 	std::shared_ptr<IHandle> handle1;
 	std::shared_ptr<IHandle> handle2;
@@ -111,8 +120,10 @@ int main(int argc, char* argv[])
 		handle3->setVolume(volume);
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	}
-	handle1 = device->play(soundCloseDoor);
-	std::this_thread::sleep_for(std::chrono::milliseconds(700));
+	device->play(soundCloseDoor);
+	std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+	device->play(soundLightSwitch);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	//Person moves
 	handle1 = device->play(soundPersonSteps);
 	for(int i = 0;i < 50;i++)
@@ -125,7 +136,12 @@ int main(int argc, char* argv[])
 	}
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	handle1->stop();
-	//Person does things
+	//Person turns on fan
+	sourceHands->setAzimuth(sourcePerson->getAzimuth());
+	sourceHands->setDistance(sourcePerson->getDistance());
+	handle1 = device->play(soundFanSwitch);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	handle1 = device->play(soundFan);
 	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	//Person moves
 	handle1 = device->play(soundPersonSteps);
@@ -137,7 +153,32 @@ int main(int argc, char* argv[])
 			sourcePerson->setDistance(0.85);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(600));
+	handle1->stop();
+	//Person winds up clock
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	sourceCClock->setAzimuth(sourcePerson->getAzimuth());
+	sourceCClock->setDistance(sourcePerson->getDistance()+0.3);
+	handle1 = device->play(soundClockWinding);
+	std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+	handle1->stop();
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	device->lock();
+	handle2 = device->play(soundClockTicking);
+	handle2->setVolume(0.5);
+	handle2->setLoopCount(-1);
+	device->unlock();
+	//Person moves
+	handle1 = device->play(soundPersonSteps);
+	for(int i = 0;i < 40;i++)
+	{
+		sourcePerson->setAzimuth(sourcePerson->getAzimuth() - 2.25);
+		sourcePerson->setDistance(0.4 / abs(sin((sourcePerson->getAzimuth() + 45)*PI / 180.0)));
+		if(sourcePerson->getDistance() > 0.85)
+			sourcePerson->setDistance(0.85);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(600));
 	handle1->stop();
 	std::this_thread::sleep_for(std::chrono::milliseconds(500000));
 	return 0;
