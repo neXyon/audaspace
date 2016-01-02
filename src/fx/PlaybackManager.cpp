@@ -33,6 +33,16 @@ unsigned int PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> cate
 	return k;
 }
 
+unsigned int PlaybackManager::addCategory(float volume)
+{
+	std::shared_ptr<PlaybackCategory> category = std::make_shared<PlaybackCategory>(m_device);
+	m_categories[m_currentKey] = category;
+	category->setVolume(volume);
+	unsigned int k = m_currentKey;
+	m_currentKey++;
+	return k;
+}
+
 std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, unsigned int catKey)
 {
 	auto iter = m_categories.find(catKey);
