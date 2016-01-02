@@ -115,7 +115,6 @@ void PlaybackCategory::stop()
 			i++;			
 	}
 	m_device->unlock();
-	m_status = STATUS_STOPPED;
 }
 
 std::shared_ptr<VolumeStorage> PlaybackCategory::getSharedVolume()
