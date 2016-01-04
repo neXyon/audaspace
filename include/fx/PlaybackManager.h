@@ -145,6 +145,12 @@ public:
 	*        - false if the category doesn't exist.
 	*/
 	bool clean(unsigned int catKey);
+
+	/**
+	* Retrieves the device of the PlaybackManager.
+	* \return A shared pointer to the device used by the playback manager.
+	*/
+	std::shared_ptr<IDevice> getDevice();
 };
 
 AUD_NAMESPACE_END

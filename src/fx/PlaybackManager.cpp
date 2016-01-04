@@ -27,19 +27,42 @@ PlaybackManager::PlaybackManager(std::shared_ptr<IDevice> device) :
 
 unsigned int PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category)
 {
-	m_categories[m_currentKey] = category;
-	unsigned int k = m_currentKey;
-	m_currentKey++;
+	bool flag = true;
+	unsigned int k = -1;
+	do {
+		auto iter = m_categories.find(m_currentKey);
+		if(iter == m_categories.end())
+		{
+			m_categories[m_currentKey] = category;
+			k = m_currentKey;
+			m_currentKey++;
+			flag = false;
+		}
+		else
+			m_currentKey++;
+	} while(flag);
+
 	return k;
 }
 
 unsigned int PlaybackManager::addCategory(float volume)
 {
 	std::shared_ptr<PlaybackCategory> category = std::make_shared<PlaybackCategory>(m_device);
-	m_categories[m_currentKey] = category;
-	category->setVolume(volume);
-	unsigned int k = m_currentKey;
-	m_currentKey++;
+	bool flag = true;
+	unsigned int k = -1;
+	do {
+		auto iter = m_categories.find(m_currentKey);
+		if(iter == m_categories.end())
+		{
+			m_categories[m_currentKey] = category;
+			k = m_currentKey;
+			m_currentKey++;
+			flag = false;
+		}
+		else
+			m_currentKey++;
+	} while(flag);
+
 	return k;
 }
 
@@ -56,7 +79,6 @@ std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, un
 	{
 		category = std::make_shared<PlaybackCategory>(m_device);
 		m_categories[catKey] = category;
-		m_currentKey = catKey + 1;
 	}
 	return category->play(sound);
 }
@@ -154,5 +176,10 @@ bool PlaybackManager::clean(unsigned int catKey)
 	{
 		return false;
 	}
+}
+
+std::shared_ptr<IDevice> PlaybackManager::getDevice()
+{
+	return m_device;
 }
 AUD_NAMESPACE_END
