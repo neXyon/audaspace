@@ -41,12 +41,11 @@ std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 	auto handle = m_device->play(vs);
 	switch (m_status) 
 	{
-	case STATUS_STOPPED:
-		handle->stop();
-		break;
 	case STATUS_PAUSED:
 		handle->pause();
 		break;
+	default:
+		m_status = STATUS_PLAYING;
 	};
 	m_handles[m_currentID] = handle;
 	HandleData* data = new HandleData;
@@ -115,6 +114,7 @@ void PlaybackCategory::stop()
 			i++;			
 	}
 	//m_device->unlock();
+	m_status = STATUS_STOPPED;
 }
 
 std::shared_ptr<VolumeStorage> PlaybackCategory::getSharedVolume()
