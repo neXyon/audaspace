@@ -78,7 +78,7 @@ void PlaybackCategory::resume()
 
 void PlaybackCategory::pause()
 {
-	m_device->lock();
+	//m_device->lock();
 	for(auto i = m_handles.begin(); i != m_handles.end();)
 	{
 		if(i->second->getStatus() == STATUS_INVALID)
@@ -89,7 +89,7 @@ void PlaybackCategory::pause()
 			i++;
 		}
 	}
-	m_device->unlock();
+	//m_device->unlock();
 	m_status = STATUS_PAUSED;
 }
 
@@ -105,7 +105,7 @@ void PlaybackCategory::setVolume(float volume)
 
 void PlaybackCategory::stop() 
 {
-	m_device->lock();
+	//m_device->lock();
 	for(auto i = m_handles.begin(); i != m_handles.end();)
 	{
 		i->second->stop();
@@ -114,7 +114,7 @@ void PlaybackCategory::stop()
 		else
 			i++;			
 	}
-	m_device->unlock();
+	//m_device->unlock();
 }
 
 std::shared_ptr<VolumeStorage> PlaybackCategory::getSharedVolume()
