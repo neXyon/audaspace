@@ -23,7 +23,6 @@
 #include "devices/IHandle.h"
 #include "plugin/PluginManager.h"
 #include "respec/ChannelMapper.h"
-#include "respec/JOSResample.h"
 #include "file/File.h"
 #include "fx/DynamicMusic.h"
 #include "fx/SoundList.h"
@@ -54,11 +53,10 @@ std::shared_ptr<IHandle> playSound(std::shared_ptr<PlaybackManager> manager, std
 
 int main(int argc, char* argv[])
 {
-	srand(time(NULL));
-
 	PluginManager::loadPlugins("");
 
-	auto factory = DeviceManager::getDefaultDeviceFactory();
+	auto factory = DeviceManager::getDeviceFactory("SDL");
+
 	auto device = factory->openDevice();
 	auto manager = std::make_shared<PlaybackManager>(device);
 
@@ -80,43 +78,62 @@ int main(int argc, char* argv[])
 	auto sourceCClock = std::make_shared<Source>(270, 0, 0.8);
 	auto sourceFaucet = std::make_shared<Source>(170, 0, 0.8);
 
-	auto soundCreackDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/creaking-door-2.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundOpenDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-open.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundCloseDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-close.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundLightSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundPeople = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/crowd-talking-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourcePeople, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundPersonSteps = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/footsteps-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourcePerson, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundPersonStairs = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/wooden-stairs-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourcePerson, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundFanSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-19.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceHands, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundFan = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/fan.mp3"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceFan, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundClockWinding = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-winding-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundClockTicking = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-ticking-5.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundClockAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundWashing = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/washing-dishes-2.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceFaucet, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundFaucet = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/water-faucet-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceFaucet, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundBabyCry = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-whining-02.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceBaby, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundBabyLaugh = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-laughing-04.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceBaby, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundSong = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/c.ogg"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceHands, threadPool, fftPlan), i_ir, threadPool, fftPlan);
-	auto soundAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundCreackDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/creaking-door-2.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundOpenDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-open.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundCloseDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-close.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundLightSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundPeople = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/crowd-talking-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourcePeople, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundPersonSteps = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/footsteps-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourcePerson, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundPersonStairs = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/wooden-stairs-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourcePerson, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundFanSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-19.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceHands, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundFan = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/fan.mp3"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceFan, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundClockWinding = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-winding-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundClockTicking = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-ticking-5.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundClockAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundWashing = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/washing-dishes-2.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceFaucet, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundFaucet = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/water-faucet-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceFaucet, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundBabyCry = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-whining-02.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceBaby, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundBabyLaugh = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-laughing-04.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceBaby, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundSong = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/c.ogg"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceHands, threadPool, fftPlan), i_ir, threadPool, fftPlan);
+	auto soundAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 
-	/*auto soundCreackDoor = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/creaking-door-2.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan);
-	auto soundOpenDoor = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-open.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan);
-	auto soundCloseDoor = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-close.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan);
-	auto soundLightSwitch = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan);
-	auto soundPeople = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/crowd-talking-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourcePeople, threadPool, fftPlan);
-	auto soundPersonSteps = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/footsteps-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourcePerson, threadPool, fftPlan);
-	auto soundPersonStairs = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/wooden-stairs-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourcePerson, threadPool, fftPlan);
-	auto soundFanSwitch = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-19.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceHands, threadPool, fftPlan);
-	auto soundFan = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/fan.mp3"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceFan, threadPool, fftPlan);
-	auto soundClockWinding = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-winding-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan);
-	auto soundClockTicking = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-ticking-5.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan);
-	auto soundClockAlarm = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan);
-	auto soundWashing = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/washing-dishes-2.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceFaucet, threadPool, fftPlan);
-	auto soundFaucet = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/water-faucet-1.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceFaucet, threadPool, fftPlan);
-	auto soundBabyCry = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-whining-02.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceBaby, threadPool, fftPlan);
-	auto soundBabyLaugh = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-laughing-04.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceBaby, threadPool, fftPlan);
-	auto soundSong = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/a.ogg"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceHands, threadPool, fftPlan);
-	auto soundAlarm = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan);*/
+	/*auto soundCreackDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/creaking-door-2.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceDoor, threadPool ), i_ir, threadPool );
+	auto soundOpenDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-open.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceDoor, threadPool ), i_ir, threadPool );
+	auto soundCloseDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-close.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceDoor, threadPool ), i_ir, threadPool );
+	auto soundLightSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-1.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceDoor, threadPool ), i_ir, threadPool );
+	auto soundPeople = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/crowd-talking-1.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourcePeople, threadPool ), i_ir, threadPool );
+	auto soundPersonSteps = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/footsteps-1.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourcePerson, threadPool ), i_ir, threadPool );
+	auto soundPersonStairs = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/wooden-stairs-1.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourcePerson, threadPool ), i_ir, threadPool );
+	auto soundFanSwitch = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-19.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceHands, threadPool ), i_ir, threadPool );
+	auto soundFan = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/fan.mp3"), rev_ir, threadPool ), specs), specs), hrtfs, sourceFan, threadPool ), i_ir, threadPool );
+	auto soundClockWinding = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-winding-1.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceCClock, threadPool ), i_ir, threadPool );
+	auto soundClockTicking = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-ticking-5.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceCClock, threadPool ), i_ir, threadPool );
+	auto soundClockAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceCClock, threadPool ), i_ir, threadPool );
+	auto soundWashing = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/washing-dishes-2.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceFaucet, threadPool ), i_ir, threadPool );
+	auto soundFaucet = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/water-faucet-1.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceFaucet, threadPool ), i_ir, threadPool );
+	auto soundBabyCry = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-whining-02.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceBaby, threadPool ), i_ir, threadPool );
+	auto soundBabyLaugh = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-laughing-04.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceBaby, threadPool ), i_ir, threadPool );
+	auto soundSong = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/c.ogg"), rev_ir, threadPool ), specs), specs), hrtfs, sourceHands, threadPool ), i_ir, threadPool );
+	auto soundAlarm = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool ), specs), specs), hrtfs, sourceCClock, threadPool ), i_ir, threadPool );*/
+
+	/*auto soundCreackDoor = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/creaking-door-2.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan);
+	auto soundOpenDoor = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-open.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan);
+	auto soundCloseDoor = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-close.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan);
+	auto soundLightSwitch = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceDoor, threadPool, fftPlan);
+	auto soundPeople = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/crowd-talking-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourcePeople, threadPool, fftPlan);
+	auto soundPersonSteps = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/footsteps-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourcePerson, threadPool, fftPlan);
+	auto soundPersonStairs = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/wooden-stairs-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourcePerson, threadPool, fftPlan);
+	auto soundFanSwitch = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/switch-19.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceHands, threadPool, fftPlan);
+	auto soundFan = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/fan.mp3"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceFan, threadPool, fftPlan);
+	auto soundClockWinding = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-winding-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan);
+	auto soundClockTicking = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/clock-ticking-5.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan);
+	auto soundClockAlarm = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan);
+	auto soundWashing = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/washing-dishes-2.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceFaucet, threadPool, fftPlan);
+	auto soundFaucet = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/water-faucet-1.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceFaucet, threadPool, fftPlan);
+	auto soundBabyCry = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-whining-02.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceBaby, threadPool, fftPlan);
+	auto soundBabyLaugh = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/baby-laughing-04.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceBaby, threadPool, fftPlan);
+	auto soundSong = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/a.ogg"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceHands, threadPool, fftPlan);
+	auto soundAlarm = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), hrtfs, sourceCClock, threadPool, fftPlan);*/
 
 	/*auto soundCreackDoor = std::make_shared<File>("effects/creaking-door-2.wav");
 	auto soundOpenDoor =std::make_shared<File>("effects/door-2-open.wav");
@@ -158,12 +175,14 @@ int main(int argc, char* argv[])
 	std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 	playSound(manager, soundLightSwitch);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	manager->clean();
 
 	handle1 = playSound(manager, soundPersonSteps);
 	moveSourceStraight(sourcePerson, 30, sourcePerson->getElevation(), -90, 0.35, 4300);
 	moveSourceCircle(sourcePerson, 10, sourcePerson->getElevation(), 700);
 	fadeInOut(handle1, 0, 500);
 	handle1->stop();
+	manager->clean();
 
 	sourceHands->setAzimuth(sourcePerson->getAzimuth());
 	sourceHands->setDistance(sourcePerson->getDistance());
@@ -172,12 +191,14 @@ int main(int argc, char* argv[])
 	/*handle1 = playSound(manager, soundSong, 0.0, -1);
 	fadeInOut(handle1, 0.1, 1000);*/
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	manager->clean();
 
 	handle1 = playSound(manager, soundPersonSteps);
 	moveSourceCircle(sourcePerson, -1, sourcePerson->getElevation(), 700);
 	moveSourceStraight(sourcePerson, 270, sourcePerson->getElevation(), 60, 0.35, 3600);
 	fadeInOut(handle1, 0, 500);
 	handle1->stop();
+	manager->clean();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	sourceCClock->setDistance(sourcePerson->getDistance() + 0.3);
@@ -186,11 +207,13 @@ int main(int argc, char* argv[])
 	handle1->stop();
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	handleClock = playSound(manager, soundClockTicking, 0.5, -1);
+	manager->clean();
 
 	handle1 = playSound(manager, soundPersonSteps);
 	moveSourceStraight(sourcePerson, 180, sourcePerson->getElevation(), 135, 0.35, 4000);
 	fadeInOut(handle1, 0, 500);
 	handle1->stop();
+	manager->clean();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	sourceFaucet->setDistance(sourcePerson->getDistance() + 0.25);
@@ -201,6 +224,7 @@ int main(int argc, char* argv[])
 	handleFaucet->stop();
 	handleFaucet = playSound(manager, soundFaucet, 0.2);
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	manager->clean();
 
 	handle1 = playSound(manager, soundPersonSteps, 1, 0, 1.3);
 	moveSourceStraight(sourcePerson, 90, sourcePerson->getElevation(), -135, 0.35, 3000);
@@ -215,11 +239,13 @@ int main(int argc, char* argv[])
 	fadeInOut(handle1, 0.0, 500);
 	handle1->stop();
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	manager->clean();
 
 	fadeInOut(handleBaby, 0.0, 500);
 	handleBaby->stop();
 	handleBaby = playSound(manager, soundBabyLaugh);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	manager->clean();
 
 	handle1 = playSound(manager, soundPersonSteps, 1, 0, 1.0);
 	moveSourceAway(sourcePerson, 0.77, 1500);
@@ -234,6 +260,7 @@ int main(int argc, char* argv[])
 	fadeInOut(handle1, 0.0, 500);
 	handle1->stop();
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	manager->clean();
 	
 	fadeInOut(handleFaucet, 0.0, 500);
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -242,6 +269,7 @@ int main(int argc, char* argv[])
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	handleBaby = playSound(manager, soundBabyCry);
 	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+	manager->clean();
 
 	for(int i = 0;i < 40;i++)
 	{
