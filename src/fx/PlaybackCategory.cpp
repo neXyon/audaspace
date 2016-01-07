@@ -39,6 +39,8 @@ std::shared_ptr<IHandle> PlaybackCategory::play(std::shared_ptr<ISound> sound)
 	std::shared_ptr<ISound> vs(std::make_shared<VolumeSound>(sound, m_volumeStorage));
 	m_device->lock();
 	auto handle = m_device->play(vs);
+	if(handle == nullptr)
+		return nullptr;
 	switch (m_status) 
 	{
 	case STATUS_PAUSED:

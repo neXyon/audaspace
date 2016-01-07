@@ -82,7 +82,7 @@ public:
 	* Plays a sound and adds it to a new or existent category.
 	* \param sound The sound to be played and added to a category.
 	* \param catKey Key of the category.
-	* \return The handle of the playback.
+	* \return The handle of the playback; nullptr if the sound couldn't be played.
 	*/
 	std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound, unsigned int catKey);
 

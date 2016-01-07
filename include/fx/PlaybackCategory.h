@@ -75,8 +75,9 @@ public:
 	~PlaybackCategory();
 
 	/**
-	* Adds a new handle to the category.
-	* \param handle The handle to be added.
+	* Plays a new sound in the category.
+	* \param sound The sound to be played.
+	* \return A handle for the playback. If the playback failed, nullptr will be returned.
 	*/
 	std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound);
 
