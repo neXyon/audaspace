@@ -30,6 +30,8 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	int irLength = m_ir->getLength();
 	if(m_irChannels != 1 && m_irChannels != m_inChannels)
 		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
+	if(m_reader->getSpecs().rate != m_ir->getSpecs().rate)
+		AUD_THROW(StateException, "The sound and the impulse response. must have the same rate");
 
 	m_M = m_L = m_N / 2;
 	
