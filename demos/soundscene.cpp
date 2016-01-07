@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
 	auto sourceHands = std::make_shared<Source>(150, 0, 0.85);
 	auto sourceFan = std::make_shared<Source>(180, 60, 0.8);
 	auto sourceBaby = std::make_shared<Source>(90, 50, 0.98);
-	auto sourceCClock = std::make_shared<Source>(0, 0, 0.8);
-	auto sourceFaucet = std::make_shared<Source>(0, 0, 0.8);
+	auto sourceCClock = std::make_shared<Source>(270, 0, 0.8);
+	auto sourceFaucet = std::make_shared<Source>(170, 0, 0.8);
 
 	auto soundCreackDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/creaking-door-2.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
 	auto soundOpenDoor = std::make_shared<ConvolverSound>(std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/door-2-open.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceDoor, threadPool, fftPlan), i_ir, threadPool, fftPlan);
@@ -118,6 +118,25 @@ int main(int argc, char* argv[])
 	auto soundSong = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/a.ogg"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceHands, threadPool, fftPlan);
 	auto soundAlarm = std::make_shared<BinauralSound>(std::make_shared<JOSResample>(std::make_shared<ChannelMapper>(std::make_shared<ConvolverSound>(std::make_shared<File>("effects/alarm-clock-01.wav"), rev_ir, threadPool, fftPlan), specs), specs), hrtfs, sourceCClock, threadPool, fftPlan);*/
 
+	/*auto soundCreackDoor = std::make_shared<File>("effects/creaking-door-2.wav");
+	auto soundOpenDoor =std::make_shared<File>("effects/door-2-open.wav");
+	auto soundCloseDoor = std::make_shared<File>("effects/door-2-close.wav");
+	auto soundLightSwitch = std::make_shared<File>("effects/switch-1.wav");
+	auto soundPeople = std::make_shared<File>("effects/crowd-talking-1.wav");
+	auto soundPersonSteps = std::make_shared<File>("effects/footsteps-1.wav");
+	auto soundPersonStairs = std::make_shared<File>("effects/wooden-stairs-1.wav");
+	auto soundFanSwitch = std::make_shared<File>("effects/switch-19.wav");
+	auto soundFan = std::make_shared<File>("effects/fan.mp3");
+	auto soundClockWinding = std::make_shared<File>("effects/clock-winding-1.wav");
+	auto soundClockTicking = std::make_shared<File>("effects/clock-ticking-5.wav");
+	auto soundClockAlarm = std::make_shared<File>("effects/alarm-clock-01.wav");
+	auto soundWashing = std::make_shared<File>("effects/washing-dishes-2.wav");
+	auto soundFaucet = std::make_shared<File>("effects/water-faucet-1.wav");
+	auto soundBabyCry = std::make_shared<File>("effects/baby-whining-02.wav");
+	auto soundBabyLaugh = std::make_shared<File>("effects/baby-laughing-04.wav");
+	auto soundSong = std::make_shared<File>("effects/c.ogg");
+	auto soundAlarm = std::make_shared<File>("effects/alarm-clock-01.wav");*/
+
 	std::shared_ptr<IHandle> handle1;
 	std::shared_ptr<IHandle> handle2;
 	std::shared_ptr<IHandle> handle3;
@@ -130,11 +149,11 @@ int main(int argc, char* argv[])
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	handle1 = playSound(manager, soundPersonSteps);
 	handle2 = playSound(manager, soundCreackDoor, 0.2);
-	handlePeople = playSound(manager, soundPeople, 0.1, -1);
+	handlePeople = playSound(manager, soundPeople, 0.07, -1);
 	fadeInOut(handlePeople, 1.0, 3000);
 	handle1->stop();
 	handle2 = playSound(manager, soundCreackDoor, 0.2);
-	fadeInOut(handlePeople, 0.1, 3000);
+	fadeInOut(handlePeople, 0.07, 3000);
 	playSound(manager, soundCloseDoor);
 	std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 	playSound(manager, soundLightSwitch);
@@ -161,7 +180,6 @@ int main(int argc, char* argv[])
 	handle1->stop();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(300));
-	sourceCClock->setAzimuth(sourcePerson->getAzimuth());
 	sourceCClock->setDistance(sourcePerson->getDistance() + 0.3);
 	handle1 = playSound(manager, soundClockWinding);
 	std::this_thread::sleep_for(std::chrono::milliseconds(2500));
@@ -175,8 +193,7 @@ int main(int argc, char* argv[])
 	handle1->stop();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	sourceFaucet->setAzimuth(sourcePerson->getAzimuth());
-	sourceFaucet->setDistance(sourcePerson->getDistance() + 0.2);
+	sourceFaucet->setDistance(sourcePerson->getDistance() + 0.25);
 	handleFaucet = playSound(manager, soundWashing);
 	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 	handleBaby = playSound(manager, soundBabyCry);
@@ -236,204 +253,6 @@ int main(int argc, char* argv[])
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 	manager->stop(0);
-	//Person enters scene
-	/*handle1= device->play(soundOpenDoor);
-	std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	handle1 = device->play(soundPersonSteps);
-	device->lock();
-	handle2 = device->play(soundCreackDoor);
-	handle2->setVolume(0.2);
-	handle3 = device->play(soundPeople);
-	handle3->setVolume(0.05);
-	handle3->setLoopCount(-1);
-	device->unlock();
-	for(int i = 0;i < 10;i++)
-	{
-		float volume = handle3->getVolume();
-		volume += 0.1;
-		if(volume > 1)
-			volume = 1.0;
-		handle3->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(300));
-	}
-	handle1->stop();
-	device->lock();
-	handle2 = device->play(soundCreackDoor);
-	handle2->setVolume(0.2);
-	device->unlock();
-	for(int i = 0;i < 10;i++)
-	{
-		float volume = handle3->getVolume();
-		volume -= 0.1;
-		if(volume < 0.05)
-			volume = 0.05;
-		handle3->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(300));
-	}
-	device->play(soundCloseDoor);
-	std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-	device->play(soundLightSwitch);
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));*/
-
-	//Person moves
-	/*handle1 = device->play(soundPersonSteps);
-	for(int i = 0;i < 50;i++)
-	{
-		sourcePerson->setAzimuth(sourcePerson->getAzimuth() - 2.8);
-		sourcePerson->setDistance(0.4 / sin(sourcePerson->getAzimuth()*PI / 180.0));
-		if(sourcePerson->getDistance() > 0.85)
-			sourcePerson->setDistance(0.85);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	handle1->stop();*/
-
-	//Person turns on fan
-	/*sourceHands->setAzimuth(sourcePerson->getAzimuth());
-	sourceHands->setDistance(sourcePerson->getDistance());
-	handle1 = device->play(soundFanSwitch);
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	handle1 = device->play(soundFan);
-	std::this_thread::sleep_for(std::chrono::milliseconds(2000));*/
-
-	//Person moves
-	/*handle1 = device->play(soundPersonSteps);
-	for(int i = 0;i < 40;i++)
-	{
-		sourcePerson->setAzimuth(sourcePerson->getAzimuth() - 2.25);
-		sourcePerson->setDistance(0.4 / abs(cos((sourcePerson->getAzimuth()+45)*PI / 180.0)));
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	handle1->stop();*/
-
-	//Person winds up clock
-	/*std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	sourceCClock->setAzimuth(sourcePerson->getAzimuth());
-	sourceCClock->setDistance(sourcePerson->getDistance()+0.3);
-	handle1 = device->play(soundClockWinding);
-	std::this_thread::sleep_for(std::chrono::milliseconds(2500));
-	handle1->stop();
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	device->lock();
-	handle2 = device->play(soundClockTicking);
-	handle2->setVolume(0.5);
-	handle2->setLoopCount(-1);
-	device->unlock();*/
-
-	//Person moves
-	/*handle1 = device->play(soundPersonSteps);
-	for(int i = 0;i < 40;i++)
-	{
-		sourcePerson->setAzimuth(sourcePerson->getAzimuth() - 2.50);
-		sourcePerson->setDistance(0.4 / abs(sin((sourcePerson->getAzimuth() + 45)*PI / 180.0)));
-		if(sourcePerson->getDistance() > 0.85)
-			sourcePerson->setDistance(0.85);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	handle1->stop();*/
-
-	//Faucet & baby
-	/*std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	sourceFaucet->setAzimuth(sourcePerson->getAzimuth());
-	sourceFaucet->setDistance(sourcePerson->getDistance() + 0.3);
-	handle2 = device->play(soundWashing);
-	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-	handle3 = device->play(soundBabyCry);
-	for(int i = 0;i < 10;i++)
-	{
-		float volume = handle2->getVolume();
-		volume -= 0.1;
-		if(volume < 0.0)
-			volume = 0.0;
-		handle2->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	handle2->stop();
-	device->lock();
-	handle2 = device->play(soundFaucet);
-	handle2->setLoopCount(-1);
-	handle2->setVolume(0.2f);
-	device->unlock();
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));*/
-
-	//Person moves upstairs
-	/*device->lock();
-	handle1 = device->play(soundPersonSteps);
-	handle1->setPitch(1.3);
-	device->unlock();
-	for(int i = 0;i < 30;i++)
-	{
-		sourcePerson->setAzimuth(sourcePerson->getAzimuth() - 3);
-		sourcePerson->setDistance(0.4 / abs(sin((sourcePerson->getAzimuth() - 45)*PI / 180.0)));
-		if(sourcePerson->getDistance() > 0.85)
-			sourcePerson->setDistance(0.85);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	for(int i = 0;i < 10;i++)
-	{
-		float volume = handle1->getVolume();
-		volume -= 0.1;
-		if(volume < 0.0)
-			volume = 0.0;
-		handle1->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	}
-	handle1->stop();
-	device->lock();
-	handle1 = device->play(soundPersonStairs);
-	handle1->setPitch(1.3);
-	device->unlock();
-	for(int i = 0;i < 30;i++)
-	{
-		sourcePerson->setElevation(sourcePerson->getElevation() + 3);
-		sourcePerson->setDistance(sourcePerson->getDistance() + 0.01);
-		if(sourcePerson->getDistance() > 0.98)
-			sourcePerson->setDistance(0.98);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	for(int i = 0;i < 10;i++)
-	{
-		float volume = handle1->getVolume();
-		volume -= 0.1;
-		if(volume < 0.0)
-			volume = 0.0;
-		handle1->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	}
-	handle1->stop();
-	device->lock();
-	handle1 = device->play(soundPersonSteps);
-	handle1->setPitch(1.3);
-	device->unlock();
-	for(int i = 0;i < 20;i++)
-	{
-		sourcePerson->setDistance(sourcePerson->getDistance() + 0.005);
-		if(sourcePerson->getDistance() > 0.98)
-			sourcePerson->setDistance(0.98);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
-	for(int i = 0;i < 10;i++)
-	{
-		float volume = handle1->getVolume();
-		volume -= 0.1;
-		if(volume < 0.0)
-			volume = 0.0;
-		handle1->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));*/
-
-	//Baby laughs
-	/*for(int i = 0;i < 10;i++)
-	{
-		float volume = handle3->getVolume();
-		volume -= 0.1;
-		if(volume < 0.0)
-			volume = 0.0;
-		handle3->setVolume(volume);
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	}*/
-
 	return 0;
 }
 
