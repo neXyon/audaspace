@@ -18,6 +18,7 @@
 #include "Exception.h"
 
 #include <cstring>
+#include <cstdlib>
 #include <chrono>
 
 AUD_NAMESPACE_BEGIN
