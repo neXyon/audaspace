@@ -74,14 +74,17 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 	else
 	{
 		m_tailCounter++;
-		std::memset(m_delayLine[0], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
+		std::memset(outBuffer, 0, m_L*sizeof(sample_t));
+		m_fftConvolvers[0]->getNextFDL(outBuffer, m_accBuffer, length, m_delayLine[0]);
+		//std::memset(m_delayLine[0], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 	}
 	m_delayLine.push_front(m_delayLine.back());
 	m_delayLine.pop_back();
+	length = m_L;
 	m_fftConvolvers[0]->IFFT_FDL(m_accBuffer, outBuffer, length);
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 
-	if(m_tailCounter >= m_delayLine.size() -1 && inBuffer == nullptr)
+	if(m_tailCounter >= m_delayLine.size() && inBuffer == nullptr)
 	{
 		eos = true;
 		/*length = m_irLength%m_M;
