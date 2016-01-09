@@ -44,7 +44,7 @@ extern AUD_API void AUD_HRTF_free(AUD_HRTF* hrtfs)
 extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation)
 {
 	assert(hrtfs);
-	assert(filter);
+	assert(sound);
 
 	(*hrtfs)->addImpulseResponse(std::make_shared<StreamBuffer>(*sound), azimuth, elevation);
 }
