@@ -34,7 +34,6 @@ Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fft
 	}
 
 	m_accBuffer = (fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex));
-
 	for(int i = 0; i < m_numThreads; i++)
 		m_threadAccBuffers.push_back((fftwf_complex*)std::calloc((m_N / 2) + 1, sizeof(fftwf_complex)));
 }
@@ -82,12 +81,12 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 	m_fftConvolvers[0]->IFFT_FDL(m_accBuffer, outBuffer, length);
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 
-	if(m_tailCounter >= m_delayLine.size() - 1 && inBuffer == nullptr)
+	if(m_tailCounter >= m_delayLine.size() -1 && inBuffer == nullptr)
 	{
 		eos = true;
-		length = m_irLength%m_M;
+		/*length = m_irLength%m_M;
 		if(m_tailCounter > m_delayLine.size() - 1)
-			length = 0;
+			length = 0;*/
 	}
 	else
 		for(int i = 0; i < m_futures.size(); i++)
