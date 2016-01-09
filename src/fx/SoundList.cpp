@@ -25,13 +25,13 @@ AUD_NAMESPACE_BEGIN
 SoundList::SoundList(bool random) :
 m_random(random)
 {
-	srand(time(NULL));
+	std::srand(time(NULL));
 }
 
 SoundList::SoundList(std::vector<std::shared_ptr<ISound>>& list, bool random) :
 m_list(list), m_random(random)
 {
-	srand(time(NULL));
+	std::srand(time(NULL));
 }
 
 std::shared_ptr<IReader> SoundList::createReader()
@@ -49,7 +49,7 @@ std::shared_ptr<IReader> SoundList::createReader()
 		{
 			int temp;
 			do{
-				temp = rand() % m_list.size();
+				temp = std::rand() % m_list.size();
 			} while(temp == m_index && m_list.size()>1);
 			m_index = temp;
 		}
