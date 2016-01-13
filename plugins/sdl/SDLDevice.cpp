@@ -26,15 +26,28 @@ void SDLDevice::SDL_mix(void* data, Uint8* buffer, int length)
 {
 	SDLDevice* device = (SDLDevice*)data;
 
+	if(!device->m_playback)
+	{
+		SDL_PauseAudio(1);
+
+		std::memset(buffer, 0, length);
+
+		return;
+	}
+
 	device->mix((data_t*)buffer, length / AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
 }
 
 void SDLDevice::playing(bool playing)
 {
-	SDL_PauseAudio(playing ? 0 : 1);
+	if(!m_playback)
+		SDL_PauseAudio(playing ? 0 : 1);
+
+	m_playback = playing;
 }
 
-SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
+SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize) :
+	m_playback(false)
 {
 	if(specs.channels == CHANNELS_INVALID)
 		specs.channels = CHANNELS_STEREO;
@@ -77,9 +90,8 @@ SDLDevice::SDLDevice(DeviceSpecs specs, int buffersize)
 
 SDLDevice::~SDLDevice()
 {
-	lock();
+	SDL_PauseAudio(1);
 	SDL_CloseAudio();
-	unlock();
 
 	destroy();
 }

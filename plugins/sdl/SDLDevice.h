@@ -39,6 +39,11 @@ class AUD_PLUGIN_API SDLDevice : public SoftwareDevice
 {
 private:
 	/**
+	 * Whether there is currently playback.
+	 */
+	bool m_playback;
+
+	/**
 	 * Mixes the next bytes into the buffer.
 	 * \param data The SDL device.
 	 * \param buffer The target buffer.
