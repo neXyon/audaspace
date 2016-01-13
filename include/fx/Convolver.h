@@ -128,7 +128,7 @@ public:
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to a FFT plan that will be used for convolution.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> m_plan);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 
 	virtual ~Convolver();
 

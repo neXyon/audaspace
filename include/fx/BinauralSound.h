@@ -73,6 +73,7 @@ public:
 	* Creates a new ConvolverSound.
 	* \param sound The sound that will be convolved. It must have only one channel.
 	* \param hrtfs The HRTF set that will be used.
+	* \param source A shared pointer to a Source object that contains the source of the sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to a FFTPlan object that will be used for convolution.
 	* \warning The same FFTPlan object must be used to construct both this and the HRTF object provided.
@@ -83,6 +84,7 @@ public:
 	* Creates a new BinauralSound. A default FFT plan will be created.
 	* \param sound The sound that will be convolved. Must have only one channel.
 	* \param hrtfs The HRTF set that will be used.
+	* \param source A shared pointer to a Source object that contains the source of the sound.
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \warning To use this constructor no FFTPlan object must have been provided to the hrtfs.
 	*/

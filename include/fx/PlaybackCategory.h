@@ -69,7 +69,7 @@ private:
 public:
 	/**
 	* Creates a new PlaybackCategory.
-	* \param A shared pointer to the device which will be used for playback.
+	* \param device A shared pointer to the device which will be used for playback.
 	*/
 	PlaybackCategory(std::shared_ptr<IDevice> device);
 	~PlaybackCategory();

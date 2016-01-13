@@ -28,6 +28,7 @@
 #include <memory>
 #include <vector>
 
+/**Default FFT size.*/
 #define DEFAULT_N 4096
 
 AUD_NAMESPACE_BEGIN
@@ -93,13 +94,13 @@ public:
 
 	/**
 	* Calculates the FFT of an input buffer with the current plan.
-	* \param[in] buffer A buffer with the input data an in which the output data will be written.
+	* \param[in,out] buffer A buffer with the input data an in which the output data will be written.
 	*/
 	void FFT(void* buffer);
 
 	/**
 	* Calculates the IFFT of an input buffer with the current plan.
-	* \param[in] buffer A buffer with the input data an in which the output data will be written.
+	* \param[in,out] buffer A buffer with the input data an in which the output data will be written.
 	*/
 	void IFFT(void* buffer);
 
@@ -112,7 +113,7 @@ public:
 
 	/**
 	* Frees one of the buffers reserved with the getRealOnlyBuffer(), getComplexOnlyBuffer() or getInplaceBuffer() method.
-	* \param a pointer to the buufer taht must be freed.
+	* \param buffer A pointer to the buufer taht must be freed.
 	*/
 	void freeBuffer(void* buffer);
 };

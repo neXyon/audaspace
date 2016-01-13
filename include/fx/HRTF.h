@@ -34,7 +34,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
-*
+* This class represents a complete set of HRTFs.
 */
 class AUD_API HRTF
 {

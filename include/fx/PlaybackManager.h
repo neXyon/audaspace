@@ -60,7 +60,7 @@ private:
 public:
 	/**
 	* Creates a new PlaybackManager.
-	* \param A shared pointer to the device which will be used for playback.
+	* \param device A shared pointer to the device which will be used for playback.
 	*/
 	PlaybackManager(std::shared_ptr<IDevice> device);
 

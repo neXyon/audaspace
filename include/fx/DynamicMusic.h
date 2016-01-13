@@ -17,9 +17,9 @@
 #pragma once
 
 /**
-* @file DynamicMusicPlayer.h
+* @file DynamicMusic.h
 * @ingroup fx
-* The DynamicMusicPlayer class.
+* The DynamicMusic class.
 */
 
 #include "devices/IHandle.h"
