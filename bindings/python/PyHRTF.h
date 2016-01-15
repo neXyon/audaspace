@@ -23,7 +23,7 @@ typedef void Reference_HRTF;
 
 typedef struct {
 	PyObject_HEAD
-		Reference_HRTF* hrtf;
+	Reference_HRTF* hrtf;
 } HRTFP;
 
 extern AUD_API PyObject* HRTF_empty();

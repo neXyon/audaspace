@@ -23,7 +23,7 @@ typedef void Reference_ImpulseResponse;
 
 typedef struct {
 	PyObject_HEAD
-		Reference_ImpulseResponse* impulseResponse;
+	Reference_ImpulseResponse* impulseResponse;
 } ImpulseResponseP;
 
 extern AUD_API PyObject* ImpulseResponse_empty();
