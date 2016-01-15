@@ -48,6 +48,7 @@ unsigned int PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> cate
 unsigned int PlaybackManager::addCategory(float volume)
 {
 	std::shared_ptr<PlaybackCategory> category = std::make_shared<PlaybackCategory>(m_device);
+	category->setVolume(volume);
 	bool flag = true;
 	unsigned int k = -1;
 	do {
