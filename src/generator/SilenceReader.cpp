@@ -48,7 +48,7 @@ int SilenceReader::getPosition() const
 Specs SilenceReader::getSpecs() const
 {
 	Specs specs;
-	specs.rate = RATE_44100;
+	specs.rate = RATE_48000;
 	specs.channels = CHANNELS_MONO;
 	return specs;
 }

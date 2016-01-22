@@ -425,7 +425,7 @@ Sound_file(PyTypeObject* type, PyObject* args)
 }
 
 PyDoc_STRVAR(M_aud_Sound_sawtooth_doc,
-			 "sawtooth(frequency, rate=44100)\n\n"
+			 "sawtooth(frequency, rate=48000)\n\n"
 			 "Creates a sawtooth sound which plays a sawtooth wave.\n\n"
 			 ":arg frequency: The frequency of the sawtooth wave in Hz.\n"
 			 ":type frequency: float\n"
@@ -439,7 +439,7 @@ static PyObject *
 Sound_sawtooth(PyTypeObject* type, PyObject* args)
 {
 	float frequency;
-	double rate = 44100;
+	double rate = 48000;
 
 	if(!PyArg_ParseTuple(args, "f|d:sawtooth", &frequency, &rate))
 		return nullptr;
@@ -494,7 +494,7 @@ Sound_silence(PyTypeObject* type)
 }
 
 PyDoc_STRVAR(M_aud_Sound_sine_doc,
-			 "sine(frequency, rate=44100)\n\n"
+			 "sine(frequency, rate=48000)\n\n"
 			 "Creates a sine sound which plays a sine wave.\n\n"
 			 ":arg frequency: The frequency of the sine wave in Hz.\n"
 			 ":type frequency: float\n"
@@ -508,7 +508,7 @@ static PyObject *
 Sound_sine(PyTypeObject* type, PyObject* args)
 {
 	float frequency;
-	double rate = 44100;
+	double rate = 48000;
 
 	if(!PyArg_ParseTuple(args, "f|d:sine", &frequency, &rate))
 		return nullptr;
@@ -534,7 +534,7 @@ Sound_sine(PyTypeObject* type, PyObject* args)
 }
 
 PyDoc_STRVAR(M_aud_Sound_square_doc,
-			 "square(frequency, rate=44100)\n\n"
+			 "square(frequency, rate=48000)\n\n"
 			 "Creates a square sound which plays a square wave.\n\n"
 			 ":arg frequency: The frequency of the square wave in Hz.\n"
 			 ":type frequency: float\n"
@@ -548,7 +548,7 @@ static PyObject *
 Sound_square(PyTypeObject* type, PyObject* args)
 {
 	float frequency;
-	double rate = 44100;
+	double rate = 48000;
 
 	if(!PyArg_ParseTuple(args, "f|d:square", &frequency, &rate))
 		return nullptr;
@@ -574,7 +574,7 @@ Sound_square(PyTypeObject* type, PyObject* args)
 }
 
 PyDoc_STRVAR(M_aud_Sound_triangle_doc,
-			 "triangle(frequency, rate=44100)\n\n"
+			 "triangle(frequency, rate=48000)\n\n"
 			 "Creates a triangle sound which plays a triangle wave.\n\n"
 			 ":arg frequency: The frequency of the triangle wave in Hz.\n"
 			 ":type frequency: float\n"
@@ -588,7 +588,7 @@ static PyObject *
 Sound_triangle(PyTypeObject* type, PyObject* args)
 {
 	float frequency;
-	double rate = 44100;
+	double rate = 48000;
 
 	if(!PyArg_ParseTuple(args, "f|d:triangle", &frequency, &rate))
 		return nullptr;

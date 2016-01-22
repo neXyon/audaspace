@@ -33,7 +33,7 @@ LinearResampleReader::LinearResampleReader(std::shared_ptr<IReader> reader, Samp
 
 void LinearResampleReader::seek(int position)
 {
-	position = floor(position * double(m_reader->getSpecs().rate) / double(m_rate));
+	position = std::floor(position * double(m_reader->getSpecs().rate) / double(m_rate));
 	m_reader->seek(position);
 	m_cache_ok = false;
 	m_cache_pos = 0;
@@ -41,12 +41,12 @@ void LinearResampleReader::seek(int position)
 
 int LinearResampleReader::getLength() const
 {
-	return floor(m_reader->getLength() * double(m_rate) / double(m_reader->getSpecs().rate));
+	return std::floor(m_reader->getLength() * double(m_rate) / double(m_reader->getSpecs().rate));
 }
 
 int LinearResampleReader::getPosition() const
 {
-	return floor((m_reader->getPosition() + (m_cache_ok ? m_cache_pos - 1 : 0))
+	return std::floor((m_reader->getPosition() + (m_cache_ok ? m_cache_pos - 1 : 0))
 				 * m_rate / m_reader->getSpecs().rate);
 }
 
@@ -100,7 +100,7 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 
 	if(m_cache_ok)
 	{
-		int need = ceil(length / factor + m_cache_pos) - 1;
+		int need = std::ceil(length / factor + m_cache_pos) - 1;
 
 		len = need;
 
@@ -111,7 +111,7 @@ void LinearResampleReader::read(int& length, bool& eos, sample_t* buffer)
 		m_reader->read(len, eos, buf + 2 * m_channels);
 
 		if(len < need)
-			length = floor((len + 1 - m_cache_pos) * factor);
+			length = std::floor((len + 1 - m_cache_pos) * factor);
 	}
 	else
 	{

@@ -22,7 +22,8 @@
 * The FFTPlan class.
 */
 
-#include "fftw3.h"
+#include <complex>
+#include <fftw3.h>
 #include "Audaspace.h"
 
 #include <memory>

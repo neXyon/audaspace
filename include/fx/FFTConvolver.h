@@ -64,7 +64,7 @@ private:
 	/**
 	* The internal buffer for the FFTS.
 	*/
-	void* m_inBuffer;
+	std::complex<sample_t>* m_inBuffer;
 
 	/**
 	* A shift buffer for the FDL method
@@ -79,7 +79,7 @@ private:
 	/**
 	* The provided impulse response.
 	*/
-	std::shared_ptr<std::vector<fftwf_complex>> m_irBuffer;
+	std::shared_ptr<std::vector<std::complex<sample_t>>> m_irBuffer;
 
 	/**
 	* If the tail is being read, this marks the current position.
@@ -96,7 +96,7 @@ public:
 	* \param ir A shared pointer to a vector with the impulse response data in the frequency domain (see ImpulseResponse class for an easy way to obtain it).
 	* \param plan A shared pointer to and FFT plan.
 	*/
-	FFTConvolver(std::shared_ptr<std::vector<fftwf_complex>> ir, std::shared_ptr<FFTPlan> plan);
+	FFTConvolver(std::shared_ptr<std::vector<std::complex<sample_t>>> ir, std::shared_ptr<FFTPlan> plan);
 	virtual ~FFTConvolver();
 
 	/**
@@ -167,7 +167,7 @@ public:
 	* \param[in] inBuffer A buffer of complex numbers, samples in the frequency domain, that will be multiplied by the impulse response. Its length must be N/2 + 1
 	* \param[in] accBuffer A pointer to the buffer into which the result of the multiplication will be summed. Its length must be N/2 + 1
 	*/
-	void getNextFDL(const fftwf_complex* inBuffer, fftwf_complex* accBuffer);
+	void getNextFDL(const std::complex<sample_t>* inBuffer, std::complex<sample_t>* accBuffer);
 
 	/**
 	* Transforms an input array of real data to the frequency domain and multiplies it by the impulse response. The result is accumulated to a buffer.
@@ -178,19 +178,19 @@ public:
 	*						of length will be setted to 0, since no data would be written in the outBuffer.
 	* \param[in] transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
 	*/
-	void getNextFDL(const sample_t* inBuffer, fftwf_complex* accBuffer, int& length, fftwf_complex* transformedData);
+	void getNextFDL(const sample_t* inBuffer, std::complex<sample_t>* accBuffer, int& length, fftwf_complex* transformedData);
 
 	/**
 	* Changes the impulse response and resets the FFTConvolver.
 	* \param ir A shared pointer to a vector with the data of the impulse response in the frequency domain.
 	*/
-	void setImpulseResponse(std::shared_ptr<std::vector<fftwf_complex>> ir);
+	void setImpulseResponse(std::shared_ptr<std::vector<std::complex<sample_t>>> ir);
 
 	/**
 	* Retrieves the current impulse response being used.
 	* \return The current impulse response.
 	*/
-	std::shared_ptr<std::vector<fftwf_complex>> getImpulseResponse();
+	std::shared_ptr<std::vector<std::complex<sample_t>>> getImpulseResponse();
 };
 
 AUD_NAMESPACE_END

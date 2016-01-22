@@ -18,8 +18,8 @@
 #include "util/BufferReader.h"
 #include "util/Buffer.h"
 
-// 5 sec * 44100 samples/sec * 4 bytes/sample * 6 channels
-#define BUFFER_RESIZE_BYTES 5292000
+// 5 sec * 48000 samples/sec * 4 bytes/sample * 6 channels
+#define BUFFER_RESIZE_BYTES 5760000
 
 AUD_NAMESPACE_BEGIN
 

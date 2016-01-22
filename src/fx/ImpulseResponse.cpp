@@ -18,6 +18,8 @@
 
 #include <algorithm>
 #include <cstring>
+#include <cstdlib>
+#include <cmath>
 
 AUD_NAMESPACE_BEGIN
 ImpulseResponse::ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse) :
@@ -42,7 +44,7 @@ int ImpulseResponse::getLength()
 	return m_length;
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>> ImpulseResponse::getChannel(int n)
+std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ImpulseResponse::getChannel(int n)
 {
 	return m_processedIR[n];
 }
@@ -55,13 +57,13 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 	bool eos = false;
 	int length = reader->getLength();
 	sample_t* buffer = (sample_t*)std::malloc(length * m_specs.channels * sizeof(sample_t));
-	int numParts = ceil((float)length / (plan->getSize() / 2));
+	int numParts = std::ceil((float)length / (plan->getSize() / 2));
 
 	for(int i = 0; i < m_specs.channels; i++)
 	{
-		m_processedIR.push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<fftwf_complex>>>>());
+		m_processedIR.push_back(std::make_shared<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>>());
 		for(int j = 0; j < numParts; j++)
-			(*m_processedIR[i]).push_back(std::make_shared<std::vector<fftwf_complex>>((N / 2) + 1));
+			(*m_processedIR[i]).push_back(std::make_shared<std::vector<std::complex<sample_t>>>((N / 2) + 1));
 	}
 	length += reader->getSpecs().rate;
 	reader->read(length, eos, buffer);
@@ -84,8 +86,7 @@ void ImpulseResponse::processImpulseResponse(std::shared_ptr<IReader> reader, st
 			plan->FFT(bufferFFT);
 			for(int j = 0; j < (N / 2) + 1; j++)
 			{
-				(*(*m_processedIR[i])[h])[j][0] = ((fftwf_complex*)bufferFFT)[j][0];
-				(*(*m_processedIR[i])[h])[j][1] = ((fftwf_complex*)bufferFFT)[j][1];
+				(*(*m_processedIR[i])[h])[j] = reinterpret_cast<std::complex<sample_t>*>(bufferFFT)[j];
 			}
 			partStart += N / 2 * m_specs.channels;
 		}

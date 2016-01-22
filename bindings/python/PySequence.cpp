@@ -52,7 +52,7 @@ Sequence_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	Sequence* self;
 
 	int channels = aud::CHANNELS_STEREO;
-	double rate = aud::RATE_44100;
+	double rate = aud::RATE_48000;
 	float fps = 30.0f;
 	bool muted = false;
 	PyObject* mutedo = nullptr;
