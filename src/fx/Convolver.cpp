@@ -23,7 +23,7 @@
 
 AUD_NAMESPACE_BEGIN
 Convolver::Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
-	m_N(plan->getSize()), m_M(plan->getSize()/2), m_L(plan->getSize()/2), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), static_cast<unsigned int>(m_irBuffers->size() - 1))), m_tailCounter(0)
+	m_N(plan->getSize()), m_M(plan->getSize()/2), m_L(plan->getSize()/2), m_irBuffers(ir), m_irLength(irLength), m_threadPool(threadPool), m_numThreads(std::min(threadPool->getNumOfThreads(), static_cast<unsigned int>(m_irBuffers->size() - 1))), m_tailCounter(0), m_eos(false)
 	
 {
 	m_resetFlag = false;
@@ -61,7 +61,13 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 	if(length > m_L)
 	{
 		length = 0;
-		eos = m_tailCounter >= m_delayLine.size();
+		eos = m_eos;
+		return;
+	}
+	if(m_eos)
+	{
+		eos = m_eos;
+		length = 0;
 		return;
 	}
 
@@ -77,7 +83,6 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 		m_tailCounter++;
 		std::memset(outBuffer, 0, m_L*sizeof(sample_t));
 		m_fftConvolvers[0]->getNextFDL(outBuffer, reinterpret_cast<std::complex<sample_t>*>(m_accBuffer), length, m_delayLine[0]);
-		//std::memset(m_delayLine[0], 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 	}
 	m_delayLine.push_front(m_delayLine.back());
 	m_delayLine.pop_back();
@@ -87,10 +92,10 @@ void Convolver::getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bo
 
 	if(m_tailCounter >= m_delayLine.size() && inBuffer == nullptr)
 	{
-		eos = true;
-		/*length = m_irLength%m_M;
-		if(m_tailCounter > m_delayLine.size() - 1)
-			length = 0;*/
+		eos = m_eos = true;
+		length = m_irLength%m_M;
+		if(length == 0)
+			length = m_M;
 	}
 	else
 		for(int i = 0; i < m_futures.size(); i++)
@@ -110,7 +115,7 @@ void Convolver::reset()
 		m_fftConvolvers[i]->clear();
 	std::memset(m_accBuffer, 0, ((m_N / 2) + 1)*sizeof(fftwf_complex));
 	m_tailCounter = 0;
-
+	m_eos = false;
 	m_resetFlag = false;
 }
 
