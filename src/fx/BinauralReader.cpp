@@ -99,6 +99,8 @@ Specs BinauralReader::getSpecs() const
 
 void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 {
+	int samples = 0;
+	int iteration = 0;
 	if(length <= 0)
 	{
 		length = 0;
@@ -110,16 +112,12 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 	int writePos = 0;
 	do
 	{
-		int writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen);
-		int l = m_L;
 		int bufRest = m_eOutBufLen - m_outBufferPos;
+		int writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen + bufRest);
 		if(bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
 		{
 			if(bufRest > 0)
-			{
 				std::memcpy(buffer + writePos, m_outBuffer + m_outBufferPos, bufRest*sizeof(sample_t));
-				//writePos += bufRest;
-			}
 			if(!m_eosTail)
 			{
 				int n = NUM_OUTCHANNELS;
@@ -131,7 +129,9 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 
 				int len = std::min(std::abs(writeLength - bufRest), m_eOutBufLen);
 				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
+				samples += len;
 				m_outBufferPos = len;
+				writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen + bufRest);
 			}
 			else
 			{
@@ -147,6 +147,7 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 			m_outBufferPos += writeLength;
 		}
 		writePos += writeLength;
+		iteration++;
 	} while(writePos < length*NUM_OUTCHANNELS);
 	m_position += length;
 }

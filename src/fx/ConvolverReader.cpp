@@ -100,9 +100,8 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 	int writePos = 0;
 	do
 	{
-		int writeLength = std::min((length*m_inChannels) - writePos, m_eOutBufLen);
-		int l = m_L;
 		int bufRest = m_eOutBufLen - m_outBufferPos;
+		int writeLength = std::min((length*m_inChannels) - writePos, m_eOutBufLen + bufRest);
 		if(bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
 		{
 			if(bufRest > 0)
@@ -113,6 +112,7 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 				int len = std::min(std::abs(writeLength - bufRest), m_eOutBufLen);
 				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
 				m_outBufferPos = len;
+				writeLength = std::min((length*m_inChannels) - writePos, m_eOutBufLen + bufRest);					
 			}
 			else
 			{
