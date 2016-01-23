@@ -19,6 +19,7 @@
 
 #include "Exception.h"
 #include "fx/HRTF.h"
+#include "fx/HRTFLoader.h"
 
 extern PyObject* AUDError;
 
@@ -80,7 +81,6 @@ HRTF_addImpulseResponse(HRTFP* self, PyObject* args)
 	try
 	{
 		return PyBool_FromLong((long)(*reinterpret_cast<std::shared_ptr<aud::HRTF>*>(self->hrtf))->addImpulseResponse(std::make_shared<aud::StreamBuffer>(*reinterpret_cast<std::shared_ptr<aud::ISound>*>(ir->sound)), azimuth, elevation));
-		Py_RETURN_NONE;
 	}
 	catch(aud::Exception& e)
 	{
@@ -89,9 +89,85 @@ HRTF_addImpulseResponse(HRTFP* self, PyObject* args)
 	}
 }
 
+PyDoc_STRVAR(M_aud_HRTF_loadLeftHrtfSet_doc,
+	"loadLeftHrtfSet(extension, directory)\n\n"
+	"Loads all HRTFs from a directory.\n\n"
+	":arg extension: The file extension of the hrtfs.\n"
+	":type extension: string\n"
+	":arg directory: The path to where the HRTF files are located.\n"
+	":type extension: string\n"
+	":return: The loaded :class:`HRTF` object.\n"
+	":rtype: :class:`HRTF`\n\n");
+
+static PyObject *
+HRTF_loadLeftHrtfSet(PyTypeObject* type, PyObject* args)
+{
+	const char* dir = nullptr;
+	const char* ext = nullptr;
+
+	if(!PyArg_ParseTuple(args, "ss:hrtf", &ext, &dir))
+		return nullptr;
+
+	HRTFP* self;
+	self = (HRTFP*)type->tp_alloc(type, 0);
+
+	try
+	{
+		self->hrtf = new std::shared_ptr<aud::HRTF>(aud::HRTFLoader::loadLeftHRTFs(ext, dir));
+	}
+	catch(aud::Exception& e)
+	{
+		Py_DECREF(self);
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+	return (PyObject *)self;
+}
+
+PyDoc_STRVAR(M_aud_HRTF_loadRightHrtfSet_doc,
+	"loadLeftHrtfSet(extension, directory)\n\n"
+	"Loads all HRTFs from a directory.\n\n"
+	":arg extension: The file extension of the hrtfs.\n"
+	":type extension: string\n"
+	":arg directory: The path to where the HRTF files are located.\n"
+	":type extension: string\n"
+	":return: The loaded :class:`HRTF` object.\n"
+	":rtype: :class:`HRTF`\n\n");
+
+static PyObject *
+HRTF_loadRightHrtfSet(PyTypeObject* type, PyObject* args)
+{
+	const char* dir = nullptr;
+	const char* ext = nullptr;
+
+	if(!PyArg_ParseTuple(args, "ss:hrtf", &ext, &dir))
+		return nullptr;
+
+	HRTFP* self;
+	self = (HRTFP*)type->tp_alloc(type, 0);
+
+	try
+	{
+		self->hrtf = new std::shared_ptr<aud::HRTF>(aud::HRTFLoader::loadRightHRTFs(ext, dir));
+	}
+	catch(aud::Exception& e)
+	{
+		Py_DECREF(self);
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+	return (PyObject *)self;
+}
+
 static PyMethodDef HRTF_methods[] = {
 	{ "addImpulseResponse", (PyCFunction)HRTF_addImpulseResponse, METH_VARARGS | METH_KEYWORDS,
 	M_aud_HRTF_addImpulseResponse_doc
+	},
+	{ "loadLeftHrtfSet", (PyCFunction)HRTF_loadLeftHrtfSet, METH_VARARGS | METH_CLASS,
+	M_aud_HRTF_loadLeftHrtfSet_doc
+	},
+	{ "loadRightHrtfSet", (PyCFunction)HRTF_loadRightHrtfSet, METH_VARARGS | METH_CLASS,
+	M_aud_HRTF_loadRightHrtfSet_doc
 	},
 	{ nullptr }  /* Sentinel */
 };
@@ -101,7 +177,7 @@ PyDoc_STRVAR(M_aud_HRTF_doc,
 
 PyTypeObject HRTFType = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
-	"aud.HRTF",					/* tp_name */
+	"aud.HRTF",								/* tp_name */
 	sizeof(HRTFP),							/* tp_basicsize */
 	0,										/* tp_itemsize */
 	(destructor)HRTF_dealloc,				/* tp_dealloc */
