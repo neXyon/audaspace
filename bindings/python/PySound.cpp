@@ -1684,7 +1684,7 @@ Sound_binaural(Sound* self, PyObject* args)
 	PyObject* object2;
 	PyObject* object3;
 
-	if(!PyArg_ParseTuple(args, "OOO:bunaural", &object1, &object2, &object3))
+	if(!PyArg_ParseTuple(args, "OOO:binaural", &object1, &object2, &object3))
 		return nullptr;
 
 	HRTFP* hrtfs = checkHRTF(object1);
@@ -1822,10 +1822,10 @@ static PyMethodDef Sound_methods[] = {
 	{ "addSound", (PyCFunction)Sound_list_addSound, METH_O,
 	M_aud_Sound_list_addSound_doc
 	},
-	{ "convolver", (PyCFunction)Sound_convolver, METH_O,
+	{ "convolver", (PyCFunction)Sound_convolver, METH_VARARGS,
 	M_aud_Sound_convolver_doc
 	},
-	{ "binaural", (PyCFunction)Sound_binaural, METH_O,
+	{ "binaural", (PyCFunction)Sound_binaural, METH_VARARGS,
 	M_aud_Sound_binaural_doc
 	},
 	{nullptr}  /* Sentinel */
