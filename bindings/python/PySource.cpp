@@ -75,7 +75,7 @@ Source_set_azimuth(SourceP* self, PyObject* args, void* nothing)
 	try
 	{
 		(*reinterpret_cast<std::shared_ptr<aud::Source>*>(self->source))->setAzimuth(azimuth);
-		PyErr_SetString(AUDError, "Couldn't change the azimuth!");
+		return 0;
 	}
 	catch(aud::Exception& e)
 	{
@@ -113,7 +113,7 @@ Source_set_elevation(SourceP* self, PyObject* args, void* nothing)
 	try
 	{
 		(*reinterpret_cast<std::shared_ptr<aud::Source>*>(self->source))->setElevation(elevation);
-		PyErr_SetString(AUDError, "Couldn't change the elevation!");
+		return 0;
 	}
 	catch(aud::Exception& e)
 	{
@@ -151,7 +151,7 @@ Source_set_distance(SourceP* self, PyObject* args, void* nothing)
 	try
 	{
 		(*reinterpret_cast<std::shared_ptr<aud::Source>*>(self->source))->setDistance(distance);
-		PyErr_SetString(AUDError, "Couldn't change the distance!");
+		return 0;
 	}
 	catch(aud::Exception& e)
 	{
@@ -218,7 +218,7 @@ PyTypeObject SourceType = {
 	0,										/* tp_iternext */
 	Source_methods,							/* tp_methods */
 	0,										/* tp_members */
-	0,										/* tp_getset */
+	Source_properties,						/* tp_getset */
 	0,										/* tp_base */
 	0,										/* tp_dict */
 	0,										/* tp_descr_get */
