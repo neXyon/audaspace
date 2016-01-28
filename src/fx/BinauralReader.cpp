@@ -23,7 +23,7 @@
 
 #define NUM_OUTCHANNELS 2
 #define NUM_CONVOLVERS 4
-#define CROSSFADE_SAMPLES 256
+#define CROSSFADE_SAMPLES 1024
 
 AUD_NAMESPACE_BEGIN
 BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
