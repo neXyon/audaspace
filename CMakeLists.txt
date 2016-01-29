@@ -713,7 +713,7 @@ endif()
 if(BUILD_DEMOS)
 	include_directories(${INCLUDE})
 
-	set(DEMOS audaplay audaconvert audaremap signalgen randsounds dynamicmusic playbackmanager convolution binaural soundscene)
+	set(DEMOS audaplay audaconvert audaremap signalgen randsounds dynamicmusic playbackmanager convolution binaural)
 
 	add_executable(audaplay demos/audaplay.cpp)
 	target_link_libraries(audaplay audaspace)
@@ -741,9 +741,6 @@ if(BUILD_DEMOS)
 
 	add_executable(binaural demos/binaural.cpp)
 	target_link_libraries(binaural audaspace)
-
-	add_executable(soundscene demos/soundscene.cpp)
-	target_link_libraries(soundscene audaspace)
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
