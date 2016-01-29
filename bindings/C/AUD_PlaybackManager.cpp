@@ -63,6 +63,12 @@ AUD_API int AUD_PlaybackManager_pause(AUD_PlaybackManager* manager, unsigned int
 	return (*manager)->pause(catKey);
 }
 
+AUD_API unsigned int AUD_PlaybackManager_addCategory(AUD_PlaybackManager* manager, float volume)
+{
+	assert(manager);
+	return (*manager)->addCategory(volume);
+}
+
 AUD_API float AUD_PlaybackManager_getVolume(AUD_PlaybackManager* manager, unsigned int catKey)
 {
 	assert(manager);

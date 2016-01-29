@@ -156,6 +156,33 @@ PlaybackManager_pause(PlaybackManagerP* self, PyObject* args)
 	}
 }
 
+PyDoc_STRVAR(M_aud_PlaybackManager_add_category_doc,
+	"addCategory(volume)\n\n"
+	"Adds a category with a custom volume.\n\n"
+	":arg volume: The volume for ther new category.\n"
+	":type volume: float\n"
+	":return: The key of the new category.\n"
+	":rtype: int\n\n");
+
+static PyObject *
+PlaybackManager_add_category(PlaybackManagerP* self, PyObject* args)
+{
+	float vol;
+
+	if(!PyArg_ParseTuple(args, "f:volume", &vol))
+		return nullptr;
+
+	try
+	{
+		return Py_BuildValue("I", (*reinterpret_cast<std::shared_ptr<aud::PlaybackManager>*>(self->playbackManager))->addCategory(vol));
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
 PyDoc_STRVAR(M_aud_PlaybackManager_get_volume_doc,
 	"getVolume(catKey)\n\n"
 	"Retrieves the volume of a category.\n\n"
@@ -271,6 +298,9 @@ static PyMethodDef PlaybackManager_methods[] = {
 	},
 	{ "stop", (PyCFunction)PlaybackManager_stop, METH_VARARGS,
 	M_aud_PlaybackManager_stop_doc
+	},
+	{ "addCategory", (PyCFunction)PlaybackManager_add_category, METH_VARARGS,
+	M_aud_PlaybackManager_add_category_doc
 	},
 	{ "getVolume", (PyCFunction)PlaybackManager_get_volume, METH_VARARGS,
 	M_aud_PlaybackManager_get_volume_doc
