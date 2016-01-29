@@ -23,7 +23,7 @@
 AUD_NAMESPACE_BEGIN
 
 BinauralSound::BinauralSound(std::shared_ptr<ISound> sound, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool) :
-	BinauralSound(sound, hrtfs, source, threadPool, std::make_shared<FFTPlan>(false))
+	BinauralSound(sound, hrtfs, source, threadPool, std::make_shared<FFTPlan>(0.0))
 {
 }
 

@@ -21,7 +21,7 @@
 
 AUD_NAMESPACE_BEGIN
 HRTF::HRTF() :
-	HRTF(std::make_shared<FFTPlan>(false))
+	HRTF(std::make_shared<FFTPlan>(0.0))
 {
 }
 
