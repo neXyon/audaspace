@@ -51,7 +51,7 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	m_eOutBufLen = m_outBufLen = m_outBufferPos = m_L * NUM_OUTCHANNELS;
 	m_inBuffer = (sample_t*)std::malloc(m_L * sizeof(sample_t));
 	for(int i = 0; i < NUM_CONVOLVERS; i++)
-		m_vecOut.push_back((sample_t*)std::malloc(m_L * sizeof(sample_t)));
+		m_vecOut.push_back((sample_t*)std::calloc(m_L, sizeof(sample_t)));
 }
 
 BinauralReader::~BinauralReader()
