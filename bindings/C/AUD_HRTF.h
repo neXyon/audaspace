@@ -41,7 +41,7 @@ extern AUD_API void AUD_HRTF_free(AUD_HRTF* hrtfs);
 * \param azimuth The azimuth angle of the HRTF.
 * \param elevation The elevation angle of the HRTF.
 */
-extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation);
+extern AUD_API void AUD_HRTF_addImpulseResponseFromSound(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation);
 
 #ifdef __cplusplus
 }

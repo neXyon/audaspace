@@ -41,7 +41,7 @@ extern AUD_API void AUD_HRTF_free(AUD_HRTF* hrtfs)
 	delete hrtfs;
 }
 
-extern AUD_API void AUD_HRTF_addImpulseResponse(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation)
+extern AUD_API void AUD_HRTF_addImpulseResponseFromSound(AUD_HRTF* hrtfs, AUD_Sound* sound, float azimuth, float elevation)
 {
 	assert(hrtfs);
 	assert(sound);

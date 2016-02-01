@@ -54,7 +54,7 @@ HRTF_dealloc(HRTFP* self)
 }
 
 PyDoc_STRVAR(M_aud_HRTF_addImpulseResponse_doc,
-	"addImpulseResponse(sound, azimuth, elevation)\n\n"
+	"addImpulseResponseFromSound(sound, azimuth, elevation)\n\n"
 	"Adds a new hrtf to the HRTF object\n\n"
 	":arg sound: The sound that contains the hrtf.\n"
 	":type sound: :class:`Sound`\n"
@@ -66,7 +66,7 @@ PyDoc_STRVAR(M_aud_HRTF_addImpulseResponse_doc,
 	":rtype: bool");
 
 static PyObject *
-HRTF_addImpulseResponse(HRTFP* self, PyObject* args)
+HRTF_addImpulseResponseFromSound(HRTFP* self, PyObject* args)
 {
 	PyObject* object;
 	float azimuth, elevation;
@@ -160,7 +160,7 @@ HRTF_loadRightHrtfSet(PyTypeObject* type, PyObject* args)
 }
 
 static PyMethodDef HRTF_methods[] = {
-	{ "addImpulseResponse", (PyCFunction)HRTF_addImpulseResponse, METH_VARARGS | METH_KEYWORDS,
+	{ "addImpulseResponseFromSound", (PyCFunction)HRTF_addImpulseResponseFromSound, METH_VARARGS | METH_KEYWORDS,
 	M_aud_HRTF_addImpulseResponse_doc
 	},
 	{ "loadLeftHrtfSet", (PyCFunction)HRTF_loadLeftHrtfSet, METH_VARARGS | METH_CLASS,
