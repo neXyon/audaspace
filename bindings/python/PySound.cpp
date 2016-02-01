@@ -1587,9 +1587,9 @@ PyDoc_STRVAR(M_aud_Sound_list_addSound_doc,
 	"addSound(sound)\n\n"
 	"Adds a new sound to a sound list.\n\n"
 	":arg sound: The sound that will be added to the list.\n"
-	":type sound: :class:`Sound`\n"
+	":type sound: :class:`Sound`\n\n"
 	".. note:: You can only add a sound to a sound list.");
-
+	
 static PyObject *
 Sound_list_addSound(Sound* self, PyObject* object)
 {
