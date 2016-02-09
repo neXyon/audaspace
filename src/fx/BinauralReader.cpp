@@ -20,11 +20,10 @@
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
-#include <iostream>
 
 #define NUM_OUTCHANNELS 2
 #define NUM_CONVOLVERS 4
-#define CROSSFADE_SAMPLES 256
+#define CROSSFADE_SAMPLES 1024
 
 AUD_NAMESPACE_BEGIN
 BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<HRTF> hrtfs, std::shared_ptr<Source> source, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan) :
@@ -37,8 +36,6 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	if(m_reader->getSpecs().rate != m_hrtfs->getSpecs().rate)
 		AUD_THROW(StateException, "The sound and the HRTFs must have the same rate");
 	m_M = m_L = m_N / 2;
-	m_specs.channels = CHANNELS_STEREO;
-	m_specs.rate = m_reader->getSpecs().rate;
 	
 	m_RealAzimuth = m_Azimuth = m_source->getAzimuth();
 	m_RealElevation = m_Elevation = m_source->getElevation();
@@ -54,7 +51,7 @@ BinauralReader::BinauralReader(std::shared_ptr<IReader> reader, std::shared_ptr<
 	m_eOutBufLen = m_outBufLen = m_outBufferPos = m_L * NUM_OUTCHANNELS;
 	m_inBuffer = (sample_t*)std::malloc(m_L * sizeof(sample_t));
 	for(int i = 0; i < NUM_CONVOLVERS; i++)
-		m_vecOut.push_back((sample_t*)std::malloc(m_L * sizeof(sample_t)));
+		m_vecOut.push_back((sample_t*)std::calloc(m_L, sizeof(sample_t)));
 }
 
 BinauralReader::~BinauralReader()
@@ -95,11 +92,15 @@ int BinauralReader::getPosition() const
 
 Specs BinauralReader::getSpecs() const
 {
-	return m_specs;
+	Specs specs = m_reader->getSpecs();
+	specs.channels = CHANNELS_STEREO;
+	return specs;
 }
 
 void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 {
+	int samples = 0;
+	int iteration = 0;
 	if(length <= 0)
 	{
 		length = 0;
@@ -111,9 +112,8 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 	int writePos = 0;
 	do
 	{
-		int writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen);
-		int l = m_L;
 		int bufRest = m_eOutBufLen - m_outBufferPos;
+		int writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen + bufRest);
 		if(bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
 		{
 			if(bufRest > 0)
@@ -127,15 +127,16 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 					n = NUM_CONVOLVERS;
 				loadBuffer(n);
 
-				writeLength = std::min(writeLength, m_eOutBufLen);
-				int len = std::min(writeLength, std::abs(writeLength - bufRest));
+				int len = std::min(std::abs(writeLength - bufRest), m_eOutBufLen);
 				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
+				samples += len;
 				m_outBufferPos = len;
+				writeLength = std::min((length*NUM_OUTCHANNELS) - writePos, m_eOutBufLen + bufRest);
 			}
 			else
 			{
 				m_outBufferPos += bufRest;
-				length = (writePos + bufRest) / NUM_OUTCHANNELS;
+				length = (writePos+bufRest) / NUM_OUTCHANNELS;
 				eos = true;
 				return;
 			}
@@ -146,6 +147,7 @@ void BinauralReader::read(int& length, bool& eos, sample_t* buffer)
 			m_outBufferPos += writeLength;
 		}
 		writePos += writeLength;
+		iteration++;
 	} while(writePos < length*NUM_OUTCHANNELS);
 	m_position += length;
 }
@@ -226,10 +228,9 @@ void BinauralReader::joinByChannel(int start, int len, int nConvolvers)
 		}
 
 		for(int j = 0; j < NUM_OUTCHANNELS; j++)
-			m_outBuffer[i + j + start] = (m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol);
+			m_outBuffer[i + j + start] = ((m_vecOut[j][k] * (1.0f - vol)) + (m_vecOut[j + NUM_OUTCHANNELS][k] * vol))*m_source->getVolume();
 		k++;
 	}
-
 	if(m_transition)
 	{
 		m_transPos -= len*NUM_OUTCHANNELS;

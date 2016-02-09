@@ -21,7 +21,7 @@
 
 AUD_NAMESPACE_BEGIN
 HRTF::HRTF() :
-	HRTF(std::make_shared<FFTPlan>(false))
+	HRTF(std::make_shared<FFTPlan>(0.0))
 {
 }
 
@@ -59,7 +59,9 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 	if(azimuth < 0)
 		azimuth += 360;
 
+	std::shared_ptr<ImpulseResponse> R, L;
 	float az = 0, el = 0, dif=0, minDif=360;
+
 	for(auto elem : m_hrtfs)
 	{
 		dif = std::fabs(elevation - elem.first);
@@ -80,6 +82,7 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 		{
 			minDif = dif;
 			az = elem.first;
+			R = elem.second;
 		}
 	}
 	azimuth = az;
@@ -87,7 +90,24 @@ std::pair<std::shared_ptr<ImpulseResponse>, std::shared_ptr<ImpulseResponse>> HR
 	if(azL == 360)
 		azL = 0;
 
-	return std::make_pair(m_hrtfs[elevation][azL], m_hrtfs[elevation][azimuth]);
+	auto iter = m_hrtfs[elevation].find(azL);
+	if(iter != m_hrtfs[elevation].end())
+		L = iter->second;
+	else
+	{
+		dif = 0;
+		minDif = 360;
+		for(auto elem : m_hrtfs[elevation])
+		{
+			dif = std::fabs(azL - elem.first);
+			if(dif < minDif)
+			{
+				minDif = dif;
+				L = elem.second;
+			}
+		}
+	}
+	return std::make_pair(L, R);
 }
 
 Specs HRTF::getSpecs()

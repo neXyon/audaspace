@@ -60,6 +60,14 @@ extern AUD_API int AUD_PlaybackManager_resume(AUD_PlaybackManager* manager, unsi
 extern AUD_API int AUD_PlaybackManager_pause(AUD_PlaybackManager* manager, unsigned int catKey);
 
 /**
+* Adds a new category with a custom volume.
+* \param manager The PlaybackManager object.
+* \param volume The volume value.
+* \return The key of the new category.
+*/
+extern AUD_API unsigned int AUD_PlaybackManager_addCategory(AUD_PlaybackManager* manager, float volume);
+
+/**
 * Retrieves the volume of a category of a playback manager.
 * \param manager The PlaybackManager object.
 * \param catKey The key of the category.

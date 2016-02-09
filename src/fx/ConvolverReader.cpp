@@ -32,6 +32,8 @@ ConvolverReader::ConvolverReader(std::shared_ptr<IReader> reader, std::shared_pt
 	int irLength = m_ir->getLength();
 	if(m_irChannels != 1 && m_irChannels != m_inChannels)
 		AUD_THROW(StateException, "The impulse response and the sound must either have the same amount of channels or the impulse response must be mono");
+	if(m_reader->getSpecs().rate != m_ir->getSpecs().rate)
+		AUD_THROW(StateException, "The sound and the impulse response. must have the same rate");
 
 	m_M = m_L = m_N / 2;
 	
@@ -98,9 +100,8 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 	int writePos = 0;
 	do
 	{
-		int writeLength = std::min((length*m_inChannels) - writePos, m_eOutBufLen);
-		int l = m_L;
 		int bufRest = m_eOutBufLen - m_outBufferPos;
+		int writeLength = std::min((length*m_inChannels) - writePos, m_eOutBufLen + bufRest);
 		if(bufRest < writeLength || (m_eOutBufLen == 0 && m_eosTail))
 		{
 			if(bufRest > 0)
@@ -108,10 +109,10 @@ void ConvolverReader::read(int& length, bool& eos, sample_t* buffer)
 			if(!m_eosTail)
 			{
 				loadBuffer();
-				writeLength = std::min(writeLength, m_eOutBufLen);
-				int len = std::min(writeLength, std::abs(writeLength - bufRest));
+				int len = std::min(std::abs(writeLength - bufRest), m_eOutBufLen);
 				std::memcpy(buffer + writePos + bufRest, m_outBuffer, len*sizeof(sample_t));
 				m_outBufferPos = len;
+				writeLength = std::min((length*m_inChannels) - writePos, m_eOutBufLen + bufRest);					
 			}
 			else
 			{

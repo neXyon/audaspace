@@ -37,6 +37,20 @@ std::shared_ptr<HRTF> HRTFLoader::loadRightHRTFs(std::shared_ptr<FFTPlan> plan, 
 	return hrtfs;
 }
 
+std::shared_ptr<HRTF> HRTFLoader::loadLeftHRTFs(const std::string& fileExtension, const std::string& path)
+{
+	std::shared_ptr<HRTF> hrtfs(std::make_shared<HRTF>());
+	loadHRTFs(hrtfs, 'L', fileExtension, path);
+	return hrtfs;
+}
+
+std::shared_ptr<HRTF> HRTFLoader::loadRightHRTFs(const std::string& fileExtension, const std::string& path)
+{
+	std::shared_ptr<HRTF> hrtfs(std::make_shared<HRTF>());
+	loadHRTFs(hrtfs, 'R', fileExtension, path);
+	return hrtfs;
+}
+
 void HRTFLoader::loadHRTFs(std::shared_ptr<HRTF> hrtfs, char ear, const std::string& fileExtension, const std::string& path)
 {
 	std::string readpath = path;

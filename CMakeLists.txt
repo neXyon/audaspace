@@ -342,6 +342,10 @@ endif()
 # C
 if(WITH_C)
 	set(C_SRC
+		bindings/C/AUD_ThreadPool.cpp
+		bindings/C/AUD_Source.cpp
+		bindings/C/AUD_HRTF.cpp
+		bindings/C/AUD_ImpulseResponse.cpp
 		bindings/C/AUD_Device.cpp
 		bindings/C/AUD_DynamicMusic.cpp
 		bindings/C/AUD_Handle.cpp
@@ -351,6 +355,10 @@ if(WITH_C)
 		bindings/C/AUD_Special.cpp
 	)
 	set(C_HDR
+		bindings/C/AUD_ThreadPool.h
+		bindings/C/AUD_Source.h
+		bindings/C/AUD_HRTF.h
+		bindings/C/AUD_ImpulseResponse.h
 		bindings/C/AUD_Device.h
 		bindings/C/AUD_DynamicMusic.h
 		bindings/C/AUD_Handle.h
@@ -779,20 +787,28 @@ if(WITH_PYTHON)
 		bindings/python/PyDevice.cpp
 		bindings/python/PyDynamicMusic.cpp
 		bindings/python/PyHandle.cpp
+		bindings/python/PyHRTF.cpp
+		bindings/python/PyImpulseResponse.cpp
 		bindings/python/PyPlaybackManager.cpp
 		bindings/python/PySequence.cpp
 		bindings/python/PySequenceEntry.cpp
 		bindings/python/PySound.cpp
+		bindings/python/PySource.cpp
+		bindings/python/PyThreadPool.cpp
 	)
 	set(PYTHON_HDR
 		bindings/python/PyAPI.h
 		bindings/python/PyDevice.h
 		bindings/python/PyDynamicMusic.h
 		bindings/python/PyHandle.h
+		bindings/python/PyHRTF.h
+		bindings/python/PyImpulseResponse.h
 		bindings/python/PyPlaybackManager.h
 		bindings/python/PySequence.h
 		bindings/python/PySequenceEntry.h
 		bindings/python/PySound.h
+		bindings/python/PySource.h
+		bindings/python/PyThreadPool.h
 	)
 
 	add_library(audaspace-py ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})

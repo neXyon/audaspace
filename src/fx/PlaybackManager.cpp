@@ -27,36 +27,73 @@ PlaybackManager::PlaybackManager(std::shared_ptr<IDevice> device) :
 
 unsigned int PlaybackManager::addCategory(std::shared_ptr<PlaybackCategory> category)
 {
-	m_categories[m_currentKey] = category;
-	unsigned int k = m_currentKey;
-	m_currentKey++;
+	bool flag = true;
+	unsigned int k = -1;
+	do {
+		auto iter = m_categories.find(m_currentKey);
+		if(iter == m_categories.end())
+		{
+			m_categories[m_currentKey] = category;
+			k = m_currentKey;
+			m_currentKey++;
+			flag = false;
+		}
+		else
+			m_currentKey++;
+	} while(flag);
+
+	return k;
+}
+
+unsigned int PlaybackManager::addCategory(float volume)
+{
+	std::shared_ptr<PlaybackCategory> category = std::make_shared<PlaybackCategory>(m_device);
+	category->setVolume(volume);
+	bool flag = true;
+	unsigned int k = -1;
+	do {
+		auto iter = m_categories.find(m_currentKey);
+		if(iter == m_categories.end())
+		{
+			m_categories[m_currentKey] = category;
+			k = m_currentKey;
+			m_currentKey++;
+			flag = false;
+		}
+		else
+			m_currentKey++;
+	} while(flag);
+
 	return k;
 }
 
 std::shared_ptr<IHandle> PlaybackManager::play(std::shared_ptr<ISound> sound, unsigned int catKey)
 {
+	auto iter = m_categories.find(catKey);
 	std::shared_ptr<PlaybackCategory> category;
-	try
+
+	if(iter != m_categories.end())
 	{
-		category = m_categories.at(catKey);
+		category = iter->second;
 	}
-	catch(std::out_of_range& oor)
+	else
 	{
 		category = std::make_shared<PlaybackCategory>(m_device);
 		m_categories[catKey] = category;
-		m_currentKey = catKey + 1;
 	}
 	return category->play(sound);
 }
 
 bool PlaybackManager::resume(unsigned int catKey)
 {
-	try
+	auto iter = m_categories.find(catKey);
+
+	if(iter != m_categories.end())
 	{
-		m_categories.at(catKey)->resume();
+		iter->second->resume();
 		return true;
 	}
-	catch(std::out_of_range& oor) 
+	else
 	{
 		return false;
 	}
@@ -64,12 +101,14 @@ bool PlaybackManager::resume(unsigned int catKey)
 
 bool PlaybackManager::pause(unsigned int catKey)
 {
-	try
+	auto iter = m_categories.find(catKey);
+
+	if(iter != m_categories.end())
 	{
-		m_categories.at(catKey)->pause();
+		iter->second->pause();
 		return true;
 	}
-	catch(std::out_of_range& oor)
+	else
 	{
 		return false;
 	}
@@ -77,11 +116,13 @@ bool PlaybackManager::pause(unsigned int catKey)
 
 float PlaybackManager::getVolume(unsigned int catKey)
 {
-	try
+	auto iter = m_categories.find(catKey);
+
+	if(iter != m_categories.end())
 	{
-		return m_categories.at(catKey)->getVolume();
+		return iter->second->getVolume();
 	}
-	catch(std::out_of_range& oor)
+	else
 	{
 		return -1.0;
 	}
@@ -89,12 +130,14 @@ float PlaybackManager::getVolume(unsigned int catKey)
 
 bool PlaybackManager::setVolume(float volume, unsigned int catKey)
 {
-	try
+	auto iter = m_categories.find(catKey);
+
+	if(iter != m_categories.end())
 	{
-		m_categories.at(catKey)->setVolume(volume);
+		iter->second->setVolume(volume);
 		return true;
 	}
-	catch(std::out_of_range& oor)
+	else
 	{
 		return false;
 	}
@@ -102,12 +145,14 @@ bool PlaybackManager::setVolume(float volume, unsigned int catKey)
 
 bool PlaybackManager::stop(unsigned int catKey)
 {
-	try
+	auto iter = m_categories.find(catKey);
+
+	if(iter != m_categories.end())
 	{
-		m_categories.at(catKey)->stop();
+		iter->second->stop();
 		return true;
 	}
-	catch(std::out_of_range& oor)
+	else
 	{
 		return false;
 	}
@@ -121,14 +166,21 @@ void PlaybackManager::clean()
 
 bool PlaybackManager::clean(unsigned int catKey)
 {
-	try
+	auto iter = m_categories.find(catKey);
+
+	if(iter != m_categories.end())
 	{
-		m_categories.at(catKey)->cleanHandles();
+		iter->second->cleanHandles();
 		return true;
 	}
-	catch(std::out_of_range& oor)
+	else
 	{
 		return false;
 	}
+}
+
+std::shared_ptr<IDevice> PlaybackManager::getDevice()
+{
+	return m_device;
 }
 AUD_NAMESPACE_END

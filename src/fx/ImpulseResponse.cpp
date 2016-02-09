@@ -23,7 +23,7 @@
 
 AUD_NAMESPACE_BEGIN
 ImpulseResponse::ImpulseResponse(std::shared_ptr<StreamBuffer> impulseResponse) :
-	ImpulseResponse(impulseResponse, std::make_shared<FFTPlan>(false))
+	ImpulseResponse(impulseResponse, std::make_shared<FFTPlan>(0.0))
 {
 }
 

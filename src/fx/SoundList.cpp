@@ -51,7 +51,7 @@ std::shared_ptr<IReader> SoundList::createReader()
 			int temp;
 			do{
 				temp = std::rand() % m_list.size();
-			} while(temp == m_index);
+			} while(temp == m_index && m_list.size()>1);
 			m_index = temp;
 		}
 		auto reader = m_list[m_index]->createReader();

@@ -196,7 +196,7 @@ void FFTConvolver::getNextFDL(const sample_t* inBuffer, std::complex<sample_t>* 
 	std::memcpy(transformedData, m_inBuffer, (m_realBufLen / 2)*sizeof(fftwf_complex));
 	for(int i = 0; i < m_realBufLen / 2; i++)
 	{
-		accBuffer[i] += (inBuffer[i] * (*m_irBuffer)[i]) / sample_t(m_N);
+		accBuffer[i] += (m_inBuffer[i] * (*m_irBuffer)[i]) / sample_t(m_N);
 	}
 }
 

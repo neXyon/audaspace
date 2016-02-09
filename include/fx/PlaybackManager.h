@@ -60,7 +60,7 @@ private:
 public:
 	/**
 	* Creates a new PlaybackManager.
-	* \param A shared pointer to the device which will be used for playback.
+	* \param device A shared pointer to the device which will be used for playback.
 	*/
 	PlaybackManager(std::shared_ptr<IDevice> device);
 
@@ -72,10 +72,17 @@ public:
 	unsigned int addCategory(std::shared_ptr<PlaybackCategory> category);
 
 	/**
+	* Adds an existent category to the manager and returns a key to access it.
+	* \param volume The volume of the new category.
+	* \return The category key.
+	*/
+	unsigned int addCategory(float volume);
+
+	/**
 	* Plays a sound and adds it to a new or existent category.
 	* \param sound The sound to be played and added to a category.
 	* \param catKey Key of the category.
-	* \return The handle of the playback.
+	* \return The handle of the playback; nullptr if the sound couldn't be played.
 	*/
 	std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound, unsigned int catKey);
 
@@ -138,6 +145,12 @@ public:
 	*        - false if the category doesn't exist.
 	*/
 	bool clean(unsigned int catKey);
+
+	/**
+	* Retrieves the device of the PlaybackManager.
+	* \return A shared pointer to the device used by the playback manager.
+	*/
+	std::shared_ptr<IDevice> getDevice();
 };
 
 AUD_NAMESPACE_END

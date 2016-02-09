@@ -115,6 +115,11 @@ private:
 	*/
 	int m_tailCounter;
 
+	/**
+	* Flag end of sound;
+	*/
+	bool m_eos;
+
 	// delete copy constructor and operator=
 	Convolver(const Convolver&) = delete;
 	Convolver& operator=(const Convolver&) = delete;
@@ -128,17 +133,17 @@ public:
 	* \param threadPool A shared pointer to a ThreadPool object with 1 or more threads.
 	* \param plan A shared pointer to a FFT plan that will be used for convolution.
 	*/
-	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> m_plan);
+	Convolver(std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::complex<sample_t>>>>> ir, int irLength, std::shared_ptr<ThreadPool> threadPool, std::shared_ptr<FFTPlan> plan);
 
 	virtual ~Convolver();
 
 	/**
 	* Convolves the data that is provided with the inpulse response.
-	* Given a plan of size N, the max amount of samples convolved by one call to this method will be N/2.
+	* Given a plan of size N, the amount of samples convolved by one call to this method will be N/2.
 	* \param[in] inBuffer A buffer with the input data to be convolved, nullptr if the source sound has ended (the convolved sound is larger than the source sound).
-	* \param[in] outBuffer A buffer in which the convolved data will be written.
+	* \param[in] outBuffer A buffer in which the convolved data will be written. Its size must be at least N/2.
 	* \param[in,out] length The number of samples you wish to obtain. If an inBuffer is provided this argument must match its length.
-	*						When this method returns, the value of length represent the number of samples written into the outBuffer.
+	*						When this method returns, the value of length represents the number of samples written into the outBuffer.
 	* \param[out] eos True if the end of the sound is reached, false otherwise.
 	*/
 	void getNext(sample_t* inBuffer, sample_t* outBuffer, int& length, bool& eos);

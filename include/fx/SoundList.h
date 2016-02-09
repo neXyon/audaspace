@@ -64,12 +64,14 @@ public:
 	/**
 	* Creates a new, empty sound list.
 	* Sounds must be added to the list using the addSound() method. 
+	* \param random False if the sounds int he list must be played sequentially. True if random.
 	*/
 	SoundList(bool random = false);
 
 	/**
 	* Creates a new sound list and initializes it.
 	* \param list A vector with sounds to initialize the list.
+	* \param random False if the sounds int he list must be played sequentially. True if random.
 	*/
 	SoundList(std::vector<std::shared_ptr<ISound>>& list, bool random = false);
 

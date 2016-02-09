@@ -69,14 +69,15 @@ private:
 public:
 	/**
 	* Creates a new PlaybackCategory.
-	* \param A shared pointer to the device which will be used for playback.
+	* \param device A shared pointer to the device which will be used for playback.
 	*/
 	PlaybackCategory(std::shared_ptr<IDevice> device);
 	~PlaybackCategory();
 
 	/**
-	* Adds a new handle to the category.
-	* \param handle The handle to be added.
+	* Plays a new sound in the category.
+	* \param sound The sound to be played.
+	* \return A handle for the playback. If the playback failed, nullptr will be returned.
 	*/
 	std::shared_ptr<IHandle> play(std::shared_ptr<ISound> sound);
 

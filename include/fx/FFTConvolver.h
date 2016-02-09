@@ -31,7 +31,7 @@
 
 AUD_NAMESPACE_BEGIN
 /**
-* This class allows to easily convolve a sound using the Fourier transform and the overlap add method.
+* This class allows to easily convolve a sound using the Fourier transform.
 */
 class AUD_API FFTConvolver
 {
@@ -113,14 +113,14 @@ public:
 
 	/**
 	* Convolves the data that is provided with the inpulse response.
-	* \param[in] inBufferA buffer with the input data to be convolved.
+	* \param[in] inBuffer A buffer with the input data to be convolved.
 	* \param[in] outBuffer A pointer to the buffer in which the convolution result will be written.
 	* \param[in,out] length The number of samples to be convolved (the length of both the inBuffer and the outBuffer).
 	*						The convolution output should be larger than the input, but since this class uses the overlap
 	*						add method, the extra length will be saved internally.
 	*						It must be equal or lower than N/2 (N=size of the FFTPlan) or the call will fail, setting this variable to 0 since no data would be
 	*						written in the outBuffer.
-	* \param [in]transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
+	* \param[in] transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
 	*/
 	void getNext(const sample_t* inBuffer, sample_t* outBuffer, int& length, fftwf_complex* transformedData);
 
@@ -176,7 +176,7 @@ public:
 	* \param[in,out] length The number of samples to be transformed and the length of the inBuffer.
 	*						It must be equal or lower than N/2 (N=size of the FFTPlan) or the call will fail and the value
 	*						of length will be setted to 0, since no data would be written in the outBuffer.
-	* \param [in]transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
+	* \param[in] transformedData A pointer to a buffer in which the Fourier transform of the input will be written.
 	*/
 	void getNextFDL(const sample_t* inBuffer, std::complex<sample_t>* accBuffer, int& length, fftwf_complex* transformedData);
 

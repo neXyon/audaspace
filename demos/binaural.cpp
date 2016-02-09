@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 	auto factory = DeviceManager::getDefaultDeviceFactory();
 	auto device = factory->openDevice();
 
-	std::shared_ptr<FFTPlan> plan(std::make_shared<FFTPlan>(4096, true));
+	std::shared_ptr<FFTPlan> plan(std::make_shared<FFTPlan>(4096, 1.0));
 	std::shared_ptr<ThreadPool> threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()));
 	std::shared_ptr<Source> source = std::make_shared<Source>(0, 0);
 	std::shared_ptr<HRTF> hrtfs;

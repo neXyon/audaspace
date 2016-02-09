@@ -45,6 +45,11 @@ private:
 	*/
 	std::atomic<float> m_elevation;
 
+	/**
+	* Distance value. Between 0 and 1.
+	*/
+	std::atomic<float> m_distance;
+
 	// delete copy constructor and operator=
 	Source(const Source&) = delete;
 	Source& operator=(const Source&) = delete;
@@ -54,8 +59,9 @@ public:
 	* Creates a Source instance with an initial value.
 	* \param azimuth The value of the azimuth.
 	* \param elevation The value of the elevation.
+	* \param distance The distance from the listener. Max distance is 1, min distance is 0.
 	*/
-	Source(float azimuth, float elevation);
+	Source(float azimuth, float elevation, float distance = 0.0);
 
 	/**
 	* Retrieves the current azimuth value.
@@ -70,6 +76,18 @@ public:
 	float getElevation();
 
 	/**
+	* Retrieves the current distance value.
+	* \return The current distance.
+	*/
+	float getDistance();
+
+	/**
+	* Retrieves the current volume value based on the distance.
+	* \return The current volume based on the Distance.
+	*/
+	float getVolume();
+
+	/**
 	* Changes the azimuth value.
 	* \param azimuth The new value for the azimuth.
 	*/
@@ -80,6 +98,12 @@ public:
 	* \param elevation The new value for the elevation.
 	*/
 	void setElevation(float elevation);
+
+	/**
+	* Changes the distance value.
+	* \param distance The new value for the distance. Max distance is 1, min distance is 0.
+	*/
+	void setDistance(float distance);
 };
 
 AUD_NAMESPACE_END

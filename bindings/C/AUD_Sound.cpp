@@ -24,6 +24,8 @@
 #include "util/StreamBuffer.h"
 #include "fx/Accumulator.h"
 #include "fx/ADSR.h"
+#include "fx/BinauralSound.h"
+#include "fx/ConvolverSound.h"
 #include "fx/Delay.h"
 #include "fx/Envelope.h"
 #include "fx/Fader.h"
@@ -659,6 +661,39 @@ AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
 	try
 	{
 		return new AUD_Sound(new MutableSound(*sound));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API AUD_Sound* AUD_Sound_Convolver(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool)
+{
+	assert(sound);
+	assert(filter);
+	assert(threadPool);
+
+	try
+	{
+		return new AUD_Sound(new ConvolverSound(*sound, *filter, *threadPool));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Source* source, AUD_ThreadPool* threadPool)
+{
+	assert(sound);
+	assert(hrtfs);
+	assert(source);
+	assert(threadPool);
+
+	try
+	{
+		return new AUD_Sound(new BinauralSound(*sound, *hrtfs, *source, *threadPool));
 	}
 	catch(Exception&)
 	{

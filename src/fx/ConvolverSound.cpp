@@ -23,7 +23,7 @@
 AUD_NAMESPACE_BEGIN
 
 ConvolverSound::ConvolverSound(std::shared_ptr<ISound> sound, std::shared_ptr<ImpulseResponse> impulseResponse, std::shared_ptr<ThreadPool> threadPool) :
-	ConvolverSound(sound, impulseResponse, threadPool, std::make_shared<FFTPlan>(false))
+	ConvolverSound(sound, impulseResponse, threadPool, std::make_shared<FFTPlan>(0.0))
 {
 }
 
