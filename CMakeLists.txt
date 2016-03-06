@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright 2009-2015 Jörg Müller
+# Copyright 2009-2016 Jörg Müller
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ endif()
 
 project(audaspace)
 
-set(AUDASPACE_VERSION 1.1)
+set(AUDASPACE_VERSION 1.2)
 set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION})
 
 # sources

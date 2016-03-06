@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2009-2015 Juan Francisco Crespo Galán
+* Copyright 2015-2016 Juan Francisco Crespo Galán
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.

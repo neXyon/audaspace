@@ -1,3 +1,36 @@
+Audaspace 1.2
+=============
+
+- New features:
+ - sound list
+ - random sounds
+ - dynamic music playing
+ - playback manager
+ - convolution/reverbation
+ - multi-threading
+ - binaural audio
+- API changes:
+ - changing default sample rate from 44.1 to 48 kHz
+- Bug fixes:
+ - several standard library fixes.
+- Bindings API:
+ - mixdown C API refactored
+- CMake/Building:
+ - assuring numpy is installed
+ - building the Python module on Mac OS X with CMake
+
+a6b6e70 Changing default sample rate from 44.1 to 48 kHz.
+20f0164 Bugfix: CMake custom command for python module on OS X.
+98679a2 Bugfix: using standard library (s)rand.
+5ab4fe7 Bugfix: first step in fixing the vector of array problem.
+e83f01d FFTW: trying to use complex to circumvent vector of array problem.
+093ebc0 Bugfix: abs -> std::fabs.
+328d7cc Bugfix: standard library include and call fixes.
+f78e330 Bugfix: using correct includes.
+64d7825 Behavior change: C API Mixdown
+749896b Merge pull request #3 from DethonUSAL/master
+6e9491c CMake: finding NumPy.
+
 Audaspace 1.1
 =============
 
