@@ -411,6 +411,16 @@ if(WITH_FFMPEG)
 	endif()
 endif()
 
+# FFTW
+find_package(FFTW REQUIRED)
+list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
+list(APPEND LIBRARIES ${FFTW_LIBRARY})
+
+if(WIN32)
+	file(GLOB FFTW_DLLS ${LIBRARY_PATH}/fftw/bin/*.dll)
+	list(APPEND DLLS ${FFTW_DLLS})
+endif()
+
 # Jack
 if(WITH_JACK)
 	find_package(Jack ${PACKAGE_OPTION})
@@ -619,10 +629,6 @@ list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp)
 
 # directories
-
-find_package(FFTW REQUIRED)
-list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
-list(APPEND LIBRARIES ${FFTW_LIBRARY})
 
 include_directories(${INCLUDE})
 link_directories()
