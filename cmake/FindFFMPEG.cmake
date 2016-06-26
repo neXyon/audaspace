@@ -6,32 +6,34 @@
 #  FFMPEG_LIBRARIES - link these to use FFMPEG
 
 # Use pkg-config to get hints about paths
-#find_package(PkgConfig QUIET)
-#if(PKG_CONFIG_FOUND)
-#	pkg_check_modules(FFMPEG_PKGCONF ffmpeg)
-#endif(PKG_CONFIG_FOUND)
+find_package(PkgConfig QUIET)
+
+if(PKG_CONFIG_FOUND)
+	pkg_check_modules(AVCODEC_PKGCONF libavcodec)
+	pkg_check_modules(AVFORMAT_PKGCONF libavformat)
+	pkg_check_modules(AVUTIL_PKGCONF libavutil)
+endif(PKG_CONFIG_FOUND)
 
 # Include dir
 find_path(FFMPEG_INCLUDE_DIR
 	NAMES libavcodec/avcodec.h libavformat/avformat.h libavformat/avio.h
-#	PATH_SUFFIXES include
-#	PATHS ${FFMPEG_PKGCONF_INCLUDE_DIRS}
+	PATHS ${AVCODEC_PKGCONF_INCLUDE_DIRS} ${AVFORMAT_PKGCONF_INCLUDE_DIRS} ${AVUTIL_PKGCONF_INCLUDE_DIRS}
 )
 
 # Libraries
 find_library(AVCODEC_LIBRARY
 	NAMES avcodec
-#	PATHS ${FFMPEG_PKGCONF_LIBRARY_DIRS}
+	PATHS ${AVCODEC_PKGCONF_LIBRARY_DIRS}
 )
 
 find_library(AVFORMAT_LIBRARY
 	NAMES avformat
-#	PATHS ${FFMPEG_PKGCONF_LIBRARY_DIRS}
+	PATHS ${AVFORMAT_PKGCONF_LIBRARY_DIRS}
 )
 
 find_library(AVUTIL_LIBRARY
 	NAMES avutil
-#	PATHS ${FFMPEG_PKGCONF_LIBRARY_DIRS}
+	PATHS ${AVUTIL_PKGCONF_LIBRARY_DIRS}
 )
 
 find_package(PackageHandleStandardArgs)
