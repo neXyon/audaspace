@@ -339,6 +339,12 @@ if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
 	set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "" FORCE)
 endif()
 
+# platform specific options
+
+if(MSYS OR MINGW)
+	add_definitions(-D_USE_MATH_DEFINES)
+endif()
+
 # C
 if(WITH_C)
 	set(C_SRC
