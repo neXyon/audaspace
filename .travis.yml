@@ -5,7 +5,7 @@ language: cpp
 os:
  - osx
 
-env: MACOSX_DEPLOYMENT_TARGET=10.9
+env: MACOSX_DEPLOYMENT_TARGET=10.11
 
 compiler:
  - clang
