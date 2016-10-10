@@ -18,6 +18,10 @@
 
 #include "Audaspace.h"
 
+#ifdef __cplusplus
+using namespace aud;
+#endif
+
 #ifdef AUD_CAPI_IMPLEMENTATION
 #include "ISound.h"
 #include "devices/IHandle.h"

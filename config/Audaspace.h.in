@@ -110,6 +110,16 @@
 /// Closes the audaspace namespace aud.
 #define AUD_NAMESPACE_END }
 
+#else
+
+/// Opens the audaspace namespace aud.
+#define AUD_NAMESPACE_BEGIN
+
+/// Closes the audaspace namespace aud.
+#define AUD_NAMESPACE_END
+
+#endif
+
 AUD_NAMESPACE_BEGIN
 
 /// Sample type.(float samples)
@@ -119,5 +129,3 @@ typedef float sample_t;
 typedef unsigned char data_t;
 
 AUD_NAMESPACE_END
-
-#endif
