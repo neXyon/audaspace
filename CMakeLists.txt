@@ -302,7 +302,7 @@ endif()
 
 cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C" FALSE)
 cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_JACK "Build Jack Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_JACK "Build JACK Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
@@ -427,7 +427,7 @@ if(WIN32)
 	list(APPEND DLLS ${FFTW_DLLS})
 endif()
 
-# Jack
+# JACK
 if(WITH_JACK)
 	find_package(Jack ${PACKAGE_OPTION})
 
@@ -455,7 +455,7 @@ if(WITH_JACK)
 		endif()
 	else()
 		set(WITH_JACK FALSE CACHE BOOL "Build With Plugin" FORCE)
-		message(WARNING "Jack not found, plugin will not be built.")
+		message(WARNING "JACK not found, plugin will not be built.")
 	endif()
 endif()
 

@@ -33,7 +33,7 @@ AUD_NAMESPACE_BEGIN
 class JackDevice;
 
 /**
- * This class is a Synchronizer implementation using Jack Transport.
+ * This class is a Synchronizer implementation using JACK Transport.
  */
 class AUD_PLUGIN_API JackSynchronizer : public ISynchronizer
 {

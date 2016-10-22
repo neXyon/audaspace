@@ -33,7 +33,7 @@ class IHandle;
 /**
  * @interface ISynchronizer
  * This class enables global synchronization of several audio applications if supported.
- * Jack for example supports synchronization through Jack Transport.
+ * JACK for example supports synchronization through JACK Transport.
  */
 class AUD_API ISynchronizer
 {

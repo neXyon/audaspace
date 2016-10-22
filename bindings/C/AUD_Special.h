@@ -104,7 +104,7 @@ extern AUD_API const char* AUD_mixdown_per_channel(AUD_Sound* sound, unsigned in
 extern AUD_API AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequencer, float volume, float start);
 
 /**
- * Initializes audio rutines (FFMPEG/Jack if it is enabled).
+ * Initializes audio routines (FFMPEG/JACK if it is enabled).
  */
 extern AUD_API void AUD_initOnce();
 

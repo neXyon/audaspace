@@ -177,7 +177,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize) :
 	// open client
 	m_client = jack_client_open(name.c_str(), options, &status);
 	if(m_client == nullptr)
-		AUD_THROW(DeviceException, "Connecting to the Jack server failed.");
+		AUD_THROW(DeviceException, "Connecting to the JACK server failed.");
 
 	// set callbacks
 	jack_set_process_callback(m_client, JackDevice::jack_mix, this);
@@ -195,7 +195,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize) :
 			sprintf(portname, "out %d", i+1);
 			m_ports[i] = jack_port_register(m_client, portname, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 			if(m_ports[i] == nullptr)
-				AUD_THROW(DeviceException, "Registering output port with Jack failed.");
+				AUD_THROW(DeviceException, "Registering output port with JACK failed.");
 		}
 	}
 	catch(Exception&)
@@ -232,7 +232,7 @@ JackDevice::JackDevice(std::string name, DeviceSpecs specs, int buffersize) :
 		delete[] m_ringbuffers;
 		destroy();
 
-		AUD_THROW(DeviceException, "Client activation with Jack failed.");
+		AUD_THROW(DeviceException, "Client activation with JACK failed.");
 	}
 
 	const char** ports = jack_get_ports(m_client, nullptr, nullptr,
@@ -365,7 +365,7 @@ public:
 
 void JackDevice::registerPlugin()
 {
-	DeviceManager::registerDevice("Jack", std::shared_ptr<IDeviceFactory>(new JackDeviceFactory));
+	DeviceManager::registerDevice("JACK", std::shared_ptr<IDeviceFactory>(new JackDeviceFactory));
 }
 
 #ifdef JACK_PLUGIN
@@ -376,7 +376,7 @@ extern "C" AUD_PLUGIN_API void registerPlugin()
 
 extern "C" AUD_PLUGIN_API const char* getName()
 {
-	return "Jack";
+	return "JACK";
 }
 #endif
 

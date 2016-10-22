@@ -1,9 +1,9 @@
-# - Try to find Jack
+# - Try to find JACK
 # Once done, this will define
 #
-#  JACK_FOUND - system has Jack
-#  JACK_INCLUDE_DIRS - the Jack include directories
-#  JACK_LIBRARIES - link these to use Jack
+#  JACK_FOUND - system has JACK
+#  JACK_INCLUDE_DIRS - the JACK include directories
+#  JACK_LIBRARIES - link these to use JACK
 
 # Use pkg-config to get hints about paths
 find_package(PkgConfig QUIET)
