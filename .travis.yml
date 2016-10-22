@@ -27,7 +27,7 @@ before_install:
 before_script:
  - mkdir build
  - cd build
- - cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python3/3.*/Frameworks/Python.framework/Versions/3.*/include/python3.*m -DPYTHON_LIBRARY=/usr/local//Cellar/python3/3.*/Frameworks/Python.framework/Versions/3.*/lib/libpython3.*.dylib -DPython_FRAMEWORKS=/usr/local/Cellar/python3/3.*/Frameworks/Python.framework ..
+ - cmake -DPYTHON_INCLUDE_DIR=$(find /usr/local/Cellar/python3/3.*/Frameworks/Python.framework/Versions/3.*/include/ -name "python3.*m") -DPYTHON_LIBRARY=$(find /usr/local/Cellar/python3/3.*/Frameworks/Python.framework/Versions/3.*/lib -name "libpython3.*.dylib") -DPython_FRAMEWORKS=$(find /usr/local/Cellar/python3/3.*/Frameworks -name "Python.framework") ..
 
 script:
  - make
