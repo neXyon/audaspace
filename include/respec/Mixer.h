@@ -97,6 +97,16 @@ public:
 	void mix(sample_t* buffer, int start, int length, float volume);
 
 	/**
+	 * Mixes a buffer with linear volume interpolation.
+	 * \param buffer The buffer to superpose.
+	 * \param start The start sample of the buffer.
+	 * \param length The length of the buffer in samples.
+	 * \param volume_to The target mixing volume. Must be a value between 0.0 and 1.0.
+	 * \param volume_from The start mixing volume. Must be a value between 0.0 and 1.0.
+	 */
+	void mix(sample_t* buffer, int start, int length, float volume_to, float volume_from);
+
+	/**
 	 * Writes the mixing buffer into an output buffer.
 	 * \param buffer The target buffer for superposing.
 	 * \param volume The mixing volume. Must be a value between 0.0 and 1.0.

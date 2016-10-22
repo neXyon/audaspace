@@ -78,7 +78,7 @@ bool SoftwareDevice::SoftwareHandle::pause(bool keep)
 }
 
 SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch, std::shared_ptr<ResampleReader> resampler, std::shared_ptr<ChannelMapperReader> mapper, bool keep) :
-	m_reader(reader), m_pitch(pitch), m_resampler(resampler), m_mapper(mapper), m_keep(keep), m_user_pitch(1.0f), m_user_volume(1.0f), m_user_pan(0.0f), m_volume(1.0f), m_loopcount(0),
+	m_reader(reader), m_pitch(pitch), m_resampler(resampler), m_mapper(mapper), m_keep(keep), m_user_pitch(1.0f), m_user_volume(1.0f), m_user_pan(0.0f), m_volume(1.0f), m_old_volume(0), m_loopcount(0),
 	m_relative(true), m_volume_max(1.0f), m_volume_min(0), m_distance_max(std::numeric_limits<float>::max()),
 	m_distance_reference(1.0f), m_attenuation(1.0f), m_cone_angle_outer(M_PI), m_cone_angle_inner(M_PI), m_cone_volume_outer(0),
 	m_flags(RENDER_CONE), m_stop(nullptr), m_stop_data(nullptr), m_status(STATUS_PLAYING), m_device(device)
@@ -88,6 +88,8 @@ SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shar
 void SoftwareDevice::SoftwareHandle::update()
 {
 	int flags = 0;
+
+	m_old_volume = m_volume;
 
 	Vector3 SL;
 	if(m_relative)
@@ -396,7 +398,7 @@ bool SoftwareDevice::SoftwareHandle::setVolume(float volume)
 
 	if(volume == 0)
 	{
-		m_volume = volume;
+		m_old_volume = m_volume = volume;
 		m_flags |= RENDER_VOLUME;
 	}
 	else
@@ -749,7 +751,7 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 				// in case of looping
 				while(pos + len < length && sound->m_loopcount && eos)
 				{
-					m_mixer->mix(buf, pos, len, sound->m_volume);
+					m_mixer->mix(buf, pos, len, sound->m_volume, sound->m_old_volume);
 
 					pos += len;
 
@@ -772,7 +774,7 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 				std::cerr << "Caught exception while reading sound data during playback with software mixing: " << e.getMessage() << std::endl;
 			}
 
-			m_mixer->mix(buf, pos, len, sound->m_volume);
+			m_mixer->mix(buf, pos, len, sound->m_volume, sound->m_old_volume);
 
 			// in case the end of the sound is reached
 			if(eos && !sound->m_loopcount)
