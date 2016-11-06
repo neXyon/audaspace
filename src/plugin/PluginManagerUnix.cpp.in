@@ -23,19 +23,34 @@ AUD_NAMESPACE_BEGIN
 
 std::unordered_map<std::string, void*> PluginManager::m_plugins;
 
+void* PluginManager::openLibrary(const std::string& path)
+{
+	return dlopen(path.c_str(), RTLD_LAZY);
+}
+
+void *PluginManager::lookupLibrary(void *handle, const std::string &name)
+{
+	return dlsym(handle, name.c_str());
+}
+
+void PluginManager::closeLibrary(void *handle)
+{
+	dlclose(handle);
+}
+
 bool PluginManager::loadPlugin(const std::string& path)
 {
-	void* handle = dlopen(path.c_str(), RTLD_LAZY);
+	void* handle = openLibrary(path);
 
 	if (!handle)
 		return false;
 
-	void (*registerPlugin)() = (void (*)())dlsym(handle, "registerPlugin");
-	const char* (*getName)() = (const char* (*)())dlsym(handle, "getName");
+	void (*registerPlugin)() = (void (*)())lookupLibrary(handle, "registerPlugin");
+	const char* (*getName)() = (const char* (*)())lookupLibrary(handle, "getName");
 
 	if(!registerPlugin || !getName)
 	{
-		dlclose(handle);
+		closeLibrary(handle);
 		return false;
 	}
 

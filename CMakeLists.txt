@@ -308,6 +308,7 @@ cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHA
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
 cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
+cmake_dependent_option(DYNLOAD_JACK "Dynamically load JACK" FALSE "WITH_JACK" FALSE)
 cmake_dependent_option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" TRUE "WITH_PYTHON_MODULE" FALSE)
 
 # compiler options
@@ -435,15 +436,24 @@ if(WITH_JACK)
 		set(JACK_SRC
 			plugins/jack/JackDevice.cpp
 			plugins/jack/JackSynchronizer.cpp
+			plugins/jack/JackLibrary.cpp
 		)
 		set(JACK_HDR
 			plugins/jack/JackDevice.h
 			plugins/jack/JackSynchronizer.h
+			plugins/jack/JackLibrary.h
+			plugins/jack/JackSymbols.h
 		)
+
+	    if(DYNLOAD_JACK)
+			add_definitions(-DDYNLOAD_JACK)
+		endif()
 
 		if(NOT PLUGIN_JACK)
 			list(APPEND INCLUDE ${JACK_INCLUDE_DIRS})
-			list(APPEND LIBRARIES ${JACK_LIBRARIES})
+			if(NOT DYNLOAD_JACK)
+				list(APPEND LIBRARIES ${JACK_LIBRARIES})
+			endif()
 			list(APPEND SRC ${JACK_SRC})
 			list(APPEND HDR ${JACK_HDR})
 			list(APPEND STATIC_PLUGINS JackDevice)
@@ -684,7 +694,11 @@ if(WITH_JACK AND PLUGIN_JACK)
 	add_definitions(-DJACK_PLUGIN)
 	include_directories(${INCLUDE} ${JACK_INCLUDE_DIRS})
 	add_library(audjack SHARED ${JACK_SRC} ${JACK_HDR} ${HDR})
-	target_link_libraries(audjack audaspace ${JACK_LIBRARIES})
+	if(DYNLOAD_JACK)
+		target_link_libraries(audjack audaspace)
+	else()
+		target_link_libraries(audjack audaspace ${JACK_LIBRARIES})
+	endif()
 	set_target_properties(audjack PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	install(TARGETS audjack DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()

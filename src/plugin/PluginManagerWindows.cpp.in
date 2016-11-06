@@ -22,19 +22,34 @@ AUD_NAMESPACE_BEGIN
 
 std::unordered_map<std::string, void*> PluginManager::m_plugins;
 
+void* PluginManager::openLibrary(const std::string& path)
+{
+	return reinterpret_cast<void*>(LoadLibrary(path.c_str()));
+}
+
+void *PluginManager::lookupLibrary(void *handle, const std::string &name)
+{
+	return GetProcAddress(reinterpret_cast<HMODULE>(handle), name.c_str());
+}
+
+void PluginManager::closeLibrary(void *handle)
+{
+	FreeLibrary(reinterpret_cast<HMODULE>(handle));
+}
+
 bool PluginManager::loadPlugin(const std::string& path)
 {
-	HMODULE handle = LoadLibrary(path.c_str());
+	void* handle = openLibrary(path);
 
 	if (!handle)
 		return false;
 
-	void(*registerPlugin)() = (void(*)())GetProcAddress(handle, "registerPlugin");
-	const char* (*getName)() = (const char* (*)())GetProcAddress(handle, "getName");
+	void (*registerPlugin)() = (void (*)())lookupLibrary(handle, "registerPlugin");
+	const char* (*getName)() = (const char* (*)())lookupLibrary(handle, "getName");
 
 	if(!registerPlugin || !getName)
 	{
-		FreeLibrary(handle);
+		closeLibrary(handle);
 		return false;
 	}
 
