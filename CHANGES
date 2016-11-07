@@ -1,3 +1,30 @@
+Audaspace 1.3
+=============
+
+- New features:
+ - linear interpolation for volume changes in the software mixer
+ - dynamic Loading for JACK
+- Bug fixes:
+ - renamed Jack to JACK
+ - C API was not working
+ - filter python API parameter check
+ - finding ffmpeg with pkgconfig
+
+64884a7 Windows fixes.
+53ba3e6 Implemented JACK dynamic loading.
+5ee0ee1 Continues last commit.
+c24b384 Trying to fix travis-ci python versioning once and for all (at least for python3).
+1fbf3bf Rename Jack => JACK where possible.
+6e4b31f Implemented linear interpolation for volume changes in the software mixer.
+817043c Fixing C API not working.
+c384daf Maybe travis-ci works now.
+aa7ddd7 Fix (hopefully) for previous commit.
+57c5dd7 Configure MACOSX_DEPLOYMENT_TARGET for travis-ci.
+7ae6ff9 Fix travis-ci python path.
+552fea4 Added posibillity to use math constants on MinGW
+c18ed59 Bugfix: incorrect parameter check in python API.
+6f048c3 CMake: fix finding ffmpeg with pkgconfig.
+
 Audaspace 1.2
 =============
 
