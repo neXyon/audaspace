@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "JackLibrary.h"
 #include "JackDevice.h"
+#include "JackLibrary.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDeviceFactory.h"
 #include "Exception.h"

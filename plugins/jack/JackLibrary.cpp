@@ -16,14 +16,14 @@
 
 #define JACK_LIBRARY_IMPLEMENTATION
 
+#include <string>
+#include <array>
+
 #include "JackLibrary.h"
 
 #ifdef DYNLOAD_JACK
 #include "plugin/PluginManager.h"
 #endif
-
-#include <string>
-#include <array>
 
 AUD_NAMESPACE_BEGIN
 
