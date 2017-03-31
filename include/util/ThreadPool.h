@@ -30,6 +30,7 @@
 #include <thread>
 #include <queue>
 #include <future>
+#include <functional>
 
 AUD_NAMESPACE_BEGIN
 /**
