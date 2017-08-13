@@ -42,14 +42,9 @@ set(SRC
 	src/fx/ADSR.cpp
 	src/fx/ADSRReader.cpp
 	src/fx/BaseIIRFilterReader.cpp
-	src/fx/BinauralSound.cpp
-	src/fx/BinauralReader.cpp
 	src/fx/ButterworthCalculator.cpp
 	src/fx/Butterworth.cpp
 	src/fx/CallbackIIRFilterReader.cpp
-	src/fx/Convolver.cpp
-	src/fx/ConvolverReader.cpp
-	src/fx/ConvolverSound.cpp
 	src/fx/Delay.cpp
 	src/fx/DelayReader.cpp
 	src/fx/DynamicIIRFilter.cpp
@@ -60,13 +55,10 @@ set(SRC
 	src/fx/Envelope.cpp
 	src/fx/Fader.cpp
 	src/fx/FaderReader.cpp
-	src/fx/FFTConvolver.cpp
 	src/fx/HighpassCalculator.cpp
 	src/fx/Highpass.cpp
-	src/fx/HRTF.cpp
 	src/fx/IIRFilter.cpp
 	src/fx/IIRFilterReader.cpp
-	src/fx/ImpulseResponse.cpp
 	src/fx/Limiter.cpp
 	src/fx/LimiterReader.cpp
 	src/fx/Loop.cpp
@@ -126,7 +118,6 @@ set(SRC
 	src/util/Barrier.cpp
 	src/util/Buffer.cpp
 	src/util/BufferReader.cpp
-	src/util/FFTPlan.cpp
 	src/util/StreamBuffer.cpp
 	src/util/ThreadPool.cpp
 )
@@ -158,14 +149,9 @@ set(PUBLIC_HDR
 	include/fx/ADSR.h
 	include/fx/ADSRReader.h
 	include/fx/BaseIIRFilterReader.h
-	include/fx/BinauralSound.h
-	include/fx/BinauralReader.h
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
-	include/fx/Convolver.h
-	include/fx/ConvolverReader.h
-	include/fx/ConvolverSound.h
 	include/fx/Delay.h
 	include/fx/DelayReader.h
 	include/fx/DynamicIIRFilter.h
@@ -176,15 +162,11 @@ set(PUBLIC_HDR
 	include/fx/Envelope.h
 	include/fx/Fader.h
 	include/fx/FaderReader.h
-	include/fx/FFTConvolver.h
 	include/fx/HighpassCalculator.h
 	include/fx/Highpass.h
-	include/fx/HRTF.h
-	include/fx/HRTFLoader.h
 	include/fx/IDynamicIIRFilterCalculator.h
 	include/fx/IIRFilter.h
 	include/fx/IIRFilterReader.h
-	include/fx/ImpulseResponse.h
 	include/fx/Limiter.h
 	include/fx/LimiterReader.h
 	include/fx/Loop.h
@@ -246,7 +228,6 @@ set(PUBLIC_HDR
 	include/util/Barrier.h
 	include/util/Buffer.h
 	include/util/BufferReader.h
-	include/util/FFTPlan.h
 	include/util/ILockable.h
 	include/util/Math3D.h
 	include/util/StreamBuffer.h
@@ -281,6 +262,7 @@ option(SHARED_LIBRARY "Build Shared Library" TRUE)
 option(WITH_C "Build C Module" TRUE)
 option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" TRUE)
 option(WITH_FFMPEG "Build With FFMPEG" TRUE)
+option(WITH_FFTW "Build With FFTW" TRUE)
 option(WITH_JACK "Build With Plugin" TRUE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
@@ -351,8 +333,6 @@ if(WITH_C)
 	set(C_SRC
 		bindings/C/AUD_ThreadPool.cpp
 		bindings/C/AUD_Source.cpp
-		bindings/C/AUD_HRTF.cpp
-		bindings/C/AUD_ImpulseResponse.cpp
 		bindings/C/AUD_Device.cpp
 		bindings/C/AUD_DynamicMusic.cpp
 		bindings/C/AUD_Handle.cpp
@@ -364,8 +344,6 @@ if(WITH_C)
 	set(C_HDR
 		bindings/C/AUD_ThreadPool.h
 		bindings/C/AUD_Source.h
-		bindings/C/AUD_HRTF.h
-		bindings/C/AUD_ImpulseResponse.h
 		bindings/C/AUD_Device.h
 		bindings/C/AUD_DynamicMusic.h
 		bindings/C/AUD_Handle.h
@@ -375,6 +353,18 @@ if(WITH_C)
 		bindings/C/AUD_Special.h
 		bindings/C/AUD_Types.h
 	)
+
+if(WITH_FFTW)
+	list(APPEND C_SRC
+			bindings/C/AUD_HRTF.cpp
+			bindings/C/AUD_ImpulseResponse.cpp
+			)
+
+		list(APPEND C_HDR
+			bindings/C/AUD_HRTF.h
+			bindings/C/AUD_ImpulseResponse.h
+			)
+	endif()
 
 	if(NOT SEPARATE_C)
 		list(APPEND SRC ${C_SRC})
@@ -419,13 +409,50 @@ if(WITH_FFMPEG)
 endif()
 
 # FFTW
-find_package(FFTW REQUIRED)
-list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
-list(APPEND LIBRARIES ${FFTW_LIBRARY})
+if(WITH_FFTW)
+	find_package(FFTW ${PACKAGE_OPTION})
 
-if(WIN32)
-	file(GLOB FFTW_DLLS ${LIBRARY_PATH}/fftw/bin/*.dll)
-	list(APPEND DLLS ${FFTW_DLLS})
+	if(FFTW_FOUND)
+		set(FFTW_SRC
+			src/fx/BinauralSound.cpp
+			src/fx/BinauralReader.cpp
+			src/fx/Convolver.cpp
+			src/fx/ConvolverReader.cpp
+			src/fx/ConvolverSound.cpp
+			src/fx/FFTConvolver.cpp
+			src/fx/HRTF.cpp
+			src/fx/ImpulseResponse.cpp
+			src/util/FFTPlan.cpp
+		)
+	set(FFTW_HDR
+		include/fx/BinauralSound.h
+			include/fx/BinauralReader.h
+			include/fx/Convolver.h
+			include/fx/ConvolverReader.h
+			include/fx/ConvolverSound.h
+			include/fx/FFTConvolver.h
+			include/fx/HRTF.h
+			include/fx/HRTFLoader.h
+			include/fx/ImpulseResponse.h
+			include/util/FFTPlan.h
+		)
+
+		add_definitions(-DWITH_CONVOLUTION)
+
+		list(APPEND INCLUDE ${FFTW_INCLUDE_DIR})
+		list(APPEND LIBRARIES ${FFTW_LIBRARY})
+
+		list(APPEND SRC ${FFTW_SRC})
+		list(APPEND HDR ${FFTW_HDR})
+
+		if(WIN32)
+			file(GLOB FFTW_DLLS ${LIBRARY_PATH}/fftw/bin/*.dll)
+			list(APPEND DLLS ${FFTW_DLLS})
+		endif()
+	else()
+		set(WITH_FFTW FALSE CACHE BOOL "Build With FFTW" FORCE)
+		message(WARNING "FFTW not found, convolution functionality will not be built.")
+	endif()
 endif()
 
 # JACK
@@ -445,7 +472,7 @@ if(WITH_JACK)
 			plugins/jack/JackSymbols.h
 		)
 
-	    if(DYNLOAD_JACK)
+	if(DYNLOAD_JACK)
 			add_definitions(-DDYNLOAD_JACK)
 		endif()
 
@@ -464,7 +491,7 @@ if(WITH_JACK)
 			list(APPEND DLLS ${JACK_DLLS})
 		endif()
 	else()
-		set(WITH_JACK FALSE CACHE BOOL "Build With Plugin" FORCE)
+		set(WITH_JACK FALSE CACHE BOOL "Build With JACK" FORCE)
 		message(WARNING "JACK not found, plugin will not be built.")
 	endif()
 endif()
@@ -635,14 +662,20 @@ string(CONCAT STATIC_PLUGIN_REGISTERS ${STATIC_PLUGIN_REGISTERS})
 
 if(WIN32)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerWindows.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
+	if(WITH_FFTW)
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderWindows.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
+	endif()
 else()
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/plugin/PluginManagerUnix.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp ESCAPE_QUOTES @ONLY)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
+	if(WITH_FFTW)
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fx/HRTFLoaderUnix.cpp ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp COPYONLY)
+	endif()
 endif()
 
 list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/PluginManager.cpp)
-list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp)
+if(WITH_FFTW)
+	list(APPEND SRC ${CMAKE_CURRENT_BINARY_DIR}/HRTFLoader.cpp)
+endif()
 
 # directories
 
@@ -743,7 +776,7 @@ endif()
 if(BUILD_DEMOS)
 	include_directories(${INCLUDE})
 
-	set(DEMOS audaplay audaconvert audaremap signalgen randsounds dynamicmusic playbackmanager convolution binaural)
+	set(DEMOS audaplay audaconvert audaremap signalgen randsounds dynamicmusic playbackmanager)
 
 	add_executable(audaplay demos/audaplay.cpp)
 	target_link_libraries(audaplay audaspace)
@@ -766,11 +799,15 @@ if(BUILD_DEMOS)
 	add_executable(playbackmanager demos/playbackmanager.cpp)
 	target_link_libraries(playbackmanager audaspace)
 
-	add_executable(convolution demos/convolution.cpp)
-	target_link_libraries(convolution audaspace)
+	if(WITH_FFTW)
+		list(APPEND DEMOS convolution binaural)
 
-	add_executable(binaural demos/binaural.cpp)
-	target_link_libraries(binaural audaspace)
+		add_executable(convolution demos/convolution.cpp)
+		target_link_libraries(convolution audaspace)
+
+		add_executable(binaural demos/binaural.cpp)
+		target_link_libraries(binaural audaspace)
+	endif()
 
 	if(WITH_OPENAL)
 		list(APPEND DEMOS openaldevices)
@@ -813,8 +850,6 @@ if(WITH_PYTHON)
 		bindings/python/PyDevice.cpp
 		bindings/python/PyDynamicMusic.cpp
 		bindings/python/PyHandle.cpp
-		bindings/python/PyHRTF.cpp
-		bindings/python/PyImpulseResponse.cpp
 		bindings/python/PyPlaybackManager.cpp
 		bindings/python/PySequence.cpp
 		bindings/python/PySequenceEntry.cpp
@@ -827,8 +862,6 @@ if(WITH_PYTHON)
 		bindings/python/PyDevice.h
 		bindings/python/PyDynamicMusic.h
 		bindings/python/PyHandle.h
-		bindings/python/PyHRTF.h
-		bindings/python/PyImpulseResponse.h
 		bindings/python/PyPlaybackManager.h
 		bindings/python/PySequence.h
 		bindings/python/PySequenceEntry.h
@@ -836,6 +869,17 @@ if(WITH_PYTHON)
 		bindings/python/PySource.h
 		bindings/python/PyThreadPool.h
 	)
+
+if(WITH_FFTW)
+	list(APPEND PYTHON_SRC
+			bindings/python/PyHRTF.cpp
+			bindings/python/PyImpulseResponse.cpp
+			)
+		list(APPEND PYTHON_HDR
+			bindings/python/PyHRTF.h
+			bindings/python/PyImpulseResponse.h
+			)
+	endif()
 
 	add_library(audaspace-py ${LIBRARY_TYPE} ${PYTHON_SRC} ${PYTHON_HDR})
 	target_link_libraries(audaspace-py audaspace ${PYTHON_LIBRARIES})

@@ -43,7 +43,7 @@ audaspace = Extension(
                       library_dirs = ['.', 'Release', 'Debug'],
                       language = 'c++',
                       extra_compile_args = extra_args,
-                      sources = [os.path.join(source_directory, file) for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp', 'PyPlaybackManager.cpp', 'PyDynamicMusic.cpp', 'PyThreadPool.cpp', 'PyImpulseResponse.cpp', 'PyHRTF.cpp', 'PySource.cpp']]
+					  sources = [os.path.join(source_directory, file) for file in ['PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp', 'PyPlaybackManager.cpp', 'PyDynamicMusic.cpp', 'PyThreadPool.cpp', 'PySource.cpp'] + (['PyImpulseResponse.cpp', 'PyHRTF.cpp'] if '@WITH_FFTW@' == 'ON' else [])]
 )
 
 setup(
@@ -56,6 +56,6 @@ setup(
       license = 'Apache License 2.0',
       long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
       ext_modules = [audaspace],
-      headers = [os.path.join(source_directory, file) for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PyImpulseResponse.h', 'PyHRTF.h', 'PySource.h']] + ['Audaspace.h']
+	  headers = [os.path.join(source_directory, file) for file in ['PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PySource.h'] + (['PyImpulseResponse.h', 'PyHRTF.h'] if '@WITH_FFTW@' == 'ON' else [])] + ['Audaspace.h']
 )
 

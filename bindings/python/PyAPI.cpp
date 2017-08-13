@@ -23,9 +23,12 @@
 #include "PyPlaybackManager.h"
 #include "PyDynamicMusic.h"
 #include "PyThreadPool.h"
+#include "PySource.h"
+
+#ifdef WITH_CONVOLUTION
 #include "PyImpulseResponse.h"
 #include "PyHRTF.h"
-#include "PySource.h"
+#endif
 
 #include "respec/Specification.h"
 #include "devices/IHandle.h"
@@ -95,14 +98,16 @@ PyInit_aud()
 	if(!initializeThreadPool())
 		return nullptr;
 
+	if(!initializeSource())
+		return nullptr;
+
+#ifdef WITH_CONVOLUTION
 	if(!initializeImpulseResponse())
 		return nullptr;
 
 	if(!initializeHRTF())
 		return nullptr;
-
-	if(!initializeSource())
-		return nullptr;
+#endif
 
 	module = PyModule_Create(&audmodule);
 	if(module == nullptr)
@@ -116,9 +121,12 @@ PyInit_aud()
 	addDynamicMusicToModule(module);
 	addPlaybackManagerToModule(module);
 	addThreadPoolToModule(module);
+	addSourceToModule(module);
+
+#ifdef WITH_CONVOLUTION
 	addImpulseResponseToModule(module);
 	addHRTFToModule(module);
-	addSourceToModule(module);
+#endif
 
 	AUDError = PyErr_NewException("aud.error", nullptr, nullptr);
 	Py_INCREF(AUDError);

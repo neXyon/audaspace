@@ -14,11 +14,14 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "PyHRTF.h"
-#include "PyImpulseResponse.h"
 #include "PySound.h"
 #include "PySource.h"
 #include "PyThreadPool.h"
+
+#ifdef WITH_CONVOLUTION
+#include "PyHRTF.h"
+#include "PyImpulseResponse.h"
+#endif
 
 #include "Exception.h"
 #include "file/File.h"
@@ -31,8 +34,6 @@
 #include "generator/Triangle.h"
 #include "fx/Accumulator.h"
 #include "fx/ADSR.h"
-#include "fx/BinauralSound.h"
-#include "fx/ConvolverSound.h"
 #include "fx/Delay.h"
 #include "fx/Envelope.h"
 #include "fx/Fader.h"
@@ -56,6 +57,11 @@
 #include "sequence/Double.h"
 #include "sequence/PingPong.h"
 #include "sequence/Superpose.h"
+
+#ifdef WITH_CONVOLUTION
+#include "fx/BinauralSound.h"
+#include "fx/ConvolverSound.h"
+#endif
 
 #include <cstring>
 #include <structmember.h>
@@ -1614,6 +1620,8 @@ Sound_list_addSound(Sound* self, PyObject* object)
 	}
 }
 
+#ifdef WITH_CONVOLUTION
+
 PyDoc_STRVAR(M_aud_Sound_convolver_doc,
 	"convolver()\n\n"
 	"Creates a sound that will apply convolution to another sound.\n\n"
@@ -1719,6 +1727,8 @@ Sound_binaural(Sound* self, PyObject* args)
 	return (PyObject *)parent;
 }
 
+#endif
+
 static PyMethodDef Sound_methods[] = {
 	{"data", (PyCFunction)Sound_data, METH_NOARGS,
 	 M_aud_Sound_data_doc
@@ -1822,12 +1832,14 @@ static PyMethodDef Sound_methods[] = {
 	{ "addSound", (PyCFunction)Sound_list_addSound, METH_O,
 	M_aud_Sound_list_addSound_doc
 	},
+#ifdef WITH_CONVOLUTION
 	{ "convolver", (PyCFunction)Sound_convolver, METH_VARARGS,
 	M_aud_Sound_convolver_doc
 	},
 	{ "binaural", (PyCFunction)Sound_binaural, METH_VARARGS,
 	M_aud_Sound_binaural_doc
 	},
+#endif
 	{nullptr}  /* Sentinel */
 };
 

@@ -668,6 +668,8 @@ AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
 	}
 }
 
+#ifdef WITH_CONVOLUTION
+
 AUD_API AUD_Sound* AUD_Sound_Convolver(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool)
 {
 	assert(sound);
@@ -700,3 +702,5 @@ AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Sou
 		return nullptr;
 	}
 }
+
+#endif
