@@ -33,7 +33,7 @@ extern AUD_API AUD_Source* AUD_Source_create(float azimuth, float elevation, flo
 
 /**
 * Deletes a Source object.
-* \param hrtfs The Source object to be deleted.
+* \param source The Source object to be deleted.
 */
 extern AUD_API void AUD_Source_free(AUD_Source* source);
 

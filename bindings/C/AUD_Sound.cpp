@@ -24,8 +24,6 @@
 #include "util/StreamBuffer.h"
 #include "fx/Accumulator.h"
 #include "fx/ADSR.h"
-#include "fx/BinauralSound.h"
-#include "fx/ConvolverSound.h"
 #include "fx/Delay.h"
 #include "fx/Envelope.h"
 #include "fx/Fader.h"
@@ -51,6 +49,11 @@
 #include "respec/ChannelMapperReader.h"
 #include "util/Buffer.h"
 #include "Exception.h"
+
+#ifdef WITH_CONVOLUTION
+#include "fx/BinauralSound.h"
+#include "fx/ConvolverSound.h"
+#endif
 
 #include <cassert>
 #include <cstring>

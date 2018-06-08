@@ -29,10 +29,12 @@ using namespace aud;
 #include "sequence/SequenceEntry.h"
 #include "fx/PlaybackManager.h"
 #include "fx/DynamicMusic.h"
-#include "fx/ImpulseResponse.h"
-#include "fx/HRTF.h"
 #include "fx/Source.h"
 #include "util/ThreadPool.h"
+#ifdef WITH_CONVOLUTION
+#include "fx/ImpulseResponse.h"
+#include "fx/HRTF.h"
+#endif
 
 typedef std::shared_ptr<aud::ISound> AUD_Sound;
 typedef std::shared_ptr<aud::IHandle> AUD_Handle;
@@ -41,9 +43,11 @@ typedef std::shared_ptr<aud::SequenceEntry> AUD_SequenceEntry;
 typedef std::shared_ptr<aud::PlaybackManager> AUD_PlaybackManager;
 typedef std::shared_ptr<aud::DynamicMusic> AUD_DynamicMusic;
 typedef std::shared_ptr<aud::ThreadPool> AUD_ThreadPool;
+typedef std::shared_ptr<aud::Source> AUD_Source;
+#ifdef WITH_CONVOLUTION
 typedef std::shared_ptr<aud::ImpulseResponse> AUD_ImpulseResponse;
 typedef std::shared_ptr<aud::HRTF> AUD_HRTF;
-typedef std::shared_ptr<aud::Source> AUD_Source;
+#endif
 #else
 typedef void AUD_Sound;
 typedef void AUD_Handle;
@@ -52,9 +56,11 @@ typedef void AUD_SequenceEntry;
 typedef void AUD_PlaybackManager;
 typedef void AUD_DynamicMusic;
 typedef void AUD_ThreadPool;
+typedef void AUD_Source;
+#ifdef WITH_CONVOLUTION
 typedef void AUD_ImpulseResponse;
 typedef void AUD_HRTF;
-typedef void AUD_Source;
+#endif
 #endif
 
 /// Container formats for writers.
