@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	float duration = 1.0f;
 
 	auto sawtooth = std::shared_ptr<ISound>(new Sawtooth(frequency, sampleRate));
-	auto silence = std::shared_ptr<ISound>(new Silence);
+	auto silence = std::shared_ptr<ISound>(new Silence(sampleRate));
 	auto sine = std::shared_ptr<ISound>(new Sine(frequency, sampleRate));
 	auto square = std::shared_ptr<ISound>(new Square(frequency, sampleRate));
 	auto triangle = std::shared_ptr<ISound>(new Triangle(frequency, sampleRate));
