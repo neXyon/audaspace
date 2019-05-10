@@ -82,7 +82,7 @@ set(SRC
 	src/fx/Volume.cpp
 	src/fx/VolumeReader.cpp
 	src/fx/VolumeSound.cpp
-	src/fx/VolumeStorage.cpp	
+	src/fx/VolumeStorage.cpp
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -700,8 +700,8 @@ set(LIB_DESTINATION "lib${LIB_SUFFIX}")
 # library
 
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
-target_link_libraries(audaspace ${LIBRARIES})  
-set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})  
+target_link_libraries(audaspace ${LIBRARIES})
+set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
 install(TARGETS audaspace
 	RUNTIME DESTINATION ${BIN_DESTINATION}
