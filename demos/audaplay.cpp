@@ -73,6 +73,16 @@ int main(int argc, char* argv[])
 
 	device->lock();
 	auto handle = device->play(reader);
+
+	if(!handle)
+	{
+		device->unlock();
+
+		std::cout << "Device could not play the file." << std::endl;
+
+		return 1;
+	}
+
 	handle->setStopCallback(release, &condition);
 	device->unlock();
 
