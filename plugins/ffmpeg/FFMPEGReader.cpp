@@ -97,7 +97,7 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 
 		if(buf_size - buf_pos < data_size)
 		{
-			buffer.resize(buf_size + data_size, true);
+			buffer.resize(buf_size + data_size);
 			buf_size += data_size;
 		}
 

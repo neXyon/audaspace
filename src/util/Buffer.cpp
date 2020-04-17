@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cstring>
 #include <cstdlib>
+#include <stdio.h>
 
 #define ALIGNMENT 32
 #define ALIGN(a) (a + ALIGNMENT - ((long long)a & (ALIGNMENT-1)))
@@ -46,27 +47,18 @@ int Buffer::getSize() const
 	return m_size;
 }
 
-void Buffer::resize(int size, bool keep)
+void Buffer::resize(int size)
 {
-	if(keep)
-	{
-		data_t* buffer = (data_t*) std::malloc(size + ALIGNMENT);
-
-		std::memcpy(ALIGN(buffer), ALIGN(m_buffer), std::min(size, m_size));
-
-		std::free(m_buffer);
-		m_buffer = buffer;
-	}
-	else
-		m_buffer = (data_t*) std::realloc(m_buffer, size + ALIGNMENT);
+	m_buffer = (data_t*) std::realloc(m_buffer, size + ALIGNMENT);
 
 	m_size = size;
 }
 
-void Buffer::assureSize(int size, bool keep)
+void Buffer::assureSize(int size)
 {
-	if(m_size < size)
-		resize(size, keep);
+	if(m_size < size) {
+		resize(size);
+	}
 }
 
 AUD_NAMESPACE_END

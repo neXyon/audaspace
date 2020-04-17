@@ -47,7 +47,7 @@ StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
 	while(!eos)
 	{
 		// increase
-		m_buffer->resize(size*sample_size, true);
+		m_buffer->resize(size*sample_size);
 
 		// read more
 		length = size-index;
@@ -57,7 +57,7 @@ StreamBuffer::StreamBuffer(std::shared_ptr<ISound> sound) :
 		index += length;
 	}
 
-	m_buffer->resize(index * sample_size, true);
+	m_buffer->resize(index * sample_size);
 }
 
 StreamBuffer::StreamBuffer(std::shared_ptr<Buffer> buffer, Specs specs) :

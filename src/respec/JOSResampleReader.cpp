@@ -72,7 +72,7 @@ void JOSResampleReader::updateBuffer(int size, double factor, int samplesize)
 		m_cache_valid -= len;
 	}
 
-	m_buffer.assureSize((m_cache_valid + size) * samplesize, true);
+	m_buffer.assureSize((m_cache_valid + size) * samplesize);
 }
 
 #define RESAMPLE_METHOD(name, left, right) void JOSResampleReader::name(double target_factor, int length, sample_t* buffer)\

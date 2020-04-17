@@ -153,7 +153,7 @@ AUD_API float* AUD_readSoundBuffer(const char* filename, float low, float high,
 		do
 		{
 			len = samplerate;
-			buffer.resize((position + len) * sizeof(float), true);
+			buffer.resize((position + len) * sizeof(float));
 			reader->read(len, eos, buffer.getBuffer() + position);
 			position += len;
 		} while(!eos);
