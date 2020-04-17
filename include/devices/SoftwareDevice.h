@@ -31,6 +31,7 @@
 
 #include <list>
 #include <mutex>
+#include <chrono>
 
 AUD_NAMESPACE_BEGIN
 
@@ -60,6 +61,13 @@ protected:
 		SoftwareHandle& operator=(const SoftwareHandle&) = delete;
 
 	public:
+		/// The last time that the buffer position changed
+		std::chrono::time_point<std::chrono::steady_clock> t1;
+		int prev_pos = 0;
+		float offset = 0;
+		float adjust = 0;
+		bool reset_clock = true;
+
 		/// The reader source.
 		std::shared_ptr<IReader> m_reader;
 

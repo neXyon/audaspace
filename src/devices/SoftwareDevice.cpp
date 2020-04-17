@@ -29,6 +29,7 @@
 #include <iostream>
 #include <limits>
 #include <mutex>
+#include <chrono>
 
 AUD_NAMESPACE_BEGIN
 
@@ -272,6 +273,9 @@ bool SoftwareDevice::SoftwareHandle::resume()
 						m_device->playing(m_device->m_playback = true);
 					m_status = STATUS_PLAYING;
 
+					reset_clock = true;
+					printf("reset clock\n");
+
 					return true;
 				}
 			}
@@ -363,11 +367,17 @@ bool SoftwareDevice::SoftwareHandle::seek(float position)
 	if(m_status == STATUS_STOPPED)
 		m_status = STATUS_PAUSED;
 
+	offset = 0;
+	prev_pos = m_reader->getPosition();
+	printf("init position\n");
+
 	return true;
 }
 
 float SoftwareDevice::SoftwareHandle::getPosition()
 {
+	float position;
+
 	if(!m_status)
 		return false;
 
@@ -376,7 +386,55 @@ float SoftwareDevice::SoftwareHandle::getPosition()
 	if(!m_status)
 		return 0.0f;
 
-	float position = m_reader->getPosition() / (float)m_device->m_specs.rate;
+	if(m_status != STATUS_PLAYING) {
+		printf("not playing\n");
+		position = m_reader->getPosition() / (float)m_device->m_specs.rate;
+	} else {
+		using namespace std::chrono;
+
+		if (reset_clock) {
+			reset_clock = false;
+			t1 = steady_clock::now();
+		}
+
+		int new_pos = m_reader->getPosition();
+		steady_clock::time_point t2 = steady_clock::now();
+		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+
+		if (prev_pos == new_pos) {
+			offset += time_span.count() + adjust;
+			//printf("offset %f\n", offset);
+		} else {
+			//printf("===== Sync!\n");
+			float time_step = (new_pos - prev_pos) / (float)m_device->m_specs.rate;
+
+			offset = offset - time_step;
+			offset += time_span.count();
+			//printf("time step %f\n", time_step);
+			printf("time diff %f\n", offset);
+			printf("adjust %f\n", adjust);
+
+			if (fabs(offset) > 0.02f) {
+				//TODO the offset error margin and adjust variable should be tied to playback FPS
+				printf("reset!\n");
+				//Try to minimize the offset by slowly drifting towards the minimal error margin.
+				adjust = 0.001f;
+				adjust = std::copysign(adjust,offset);
+				adjust *= -1.0f;
+			} else {
+				adjust = 0;
+			}
+
+			prev_pos = new_pos;
+		}
+
+		t1 = steady_clock::now();
+
+		position = new_pos / (float)m_device->m_specs.rate;
+		position += offset;
+	}
+
+	//printf("position: %f\n", position);
 
 	return position;
 }
