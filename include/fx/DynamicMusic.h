@@ -177,14 +177,14 @@ public:
 	*        - false if the handle is invalid.
 	* \warning Whether the seek works or not depends on the sound source.
 	*/
-	bool seek(float position); 
+	bool seek(double position);
 
 	/**
 	* Retrieves the current playback position of a sound.
 	* \return The playback position in seconds, or 0.0 if the handle is
 	*         invalid.
 	*/
-	float getPosition();
+	double getPosition();
 
 	/**
 	* Retrieves the volume of the scenes.

@@ -169,7 +169,7 @@ bool DynamicMusic::pause()
 	return result || resultTrans;
 }
 
-bool DynamicMusic::seek(float position)
+bool DynamicMusic::seek(double position)
 {
 	bool result;
 
@@ -183,9 +183,9 @@ bool DynamicMusic::seek(float position)
 	return result;
 }
 
-float DynamicMusic::getPosition()
+double DynamicMusic::getPosition()
 {
-	float result = 0.0f;
+	double result = 0.0f;
 
 	if(m_currentHandle != nullptr)
 		result = m_currentHandle->getPosition();
