@@ -133,14 +133,14 @@ bool DynamicMusic::addTransition(int init, int end, std::shared_ptr<ISound> soun
 	return false;
 }
 
-void DynamicMusic::setFadeTime(float seconds)
+void DynamicMusic::setFadeTime(double seconds)
 {
 	m_device->lock();
 	m_fadeTime = seconds;
 	m_device->unlock();
 }
 
-float DynamicMusic::getFadeTime()
+double DynamicMusic::getFadeTime()
 {
 	return m_fadeTime;
 }

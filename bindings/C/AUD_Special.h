@@ -45,7 +45,7 @@ extern AUD_API float* AUD_readSoundBuffer(const char* filename, float low, float
  * \param seconds The time in seconds.
  * \return The silence handle.
  */
-extern AUD_API AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, float seconds);
+extern AUD_API AUD_Handle* AUD_pauseAfter(AUD_Handle* handle, double seconds);
 
 /**
  * Reads a sound into a buffer for drawing at a specific sampling rate.
