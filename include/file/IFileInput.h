@@ -41,6 +41,11 @@ class AUD_API IFileInput
 {
 public:
 	/**
+	 * Destroys the file input.
+	 */
+	virtual ~IFileInput() {}
+
+	/**
 	 * Creates a reader for a file to be read.
 	 * \param filename Path to the file to be read.
 	 * \return The reader that reads the file.

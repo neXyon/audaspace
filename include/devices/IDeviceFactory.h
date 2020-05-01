@@ -36,6 +36,11 @@ class AUD_API IDeviceFactory
 {
 public:
 	/**
+	 * Destroys the device factory.
+	 */
+	virtual ~IDeviceFactory() {}
+
+	/**
 	 * Opens an audio device for playback.
 	 * \exception Exception Thrown if the audio device cannot be opened.
 	 */

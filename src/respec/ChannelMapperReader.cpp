@@ -16,6 +16,7 @@
 
 #include "respec/ChannelMapperReader.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 

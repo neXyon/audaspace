@@ -171,7 +171,7 @@ bool DynamicMusic::pause()
 
 bool DynamicMusic::seek(double position)
 {
-	bool result;
+	bool result = false;
 
 	if(m_currentHandle != nullptr) 
 	{
