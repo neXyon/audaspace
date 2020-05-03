@@ -15,7 +15,7 @@ before_install:
  - brew update
  - brew install cmake || brew outdated cmake || brew upgrade cmake
  - brew install ffmpeg
- - brew upgrade python
+ #- brew upgrade python
  - brew install sdl2
  - brew install libsndfile
  - brew install jack
