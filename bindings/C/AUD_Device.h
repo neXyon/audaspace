@@ -231,6 +231,15 @@ extern AUD_API void AUD_seekSynchronizer(AUD_Handle* handle, double time);
 extern AUD_API double AUD_getSynchronizerPosition(AUD_Handle* handle);
 
 /**
+ * Sets the syncronizer type to interpolated if 'true' is passed.
+ * Per default the syncronizer is not interpolated.
+ * Will only have an effect if the device supports or might benefit from
+ * interpolation.
+ * \param interpolated Set the syncronizer to be interpolated or not.
+ */
+extern AUD_API void AUD_setInterpolatedSynchronizer(bool interpolated);
+
+/**
  * Starts the playback of jack transport if possible.
  */
 extern AUD_API void AUD_playSynchronizer();

@@ -86,6 +86,7 @@ public:
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
 	virtual ISynchronizer* getSynchronizer();
+	virtual void createSynchronizer(bool interpolated=false);
 
 	/**
 	 * Registers this plugin.

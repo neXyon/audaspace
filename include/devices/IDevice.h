@@ -24,6 +24,7 @@
 
 #include "respec/Specification.h"
 #include "util/ILockable.h"
+#include "ISynchronizer.h"
 
 #include <memory>
 
@@ -32,7 +33,6 @@ AUD_NAMESPACE_BEGIN
 class IHandle;
 class IReader;
 class ISound;
-class ISynchronizer;
 
 /**
  * @interface IDevice
@@ -118,6 +118,16 @@ public:
 	 * @return The synchronizer which will be the DefaultSynchronizer if synchonization is not supported.
 	 */
 	virtual ISynchronizer* getSynchronizer()=0;
+
+	/**
+	 * Creates the synchronizer for this device, which enables accurate synchronization
+	 * between audio playback and video playback for example.
+	 *
+	 * If interpolated = True is passed to this function, a
+	 * InterpolatedSynchronizer will be created instead of a DefaultSynchronizer
+	 * for devices where synchronization is not supported.
+	 */
+	virtual void createSynchronizer(bool interpolated=false)=0;
 };
 
 AUD_NAMESPACE_END

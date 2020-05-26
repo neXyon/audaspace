@@ -305,6 +305,11 @@ AUD_API double AUD_getSynchronizerPosition(AUD_Handle* handle)
 	return (*reinterpret_cast<std::shared_ptr<IHandle>*>(handle))->getPosition();
 }
 
+AUD_API void AUD_setInterpolatedSynchronizer(bool interpolated)
+{
+	DeviceManager::getDevice()->createSynchronizer(interpolated);
+}
+
 AUD_API void AUD_playSynchronizer()
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();

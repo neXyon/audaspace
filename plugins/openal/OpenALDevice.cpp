@@ -17,6 +17,8 @@
 #include "OpenALDevice.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDeviceFactory.h"
+#include "devices/DefaultSynchronizer.h"
+#include "devices/InterpolatedSynchronizer.h"
 #include "respec/ConverterReader.h"
 #include "Exception.h"
 #include "ISound.h"
@@ -1175,6 +1177,8 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, std::string name) 
 	alcGetError(m_device);
 
 	m_specs = specs;
+
+	createSynchronizer();
 }
 
 OpenALDevice::~OpenALDevice()
@@ -1390,7 +1394,16 @@ void OpenALDevice::setVolume(float volume)
 
 ISynchronizer* OpenALDevice::getSynchronizer()
 {
-	return &m_synchronizer;
+	return m_synchronizer.get();
+}
+
+void OpenALDevice::createSynchronizer(bool interpolated)
+{
+	if (interpolated) {
+		m_synchronizer = std::shared_ptr<ISynchronizer>(new InterpolatedSynchronizer);
+	} else {
+		m_synchronizer = std::shared_ptr<ISynchronizer>(new DefaultSynchronizer);
+	}
 }
 
 /******************************************************************************/

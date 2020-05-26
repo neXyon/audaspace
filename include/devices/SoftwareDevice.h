@@ -26,7 +26,6 @@
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"
 #include "devices/I3DHandle.h"
-#include "devices/DefaultSynchronizer.h"
 #include "util/Buffer.h"
 
 #include <list>
@@ -320,7 +319,7 @@ private:
 	int m_flags;
 
 	/// Synchronizer.
-	DefaultSynchronizer m_synchronizer;
+	std::shared_ptr<ISynchronizer> m_synchronizer;
 
 	// delete copy constructor and operator=
 	SoftwareDevice(const SoftwareDevice&) = delete;
@@ -350,6 +349,7 @@ public:
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
 	virtual ISynchronizer* getSynchronizer();
+	virtual void createSynchronizer(bool interpolated=false);
 
 	virtual Vector3 getListenerLocation() const;
 	virtual void setListenerLocation(const Vector3& location);

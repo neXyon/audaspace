@@ -30,6 +30,7 @@ set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION}.0)
 
 set(SRC
 	src/devices/DefaultSynchronizer.cpp
+	src/devices/InterpolatedSynchronizer.cpp
 	src/devices/DeviceManager.cpp
 	src/devices/NULLDevice.cpp
 	src/devices/ReadDevice.cpp
@@ -129,7 +130,7 @@ set(PRIVATE_HDR
 )
 
 set(PUBLIC_HDR
-	include/devices/DefaultSynchronizer.h
+	include/devices/InterpolatedSynchronizer.h
 	include/devices/DeviceManager.h
 	include/devices/I3DDevice.h
 	include/devices/I3DHandle.h

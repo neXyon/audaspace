@@ -155,6 +155,10 @@ ISynchronizer* NULLDevice::getSynchronizer()
 	return nullptr;
 }
 
+void NULLDevice::createSynchronizer(bool interpolated)
+{
+}
+
 class NULLDeviceFactory : public IDeviceFactory
 {
 public:

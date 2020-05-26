@@ -159,6 +159,7 @@ public:
 	virtual ~JackDevice();
 
 	virtual ISynchronizer* getSynchronizer();
+	virtual void createSynchronizer(bool interpolated=false){}
 
 	/**
 	 * Starts jack transport playback.

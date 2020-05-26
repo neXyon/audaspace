@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "devices/SoftwareDevice.h"
+#include "devices/DefaultSynchronizer.h"
+#include "devices/InterpolatedSynchronizer.h"
 #include "fx/PitchReader.h"
 #include "respec/ChannelMapperReader.h"
 #include "respec/JOSResampleReader.h"
@@ -704,6 +706,8 @@ void SoftwareDevice::create()
 	m_distance_model = DISTANCE_MODEL_INVERSE_CLAMPED;
 	m_flags = 0;
 	m_quality = false;
+
+	createSynchronizer();
 }
 
 void SoftwareDevice::destroy()
@@ -911,9 +915,17 @@ void SoftwareDevice::setVolume(float volume)
 
 ISynchronizer* SoftwareDevice::getSynchronizer()
 {
-	return &m_synchronizer;
+	return m_synchronizer.get();
 }
 
+void SoftwareDevice::createSynchronizer(bool interpolated)
+{
+	if (interpolated) {
+		m_synchronizer = std::shared_ptr<ISynchronizer>(new InterpolatedSynchronizer);
+	} else {
+		m_synchronizer = std::shared_ptr<ISynchronizer>(new DefaultSynchronizer);
+	}
+}
 /******************************************************************************/
 /**************************** 3D Device Code **********************************/
 /******************************************************************************/
