@@ -270,6 +270,7 @@ option(WITH_FFTW "Build With FFTW" TRUE)
 option(WITH_JACK "Build With Plugin" TRUE)
 option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 option(WITH_OPENAL "Build With OpenAL" TRUE)
+option(WITH_PULSEAUDIO "Build With PulseAudio" TRUE)
 option(WITH_PYTHON "Build With Python Library" TRUE)
 option(WITH_SDL "Build With SDL" TRUE)
 option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
@@ -291,6 +292,7 @@ cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHA
 cmake_dependent_option(PLUGIN_JACK "Build JACK Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_PULSEAUDIO "Build PulseAudio Plugin" TRUE "WITH_PULSEAUDIO;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
 cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
@@ -567,6 +569,31 @@ if(WITH_OPENAL)
 	endif()
 endif()
 
+# PulseAudio
+if(WITH_PULSEAUDIO)
+	find_package(LibPulse ${PACKAGE_OPTION})
+
+	if(LIBPULSE_FOUND)
+		set(PULSEAUDIO_SRC
+			plugins/pulseaudio/PulseAudioDevice.cpp
+		)
+		set(PULSEAUDIO_HDR
+			plugins/pulseaudio/PulseAudioDevice.h
+		)
+
+		if(NOT PLUGIN_PULSEAUDIO)
+			list(APPEND INCLUDE ${LIBPULSE_INCLUDE_DIR})
+			list(APPEND LIBRARIES ${LIBPULSE_LIBRARY})
+			list(APPEND SRC ${PULSEAUDIO_SRC})
+			list(APPEND HDR ${PULSEAUDIO_HDR})
+			list(APPEND STATIC_PLUGINS PulseAudioDevice)
+		endif()
+	else()
+		set(WITH_PULSEAUDIO FALSE CACHE BOOL "Build With PulseAudio" FORCE)
+		message(WARNING "PulseAudio not found, plugin will not be built.")
+	endif()
+endif()
+
 # Python
 if(WITH_PYTHON)
 	find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
@@ -765,6 +792,17 @@ if(WITH_OPENAL AND PLUGIN_OPENAL)
 	endif()
 	target_link_libraries(audopenal audaspace ${OPENAL_LIBRARY})
 	install(TARGETS audopenal DESTINATION ${DEFAULT_PLUGIN_PATH})
+endif()
+
+if(WITH_PULSEAUDIO AND PLUGIN_PULSEAUDIO)
+	add_definitions(-DPULSEAUDIO_PLUGIN)
+	include_directories(${INCLUDE} ${LIBPULSE_INCLUDE_DIR})
+	add_library(audpulseaudio SHARED ${PULSEAUDIO_SRC} ${PULSEAUDIO_HDR} ${HDR})
+	if(WITH_VERSIONED_PLUGINS)
+		set_target_properties(audpulseaudio PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+	endif()
+	target_link_libraries(audpulseaudio audaspace ${LIBPULSE_LIBRARY})
+	install(TARGETS audpulseaudio DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 if(WITH_SDL AND PLUGIN_SDL)
