@@ -274,6 +274,11 @@ option(WITH_PULSEAUDIO "Build With PulseAudio" TRUE)
 option(WITH_PYTHON "Build With Python Library" TRUE)
 option(WITH_SDL "Build With SDL" TRUE)
 option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
+if(WIN32)
+	option(WITH_WASAPI "Build With WASAPI" TRUE)
+else()
+	set(WITH_WASAPI FALSE)
+endif()
 
 if(WITH_STRICT_DEPENDENCIES)
 	set(PACKAGE_OPTION REQUIRED)
@@ -294,6 +299,7 @@ cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LI
 cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_PULSEAUDIO "Build PulseAudio Plugin" TRUE "WITH_PULSEAUDIO;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
+cmake_dependent_option(PLUGIN_WASAPI "Build WASAPI Plugin" TRUE "WITH_WASAPI;SHARED_LIBRARY" FALSE)
 cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
 cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
 cmake_dependent_option(DYNLOAD_JACK "Dynamically load JACK" FALSE "WITH_JACK" FALSE)
@@ -664,6 +670,23 @@ if(WITH_SDL)
 	endif()
 endif()
 
+# WASAPI
+if(WITH_WASAPI)
+	set(WASAPI_SRC
+		plugins/wasapi/WASAPIDevice.cpp
+	)
+	set(WASAPI_HDR
+		plugins/wasapi/WASAPIDevice.h
+	)
+
+	if(NOT PLUGIN_WASAPI)
+		list(APPEND LIBRARIES ksuser)
+		list(APPEND SRC ${WASAPI_SRC})
+		list(APPEND HDR ${WASAPI_HDR})
+		list(APPEND STATIC_PLUGINS WASAPIDevice)
+	endif()
+endif()
+
 # library configuration
 
 if(SHARED_LIBRARY)
@@ -814,6 +837,17 @@ if(WITH_SDL AND PLUGIN_SDL)
 	endif()
 	target_link_libraries(audsdl audaspace ${SDL_LIBRARY})
 	install(TARGETS audsdl DESTINATION ${DEFAULT_PLUGIN_PATH})
+endif()
+
+if(WITH_WASAPI AND PLUGIN_WASAPI)
+	add_definitions(-DWASAPI_PLUGIN)
+	include_directories(${INCLUDE})
+	add_library(audwasapi SHARED ${WASAPI_SRC} ${WASAPI_HDR} ${HDR})
+	if(WITH_VERSIONED_PLUGINS)
+		set_target_properties(audwasapi PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+	endif()
+	target_link_libraries(audwasapi audaspace ksuser)
+	install(TARGETS audwasapi DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 # dlls
