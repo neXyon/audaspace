@@ -241,24 +241,24 @@ WASAPIDevice::WASAPIDevice(DeviceSpecs specs, int buffersize) :
 
 	if(result == S_FALSE)
 	{
-		if(wave_format_extensible_closest_match.Format.wFormatTag != WAVE_FORMAT_EXTENSIBLE)
+		if(closest_match_pointer->Format.wFormatTag != WAVE_FORMAT_EXTENSIBLE)
 			goto error;
 
-		specs.channels = Channels(wave_format_extensible_closest_match.Format.nChannels);
-		specs.rate = wave_format_extensible_closest_match.Format.nSamplesPerSec;
+		specs.channels = Channels(closest_match_pointer->Format.nChannels);
+		specs.rate = closest_match_pointer->Format.nSamplesPerSec;
 
-		if(wave_format_extensible_closest_match.SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
+		if(closest_match_pointer->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
 		{
-			if(wave_format_extensible_closest_match.Format.wBitsPerSample == 32)
+			if(closest_match_pointer->Format.wBitsPerSample == 32)
 				specs.format = FORMAT_FLOAT32;
-			else if(wave_format_extensible_closest_match.Format.wBitsPerSample == 64)
+			else if(closest_match_pointer->Format.wBitsPerSample == 64)
 				specs.format = FORMAT_FLOAT64;
 			else
 				goto error;
 		}
-		else if(wave_format_extensible_closest_match.SubFormat == KSDATAFORMAT_SUBTYPE_PCM)
+		else if(closest_match_pointer->SubFormat == KSDATAFORMAT_SUBTYPE_PCM)
 		{
-			switch(wave_format_extensible_closest_match.Format.wBitsPerSample)
+			switch(closest_match_pointer->Format.wBitsPerSample)
 			{
 			case 8:
 				specs.format = FORMAT_U8;
@@ -280,7 +280,13 @@ WASAPIDevice::WASAPIDevice(DeviceSpecs specs, int buffersize) :
 		else
 			goto error;
 
-		m_wave_format_extensible = wave_format_extensible_closest_match;
+		m_wave_format_extensible = *closest_match_pointer;
+
+		if(closest_match_pointer != &wave_format_extensible_closest_match)
+		{
+			CoTaskMemFree(closest_match_pointer);
+			closest_match_pointer = &wave_format_extensible_closest_match;
+		}
 	}
 	else if(FAILED(result))
 		goto error;
@@ -303,6 +309,8 @@ WASAPIDevice::WASAPIDevice(DeviceSpecs specs, int buffersize) :
 	return;
 
 	error:
+	if(closest_match_pointer != &wave_format_extensible_closest_match)
+		CoTaskMemFree(closest_match_pointer);
 	SafeRelease(&m_imm_device);
 	SafeRelease(&m_imm_device_enumerator);
 	SafeRelease(&m_audio_client);
