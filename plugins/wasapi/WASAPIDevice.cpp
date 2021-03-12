@@ -62,7 +62,15 @@ void WASAPIDevice::updateStream()
 	if(FAILED(m_audio_client->GetService(IID_IAudioRenderClient, reinterpret_cast<void**>(&render_client))))
 		return;
 
-	UINT32 length = buffer_size;
+	UINT32 padding;
+
+	if(FAILED(m_audio_client->GetCurrentPadding(&padding)))
+	{
+		SafeRelease(&render_client);
+		return;
+	}
+
+	UINT32 length = buffer_size - padding;
 
 	if(FAILED(render_client->GetBuffer(length, &buffer)))
 	{
@@ -88,8 +96,6 @@ void WASAPIDevice::updateStream()
 
 	for(;;)
 	{
-		UINT32 padding;
-
 		if(FAILED(m_audio_client->GetCurrentPadding(&padding)))
 		{
 			m_audio_client->Stop();
