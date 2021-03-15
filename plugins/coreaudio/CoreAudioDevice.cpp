@@ -148,6 +148,16 @@ m_audio_unit(nullptr)
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with CoreAudio.");
 	}
 
+	try
+	{
+		m_synchronizer = std::unique_ptr<CoreAudioSynchronizer>(new CoreAudioSynchronizer(m_audio_unit));
+	}
+	catch(Exception&)
+	{
+		AudioComponentInstanceDispose(m_audio_unit);
+		throw;
+	}
+
 	create();
 }
 
@@ -158,6 +168,11 @@ CoreAudioDevice::~CoreAudioDevice()
 	AudioComponentInstanceDispose(m_audio_unit);
 
 	destroy();
+}
+
+ISynchronizer* CoreAudioDevice::getSynchronizer()
+{
+	return m_synchronizer.get();
 }
 
 class CoreAudioDeviceFactory : public IDeviceFactory

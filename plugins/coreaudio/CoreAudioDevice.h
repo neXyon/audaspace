@@ -26,7 +26,10 @@
  * The CoreAudioDevice class.
  */
 
+#include "CoreAudioSynchronizer.h"
 #include "devices/SoftwareDevice.h"
+
+#include <memory>
 
 #include <AudioUnit/AudioUnit.h>
 
@@ -47,6 +50,11 @@ private:
 	 * The CoreAudio AudioUnit.
 	 */
 	AudioUnit m_audio_unit;
+
+	/**
+	 * The Synchronizer.
+	 */
+	std::unique_ptr<CoreAudioSynchronizer> m_synchronizer;
 
 	/**
 	 * Mixes the next bytes into the buffer.
@@ -80,6 +88,8 @@ public:
 	 * Closes the CoreAudio audio device.
 	 */
 	virtual ~CoreAudioDevice();
+
+	virtual ISynchronizer* getSynchronizer();
 
 	/**
 	 * Registers this plugin.

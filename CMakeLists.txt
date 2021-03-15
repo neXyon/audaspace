@@ -395,17 +395,21 @@ endif()
 if(WITH_COREAUDIO)
 	find_library(COREAUDIO_LIBRARY CoreAudio)
 	find_library(AUDIOUNIT_LIBRARY AudioUnit)
+	find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox)
 	find_path(AUDIOUNIT_INCLUDE_DIR AudioUnit/AudioUnit.h)
+	find_path(AUDIOTOOLBOX_INCLUDE_DIR AudioToolbox/CoreAudioClock.h)
 
 	if(COREAUDIO_LIBRARY AND AUDIOUNIT_LIBRARY AND AUDIOUNIT_INCLUDE_DIR)
-		set(COREAUDIO_LIBRARIES ${COREAUDIO_LIBRARY} ${AUDIOUNIT_LIBRARY})
-		set(COREAUDIO_INCLUDE_DIRS ${AUDIOUNIT_INCLUDE_DIR})
+		set(COREAUDIO_LIBRARIES ${COREAUDIO_LIBRARY} ${AUDIOUNIT_LIBRARY} ${AUDIOTOOLBOX_LIBRARY})
+		set(COREAUDIO_INCLUDE_DIRS ${AUDIOUNIT_INCLUDE_DIR} ${AUDIOTOOLBOX_INCLUDE_DIR})
 
 		set(COREAUDIO_SRC
 			plugins/coreaudio/CoreAudioDevice.cpp
+			plugins/coreaudio/CoreAudioSynchronizer.cpp
 		)
 		set(COREAUDIO_HDR
 			plugins/coreaudio/CoreAudioDevice.h
+			plugins/coreaudio/CoreAudioSynchronizer.h
 		)
 
 		if(NOT PLUGIN_COREAUDIO)
