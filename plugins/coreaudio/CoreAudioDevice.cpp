@@ -121,7 +121,10 @@ m_audio_unit(nullptr)
 	status = AudioUnitSetProperty(m_audio_unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &stream_basic_description, sizeof(stream_basic_description));
 
 	if(status != noErr)
+	{
+		AudioComponentInstanceDispose(m_audio_unit);
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with CoreAudio.");
+	}
 
 	m_specs = specs;
 
@@ -132,12 +135,18 @@ m_audio_unit(nullptr)
 	status = AudioUnitSetProperty(m_audio_unit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &render_callback_struct, sizeof(render_callback_struct));
 
 	if(status != noErr)
+	{
+		AudioComponentInstanceDispose(m_audio_unit);
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with CoreAudio.");
+	}
 
 	status = AudioUnitInitialize(m_audio_unit);
 
 	if(status != noErr)
+	{
+		AudioComponentInstanceDispose(m_audio_unit);
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with CoreAudio.");
+	}
 
 	create();
 }
