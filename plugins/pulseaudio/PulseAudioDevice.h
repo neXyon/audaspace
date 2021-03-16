@@ -44,7 +44,6 @@ private:
 	volatile bool m_playback;
 
 	pa_threaded_mainloop* m_mainloop;
-	pa_mainloop_api* m_mainloop_api;
 	pa_context* m_context;
 	pa_stream* m_stream;
 	pa_context_state_t m_state;

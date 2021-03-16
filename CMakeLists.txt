@@ -307,6 +307,7 @@ cmake_dependent_option(PLUGIN_WASAPI "Build WASAPI Plugin" TRUE "WITH_WASAPI;SHA
 cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
 cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
 cmake_dependent_option(DYNLOAD_JACK "Dynamically load JACK" FALSE "WITH_JACK" FALSE)
+cmake_dependent_option(DYNLOAD_PULSEAUDIO "Dynamically load PulseAudio" FALSE "WITH_PULSEAUDIO" FALSE)
 cmake_dependent_option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" TRUE "WITH_PYTHON_MODULE" FALSE)
 cmake_dependent_option(WITH_VERSIONED_PLUGINS "Build Plugins With Sonumber" TRUE "SHARED_LIBRARY" FALSE)
 
@@ -527,7 +528,7 @@ if(WITH_JACK)
 			plugins/jack/JackSymbols.h
 		)
 
-	if(DYNLOAD_JACK)
+		if(DYNLOAD_JACK)
 			add_definitions(-DDYNLOAD_JACK)
 		endif()
 
@@ -624,14 +625,23 @@ if(WITH_PULSEAUDIO)
 	if(LIBPULSE_FOUND)
 		set(PULSEAUDIO_SRC
 			plugins/pulseaudio/PulseAudioDevice.cpp
+			plugins/pulseaudio/PulseAudioLibrary.cpp
 		)
 		set(PULSEAUDIO_HDR
 			plugins/pulseaudio/PulseAudioDevice.h
+			plugins/pulseaudio/PulseAudioLibrary.h
+			plugins/pulseaudio/PulseAudioSymbols.h
 		)
+
+		if(DYNLOAD_PULSEAUDIO)
+			add_definitions(-DDYNLOAD_PULSEAUDIO)
+		endif()
 
 		if(NOT PLUGIN_PULSEAUDIO)
 			list(APPEND INCLUDE ${LIBPULSE_INCLUDE_DIR})
-			list(APPEND LIBRARIES ${LIBPULSE_LIBRARY})
+			if(NOT DYNLOAD_PULSEAUDIO)
+				list(APPEND LIBRARIES ${LIBPULSE_LIBRARY})
+			endif()
 			list(APPEND SRC ${PULSEAUDIO_SRC})
 			list(APPEND HDR ${PULSEAUDIO_HDR})
 			list(APPEND STATIC_PLUGINS PulseAudioDevice)
@@ -877,7 +887,11 @@ if(WITH_PULSEAUDIO AND PLUGIN_PULSEAUDIO)
 	if(WITH_VERSIONED_PLUGINS)
 		set_target_properties(audpulseaudio PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 	endif()
-	target_link_libraries(audpulseaudio audaspace ${LIBPULSE_LIBRARY})
+	if(DYNLOAD_PULSEAUDIO)
+		target_link_libraries(audpulseaudio audaspace)
+	else()
+		target_link_libraries(audpulseaudio audaspace ${LIBPULSE_LIBRARY})
+	endif()
 	install(TARGETS audpulseaudio DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 

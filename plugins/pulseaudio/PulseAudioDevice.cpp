@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "PulseAudioDevice.h"
+#include "PulseAudioLibrary.h"
 #include "devices/DeviceManager.h"
 #include "devices/IDeviceFactory.h"
 #include "Exception.h"
@@ -26,9 +27,9 @@ void PulseAudioDevice::PulseAudio_state_callback(pa_context *context, void *data
 {
 	PulseAudioDevice* device = (PulseAudioDevice*)data;
 
-	device->m_state = pa_context_get_state(context);
+	device->m_state = AUD_pa_context_get_state(context);
 
-	pa_threaded_mainloop_signal(device->m_mainloop, 0);
+	AUD_pa_threaded_mainloop_signal(device->m_mainloop, 0);
 }
 
 void PulseAudioDevice::PulseAudio_request(pa_stream *stream, size_t num_bytes, void *data)
@@ -37,11 +38,11 @@ void PulseAudioDevice::PulseAudio_request(pa_stream *stream, size_t num_bytes, v
 
 	void* buffer;
 
-	pa_stream_begin_write(stream, &buffer, &num_bytes);
+	AUD_pa_stream_begin_write(stream, &buffer, &num_bytes);
 
 	device->mix((data_t*)buffer, num_bytes / AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
 
-	pa_stream_write(stream, buffer, num_bytes, nullptr, 0, PA_SEEK_RELATIVE);
+	AUD_pa_stream_write(stream, buffer, num_bytes, nullptr, 0, PA_SEEK_RELATIVE);
 }
 
 void PulseAudioDevice::PulseAudio_underflow(pa_stream *stream, void *data)
@@ -63,7 +64,7 @@ void PulseAudioDevice::PulseAudio_underflow(pa_stream *stream, void *data)
 		buffer_attr.prebuf = -1U;
 		buffer_attr.tlength = device->m_buffersize;
 
-		pa_stream_set_buffer_attr(stream, &buffer_attr, nullptr, nullptr);
+		AUD_pa_stream_set_buffer_attr(stream, &buffer_attr, nullptr, nullptr);
 	}
 }
 
@@ -71,7 +72,7 @@ void PulseAudioDevice::playing(bool playing)
 {
 	m_playback = playing;
 
-	pa_stream_cork(m_stream, playing ? 0 : 1, nullptr, nullptr);
+	AUD_pa_stream_cork(m_stream, playing ? 0 : 1, nullptr, nullptr);
 }
 
 PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buffersize) :
@@ -80,19 +81,25 @@ PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buff
 	m_buffersize(buffersize),
 	m_underflows(0)
 {
-	m_mainloop = pa_threaded_mainloop_new();
-	pa_threaded_mainloop_start(m_mainloop);
+	m_mainloop = AUD_pa_threaded_mainloop_new();
 
-	m_mainloop_api = pa_threaded_mainloop_get_api(m_mainloop);
+	AUD_pa_threaded_mainloop_lock(m_mainloop);
 
-	m_context = pa_context_new(m_mainloop_api, name.c_str());
+	m_context = AUD_pa_context_new(AUD_pa_threaded_mainloop_get_api(m_mainloop), name.c_str());
 
-	pa_context_connect(m_context, nullptr, PA_CONTEXT_NOFLAGS, nullptr);
+	if(!m_context)
+	{
+		AUD_pa_threaded_mainloop_unlock(m_mainloop);
+		AUD_pa_threaded_mainloop_free(m_mainloop);
 
+		AUD_THROW(DeviceException, "Could not connect to PulseAudio.");
+	}
 
-	pa_context_set_state_callback(m_context, PulseAudio_state_callback, this);
+	AUD_pa_context_set_state_callback(m_context, PulseAudio_state_callback, this);
 
-	pa_threaded_mainloop_lock(m_mainloop);
+	AUD_pa_context_connect(m_context, nullptr, PA_CONTEXT_NOFLAGS, nullptr);
+
+	AUD_pa_threaded_mainloop_start(m_mainloop);
 
 	while(m_state != PA_CONTEXT_READY)
 	{
@@ -100,23 +107,21 @@ PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buff
 		{
 		case PA_CONTEXT_FAILED:
 		case PA_CONTEXT_TERMINATED:
-			pa_threaded_mainloop_unlock(m_mainloop);
+			AUD_pa_threaded_mainloop_unlock(m_mainloop);
+			AUD_pa_threaded_mainloop_stop(m_mainloop);
 
-			pa_context_disconnect(m_context);
-			pa_context_unref(m_context);
+			AUD_pa_context_disconnect(m_context);
+			AUD_pa_context_unref(m_context);
 
-			pa_threaded_mainloop_stop(m_mainloop);
-			pa_threaded_mainloop_free(m_mainloop);
+			AUD_pa_threaded_mainloop_free(m_mainloop);
 
 			AUD_THROW(DeviceException, "Could not connect to PulseAudio.");
 			break;
 		default:
-			pa_threaded_mainloop_wait(m_mainloop);
+			AUD_pa_threaded_mainloop_wait(m_mainloop);
 			break;
 		}
 	}
-
-	pa_threaded_mainloop_unlock(m_mainloop);
 
 	if(specs.channels == CHANNELS_INVALID)
 		specs.channels = CHANNELS_STEREO;
@@ -157,21 +162,23 @@ PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buff
 		break;
 	}
 
-	m_stream = pa_stream_new(m_context, "Playback", &sample_spec, nullptr);
+	m_stream = AUD_pa_stream_new(m_context, "Playback", &sample_spec, nullptr);
 
 	if(!m_stream)
 	{
-		pa_context_disconnect(m_context);
-		pa_context_unref(m_context);
+		AUD_pa_threaded_mainloop_unlock(m_mainloop);
+		AUD_pa_threaded_mainloop_stop(m_mainloop);
 
-		pa_threaded_mainloop_stop(m_mainloop);
-		pa_threaded_mainloop_free(m_mainloop);
+		AUD_pa_context_disconnect(m_context);
+		AUD_pa_context_unref(m_context);
+
+		AUD_pa_threaded_mainloop_free(m_mainloop);
 
 		AUD_THROW(DeviceException, "Could not create PulseAudio stream.");
 	}
 
-	pa_stream_set_write_callback(m_stream, PulseAudio_request, this);
-	pa_stream_set_underflow_callback(m_stream, PulseAudio_underflow, this);
+	AUD_pa_stream_set_write_callback(m_stream, PulseAudio_request, this);
+	AUD_pa_stream_set_underflow_callback(m_stream, PulseAudio_underflow, this);
 
 	pa_buffer_attr buffer_attr;
 
@@ -181,28 +188,32 @@ PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buff
 	buffer_attr.prebuf = -1U;
 	buffer_attr.tlength = buffersize;
 
-	if(pa_stream_connect_playback(m_stream, nullptr, &buffer_attr, static_cast<pa_stream_flags_t>(PA_STREAM_INTERPOLATE_TIMING | PA_STREAM_ADJUST_LATENCY | PA_STREAM_AUTO_TIMING_UPDATE), nullptr, nullptr) < 0)
+	if(AUD_pa_stream_connect_playback(m_stream, nullptr, &buffer_attr, static_cast<pa_stream_flags_t>(PA_STREAM_INTERPOLATE_TIMING | PA_STREAM_ADJUST_LATENCY | PA_STREAM_AUTO_TIMING_UPDATE), nullptr, nullptr) < 0)
 	{
-		pa_context_disconnect(m_context);
-		pa_context_unref(m_context);
+		AUD_pa_threaded_mainloop_unlock(m_mainloop);
+		AUD_pa_threaded_mainloop_stop(m_mainloop);
 
-		pa_threaded_mainloop_stop(m_mainloop);
-		pa_threaded_mainloop_free(m_mainloop);
+		AUD_pa_context_disconnect(m_context);
+		AUD_pa_context_unref(m_context);
+
+		AUD_pa_threaded_mainloop_free(m_mainloop);
 
 		AUD_THROW(DeviceException, "Could not connect PulseAudio stream.");
 	}
+
+	AUD_pa_threaded_mainloop_unlock(m_mainloop);
 
 	create();
 }
 
 PulseAudioDevice::~PulseAudioDevice()
 {
-	pa_context_disconnect(m_context);
+	AUD_pa_threaded_mainloop_stop(m_mainloop);
 
-	pa_context_unref(m_context);
+	AUD_pa_context_disconnect(m_context);
+	AUD_pa_context_unref(m_context);
 
-	pa_threaded_mainloop_stop(m_mainloop);
-	pa_threaded_mainloop_free(m_mainloop);
+	AUD_pa_threaded_mainloop_free(m_mainloop);
 
 	destroy();
 }
@@ -252,7 +263,8 @@ public:
 
 void PulseAudioDevice::registerPlugin()
 {
-	DeviceManager::registerDevice("PulseAudio", std::shared_ptr<IDeviceFactory>(new PulseAudioDeviceFactory));
+	if(loadPulseAudio())
+		DeviceManager::registerDevice("PulseAudio", std::shared_ptr<IDeviceFactory>(new PulseAudioDeviceFactory));
 }
 
 #ifdef PULSEAUDIO_PLUGIN

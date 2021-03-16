@@ -14,34 +14,46 @@
  * limitations under the License.
  ******************************************************************************/
 
-#pragma once
+#define PULSEAUDIO_LIBRARY_IMPLEMENTATION
 
-#ifdef JACK_PLUGIN
-#define AUD_BUILD_PLUGIN
+#include <string>
+#include <array>
+
+#include "PulseAudioLibrary.h"
+
+#ifdef DYNLOAD_PULSEAUDIO
+#include "plugin/PluginManager.h"
 #endif
-
-/**
- * @file JackLibrary.h
- * @ingroup plugin
- */
-
-#include "Audaspace.h"
-
-#include <jack/jack.h>
-#include <jack/ringbuffer.h>
 
 AUD_NAMESPACE_BEGIN
 
-#ifdef JACK_LIBRARY_IMPLEMENTATION
-#define JACK_SYMBOL(sym) decltype(&sym) AUD_##sym
+bool loadPulseAudio()
+{
+#ifdef DYNLOAD_PULSEAUDIO
+	std::array<const std::string, 2> names = {"libpulse.so", "libpulse.so.0"};
+
+	void* handle = nullptr;
+
+	for(auto& name : names)
+	{
+		handle = PluginManager::openLibrary(name);
+		if(handle)
+			break;
+	}
+
+	if (!handle)
+		return false;
+
+#define PULSEAUDIO_SYMBOL(sym) AUD_##sym = reinterpret_cast<decltype(&sym)>(PluginManager::lookupLibrary(handle, #sym))
 #else
-#define JACK_SYMBOL(sym) extern decltype(&sym) AUD_##sym
+#define PULSEAUDIO_SYMBOL(sym) AUD_##sym = &sym
 #endif
 
-#include "JackSymbols.h"
+#include "PulseAudioSymbols.h"
 
-#undef JACK_SYMBOL
+#undef PULSEAUDIO_SYMBOL
 
-bool loadJACK();
+	return AUD_pa_context_new != nullptr;
+}
 
 AUD_NAMESPACE_END

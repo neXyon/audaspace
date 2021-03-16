@@ -16,32 +16,31 @@
 
 #pragma once
 
-#ifdef JACK_PLUGIN
+#ifdef PULSEAUDIO_PLUGIN
 #define AUD_BUILD_PLUGIN
 #endif
 
 /**
- * @file JackLibrary.h
+ * @file PulseAudioLibrary.h
  * @ingroup plugin
  */
 
 #include "Audaspace.h"
 
-#include <jack/jack.h>
-#include <jack/ringbuffer.h>
+#include <pulse/pulseaudio.h>
 
 AUD_NAMESPACE_BEGIN
 
-#ifdef JACK_LIBRARY_IMPLEMENTATION
-#define JACK_SYMBOL(sym) decltype(&sym) AUD_##sym
+#ifdef PULSEAUDIO_LIBRARY_IMPLEMENTATION
+#define PULSEAUDIO_SYMBOL(sym) decltype(&sym) AUD_##sym
 #else
-#define JACK_SYMBOL(sym) extern decltype(&sym) AUD_##sym
+#define PULSEAUDIO_SYMBOL(sym) extern decltype(&sym) AUD_##sym
 #endif
 
-#include "JackSymbols.h"
+#include "PulseAudioSymbols.h"
 
-#undef JACK_SYMBOL
+#undef PULSEAUDIO_SYMBOL
 
-bool loadJACK();
+bool loadPulseAudio();
 
 AUD_NAMESPACE_END
