@@ -35,3 +35,6 @@ PULSEAUDIO_SYMBOL(pa_mainloop_free);
 PULSEAUDIO_SYMBOL(pa_mainloop_get_api);
 PULSEAUDIO_SYMBOL(pa_mainloop_new);
 PULSEAUDIO_SYMBOL(pa_mainloop_iterate);
+PULSEAUDIO_SYMBOL(pa_mainloop_prepare);
+PULSEAUDIO_SYMBOL(pa_mainloop_poll);
+PULSEAUDIO_SYMBOL(pa_mainloop_dispatch);
