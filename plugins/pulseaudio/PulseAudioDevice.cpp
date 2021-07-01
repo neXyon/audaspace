@@ -78,6 +78,7 @@ void PulseAudioDevice::runMixingThread()
 			if(shouldStop())
 			{
 				AUD_pa_stream_cork(m_stream, 1, nullptr, nullptr);
+				AUD_pa_stream_flush(m_stream, nullptr, nullptr);
 				doStop();
 				return;
 			}
