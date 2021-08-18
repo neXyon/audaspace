@@ -32,17 +32,24 @@ void PulseAudioDevice::PulseAudio_state_callback(pa_context *context, void *data
 	device->m_state = AUD_pa_context_get_state(context);
 }
 
-void PulseAudioDevice::PulseAudio_request(pa_stream *stream, size_t num_bytes, void *data)
+void PulseAudioDevice::PulseAudio_request(pa_stream *stream, size_t total_bytes, void *data)
 {
 	PulseAudioDevice* device = (PulseAudioDevice*)data;
 
 	void* buffer;
 
-	AUD_pa_stream_begin_write(stream, &buffer, &num_bytes);
+	while(total_bytes > 0)
+	{
+		size_t num_bytes = total_bytes;
 
-	device->mix((data_t*)buffer, num_bytes / AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
+		AUD_pa_stream_begin_write(stream, &buffer, &num_bytes);
 
-	AUD_pa_stream_write(stream, buffer, num_bytes, nullptr, 0, PA_SEEK_RELATIVE);
+		device->mix((data_t*)buffer, num_bytes / AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
+
+		AUD_pa_stream_write(stream, buffer, num_bytes, nullptr, 0, PA_SEEK_RELATIVE);
+
+		total_bytes -= num_bytes;
+	}
 }
 
 void PulseAudioDevice::PulseAudio_underflow(pa_stream *stream, void *data)
