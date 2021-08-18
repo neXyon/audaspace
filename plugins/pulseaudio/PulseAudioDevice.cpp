@@ -96,7 +96,6 @@ void PulseAudioDevice::runMixingThread()
 
 PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buffersize) :
 	m_state(PA_CONTEXT_UNCONNECTED),
-	m_buffersize(buffersize),
 	m_underflows(0)
 {
 	m_mainloop = AUD_pa_mainloop_new();
@@ -186,6 +185,9 @@ PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buff
 
 	AUD_pa_stream_set_write_callback(m_stream, PulseAudio_request, this);
 	AUD_pa_stream_set_underflow_callback(m_stream, PulseAudio_underflow, this);
+
+	buffersize *= AUD_DEVICE_SAMPLE_SIZE(m_specs);
+	m_buffersize = buffersize;
 
 	pa_buffer_attr buffer_attr;
 
