@@ -107,7 +107,7 @@ AUD_API AUD_SoundInfo AUD_getInfo(AUD_Sound* sound)
 AUD_API float* AUD_readSoundBuffer(const char* filename, float low, float high,
 						   float attack, float release, float threshold,
 						   int accumulate, int additive, int square,
-						   float sthreshold, double samplerate, int* length)
+						   float sthreshold, double samplerate, int* length, int stream)
 {
 	Buffer buffer;
 	DeviceSpecs specs;
@@ -115,7 +115,7 @@ AUD_API float* AUD_readSoundBuffer(const char* filename, float low, float high,
 	specs.rate = (SampleRate)samplerate;
 	std::shared_ptr<ISound> sound;
 
-	std::shared_ptr<ISound> file = std::shared_ptr<ISound>(new File(filename));
+	std::shared_ptr<ISound> file = std::shared_ptr<ISound>(new File(filename, stream));
 
 	int position = 0;
 
