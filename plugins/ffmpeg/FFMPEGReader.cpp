@@ -407,22 +407,16 @@ void FFMPEGReader::seek(int position)
 {
 	if(position >= 0)
 	{
-		uint64_t st_time = m_formatCtx->start_time;
-		uint64_t seek_pos = ((uint64_t)position) * ((uint64_t)AV_TIME_BASE) / ((uint64_t)m_specs.rate);
+		double pts_time_base = av_q2d(m_formatCtx->streams[m_stream]->time_base);
 
-		if(st_time != AV_NOPTS_VALUE) {
+		uint64_t st_time = m_formatCtx->streams[m_stream]->start_time;
+		uint64_t seek_pos = (uint64_t)(position / (pts_time_base * m_specs.rate));
+
+		if(st_time != AV_NOPTS_VALUE)
 			seek_pos += st_time;
-		}
-
-		double pts_time_base = 
-			av_q2d(m_formatCtx->streams[m_stream]->time_base);
-		uint64_t pts_st_time =
-			((st_time != AV_NOPTS_VALUE) ? st_time : 0)
-			/ pts_time_base / (uint64_t) AV_TIME_BASE;
 
 		// a value < 0 tells us that seeking failed
-		if(av_seek_frame(m_formatCtx, -1, seek_pos,
-				 AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY) >= 0)
+		if(av_seek_frame(m_formatCtx, m_stream, seek_pos, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY) >= 0)
 		{
 			avcodec_flush_buffers(m_codecCtx);
 			m_position = position;
@@ -443,7 +437,7 @@ void FFMPEGReader::seek(int position)
 					if(packet.pts != AV_NOPTS_VALUE)
 					{
 						// calculate real position, and read to frame!
-						m_position = (packet.pts - pts_st_time) * pts_time_base * m_specs.rate;
+						m_position = (packet.pts - (st_time != AV_NOPTS_VALUE ? st_time : 0)) * pts_time_base * m_specs.rate;
 
 						if(m_position < position)
 						{
@@ -473,9 +467,25 @@ void FFMPEGReader::seek(int position)
 
 int FFMPEGReader::getLength() const
 {
+	auto stream = m_formatCtx->streams[m_stream];
+
+	double time_base = av_q2d(stream->time_base);
+	double duration;
+
+	if(stream->duration != AV_NOPTS_VALUE)
+		duration = stream->duration * time_base;
+	else if(m_formatCtx->duration != AV_NOPTS_VALUE)
+	{
+		duration = float(m_formatCtx->duration) / AV_TIME_BASE;
+
+		if(stream->start_time != AV_NOPTS_VALUE)
+			duration -= stream->start_time * time_base;
+	}
+	else
+		duration = -1;
+
 	// return approximated remaning size
-	return (int)((m_formatCtx->duration * m_codecCtx->sample_rate)
-				 / AV_TIME_BASE)-m_position;
+	return (int)(duration * m_codecCtx->sample_rate) - m_position;
 }
 
 int FFMPEGReader::getPosition() const
