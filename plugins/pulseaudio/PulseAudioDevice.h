@@ -27,6 +27,9 @@
  */
 
 #include "devices/ThreadedDevice.h"
+#include "util/RingBuffer.h"
+
+#include <condition_variable>
 
 #include <pulse/pulseaudio.h>
 
@@ -43,8 +46,38 @@ private:
 	pa_stream* m_stream;
 	pa_context_state_t m_state;
 
+	/**
+	 * The mixing ring buffer.
+	 */
+	RingBuffer m_ring_buffer;
+
+	/**
+	 * Whether the device is valid.
+	 */
+	bool m_valid;
+
 	int m_buffersize;
 	uint32_t m_underflows;
+
+	/**
+	 * The mixing thread.
+	 */
+	std::thread m_mixingThread;
+
+	/**
+	 * Mutex for mixing.
+	 */
+	std::mutex m_mixingLock;
+
+	/**
+	 * Condition for mixing.
+	 */
+	std::condition_variable m_mixingCondition;
+
+	/**
+	 * Updates the ring buffer.
+	 */
+	AUD_LOCAL void updateRingBuffer();
 
 	/**
 	 * Reports the state of the PulseAudio server connection.
