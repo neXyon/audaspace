@@ -39,3 +39,13 @@ PULSEAUDIO_SYMBOL(pa_mainloop_iterate);
 PULSEAUDIO_SYMBOL(pa_mainloop_prepare);
 PULSEAUDIO_SYMBOL(pa_mainloop_poll);
 PULSEAUDIO_SYMBOL(pa_mainloop_dispatch);
+
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_free);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_get_api);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_lock);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_new);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_signal);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_start);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_stop);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_unlock);
+PULSEAUDIO_SYMBOL(pa_threaded_mainloop_wait);
