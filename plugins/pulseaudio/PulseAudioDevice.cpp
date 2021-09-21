@@ -112,30 +112,6 @@ void PulseAudioDevice::PulseAudio_request(pa_stream *stream, size_t total_bytes,
 	}
 }
 
-void PulseAudioDevice::PulseAudio_underflow(pa_stream *stream, void *data)
-{
-	PulseAudioDevice* device = (PulseAudioDevice*)data;
-
-	DeviceSpecs specs = device->getSpecs();
-
-	//if(++device->m_underflows > 4 && device->m_buffersize < AUD_DEVICE_SAMPLE_SIZE(specs) * specs.rate * 2)
-	if(false)
-	{
-		device->m_buffersize <<= 1;
-		device->m_underflows = 0;
-
-		pa_buffer_attr buffer_attr;
-
-		buffer_attr.fragsize = -1U;
-		buffer_attr.maxlength = -1U;
-		buffer_attr.minreq = -1U;
-		buffer_attr.prebuf = -1U;
-		buffer_attr.tlength = device->m_buffersize;
-
-		AUD_pa_stream_set_buffer_attr(stream, &buffer_attr, nullptr, nullptr);
-	}
-}
-
 void PulseAudioDevice::playing(bool playing)
 {
 	m_playback = playing;
@@ -249,7 +225,6 @@ PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buff
 	}
 
 	AUD_pa_stream_set_write_callback(m_stream, PulseAudio_request, this);
-	AUD_pa_stream_set_underflow_callback(m_stream, PulseAudio_underflow, this);
 
 	buffersize *= AUD_DEVICE_SAMPLE_SIZE(m_specs);
 	m_buffersize = buffersize;

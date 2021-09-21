@@ -113,14 +113,6 @@ private:
 	 */
 	AUD_LOCAL static void PulseAudio_request(pa_stream* stream, size_t total_bytes, void* data);
 
-	/**
-	 * Reports an underflow from the PulseAudio server.
-	 * Automatically adjusts the latency if this happens too often.
-	 * @param stream The PulseAudio stream.
-	 * \param data The PulseAudio device.
-	 */
-	AUD_LOCAL static void PulseAudio_underflow(pa_stream* stream, void* data);
-
 	// delete copy constructor and operator=
 	PulseAudioDevice(const PulseAudioDevice&) = delete;
 	PulseAudioDevice& operator=(const PulseAudioDevice&) = delete;
