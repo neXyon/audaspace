@@ -42,6 +42,19 @@ AUD_NAMESPACE_BEGIN
 class AUD_PLUGIN_API PulseAudioDevice : public SoftwareDevice
 {
 private:
+	class PulseAudioSynchronizer : public DefaultSynchronizer
+	{
+		PulseAudioDevice* m_device;
+
+	public:
+		PulseAudioSynchronizer(PulseAudioDevice* device);
+
+		virtual double getPosition(std::shared_ptr<IHandle> handle);
+	};
+
+	/// Synchronizer.
+	PulseAudioSynchronizer m_synchronizer;
+
 	/**
 	 * Whether there is currently playback.
 	 */
@@ -129,6 +142,8 @@ public:
 	 * Closes the PulseAudio audio device.
 	 */
 	virtual ~PulseAudioDevice();
+
+	virtual ISynchronizer* getSynchronizer();
 
 	/**
 	 * Registers this plugin.

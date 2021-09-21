@@ -23,6 +23,22 @@
 
 AUD_NAMESPACE_BEGIN
 
+PulseAudioDevice::PulseAudioSynchronizer::PulseAudioSynchronizer(PulseAudioDevice *device) :
+	m_device(device)
+{
+}
+
+double PulseAudioDevice::PulseAudioSynchronizer::getPosition(std::shared_ptr<IHandle> handle)
+{
+	pa_usec_t latency;
+	int negative;
+	AUD_pa_stream_get_latency(m_device->m_stream, &latency, &negative);
+
+	double delay = m_device->m_ring_buffer.getReadSize() / (AUD_SAMPLE_SIZE(m_device->m_specs) * m_device->m_specs.rate) + latency * 1.0e-6;
+
+	return handle->getPosition() - delay;
+}
+
 void PulseAudioDevice::updateRingBuffer()
 {
 	unsigned int samplesize = AUD_SAMPLE_SIZE(m_specs);
@@ -130,6 +146,7 @@ void PulseAudioDevice::playing(bool playing)
 }
 
 PulseAudioDevice::PulseAudioDevice(std::string name, DeviceSpecs specs, int buffersize) :
+	m_synchronizer(this),
 	m_playback(false),
 	m_state(PA_CONTEXT_UNCONNECTED),
 	m_valid(true),
@@ -285,6 +302,11 @@ PulseAudioDevice::~PulseAudioDevice()
 	AUD_pa_threaded_mainloop_free(m_mainloop);
 
 	destroy();
+}
+
+ISynchronizer *PulseAudioDevice::getSynchronizer()
+{
+	return &m_synchronizer;
 }
 
 class PulseAudioDeviceFactory : public IDeviceFactory
