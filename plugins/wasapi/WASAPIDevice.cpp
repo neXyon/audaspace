@@ -85,13 +85,6 @@ void WASAPIDevice::runMixingThread()
 			data_t* buffer;
 			std::lock_guard<ILockable> lock(*this);
 
-			if(m_default_device_changed)
-			{
-				m_default_device_changed = false;
-				result = AUDCLNT_E_DEVICE_INVALIDATED;
-				goto stop_thread;
-			}
-
 			if(run_init)
 			{
 				result = setupRenderClient(render_client, buffer_size);
@@ -100,6 +93,13 @@ void WASAPIDevice::runMixingThread()
 					goto stop_thread;
 
 				sleep_duration = std::chrono::milliseconds(buffer_size * 1000 / int(m_specs.rate) / 2);
+			}
+
+			if(m_default_device_changed)
+			{
+				m_default_device_changed = false;
+				result = AUDCLNT_E_DEVICE_INVALIDATED;
+				goto stop_thread;
 			}
 
 			if(FAILED(result = m_audio_client->GetCurrentPadding(&padding)))
