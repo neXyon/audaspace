@@ -8,7 +8,7 @@
 # Use pkg-config to get hints about paths
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(FFTW_PKGCONF fftw3)
+	pkg_check_modules(FFTW_PKGCONF fftw3f)
 endif(PKG_CONFIG_FOUND)
 
 # Include dir
@@ -19,7 +19,7 @@ find_path(FFTW_INCLUDE_DIR
 
 # Library
 find_library(FFTW_LIBRARY
-	NAMES fftw libfftw3f-3 fftw3f
+	NAMES libfftw3f-3 fftw3f fftw
 	PATHS ${FFTW_PKGCONF_LIBRARY_DIRS}
 )
 
