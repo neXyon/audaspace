@@ -16,8 +16,9 @@
 # limitations under the License.
 ################################################################################
 
-# filter design, high quality values:
-# sinc filter coefficients, Nz = 136, L = 2304, freq = 0.963904, Kaiser Window B = 16
+# high quality:   sinc filter coefficients, Nz = 136, L = 2304, freq = 0.963904, Kaiser Window B = 16
+# medium quality: sinc filter coefficients, Nz = 42, L = 500, freq = 0.916636, Kaiser Window B = 12
+# low quality:    sinc filter coefficients, Nz = 16, L = 128, freq = 0.834068, Kaiser Window B = 10
 
 import numpy as np
 import scipy
@@ -26,6 +27,8 @@ L = 2304
 Nz = 136
 B = 16
 freq = Nz / (Nz + B / np.pi)
+
+print(f'// sinc filter coefficients, Nz = {Nz}, L = {L}, freq = {freq:.6f}, Kaiser Window B = {B}')
 
 Nz = Nz / freq
 
@@ -39,7 +42,18 @@ b = b[len(a)-1:]
 
 y = a * b
 
-# y contains the filter coefficients that need to be written to the filter coefficient file
+# print filter coefficients from y
+if False:
+	print(f'AUD_NAMESPACE_BEGIN')
+	print(f'const int JOSResampleReader::m_len_PRESET = {int(L*Nz)};')
+	print(f'const int JOSResampleReader::m_L_PRESET = {L};')
+	print(f'const float JOSResampleReader::m_coeff_PRESET[m_len_PRESET + 1] = {{')
+	for idx, val in enumerate(y):
+		print(f'{val:.9e}f', end=', ')
+		if (idx + 1) % 10 == 0:
+			print("\n", end='')
+	print(f'}};')
+	print(f'AUD_NAMESPACE_END')
 
 # visualize filter
 
