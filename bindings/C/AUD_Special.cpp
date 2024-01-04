@@ -351,7 +351,7 @@ AUD_API AUD_Device* AUD_openMixdownDevice(AUD_DeviceSpecs specs, AUD_Sound* sequ
 	try
 	{
 		ReadDevice* device = new ReadDevice(convCToDSpec(specs));
-		device->setQuality(true);
+		device->setQuality(ResampleQuality::HIGH);
 		device->setVolume(volume);
 
 		Sequence* f = dynamic_cast<Sequence*>(sequencer->get());

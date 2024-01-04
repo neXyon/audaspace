@@ -1308,7 +1308,7 @@ Sound_resample(Sound* self, PyObject* args)
 			specs.rate = rate;
 			specs.format = FORMAT_INVALID;
 			if(high_quality)
-				parent->sound = new std::shared_ptr<ISound>(new JOSResample(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), specs));
+				parent->sound = new std::shared_ptr<ISound>(new JOSResample(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), specs, ResampleQuality::HIGH));
 			else
 				parent->sound = new std::shared_ptr<ISound>(new LinearResample(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), specs));
 		}

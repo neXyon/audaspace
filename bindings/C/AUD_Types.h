@@ -119,6 +119,15 @@ typedef enum
 	AUD_CHANNELS_SURROUND71 = 8	/// 7.1 surround sound.
 } AUD_Channels;
 
+/// Resampling algorithm and quality.
+typedef enum
+{
+	AUD_RES_Q_FASTEST = 0, /// Linear resample, very fast but lowest quality.
+	AUD_RES_Q_LOW     = 1, /// JOS resample at low quality preset.
+	AUD_RES_Q_MEDIUM  = 2, /// JOS resample at medium quality preset.
+	AUD_RES_Q_HIGH    = 3  /// JOS resample at high quality preset.
+} AUD_ResampleQuality;
+
 /**
  * The sample rate tells how many samples are played back within one second.
  * Some exotic formats may use other sample rates than provided here.

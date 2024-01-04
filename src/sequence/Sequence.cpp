@@ -102,7 +102,7 @@ void Sequence::remove(std::shared_ptr<SequenceEntry> entry)
 
 std::shared_ptr<IReader> Sequence::createQualityReader()
 {
-	return std::shared_ptr<IReader>(new SequenceReader(m_sequence, true));
+	return std::shared_ptr<IReader>(new SequenceReader(m_sequence, ResampleQuality::HIGH));
 }
 
 std::shared_ptr<IReader> Sequence::createReader()
