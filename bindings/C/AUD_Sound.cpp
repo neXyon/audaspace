@@ -570,7 +570,7 @@ AUD_API AUD_Sound* AUD_Sound_resample(AUD_Sound* sound, AUD_SampleRate rate, AUD
 		specs.channels = CHANNELS_INVALID;
 		specs.rate = rate;
 		specs.format = FORMAT_INVALID;
-		if (quality == AUD_RES_Q_FASTEST)
+		if (quality == AUD_RESAMPLE_QUALITY_FASTEST)
 		{
 			return new AUD_Sound(new LinearResample(*sound, specs));
 		}
