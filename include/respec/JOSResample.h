@@ -44,7 +44,7 @@ public:
 	 * \param sound The input sound.
 	 * \param specs The target specifications.
 	 */
-	JOSResample(std::shared_ptr<ISound> sound, DeviceSpecs specs, ResampleQuality quality);
+	JOSResample(std::shared_ptr<ISound> sound, DeviceSpecs specs, ResampleQuality quality = ResampleQuality::HIGH);
 
 	virtual std::shared_ptr<IReader> createReader();
 };
