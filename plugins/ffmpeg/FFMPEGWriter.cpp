@@ -30,10 +30,6 @@ extern "C" {
 
 AUD_NAMESPACE_BEGIN
 
-#if LIBAVCODEC_VERSION_MAJOR < 58
-#define FFMPEG_OLD_CODE
-#endif
-
 void FFMPEGWriter::encode()
 {
 	sample_t* data = m_input_buffer.getBuffer();
@@ -65,20 +61,9 @@ void FFMPEGWriter::encode()
 		if(m_input_size)
 			m_convert(reinterpret_cast<data_t*>(data), reinterpret_cast<data_t*>(data), m_input_samples * m_specs.channels);
 
-#ifdef FFMPEG_OLD_CODE
-	m_packet->data = nullptr;
-	m_packet->size = 0;
-
-	av_init_packet(m_packet);
-
-	av_frame_unref(m_frame);
-	int got_packet;
-#endif
-
 	m_frame->nb_samples = m_input_samples;
 	m_frame->format = m_codecCtx->sample_fmt;
-	m_frame->channel_layout = m_codecCtx->channel_layout;
-	m_frame->channels = m_specs.channels;
+	m_frame->ch_layout = m_codecCtx->ch_layout;
 
 	if(avcodec_fill_audio_frame(m_frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_buffer.getSize(), 0) < 0)
 		AUD_THROW(FileException, "File couldn't be written, filling the audio frame failed with ffmpeg.");
@@ -86,24 +71,6 @@ void FFMPEGWriter::encode()
 	AVRational sample_time = { 1, static_cast<int>(m_specs.rate) };
 	m_frame->pts = av_rescale_q(m_position - m_input_samples, m_codecCtx->time_base, sample_time);
 
-#ifdef FFMPEG_OLD_CODE
-	if(avcodec_encode_audio2(m_codecCtx, m_packet, m_frame, &got_packet))
-	{
-		AUD_THROW(FileException, "File couldn't be written, audio encoding failed with ffmpeg.");
-	}
-
-	if(got_packet)
-	{
-		m_packet->flags |= AV_PKT_FLAG_KEY;
-		m_packet->stream_index = m_stream->index;
-		if(av_write_frame(m_formatCtx, m_packet) < 0)
-		{
-			av_free_packet(m_packet);
-			AUD_THROW(FileException, "Frame couldn't be writen to the file with ffmpeg.");
-		}
-		av_free_packet(m_packet);
-	}
-#else
 	if(avcodec_send_frame(m_codecCtx, m_frame) < 0)
 		AUD_THROW(FileException, "File couldn't be written, audio encoding failed with ffmpeg.");
 
@@ -114,37 +81,10 @@ void FFMPEGWriter::encode()
 		if(av_write_frame(m_formatCtx, m_packet) < 0)
 			AUD_THROW(FileException, "Frame couldn't be writen to the file with ffmpeg.");
 	}
-#endif
 }
 
 void FFMPEGWriter::close()
 {
-#ifdef FFMPEG_OLD_CODE
-	int got_packet = true;
-
-	while(got_packet)
-	{
-		m_packet->data = nullptr;
-		m_packet->size = 0;
-
-		av_init_packet(m_packet);
-
-		if(avcodec_encode_audio2(m_codecCtx, m_packet, nullptr, &got_packet))
-			AUD_THROW(FileException, "File end couldn't be written, audio encoding failed with ffmpeg.");
-
-		if(got_packet)
-		{
-			m_packet->flags |= AV_PKT_FLAG_KEY;
-			m_packet->stream_index = m_stream->index;
-			if(av_write_frame(m_formatCtx, m_packet))
-			{
-				av_free_packet(m_packet);
-				AUD_THROW(FileException, "Final frames couldn't be writen to the file with ffmpeg.");
-			}
-			av_free_packet(m_packet);
-		}
-	}
-#else
 	if(avcodec_send_frame(m_codecCtx, nullptr) < 0)
 		AUD_THROW(FileException, "File couldn't be written, audio encoding failed with ffmpeg.");
 
@@ -155,7 +95,6 @@ void FFMPEGWriter::close()
 		if(av_write_frame(m_formatCtx, m_packet) < 0)
 			AUD_THROW(FileException, "Frame couldn't be writen to the file with ffmpeg.");
 	}
-#endif
 }
 
 FFMPEGWriter::FFMPEGWriter(const std::string &filename, DeviceSpecs specs, Container format, Codec codec, unsigned int bitrate) :
@@ -237,33 +176,33 @@ FFMPEGWriter::FFMPEGWriter(const std::string &filename, DeviceSpecs specs, Conta
 		break;
 	}
 
-	uint64_t channel_layout = 0;
+	AVChannelLayout channel_layout{};
 
 	switch(m_specs.channels)
 	{
 	case CHANNELS_MONO:
-		channel_layout = AV_CH_LAYOUT_MONO;
+		channel_layout = AV_CHANNEL_LAYOUT_MONO;
 		break;
 	case CHANNELS_STEREO:
-		channel_layout = AV_CH_LAYOUT_STEREO;
+		channel_layout = AV_CHANNEL_LAYOUT_STEREO;
 		break;
 	case CHANNELS_STEREO_LFE:
-		channel_layout = AV_CH_LAYOUT_2POINT1;
+		channel_layout = AV_CHANNEL_LAYOUT_2POINT1;
 		break;
 	case CHANNELS_SURROUND4:
-		channel_layout = AV_CH_LAYOUT_QUAD;
+		channel_layout = AV_CHANNEL_LAYOUT_QUAD;
 		break;
 	case CHANNELS_SURROUND5:
-		channel_layout = AV_CH_LAYOUT_5POINT0_BACK;
+		channel_layout = AV_CHANNEL_LAYOUT_5POINT0_BACK;
 		break;
 	case CHANNELS_SURROUND51:
-		channel_layout = AV_CH_LAYOUT_5POINT1_BACK;
+		channel_layout = AV_CHANNEL_LAYOUT_5POINT1_BACK;
 		break;
 	case CHANNELS_SURROUND61:
-		channel_layout = AV_CH_LAYOUT_6POINT1_BACK;
+		channel_layout = AV_CHANNEL_LAYOUT_6POINT1_BACK;
 		break;
 	case CHANNELS_SURROUND71:
-		channel_layout = AV_CH_LAYOUT_7POINT1;
+		channel_layout = AV_CHANNEL_LAYOUT_7POINT1;
 		break;
 	default:
 		AUD_THROW(FileException, "File couldn't be written, channel layout not supported.");
@@ -284,11 +223,7 @@ FFMPEGWriter::FFMPEGWriter(const std::string &filename, DeviceSpecs specs, Conta
 
 		m_stream->id = m_formatCtx->nb_streams - 1;
 
-#ifdef FFMPEG_OLD_CODE
-		m_codecCtx = m_stream->codec;
-#else
 		m_codecCtx = avcodec_alloc_context3(codec);
-#endif
 
 		if(!m_codecCtx)
 			AUD_THROW(FileException, "File couldn't be written, context creation failed with ffmpeg.");
@@ -399,24 +334,17 @@ FFMPEGWriter::FFMPEGWriter(const std::string &filename, DeviceSpecs specs, Conta
 
 		m_specs.rate = m_codecCtx->sample_rate;
 
-#ifdef FFMPEG_OLD_CODE
-		m_codecCtx->codec_id = audio_codec;
-#endif
-
 		m_codecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
 		m_codecCtx->bit_rate = bitrate;
-		m_codecCtx->channel_layout = channel_layout;
-		m_codecCtx->channels = m_specs.channels;
+		m_codecCtx->ch_layout = channel_layout;
 		m_stream->time_base.num = m_codecCtx->time_base.num = 1;
 		m_stream->time_base.den = m_codecCtx->time_base.den = m_codecCtx->sample_rate;
 
 		if(avcodec_open2(m_codecCtx, codec, nullptr) < 0)
 			AUD_THROW(FileException, "File couldn't be written, encoder couldn't be opened with ffmpeg.");
 
-#ifndef FFMPEG_OLD_CODE
 		if(avcodec_parameters_from_context(m_stream->codecpar, m_codecCtx) < 0)
 			AUD_THROW(FileException, "File couldn't be written, codec parameters couldn't be copied to the context.");
-#endif
 
 		int samplesize = std::max(int(AUD_SAMPLE_SIZE(m_specs)), AUD_DEVICE_SAMPLE_SIZE(m_specs));
 
@@ -431,19 +359,13 @@ FFMPEGWriter::FFMPEGWriter(const std::string &filename, DeviceSpecs specs, Conta
 	}
 	catch(Exception&)
 	{
-#ifndef FFMPEG_OLD_CODE
 		if(m_codecCtx)
 			avcodec_free_context(&m_codecCtx);
-#endif
 		avformat_free_context(m_formatCtx);
 		throw;
 	}
 
-#ifdef FFMPEG_OLD_CODE
-	m_packet = new AVPacket({});
-#else
 	m_packet = av_packet_alloc();
-#endif
 
 	m_frame = av_frame_alloc();
 }
@@ -463,19 +385,11 @@ FFMPEGWriter::~FFMPEGWriter()
 
 	if(m_packet)
 	{
-#ifdef FFMPEG_OLD_CODE
-		delete m_packet;
-#else
 		av_packet_free(&m_packet);
-#endif
 	}
 
-#ifdef FFMPEG_OLD_CODE
-	avcodec_close(m_codecCtx);
-#else
 	if(m_codecCtx)
 		avcodec_free_context(&m_codecCtx);
-#endif
 
 	avio_closep(&m_formatCtx->pb);
 	avformat_free_context(m_formatCtx);
