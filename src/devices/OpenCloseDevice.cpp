@@ -36,14 +36,10 @@ void OpenCloseDevice::closeAfterDelay()
 
 void OpenCloseDevice::closeNow()
 {
-	std::unique_lock<std::mutex> lock(m_delayed_close_mutex);
-
-	if(m_delayed_close_running)
+	if(m_delayed_close_thread.joinable())
 	{
-		lock.unlock();
 		m_immediate_close_condition.notify_all();
 		m_delayed_close_thread.join();
-		lock.lock();
 	}
 }
 
@@ -72,6 +68,9 @@ void OpenCloseDevice::playing(bool playing)
 
 			if(m_device_opened && !m_delayed_close_running)
 			{
+				if(m_delayed_close_thread.joinable())
+					m_delayed_close_thread.join();
+
 				m_delayed_close_running = true;
 				m_delayed_close_thread = std::thread(&OpenCloseDevice::closeAfterDelay, this);
 			}
