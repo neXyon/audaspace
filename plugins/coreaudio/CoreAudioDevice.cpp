@@ -171,7 +171,6 @@ m_audio_unit(nullptr)
 
 CoreAudioDevice::~CoreAudioDevice()
 {
-	close();
 	destroy();
 }
 

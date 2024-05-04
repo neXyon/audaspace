@@ -22,8 +22,9 @@
  * The OpenCloseDevice class.
  */
 
-#include <thread>
 #include <chrono>
+#include <condition_variable>
+#include <thread>
 
 #include "devices/SoftwareDevice.h"
 
@@ -61,6 +62,11 @@ private:
 	std::mutex m_delayed_close_mutex;
 
 	/**
+	 * Condition to close immediately. Used when object is destructed.
+	 */
+	std::condition_variable m_immediate_close_condition;
+
+	/**
 	 * How long to wait until closing the device..
 	 */
 	std::chrono::milliseconds m_device_close_delay{10000};
@@ -95,14 +101,14 @@ private:
 	 */
 	AUD_LOCAL virtual void close() = 0;
 
-	~OpenCloseDevice();
-
 	// delete copy constructor and operator=
 	OpenCloseDevice(const OpenCloseDevice&) = delete;
 	OpenCloseDevice& operator=(const OpenCloseDevice&) = delete;
 
 protected:
 	OpenCloseDevice() = default;
+
+	~OpenCloseDevice();
 
 	virtual void playing(bool playing);
 };
