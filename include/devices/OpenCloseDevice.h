@@ -108,7 +108,7 @@ private:
 protected:
 	OpenCloseDevice() = default;
 
-	~OpenCloseDevice();
+	void closeNow();
 
 	virtual void playing(bool playing);
 };

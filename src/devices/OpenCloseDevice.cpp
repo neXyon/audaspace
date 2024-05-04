@@ -23,10 +23,7 @@ void OpenCloseDevice::closeAfterDelay()
 {
 	std::unique_lock<std::mutex> lock(m_delayed_close_mutex);
 
-	while(std::chrono::steady_clock::now() < m_playback_stopped_time + m_device_close_delay)
-	{
-		m_immediate_close_condition.wait_until(lock, m_playback_stopped_time + m_device_close_delay);
-	}
+	m_immediate_close_condition.wait_until(lock, m_playback_stopped_time + m_device_close_delay);
 
 	m_delayed_close_running = false;
 
@@ -37,7 +34,7 @@ void OpenCloseDevice::closeAfterDelay()
 	m_device_opened = false;
 }
 
-OpenCloseDevice::~OpenCloseDevice()
+void OpenCloseDevice::closeNow()
 {
 	std::unique_lock<std::mutex> lock(m_delayed_close_mutex);
 
