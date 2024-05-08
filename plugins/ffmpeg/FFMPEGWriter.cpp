@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2016 Jörg Müller
+ * Copyright 2009-2024 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ void FFMPEGWriter::encode()
 
 	m_frame->nb_samples = m_input_samples;
 	m_frame->format = m_codecCtx->sample_fmt;
-	m_frame->ch_layout = m_codecCtx->ch_layout;
+	av_channel_layout_copy(&m_frame->ch_layout, &m_codecCtx->ch_layout);
 
 	if(avcodec_fill_audio_frame(m_frame, m_specs.channels, m_codecCtx->sample_fmt, reinterpret_cast<data_t*>(data), m_input_buffer.getSize(), 0) < 0)
 		AUD_THROW(FileException, "File couldn't be written, filling the audio frame failed with ffmpeg.");
@@ -334,9 +334,10 @@ FFMPEGWriter::FFMPEGWriter(const std::string &filename, DeviceSpecs specs, Conta
 
 		m_specs.rate = m_codecCtx->sample_rate;
 
+
 		m_codecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
 		m_codecCtx->bit_rate = bitrate;
-		m_codecCtx->ch_layout = channel_layout;
+		av_channel_layout_copy(&m_codecCtx->ch_layout, &channel_layout);
 		m_stream->time_base.num = m_codecCtx->time_base.num = 1;
 		m_stream->time_base.den = m_codecCtx->time_base.den = m_codecCtx->sample_rate;
 
