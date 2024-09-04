@@ -45,10 +45,15 @@ private:
 	class PulseAudioSynchronizer : public DefaultSynchronizer
 	{
 		PulseAudioDevice* m_device;
+		pa_usec_t m_time_start = 0;
+		double m_seek_pos = 0.0f;
+		double m_timeline_pos = 0.0f;
 
 	public:
 		PulseAudioSynchronizer(PulseAudioDevice* device);
 
+		void update_time_start();
+		virtual void seek(std::shared_ptr<IHandle> handle, double time);
 		virtual double getPosition(std::shared_ptr<IHandle> handle);
 	};
 
