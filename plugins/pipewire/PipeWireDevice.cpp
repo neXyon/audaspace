@@ -204,10 +204,9 @@ PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int b
 	info.format = format;
 	info.rate = m_specs.rate;
 
-	const spa_pod *params[1];
 	uint8_t buffer[1024];
 	spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-	params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
+	const spa_pod *param = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
 	AUD_pw_stream_connect(m_stream,
 			  PW_DIRECTION_OUTPUT,
@@ -215,7 +214,7 @@ PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int b
 			  static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT |
 			  PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_INACTIVE |
 			  PW_STREAM_FLAG_RT_PROCESS),
-			  params, 1);
+			  &param, 1);
 	AUD_pw_thread_loop_start(m_thread);
 
 	create();
