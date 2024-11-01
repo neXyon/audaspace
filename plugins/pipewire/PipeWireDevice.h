@@ -26,7 +26,10 @@
  * The PipeWireDevice class.
  */
 
+#include <condition_variable>
+#include <thread>
 #include <pipewire/pipewire.h>
+#include <spa/utils/ringbuffer.h>
 
 #include "devices/SoftwareDevice.h"
 
@@ -65,7 +68,32 @@ private:
 	pw_thread_loop* m_thread;
 	std::unique_ptr<pw_stream_events> m_events;
 
+	/**
+	 * The mixing thread.
+	 */
+	std::thread m_mixingThread;
+	bool m_run_mixing_thread;
+
+	/**
+	 * Mutex for mixing.
+	 */
+	std::mutex m_mixingLock;
+
+	/**
+	 * The mixing ringbuffer and mixing data
+	 */
+	spa_ringbuffer m_ringbuffer;
+	Buffer m_ringbuffer_data;
+	bool m_clear_ringbuffer;
+	std::condition_variable m_mixingCondition;
+
 	AUD_LOCAL static void handle_state_changed(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error);
+
+	/**
+	 * Updates the ring buffers.
+	 */
+	AUD_LOCAL void updateRingBuffers();
+
 	/**
 	 * Mixes the next bytes into the buffer.
 	 * \param data The PipeWire device.
