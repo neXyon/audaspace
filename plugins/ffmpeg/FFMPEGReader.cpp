@@ -27,6 +27,15 @@ extern "C" {
 
 AUD_NAMESPACE_BEGIN
 
+/* FFmpeg < 4.0 */
+#if LIBAVCODEC_VERSION_MAJOR < 58
+#define FFMPEG_OLD_CODE
+#endif
+/* FFmpeg < 5.0 */
+#if LIBAVCODEC_VERSION_MAJOR < 59
+#define FFMPEG_OLD_CH_LAYOUT
+#endif
+
 SampleFormat FFMPEGReader::convertSampleFormat(AVSampleFormat format)
 {
 	switch(av_get_packed_sample_fmt(format))
@@ -51,6 +60,54 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 	int buf_size = buffer.getSize();
 	int buf_pos = 0;
 
+#ifdef FFMPEG_OLD_CODE
+	int got_frame;
+	int read_length;
+	uint8_t* orig_data = packet.data;
+	int orig_size = packet.size;
+
+	while(packet.size > 0)
+	{
+		got_frame = 0;
+
+		read_length = avcodec_decode_audio4(m_codecCtx, m_frame, &got_frame, &packet);
+		if(read_length < 0)
+			break;
+
+		if(got_frame)
+		{
+			int data_size = av_samples_get_buffer_size(nullptr, m_codecCtx->channels, m_frame->nb_samples, m_codecCtx->sample_fmt, 1);
+
+			if(buf_size - buf_pos < data_size)
+			{
+				buffer.resize(buf_size + data_size, true);
+				buf_size += data_size;
+			}
+
+			if(m_tointerleave)
+			{
+				int single_size = data_size / m_codecCtx->channels / m_frame->nb_samples;
+				for(int channel = 0; channel < m_codecCtx->channels; channel++)
+				{
+					for(int i = 0; i < m_frame->nb_samples; i++)
+					{
+						std::memcpy(((data_t*)buffer.getBuffer()) + buf_pos + ((m_codecCtx->channels * i) + channel) * single_size,
+							   m_frame->data[channel] + i * single_size, single_size);
+					}
+				}
+			}
+			else
+				std::memcpy(((data_t*)buffer.getBuffer()) + buf_pos, m_frame->data[0], data_size);
+
+			buf_pos += data_size;
+		}
+		packet.size -= read_length;
+		packet.data += read_length;
+	}
+
+	packet.data = orig_data;
+	packet.size = orig_size;
+#else
 	avcodec_send_packet(m_codecCtx, &packet);
 
 	while(true)
@@ -60,7 +117,13 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 		if(ret != 0)
 			break;
 
-		int data_size = av_samples_get_buffer_size(nullptr, m_codecCtx->ch_layout.nb_channels, m_frame->nb_samples, m_codecCtx->sample_fmt, 1);
+		#ifdef FFMPEG_OLD_CH_LAYOUT
+			int channels = m_codecCtx->channels;
+		#else
+			int channels = m_codecCtx->ch_layout.nb_channels;
+		#endif
+
+		int data_size = av_samples_get_buffer_size(nullptr, channels, m_frame->nb_samples, m_codecCtx->sample_fmt, 1);
 
 		if(buf_size - buf_pos < data_size)
 		{
@@ -70,12 +133,12 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 
 		if(m_tointerleave)
 		{
-			int single_size = data_size / m_codecCtx->ch_layout.nb_channels / m_frame->nb_samples;
-			for(int channel = 0; channel < m_codecCtx->ch_layout.nb_channels; channel++)
+			int single_size = data_size / channels / m_frame->nb_samples;
+			for(int channel = 0; channel < channels; channel++)
 			{
 				for(int i = 0; i < m_frame->nb_samples; i++)
 				{
-					std::memcpy(((data_t*)buffer.getBuffer()) + buf_pos + ((m_codecCtx->ch_layout.nb_channels * i) + channel) * single_size,
+					std::memcpy(((data_t*)buffer.getBuffer()) + buf_pos + ((channels * i) + channel) * single_size,
 						   m_frame->data[channel] + i * single_size, single_size);
 				}
 			}
@@ -85,6 +148,7 @@ int FFMPEGReader::decode(AVPacket& packet, Buffer& buffer)
 
 		buf_pos += data_size;
 	}
+#endif
 
 	return buf_pos;
 }
@@ -102,7 +166,11 @@ void FFMPEGReader::init(int stream)
 
 	for(unsigned int i = 0; i < m_formatCtx->nb_streams; i++)
 	{
+#ifdef FFMPEG_OLD_CODE
+		if((m_formatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+#else
 		if((m_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+#endif
 			&& (m_stream < 0))
 		{
 			if(stream == 0)
@@ -119,28 +187,43 @@ void FFMPEGReader::init(int stream)
 		AUD_THROW(FileException, "File couldn't be read, no audio stream found by ffmpeg.");
 
 	// get a decoder and open it
+#ifndef FFMPEG_OLD_CODE
 	const AVCodec* aCodec = avcodec_find_decoder(m_formatCtx->streams[m_stream]->codecpar->codec_id);
 
 	if(!aCodec)
 		AUD_THROW(FileException, "File couldn't be read, no decoder found with ffmpeg.");
+#endif
 
 	m_frame = av_frame_alloc();
 
 	if(!m_frame)
 		AUD_THROW(FileException, "File couldn't be read, ffmpeg frame couldn't be allocated.");
 
+#ifdef FFMPEG_OLD_CODE
+	m_codecCtx = m_formatCtx->streams[m_stream]->codec;
+
+	AVCodec* aCodec = avcodec_find_decoder(m_codecCtx->codec_id);
+#else
 	m_codecCtx = avcodec_alloc_context3(aCodec);
+#endif
 
 	if(!m_codecCtx)
 		AUD_THROW(FileException, "File couldn't be read, ffmpeg context couldn't be allocated.");
 
+#ifndef FFMPEG_OLD_CODE
 	if(avcodec_parameters_to_context(m_codecCtx, m_formatCtx->streams[m_stream]->codecpar) < 0)
 		AUD_THROW(FileException, "File couldn't be read, ffmpeg decoder parameters couldn't be copied to decoder context.");
+#endif
 
 	if(avcodec_open2(m_codecCtx, aCodec, nullptr) < 0)
 		AUD_THROW(FileException, "File couldn't be read, ffmpeg codec couldn't be opened.");
 
-	m_specs.channels = (Channels) m_codecCtx->ch_layout.nb_channels;
+	#ifdef FFMPEG_OLD_CH_LAYOUT
+		int channels = m_codecCtx->channels;
+	#else
+		int channels = m_codecCtx->ch_layout.nb_channels;
+	#endif
+	m_specs.channels = (Channels) channels;
 	m_tointerleave = av_sample_fmt_is_planar(m_codecCtx->sample_fmt);
 
 	switch(av_get_packed_sample_fmt(m_codecCtx->sample_fmt))
@@ -236,8 +319,12 @@ FFMPEGReader::~FFMPEGReader()
 {
 	if(m_frame)
 		av_frame_free(&m_frame);
+#ifdef FFMPEG_OLD_CODE
+	avcodec_close(m_codecCtx);
+#else
 	if(m_codecCtx)
 		avcodec_free_context(&m_codecCtx);
+#endif
 	avformat_close_input(&m_formatCtx);
 }
 
@@ -247,7 +334,11 @@ std::vector<StreamInfo> FFMPEGReader::queryStreams()
 
 	for(unsigned int i = 0; i < m_formatCtx->nb_streams; i++)
 	{
+#ifdef FFMPEG_OLD_CODE
+		if(m_formatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+#else
 		if(m_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+#endif
 		{
 			StreamInfo info;
 
@@ -265,9 +356,20 @@ std::vector<StreamInfo> FFMPEGReader::queryStreams()
 			else
 				info.duration = 0;
 
-			info.specs.channels = Channels(m_formatCtx->streams[i]->codecpar->ch_layout.nb_channels);
+#ifdef FFMPEG_OLD_CODE
+			info.specs.channels = Channels(m_formatCtx->streams[i]->codec->channels);
+			info.specs.rate = m_formatCtx->streams[i]->codec->sample_rate;
+			info.specs.format = convertSampleFormat(m_formatCtx->streams[i]->codec->sample_fmt);
+#else
+			#ifdef FFMPEG_OLD_CH_LAYOUT
+				int channels = m_formatCtx->streams[i]->codecpar->channels;
+			#else
+				int channels = m_formatCtx->streams[i]->codecpar->ch_layout.nb_channels;
+			#endif
+			info.specs.channels = Channels(channels);
 			info.specs.rate = m_formatCtx->streams[i]->codecpar->sample_rate;
 			info.specs.format = convertSampleFormat(AVSampleFormat(m_formatCtx->streams[i]->codecpar->format));
+#endif
 
 			result.emplace_back(info);
 		}
