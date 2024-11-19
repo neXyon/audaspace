@@ -33,22 +33,33 @@ void PulseAudioDevice::PulseAudioSynchronizer::play()
 {
 	/* Make sure that our start time is up to date. */
 	AUD_pa_stream_get_time(m_device->m_stream, &m_time_start);
-	m_seek_pos = m_timeline_pos;
+	m_playing = true;
+}
+
+void PulseAudioDevice::PulseAudioSynchronizer::stop()
+{
+	std::shared_ptr<IHandle> dummy_handle;
+	m_seek_pos = getPosition(dummy_handle);
+	m_playing = false;
 }
 
 void PulseAudioDevice::PulseAudioSynchronizer::seek(std::shared_ptr<IHandle> handle, double time)
 {
+	/* Update start time here as we might update the seek position while playing back. */
 	AUD_pa_stream_get_time(m_device->m_stream, &m_time_start);
-	m_seek_pos = m_timeline_pos = time;
+	m_seek_pos = time;
 	handle->seek(time);
 }
 
-double PulseAudioDevice::PulseAudioSynchronizer::getPosition(std::shared_ptr<IHandle> handle)
+double PulseAudioDevice::PulseAudioSynchronizer::getPosition(std::shared_ptr<IHandle> /*handle*/)
 {
 	pa_usec_t time;
+	if(!m_playing)
+	{
+		return m_seek_pos;
+	}
 	AUD_pa_stream_get_time(m_device->m_stream, &time);
-	m_timeline_pos = (time - m_time_start) * 1.0e-6 + m_seek_pos;
-	return m_timeline_pos;
+	return (time - m_time_start) * 1.0e-6 + m_seek_pos;
 }
 
 void PulseAudioDevice::updateRingBuffer()
