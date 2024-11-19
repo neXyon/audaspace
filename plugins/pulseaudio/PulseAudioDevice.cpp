@@ -29,8 +29,9 @@ PulseAudioDevice::PulseAudioSynchronizer::PulseAudioSynchronizer(PulseAudioDevic
 {
 }
 
-void PulseAudioDevice::PulseAudioSynchronizer::update_time_start()
+void PulseAudioDevice::PulseAudioSynchronizer::play()
 {
+	/* Make sure that our start time is up to date. */
 	AUD_pa_stream_get_time(m_device->m_stream, &m_time_start);
 	m_seek_pos = m_timeline_pos;
 }
@@ -150,7 +151,6 @@ void PulseAudioDevice::playing(bool playing)
 	{
 		AUD_pa_threaded_mainloop_lock(m_mainloop);
 		AUD_pa_stream_cork(m_stream, 0, nullptr, nullptr);
-		m_synchronizer.update_time_start();
 		AUD_pa_threaded_mainloop_unlock(m_mainloop);
 	}
 }

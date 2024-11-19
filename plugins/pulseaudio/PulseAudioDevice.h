@@ -52,7 +52,7 @@ private:
 	public:
 		PulseAudioSynchronizer(PulseAudioDevice* device);
 
-		void update_time_start();
+		void play();
 		virtual void seek(std::shared_ptr<IHandle> handle, double time);
 		virtual double getPosition(std::shared_ptr<IHandle> handle);
 	};
