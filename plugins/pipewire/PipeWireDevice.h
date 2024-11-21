@@ -45,12 +45,14 @@ private:
 	{
 		PipeWireDevice* m_device;
 		bool m_playing = false;
+		bool m_get_tick_start = false;
 		int64_t m_tick_start = 0.0f;
 		double m_seek_pos = 0.0f;
 
 	public:
 		PipeWireSynchronizer(PipeWireDevice* device);
 
+		void updateTickStart();
 		virtual void play();
 		virtual void stop();
 		virtual void seek(std::shared_ptr<IHandle> handle, double time);
@@ -61,9 +63,9 @@ private:
 	PipeWireSynchronizer m_synchronizer;
 
 	/**
-	 * Whether there is currently playback.
+	 * Whether we should start filling our ringbuffer with audio.
 	 */
-	bool m_playback;
+	bool m_fill_ringbuffer;
 
 	pw_stream* m_stream;
 	pw_thread_loop* m_thread;
@@ -85,7 +87,6 @@ private:
 	 */
 	spa_ringbuffer m_ringbuffer;
 	Buffer m_ringbuffer_data;
-	bool m_clear_ringbuffer;
 	std::condition_variable m_mixingCondition;
 
 	AUD_LOCAL static void handleStateChanged(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error);

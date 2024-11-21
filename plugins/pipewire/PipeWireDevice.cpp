@@ -31,12 +31,22 @@ PipeWireDevice::PipeWireSynchronizer::PipeWireSynchronizer(PipeWireDevice* devic
 {
 }
 
-void PipeWireDevice::PipeWireSynchronizer::play()
+void PipeWireDevice::PipeWireSynchronizer::updateTickStart()
 {
+	if (!m_get_tick_start)
+	{
+		return;
+	}
 	pw_time tm;
 	AUD_pw_stream_get_time_n(m_device->m_stream, &tm, sizeof(tm));
 	m_tick_start = tm.ticks;
+	m_get_tick_start = false;
+}
+
+void PipeWireDevice::PipeWireSynchronizer::play()
+{
 	m_playing = true;
+	m_get_tick_start = true;
 }
 
 void PipeWireDevice::PipeWireSynchronizer::stop()
@@ -49,21 +59,14 @@ void PipeWireDevice::PipeWireSynchronizer::stop()
 void PipeWireDevice::PipeWireSynchronizer::seek(std::shared_ptr<IHandle> handle, double time)
 {
 	/* Update start time here as we might update the seek position while playing back. */
-	pw_time tm;
-	AUD_pw_stream_get_time_n(m_device->m_stream, &tm, sizeof(tm));
-	m_tick_start = tm.ticks;
+	m_get_tick_start = true;
 	m_seek_pos = time;
-	{
-		std::unique_lock<std::mutex> lock(m_device->m_mixingLock);
-		m_device->m_clear_ringbuffer = true;
-	}
 	handle->seek(time);
-	m_device->m_mixingCondition.notify_all();
 }
 
 double PipeWireDevice::PipeWireSynchronizer::getPosition(std::shared_ptr<IHandle> handle)
 {
-	if (!m_playing)
+	if (!m_playing || m_get_tick_start)
 	{
 		return m_seek_pos;
 	}
@@ -71,11 +74,11 @@ double PipeWireDevice::PipeWireSynchronizer::getPosition(std::shared_ptr<IHandle
 	AUD_pw_stream_get_time_n(m_device->m_stream, &tm, sizeof(tm));
 	uint64_t now = AUD_pw_stream_get_nsec(m_device->m_stream);
 	int64_t diff = now - tm.now;
+	/* Elapsed time since the last sample was queued. */
 	int64_t elapsed = (tm.rate.denom * diff) / (tm.rate.num * SPA_NSEC_PER_SEC);
 
 	/* Calculate the elapsed time in seconds from the last seek position. */
 	double elapsed_time = (tm.ticks - m_tick_start + elapsed) * tm.rate.num / double(tm.rate.denom);
-	/* Convert to seconds and add the last seek position timestamp. */
 	return elapsed_time + m_seek_pos;
 }
 
@@ -105,7 +108,7 @@ void PipeWireDevice::updateRingBuffers()
 	{
 		/* Get the amount of bytes available for writing. */
 		int32_t rb_avail = rb_size - spa_ringbuffer_get_write_index(&m_ringbuffer, &rb_index);
-		if (!m_clear_ringbuffer && rb_avail > 0) {
+		if (m_fill_ringbuffer && rb_avail > 0) {
 			/* As we allocated the ring buffer ourselves, we assume that the samplesize and
 			 * the available bytes to read is evenly divisable.
 			 */
@@ -115,11 +118,11 @@ void PipeWireDevice::updateRingBuffers()
 			rb_index += rb_avail;
 			spa_ringbuffer_write_update(&m_ringbuffer, rb_index);
 		}
-		if (m_clear_ringbuffer) {
-			m_clear_ringbuffer = false;
+		if (!m_fill_ringbuffer) {
+			/* Clear the ringbuffer when we are not playing back to make sure we don't
+			 * keep any outdated data.
+			 */
 			spa_ringbuffer_read_update(&m_ringbuffer, rb_index);
-			/* Make sure that we try to fill the ring buffer with new data after clearing it. */
-			continue;
 		}
 		m_mixingCondition.wait(lock);
 	}
@@ -136,6 +139,11 @@ void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 		return;
 	}
 
+	/* We call this here as the tick is not guaranteed to be up to date
+	 * until the "process" callback is triggered.
+	 */
+	device->m_synchronizer.updateTickStart();
+
 	spa_data& spa_data = pw_buf->buffer->datas[0];
 	spa_chunk* chunk = spa_data.chunk;
 
@@ -148,10 +156,10 @@ void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 	}
 	chunk->size = n_frames * chunk->stride;
 
-	if(!device->m_playback)
+	if(!device->m_fill_ringbuffer)
 	{
-		/* Queue up silence if we are not playing back. If we don't give Pipewire any buffers,
-		 * it will think we encountered an error.
+		/* Queue up silence if we are not queuing up any samples.
+		 * If we don't give Pipewire any buffers, it will think we encountered an error.
 		 */
 		memset(spa_data.data, 0, AUD_FORMAT_SIZE(device->m_specs.format) * chunk->size);
 		AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
@@ -189,15 +197,15 @@ void PipeWireDevice::playing(bool playing)
 	AUD_pw_thread_loop_lock(m_thread);
 	AUD_pw_stream_set_active(m_stream, playing);
 	AUD_pw_thread_loop_unlock(m_thread);
-
-	m_playback = playing;
+	m_fill_ringbuffer = playing;
+	/* Poke the mixing thread to ensure that it reacts to the m_fill_ringbuffer change. */
+	m_mixingCondition.notify_all();
 }
 
 PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int buffersize) :
 	m_synchronizer(this),
-	m_playback(false),
-	m_run_mixing_thread(true),
-	m_clear_ringbuffer(false)
+	m_fill_ringbuffer(false),
+	m_run_mixing_thread(true)
 {
 	if(specs.channels == CHANNELS_INVALID)
 		specs.channels = CHANNELS_STEREO;
