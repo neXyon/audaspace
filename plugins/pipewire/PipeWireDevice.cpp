@@ -31,20 +31,28 @@ PipeWireDevice::PipeWireSynchronizer::PipeWireSynchronizer(PipeWireDevice* devic
 {
 }
 
-void PipeWireDevice::PipeWireSynchronizer::update_tick_start()
+void PipeWireDevice::PipeWireSynchronizer::play()
 {
 	pw_time tm;
 	AUD_pw_stream_get_time_n(m_device->m_stream, &tm, sizeof(tm));
 	m_tick_start = tm.ticks;
-	m_seek_pos = m_timeline_pos;
+	m_playing = true;
+}
+
+void PipeWireDevice::PipeWireSynchronizer::stop()
+{
+	std::shared_ptr<IHandle> dummy_handle;
+	m_seek_pos = getPosition(dummy_handle);
+	m_playing = false;
 }
 
 void PipeWireDevice::PipeWireSynchronizer::seek(std::shared_ptr<IHandle> handle, double time)
 {
+	/* Update start time here as we might update the seek position while playing back. */
 	pw_time tm;
 	AUD_pw_stream_get_time_n(m_device->m_stream, &tm, sizeof(tm));
 	m_tick_start = tm.ticks;
-	m_seek_pos = m_timeline_pos = time;
+	m_seek_pos = time;
 	{
 		std::unique_lock<std::mutex> lock(m_device->m_mixingLock);
 		m_device->m_clear_ringbuffer = true;
@@ -55,6 +63,10 @@ void PipeWireDevice::PipeWireSynchronizer::seek(std::shared_ptr<IHandle> handle,
 
 double PipeWireDevice::PipeWireSynchronizer::getPosition(std::shared_ptr<IHandle> handle)
 {
+	if (!m_playing)
+	{
+		return m_seek_pos;
+	}
 	pw_time tm;
 	AUD_pw_stream_get_time_n(m_device->m_stream, &tm, sizeof(tm));
 	uint64_t now = AUD_pw_stream_get_nsec(m_device->m_stream);
@@ -64,25 +76,16 @@ double PipeWireDevice::PipeWireSynchronizer::getPosition(std::shared_ptr<IHandle
 	/* Calculate the elapsed time in seconds from the last seek position. */
 	double elapsed_time = (tm.ticks - m_tick_start + elapsed) * tm.rate.num / double(tm.rate.denom);
 	/* Convert to seconds and add the last seek position timestamp. */
-	m_timeline_pos = elapsed_time + m_seek_pos;
-	return m_timeline_pos;
+	return elapsed_time + m_seek_pos;
 }
 
 void PipeWireDevice::handle_state_changed(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error)
 {
 	PipeWireDevice* device = (PipeWireDevice*) device_ptr;
 	//fprintf(stderr, "stream state: \"%s\"\n", pw_stream_state_as_string(state));
-	switch (state) {
-	case PW_STREAM_STATE_PAUSED:
+	if (state == PW_STREAM_STATE_PAUSED)
+	{
 		pw_stream_flush(device->m_stream, false);
-		break;
-	case PW_STREAM_STATE_STREAMING:
-		/* When we activate/unpause the stream, we need to make sure that
-		 * we update the refrence tick number as the ticks we get from PipeWire
-		 * might have continued to count up after we paused the stream.
-		 */
-		device->m_synchronizer.update_tick_start();
-		break;
 	}
 }
 

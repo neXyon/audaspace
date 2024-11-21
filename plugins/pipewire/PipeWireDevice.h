@@ -44,14 +44,15 @@ private:
 	class PipeWireSynchronizer : public DefaultSynchronizer
 	{
 		PipeWireDevice* m_device;
+		bool m_playing = false;
 		int64_t m_tick_start = 0.0f;
 		double m_seek_pos = 0.0f;
-		double m_timeline_pos = 0.0f;
 
 	public:
 		PipeWireSynchronizer(PipeWireDevice* device);
 
-		void update_tick_start();
+		virtual void play();
+		virtual void stop();
 		virtual void seek(std::shared_ptr<IHandle> handle, double time);
 		virtual double getPosition(std::shared_ptr<IHandle> handle);
 	};
