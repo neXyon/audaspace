@@ -88,7 +88,7 @@ private:
 	bool m_clear_ringbuffer;
 	std::condition_variable m_mixingCondition;
 
-	AUD_LOCAL static void handle_state_changed(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error);
+	AUD_LOCAL static void handleStateChanged(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error);
 
 	/**
 	 * Updates the ring buffers.
@@ -99,7 +99,7 @@ private:
 	 * Mixes the next bytes into the buffer.
 	 * \param data The PipeWire device.
 	 */
-	AUD_LOCAL static void mix_audio_buffer(void* device_ptr);
+	AUD_LOCAL static void mixAudioBuffer(void* device_ptr);
 
 	// delete copy constructor and operator=
 	PipeWireDevice(const PipeWireDevice&) = delete;

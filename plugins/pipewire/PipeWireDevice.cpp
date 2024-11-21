@@ -79,7 +79,7 @@ double PipeWireDevice::PipeWireSynchronizer::getPosition(std::shared_ptr<IHandle
 	return elapsed_time + m_seek_pos;
 }
 
-void PipeWireDevice::handle_state_changed(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error)
+void PipeWireDevice::handleStateChanged(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error)
 {
 	PipeWireDevice* device = (PipeWireDevice*) device_ptr;
 	//fprintf(stderr, "stream state: \"%s\"\n", pw_stream_state_as_string(state));
@@ -125,7 +125,7 @@ void PipeWireDevice::updateRingBuffers()
 	}
 }
 
-void PipeWireDevice::mix_audio_buffer(void* device_ptr)
+void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 {
 	PipeWireDevice* device = (PipeWireDevice*) device_ptr;
 
@@ -242,8 +242,8 @@ PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int b
 
 	m_events = std::make_unique<pw_stream_events>();
 	m_events->version = PW_VERSION_STREAM_EVENTS;
-	m_events->state_changed = PipeWireDevice::handle_state_changed;
-	m_events->process = PipeWireDevice::mix_audio_buffer;
+	m_events->state_changed = PipeWireDevice::handleStateChanged;
+	m_events->process = PipeWireDevice::mixAudioBuffer;
 
 	pw_properties *stream_props = AUD_pw_properties_new(
 				PW_KEY_MEDIA_TYPE, "Audio",
