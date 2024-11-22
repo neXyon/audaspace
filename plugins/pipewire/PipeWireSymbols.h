@@ -28,6 +28,7 @@ PIPEWIRE_SYMBOL(pw_stream_new_simple);
 PIPEWIRE_SYMBOL(pw_stream_queue_buffer);
 PIPEWIRE_SYMBOL(pw_stream_dequeue_buffer);
 PIPEWIRE_SYMBOL(pw_stream_set_active);
+PIPEWIRE_SYMBOL(pw_stream_flush);
 
 PIPEWIRE_SYMBOL(pw_thread_loop_destroy);
 PIPEWIRE_SYMBOL(pw_thread_loop_get_loop);

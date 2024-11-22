@@ -88,7 +88,7 @@ void PipeWireDevice::handleStateChanged(void* device_ptr, enum pw_stream_state o
 	//fprintf(stderr, "stream state: \"%s\"\n", pw_stream_state_as_string(state));
 	if (state == PW_STREAM_STATE_PAUSED)
 	{
-		pw_stream_flush(device->m_stream, false);
+		AUD_pw_stream_flush(device->m_stream, false);
 	}
 }
 
