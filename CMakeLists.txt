@@ -14,7 +14,7 @@
 # limitations under the License.
 ################################################################################
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 include(CMakeDependentOption)
 
 if(POLICY CMP0054)
@@ -25,6 +25,14 @@ project(audaspace)
 
 set(AUDASPACE_VERSION 1.5)
 set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION}.0)
+
+if(DEFINED AUDASPACE_CMAKE_CFG)
+	include(${AUDASPACE_CMAKE_CFG})
+endif()
+
+if(NOT DEFINED AUDASPACE_STANDALONE)
+	set(AUDASPACE_STANDALONE TRUE)
+endif()
 
 # sources
 
@@ -102,8 +110,8 @@ set(SRC
 	src/respec/ConverterReader.cpp
 	src/respec/JOSResample.cpp
 	src/respec/JOSResampleReaderCoeffHigh.cpp
-	src/respec/JOSResampleReaderCoeffMedium.cpp
 	src/respec/JOSResampleReaderCoeffLow.cpp
+	src/respec/JOSResampleReaderCoeffMedium.cpp
 	src/respec/JOSResampleReader.cpp
 	src/respec/LinearResample.cpp
 	src/respec/LinearResampleReader.cpp
@@ -252,103 +260,113 @@ set(HDR ${PRIVATE_HDR} ${PUBLIC_HDR})
 set(INCLUDE ${CMAKE_CURRENT_BINARY_DIR} include)
 
 if(WIN32)
-	set(DLLS)
 	set(LIBRARIES)
-	set(LIBRARY_PATH "../lib" CACHE PATH "Path which contains the libraries.")
-	file(GLOB LIBRARY_DIRS ${LIBRARY_PATH}/*)
-	list(APPEND CMAKE_PREFIX_PATH ${LIBRARY_DIRS})
+	if(AUDASPACE_STANDALONE)
+		set(DLLS)
+		set(LIBRARY_PATH "../lib" CACHE PATH "Path which contains the libraries.")
+		file(GLOB LIBRARY_DIRS ${LIBRARY_PATH}/*)
+		list(APPEND CMAKE_PREFIX_PATH ${LIBRARY_DIRS})
+	endif()
 else()
 	set(LIBRARIES ${CMAKE_DL_LIBS} -lpthread)
 endif()
 
 set(STATIC_PLUGINS "")
-set(PACKAGE_OPTION QUIET)
 
 # dependencies
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
+if(AUDASPACE_STANDALONE)
+	set(PACKAGE_OPTION QUIET)
+	list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
-option(BUILD_DEMOS "Build and install demos" TRUE)
+	option(BUILD_DEMOS "Build and install demos" TRUE)
 
-option(SHARED_LIBRARY "Build Shared Library" TRUE)
+	option(SHARED_LIBRARY "Build Shared Library" TRUE)
 
-option(WITH_C "Build C Module" TRUE)
-option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" TRUE)
-option(WITH_FFMPEG "Build With FFMPEG" TRUE)
-option(WITH_FFTW "Build With FFTW" TRUE)
-option(WITH_JACK "Build With Plugin" TRUE)
-option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
-option(WITH_OPENAL "Build With OpenAL" TRUE)
-option(WITH_PYTHON "Build With Python Library" TRUE)
-option(WITH_SDL "Build With SDL" TRUE)
-option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
-if(APPLE)
-	option(WITH_COREAUDIO "Build With CoreAudio" TRUE)
-endif()
-if(NOT WIN32 AND NOT APPLE)
-	option(WITH_PULSEAUDIO "Build With PulseAudio" TRUE)
-endif()
-if(WIN32)
-	option(WITH_WASAPI "Build With WASAPI" TRUE)
-endif()
+	option(WITH_C "Build C Module" TRUE)
+	option(WITH_DOCS "Build C++ HTML Documentation with Doxygen" TRUE)
+	option(WITH_FFMPEG "Build With FFMPEG" TRUE)
+	option(WITH_FFTW "Build With FFTW" TRUE)
+	option(WITH_JACK "Build With Plugin" TRUE)
+	option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
+	option(WITH_OPENAL "Build With OpenAL" TRUE)
+	option(WITH_PYTHON "Build With Python Library" TRUE)
+	option(WITH_SDL "Build With SDL" TRUE)
+	option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
+	if(APPLE)
+		option(WITH_COREAUDIO "Build With CoreAudio" TRUE)
+	endif()
+	if(NOT WIN32 AND NOT APPLE)
+		option(WITH_PULSEAUDIO "Build With PulseAudio" TRUE)
+		option(WITH_PIPEWIRE "Build With PipeWire" TRUE)
+	endif()
+	if(WIN32)
+		option(WITH_WASAPI "Build With WASAPI" TRUE)
+	endif()
 
-if(WITH_STRICT_DEPENDENCIES)
-	set(PACKAGE_OPTION REQUIRED)
-endif()
+	if(WITH_STRICT_DEPENDENCIES)
+		set(PACKAGE_OPTION REQUIRED)
+	endif()
 
-if(WIN32 OR APPLE)
-	set(DEFAULT_PLUGIN_PATH "." CACHE STRING "Default plugin installation and loading path.")
-	set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
-else()
-	set(DEFAULT_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/share/audaspace/plugins" CACHE STRING "Default plugin installation and loading path.")
-	set(DOCUMENTATION_INSTALL_PATH "share/doc/audaspace" CACHE PATH "Path where the documentation is installed.")
-endif()
+	if(WIN32 OR APPLE)
+		set(DEFAULT_PLUGIN_PATH "." CACHE STRING "Default plugin installation and loading path.")
+		set(DOCUMENTATION_INSTALL_PATH "doc" CACHE PATH "Path where the documentation is installed.")
+	else()
+		set(DEFAULT_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/share/audaspace/plugins" CACHE STRING "Default plugin installation and loading path.")
+		set(DOCUMENTATION_INSTALL_PATH "share/doc/audaspace" CACHE PATH "Path where the documentation is installed.")
+	endif()
 
-cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C" FALSE)
-cmake_dependent_option(PLUGIN_COREAUDIO "Build CoreAudio Plugin" TRUE "WITH_COREAUDIO;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_JACK "Build JACK Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_PULSEAUDIO "Build PulseAudio Plugin" TRUE "WITH_PULSEAUDIO;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(PLUGIN_WASAPI "Build WASAPI Plugin" TRUE "WITH_WASAPI;SHARED_LIBRARY" FALSE)
-cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
-cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
-cmake_dependent_option(DYNLOAD_JACK "Dynamically load JACK" FALSE "WITH_JACK" FALSE)
-cmake_dependent_option(DYNLOAD_PULSEAUDIO "Dynamically load PulseAudio" FALSE "WITH_PULSEAUDIO" FALSE)
-cmake_dependent_option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" TRUE "WITH_PYTHON_MODULE" FALSE)
-cmake_dependent_option(WITH_VERSIONED_PLUGINS "Build Plugins With Sonumber" TRUE "SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(SEPARATE_C "Build C Binding as separate library" TRUE "WITH_C" FALSE)
+	cmake_dependent_option(PLUGIN_COREAUDIO "Build CoreAudio Plugin" TRUE "WITH_COREAUDIO;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_FFMPEG "Build FFMPEG Plugin" TRUE "WITH_FFMPEG;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_JACK "Build JACK Plugin" TRUE "WITH_JACK;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_LIBSNDFILE "Build LibSndFile Plugin" TRUE "WITH_LIBSNDFILE;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_OPENAL "Build OpenAL Plugin" TRUE "WITH_OPENAL;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_PULSEAUDIO "Build PulseAudio Plugin" TRUE "WITH_PULSEAUDIO;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_PIPEWIRE "Build PipeWire Plugin" TRUE "WITH_PIPEWIRE;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_SDL "Build SDL Plugin" TRUE "WITH_SDL;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(PLUGIN_WASAPI "Build WASAPI Plugin" TRUE "WITH_WASAPI;SHARED_LIBRARY" FALSE)
+	cmake_dependent_option(WITH_PYTHON_MODULE "Build Python Module" TRUE "WITH_PYTHON" FALSE)
+	cmake_dependent_option(USE_SDL2 "Use SDL2 instead of 1 if available" TRUE "WITH_SDL" FALSE)
+	cmake_dependent_option(DYNLOAD_JACK "Dynamically load JACK" FALSE "WITH_JACK" FALSE)
+	cmake_dependent_option(DYNLOAD_PULSEAUDIO "Dynamically load PulseAudio" FALSE "WITH_PULSEAUDIO" FALSE)
+	cmake_dependent_option(DYNLOAD_PIPEWIRE "Dynamically load PipeWire" FALSE "WITH_PIPEWIRE" FALSE)
+	cmake_dependent_option(WITH_BINDING_DOCS "Build C/Python HTML Documentation with Sphinx" TRUE "WITH_PYTHON_MODULE" FALSE)
+	cmake_dependent_option(WITH_VERSIONED_PLUGINS "Build Plugins With Sonumber" TRUE "SHARED_LIBRARY" FALSE)
 
-# compiler options
+	# compiler options
+	set(CMAKE_CXX_STANDARD 17)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+	if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+		list(APPEND CMAKE_C_COMPILER_FLAGS "-fvisibility=hidden")
+		list(APPEND CMAKE_CXX_COMPILER_FLAGS "-fvisibility=hidden")
+	endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-	list(APPEND CMAKE_C_COMPILER_FLAGS "-fvisibility=hidden")
-	list(APPEND CMAKE_CXX_COMPILER_FLAGS "-fvisibility=hidden")
+	if(MSVC)
+		list(APPEND CMAKE_C_FLAGS_DEBUG "/Zi /Od")
+		list(APPEND CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
+		list(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG")
+		list(APPEND CMAKE_STATIC_LINKER_FLAGS_DEBUG "/DEBUG")
+		list(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
+
+		if(SHARED_LIBRARY)
+			include(GenerateExportHeader)
+		endif()
+	endif()
+
+	if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+		set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "" FORCE)
+	endif()
 endif()
 
 if(MSVC)
-	list(APPEND CMAKE_C_FLAGS_DEBUG "/Zi /Od")
-	list(APPEND CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
-	list(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG")
-	list(APPEND CMAKE_STATIC_LINKER_FLAGS_DEBUG "/DEBUG")
-	list(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
 	add_definitions(
 		/D_USE_MATH_DEFINES
 		/EHsc
 		/DNOMINMAX
 		/D_STDINT_H
 	)
-	if(SHARED_LIBRARY)
-		include(GenerateExportHeader)
-	endif()
-endif()
-
-if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-	set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "" FORCE)
 endif()
 
 # platform specific options
@@ -435,7 +453,11 @@ if(WITH_COREAUDIO)
 		if(WITH_STRICT_DEPENDENCIES)
 			message(FATAL_ERROR "CoreAudio not found!")
 		else()
-			set(WITH_COREAUDIO FALSE CACHE BOOL "Build With CoreAudio" FORCE)
+			if(AUDASPACE_STANDALONE)
+				set(WITH_COREAUDIO FALSE CACHE BOOL "Build With CoreAudio" FORCE)
+			else()
+				set(WITH_COREAUDIO FALSE)
+			endif()
 			message(WARNING "CoreAudio not found, plugin will not be built.")
 		endif()
 	endif()
@@ -443,7 +465,9 @@ endif()
 
 # FFMPEG
 if(WITH_FFMPEG)
-	find_package(FFMPEG ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(FFMPEG ${PACKAGE_OPTION})
+	endif()
 
 	if(FFMPEG_FOUND)
 		set(FFMPEG_SRC
@@ -465,19 +489,25 @@ if(WITH_FFMPEG)
 			list(APPEND STATIC_PLUGINS FFMPEG)
 		endif()
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB FFMPEG_DLLS ${LIBRARY_PATH}/ffmpeg/bin/*.dll)
 			list(APPEND DLLS ${FFMPEG_DLLS})
 		endif()
 	else()
-		set(WITH_FFMPEG FALSE CACHE BOOL "Build With FFMPEG" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_FFMPEG FALSE CACHE BOOL "Build With FFMPEG" FORCE)
+		else()
+			set(WITH_FFMPEG FALSE)
+		endif()
 		message(WARNING "FFMPEG not found, plugin will not be built.")
 	endif()
 endif()
 
 # FFTW
 if(WITH_FFTW)
-	find_package(FFTW ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(FFTW ${PACKAGE_OPTION})
+	endif()
 
 	if(FFTW_FOUND)
 		set(FFTW_SRC
@@ -514,19 +544,25 @@ if(WITH_FFTW)
 		list(APPEND SRC ${FFTW_SRC})
 		list(APPEND HDR ${FFTW_HDR})
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB FFTW_DLLS ${LIBRARY_PATH}/fftw/bin/*.dll)
 			list(APPEND DLLS ${FFTW_DLLS})
 		endif()
 	else()
-		set(WITH_FFTW FALSE CACHE BOOL "Build With FFTW" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_FFTW FALSE CACHE BOOL "Build With FFTW" FORCE)
+		else()
+			set(WITH_FFTW FALSE)
+		endif()
 		message(WARNING "FFTW not found, convolution functionality will not be built.")
 	endif()
 endif()
 
 # JACK
 if(WITH_JACK)
-	find_package(Jack ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(Jack ${PACKAGE_OPTION})
+	endif()
 
 	if(JACK_FOUND)
 		set(JACK_SRC
@@ -555,19 +591,25 @@ if(WITH_JACK)
 			list(APPEND STATIC_PLUGINS JackDevice)
 		endif()
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB JACK_DLLS ${LIBRARY_PATH}/jack/bin/*.dll)
 			list(APPEND DLLS ${JACK_DLLS})
 		endif()
 	else()
-		set(WITH_JACK FALSE CACHE BOOL "Build With JACK" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_JACK FALSE CACHE BOOL "Build With JACK" FORCE)
+		else()
+			set(WITH_JACK FALSE)
+		endif()
 		message(WARNING "JACK not found, plugin will not be built.")
 	endif()
 endif()
 
 # LibSndFile
 if(WITH_LIBSNDFILE)
-	find_package(LibSndFile ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(LibSndFile ${PACKAGE_OPTION})
+	endif()
 
 	if(LIBSNDFILE_FOUND)
 		set(LIBSNDFILE_SRC
@@ -589,19 +631,25 @@ if(WITH_LIBSNDFILE)
 			list(APPEND STATIC_PLUGINS SndFile)
 		endif()
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB LIBSNDFILE_DLLS ${LIBRARY_PATH}/libsndfile/bin/*.dll)
 			list(APPEND DLLS ${LIBSNDFILE_DLLS})
 		endif()
 	else()
-		set(WITH_LIBSNDFILE FALSE CACHE BOOL "Build With LibSndFile" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_LIBSNDFILE FALSE CACHE BOOL "Build With LibSndFile" FORCE)
+		else()
+			set(WITH_LIBSNDFILE FALSE)
+		endif()
 		message(WARNING "LibSndFile not found, plugin will not be built.")
 	endif()
 endif()
 
 # OpenAL
 if(WITH_OPENAL)
-	find_package(OpenAL ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(OpenAL ${PACKAGE_OPTION})
+	endif()
 
 	if(OPENAL_FOUND)
 		set(OPENAL_SRC
@@ -621,19 +669,25 @@ if(WITH_OPENAL)
 			list(APPEND STATIC_PLUGINS OpenALDevice)
 		endif()
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB OPENAL_DLLS ${LIBRARY_PATH}/OpenAL/bin/*.dll)
 			list(APPEND DLLS ${OPENAL_DLLS})
 		endif()
 	else()
-		set(WITH_OPENAL FALSE CACHE BOOL "Build With OpenAL" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_OPENAL FALSE CACHE BOOL "Build With OpenAL" FORCE)
+		else()
+			set(WITH_OPENAL FALSE)
+		endif()
 		message(WARNING "OpenAL not found, plugin will not be built.")
 	endif()
 endif()
 
 # PulseAudio
 if(WITH_PULSEAUDIO)
-	find_package(LibPulse ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(LibPulse ${PACKAGE_OPTION})
+	endif()
 
 	if(LIBPULSE_FOUND)
 		set(PULSEAUDIO_SRC
@@ -660,15 +714,62 @@ if(WITH_PULSEAUDIO)
 			list(APPEND STATIC_PLUGINS PulseAudioDevice)
 		endif()
 	else()
-		set(WITH_PULSEAUDIO FALSE CACHE BOOL "Build With PulseAudio" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_PULSEAUDIO FALSE CACHE BOOL "Build With PulseAudio" FORCE)
+		else()
+			set(WITH_PULSEAUDIO FALSE)
+		endif()
 		message(WARNING "PulseAudio not found, plugin will not be built.")
+	endif()
+endif()
+
+# Pipewire
+if(WITH_PIPEWIRE)
+	if(AUDASPACE_STANDALONE)
+		find_package(PkgConfig)
+		pkg_check_modules(PIPEWIRE ${PACKAGE_OPTION} libpipewire-0.3)
+	endif()
+
+	if(PIPEWIRE_FOUND)
+		set(PIPEWIRE_SRC
+			plugins/pipewire/PipeWireDevice.cpp
+			plugins/pipewire/PipeWireLibrary.cpp
+		)
+		set(PIPEWIRE_HDR
+			plugins/pipewire/PipeWireDevice.h
+			plugins/pipewire/PipeWireLibrary.h
+			plugins/pipewire/PipeWireSymbols.h
+		)
+
+		if(DYNLOAD_PIPEWIRE)
+			add_definitions(-DDYNLOAD_PIPEWIRE)
+		endif()
+
+		if(NOT PLUGIN_PIPEWIRE)
+			list(APPEND INCLUDE ${PIPEWIRE_INCLUDE_DIRS})
+			if(NOT DYNLOAD_PIPEWIRE)
+				list(APPEND LIBRARIES ${PIPEWIRE_LIBRARIES})
+			endif()
+			list(APPEND SRC ${PIPEWIRE_SRC})
+			list(APPEND HDR ${PIPEWIRE_HDR})
+			list(APPEND STATIC_PLUGINS PipeWireDevice)
+		endif()
+	else()
+		if(AUDASPACE_STANDALONE)
+			set(WITH_PIPEWIRE FALSE CACHE BOOL "Build With PipeWire" FORCE)
+		else()
+			set(WITH_PIPEWIRE FALSE)
+		endif()
+		message(WARNING "PipeWire not found, plugin will not be built.")
 	endif()
 endif()
 
 # Python
 if(WITH_PYTHON)
-	find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
-	find_package(NumPy ${PACKAGE_OPTION})
+	if(AUDASPACE_STANDALONE)
+		find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
+		find_package(NumPy ${PACKAGE_OPTION})
+	endif()
 
 	if(PYTHONLIBS_FOUND AND NUMPY_FOUND)
 		list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIRS})
@@ -684,29 +785,35 @@ if(WITH_PYTHON)
 
 		set(AUDASPACE_PY_LIBRARY -laudaspace-py)
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB PYTHON_DLLS ${LIBRARY_PATH}/Python/bin/*.dll)
 			list(APPEND DLLS ${PYTHON_DLLS})
 		endif()
 	else()
-		set(WITH_PYTHON FALSE CACHE BOOL "Build With Python Library" FORCE)
-		message(WARNING "Python libraries not found, language binding will not be built.")
+		if(AUDASPACE_STANDALONE)
+			set(WITH_PYTHON FALSE CACHE BOOL "Build With Python Library" FORCE)
+		else()
+			set(WITH_PYTHON FALSE)
+		endif()
+		message(WARNING "Python & NumPy libraries not found, language binding will not be built.")
 	endif()
 endif()
 
 # SDL
 if(WITH_SDL)
-	if(USE_SDL2)
-		find_package(SDL2)
-		if(SDL2_FOUND)
-			set(SDL_INCLUDE_DIR ${SDL2_INCLUDE_DIR})
-			set(SDL_LIBRARY ${SDL2_LIBRARY})
-			set(SDL_FOUND TRUE)
+	if(AUDASPACE_STANDALONE)
+		if(USE_SDL2)
+			find_package(SDL2)
+			if(SDL2_FOUND)
+				set(SDL_INCLUDE_DIR ${SDL2_INCLUDE_DIR})
+				set(SDL_LIBRARY ${SDL2_LIBRARY})
+				set(SDL_FOUND TRUE)
+			else()
+				find_package(SDL ${PACKAGE_OPTION})
+			endif()
 		else()
 			find_package(SDL ${PACKAGE_OPTION})
 		endif()
-	else()
-		find_package(SDL ${PACKAGE_OPTION})
 	endif()
 
 	if(SDL_FOUND)
@@ -725,12 +832,16 @@ if(WITH_SDL)
 			list(APPEND STATIC_PLUGINS SDLDevice)
 		endif()
 
-		if(WIN32)
+		if(WIN32 AND AUDASPACE_STANDALONE)
 			file(GLOB SDL_DLLS ${LIBRARY_PATH}/sdl/bin/*.dll)
 			list(APPEND DLLS ${SDL_DLLS})
 		endif()
 	else()
-		set(WITH_SDL FALSE CACHE BOOL "Build With SDL" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_SDL FALSE CACHE BOOL "Build With SDL" FORCE)
+		else()
+			set(WITH_SDL FALSE)
+		endif()
 		message(WARNING "SDL not found, plugin will not be built.")
 	endif()
 endif()
@@ -818,18 +929,21 @@ add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
 set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
-install(TARGETS audaspace
-	RUNTIME DESTINATION ${BIN_DESTINATION}
-	LIBRARY DESTINATION ${LIB_DESTINATION}
-	ARCHIVE DESTINATION ${LIB_DESTINATION}
-)
+if(AUDASPACE_STANDALONE)
+	install(TARGETS audaspace
+		RUNTIME DESTINATION ${BIN_DESTINATION}
+		LIBRARY DESTINATION ${LIB_DESTINATION}
+		ARCHIVE DESTINATION ${LIB_DESTINATION}
+	)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h DESTINATION include/audaspace)
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include/audaspace)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Audaspace.h DESTINATION include/audaspace)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages/pkgconfig/audaspace.pc.in ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc @ONLY)
-if(NOT WIN32 AND NOT APPLE)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc DESTINATION "lib${LIB_SUFFIX}/pkgconfig")
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages/pkgconfig/audaspace.pc.in ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc @ONLY)
+
+	if(NOT WIN32 AND NOT APPLE)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/audaspace.pc DESTINATION "lib${LIB_SUFFIX}/pkgconfig")
+	endif()
 endif()
 
 # plugins
@@ -906,6 +1020,21 @@ if(WITH_PULSEAUDIO AND PLUGIN_PULSEAUDIO)
 		target_link_libraries(audpulseaudio audaspace ${LIBPULSE_LIBRARY})
 	endif()
 	install(TARGETS audpulseaudio DESTINATION ${DEFAULT_PLUGIN_PATH})
+endif()
+
+if(WITH_PIPEWIRE AND PLUGIN_PIPEWIRE)
+	add_definitions(-DPIPEWIRE_PLUGIN)
+	include_directories(${INCLUDE} ${PIPEWIRE_INCLUDE_DIRS})
+	add_library(audpipewire SHARED ${PIPEWIRE_SRC} ${PIPEWIRE_HDR} ${HDR})
+	if(WITH_VERSIONED_PLUGINS)
+		set_target_properties(audpipewire PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+	endif()
+	if(DYNLOAD_PIPEWIRE)
+		target_link_libraries(audpipewire audaspace)
+	else()
+		target_link_libraries(audpipewire audaspace ${PIPEWIRE_LIBRARIES})
+	endif()
+	install(TARGETS audpipewire DESTINATION ${DEFAULT_PLUGIN_PATH})
 endif()
 
 if(WITH_SDL AND PLUGIN_SDL)
@@ -1011,7 +1140,9 @@ if(WITH_C)
 		)
 	endif()
 
-	install(FILES ${C_HDR} DESTINATION include/audaspace)
+	if(AUDASPACE_STANDALONE)
+		install(FILES ${C_HDR} DESTINATION include/audaspace)
+	endif()
 endif()
 
 if(WITH_PYTHON)
@@ -1055,13 +1186,15 @@ if(WITH_PYTHON)
 	target_link_libraries(audaspace-py audaspace ${PYTHON_LIBRARIES})
 	set_target_properties(audaspace-py PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
-	install(TARGETS audaspace-py
-		RUNTIME DESTINATION ${BIN_DESTINATION}
-		LIBRARY DESTINATION ${LIB_DESTINATION}
-		ARCHIVE DESTINATION ${LIB_DESTINATION}
-	)
+	if(AUDASPACE_STANDALONE)
+		install(TARGETS audaspace-py
+			RUNTIME DESTINATION ${BIN_DESTINATION}
+			LIBRARY DESTINATION ${LIB_DESTINATION}
+			ARCHIVE DESTINATION ${LIB_DESTINATION}
+		)
 
-	install(FILES ${PYTHON_HDR} DESTINATION include/audaspace/python)
+		install(FILES ${PYTHON_HDR} DESTINATION include/audaspace/python)
+	endif()
 
 	if(WITH_PYTHON_MODULE)
 		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
@@ -1092,7 +1225,11 @@ if(WITH_DOCS)
 
 		add_custom_target(audaspace_doc ALL ${DOXYGEN_EXECUTABLE} Doxyfile COMMENT "Building C++ HTML documentation with Doxygen.")
 	else()
-		set(WITH_DOCS FALSE CACHE BOOL "Build C++ HTML Documentation with Doxygen" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_DOCS FALSE CACHE BOOL "Build C++ HTML Documentation with Doxygen" FORCE)
+		else()
+			set(WITH_DOCS FALSE)
+		endif()
 		message(WARNING "Doxygen (and/or dot) not found, documentation will not be built.")
 	endif()
 endif()
@@ -1105,7 +1242,11 @@ if(WITH_BINDING_DOCS)
 
 		add_custom_target(bindings_doc ALL COMMAND ${PYTHON_EXECUTABLE} setup.py --build-docs ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" DEPENDS pythonmodule COMMENT "Building C/Python HTML documentation with Sphinx.")
 	else()
-		set(WITH_BINDING_DOCS FALSE CACHE BOOL "Build C/Python HTML Documentation with Sphinx" FORCE)
+		if(AUDASPACE_STANDALONE)
+			set(WITH_BINDING_DOCS FALSE CACHE BOOL "Build C/Python HTML Documentation with Sphinx" FORCE)
+		else()
+			set(WITH_BINDING_DOCS FALSE)
+		endif()
 		message(WARNING "Sphinx not found, binding documentation will not be built.")
 	endif()
 endif()
