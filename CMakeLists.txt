@@ -14,7 +14,7 @@
 # limitations under the License.
 ################################################################################
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 include(CMakeDependentOption)
 
 if(POLICY CMP0054)
@@ -727,7 +727,7 @@ endif()
 if(WITH_PIPEWIRE)
 	if(AUDASPACE_STANDALONE)
 		find_package(PkgConfig)
-		pkg_check_modules(PIPEWIRE ${PACKAGE_OPTION} libpipewire-0.3)
+		pkg_check_modules(PIPEWIRE ${PACKAGE_OPTION} libpipewire-0.3>=1.1.0)
 	endif()
 
 	if(PIPEWIRE_FOUND)
