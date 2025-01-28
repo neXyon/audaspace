@@ -26,7 +26,6 @@
  * The JackDevice class.
  */
 
-#include "JackSynchronizer.h"
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"
 
@@ -71,9 +70,6 @@ private:
 	 */
 	bool m_valid;
 
-	/// Synchronizer.
-	JackSynchronizer m_synchronizer;
-
 	/**
 	 * Invalidates the jack device.
 	 * \param data The jack device that gets invalidet by jack.
@@ -108,7 +104,7 @@ private:
 	/**
 	 * External syncronisation callback function.
 	 */
-	ISynchronizer::syncFunction m_syncFunc;
+	syncFunction m_syncFunc;
 
 	/**
 	 * Data for the sync function.
@@ -158,8 +154,6 @@ public:
 	 */
 	virtual ~JackDevice();
 
-	virtual ISynchronizer* getSynchronizer();
-
 	/**
 	 * Starts jack transport playback.
 	 */
@@ -181,7 +175,7 @@ public:
 	 * \param sync The callback function.
 	 * \param data The data for the function.
 	 */
-	void setSyncCallback(ISynchronizer::syncFunction sync, void* data);
+	void setSyncCallback(syncFunction sync, void* data);
 
 	/**
 	 * Retrieves the jack transport playback time.

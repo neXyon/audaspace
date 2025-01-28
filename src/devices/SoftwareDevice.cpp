@@ -951,11 +951,6 @@ void SoftwareDevice::setVolume(float volume)
 	m_volume = volume;
 }
 
-ISynchronizer* SoftwareDevice::getSynchronizer()
-{
-	return &m_synchronizer;
-}
-
 /******************************************************************************/
 /**************************** 3D Device Code **********************************/
 /******************************************************************************/
@@ -1035,7 +1030,7 @@ void SoftwareDevice::seekSynchronizer(double time)
 	m_synchronizerPosition = uint64_t(time * m_specs.rate);
 
 	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, m_synchronizerState, m_synchronizerPosition);
+		m_syncFunction(m_syncFunctionData, m_synchronizerState, time);
 }
 
 double SoftwareDevice::getSynchronizerPosition()
@@ -1063,7 +1058,7 @@ void SoftwareDevice::stopSynchronizer()
 		m_syncFunction(m_syncFunctionData, m_synchronizerState, getSynchronizerPosition());
 }
 
-void SoftwareDevice::setSyncCallback(ISynchronizer::syncFunction function, void* data)
+void SoftwareDevice::setSyncCallback(syncFunction function, void* data)
 {
 	std::lock_guard<ILockable> lock(*this);
 

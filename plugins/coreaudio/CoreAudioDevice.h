@@ -30,8 +30,6 @@
 
 #include <AudioUnit/AudioUnit.h>
 
-#include "CoreAudioSynchronizer.h"
-
 #include "devices/OpenCloseDevice.h"
 
 AUD_NAMESPACE_BEGIN
@@ -52,10 +50,8 @@ private:
 	 */
 	AudioUnit m_audio_unit;
 
-	/**
-	 * The Synchronizer.
-	 */
-	std::unique_ptr<CoreAudioSynchronizer> m_synchronizer;
+	/// The CoreAudio clock referene.
+	CAClockRef m_clock_ref;
 
 	/**
 	 * Mixes the next bytes into the buffer.
@@ -92,7 +88,10 @@ public:
 	 */
 	virtual ~CoreAudioDevice();
 
-	virtual ISynchronizer* getSynchronizer();
+	virtual void seekSynchronizer(double time);
+	virtual double getSynchronizerPosition();
+	virtual void playSynchronizer();
+	virtual void stopSynchronizer();
 
 	/**
 	 * Registers this plugin.

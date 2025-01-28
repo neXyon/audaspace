@@ -42,25 +42,6 @@ AUD_NAMESPACE_BEGIN
 class AUD_PLUGIN_API PulseAudioDevice : public SoftwareDevice
 {
 private:
-	class PulseAudioSynchronizer : public DefaultSynchronizer
-	{
-		PulseAudioDevice* m_device;
-		bool m_playing = false;
-		pa_usec_t m_time_start = 0;
-		double m_seek_pos = 0.0f;
-
-	public:
-		PulseAudioSynchronizer(PulseAudioDevice* device);
-
-		virtual void play();
-		virtual void stop();
-		virtual void seek(std::shared_ptr<IHandle> handle, double time);
-		virtual double getPosition(std::shared_ptr<IHandle> handle);
-	};
-
-	/// Synchronizer.
-	PulseAudioSynchronizer m_synchronizer;
-
 	/**
 	 * Whether there is currently playback.
 	 */
@@ -101,6 +82,7 @@ private:
 	 */
 	std::condition_variable m_mixingCondition;
 
+	/// Synchronizer.
 	pa_usec_t m_synchronizerStartTime{0};
 	double m_synchronizerStartPosition{0.0};
 
@@ -145,8 +127,6 @@ public:
 	 * Closes the PulseAudio audio device.
 	 */
 	virtual ~PulseAudioDevice();
-
-	virtual ISynchronizer* getSynchronizer();
 
 	virtual void seekSynchronizer(double time);
 	virtual double getSynchronizerPosition();

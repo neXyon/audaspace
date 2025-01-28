@@ -162,8 +162,7 @@ void JackDevice::jack_shutdown(void* data)
 	device->m_valid = false;
 }
 
-JackDevice::JackDevice(const std::string &name, DeviceSpecs specs, int buffersize) :
-	m_synchronizer(this)
+JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersize)
 {
 	if(specs.channels == CHANNELS_INVALID)
 		specs.channels = CHANNELS_STEREO;
@@ -270,11 +269,6 @@ JackDevice::~JackDevice()
 	destroy();
 }
 
-ISynchronizer* JackDevice::getSynchronizer()
-{
-	return &m_synchronizer;
-}
-
 void JackDevice::playing(bool playing)
 {
 	// Do nothing.
@@ -298,7 +292,7 @@ void JackDevice::seekSynchronizer(double time)
 		AUD_jack_transport_locate(m_client, time * m_specs.rate);
 }
 
-void JackDevice::setSyncCallback(ISynchronizer::syncFunction sync, void* data)
+void JackDevice::setSyncCallback(syncFunction sync, void* data)
 {
 	m_syncFunc = sync;
 	m_syncFuncData = data;

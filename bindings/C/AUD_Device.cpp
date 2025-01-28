@@ -21,7 +21,6 @@
 #include "Exception.h"
 
 #include <cassert>
-#include <limits>
 
 using namespace aud;
 
@@ -293,45 +292,31 @@ AUD_API AUD_Device* AUD_Device_getCurrent()
 
 AUD_API void AUD_seekSynchronizer(double time)
 {
-	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
-	if(synchronizer)
-		synchronizer->seek(time);
+	DeviceManager::getDevice()->seekSynchronizer(time);
 }
 
 AUD_API double AUD_getSynchronizerPosition()
 {
-	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
-	if(synchronizer)
-		return synchronizer->getPosition();
-	return std::numeric_limits<double>::quiet_NaN();
+	return DeviceManager::getDevice()->getSynchronizerPosition();
 }
 
 AUD_API void AUD_playSynchronizer()
 {
-	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
-	if(synchronizer)
-		synchronizer->play();
+	DeviceManager::getDevice()->playSynchronizer();
 }
 
 AUD_API void AUD_stopSynchronizer()
 {
-	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
-	if(synchronizer)
-		synchronizer->stop();
+	DeviceManager::getDevice()->stopSynchronizer();
 }
 
 AUD_API void AUD_setSynchronizerCallback(AUD_syncFunction function, void* data)
 {
-	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
-	if(synchronizer)
-		synchronizer->setSyncCallback(function, data);
+	DeviceManager::getDevice()->setSyncCallback(function, data);
 }
 
 AUD_API int AUD_isSynchronizerPlaying()
 {
-	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
-	if(synchronizer)
-		return synchronizer->isPlaying();
-	return false;
+	return DeviceManager::getDevice()->isSynchronizerPlaying();
 }
 

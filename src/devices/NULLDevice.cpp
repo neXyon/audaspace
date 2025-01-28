@@ -150,11 +150,6 @@ void NULLDevice::setVolume(float volume)
 {
 }
 
-ISynchronizer* NULLDevice::getSynchronizer()
-{
-	return nullptr;
-}
-
 void NULLDevice::seekSynchronizer(double time)
 {
 }
@@ -172,7 +167,7 @@ void NULLDevice::stopSynchronizer()
 {
 }
 
-void NULLDevice::setSyncCallback(ISynchronizer::syncFunction function, void* data)
+void NULLDevice::setSyncCallback(syncFunction function, void* data)
 {
 }
 

@@ -24,7 +24,6 @@
 
 #include <memory>
 
-#include "devices/ISynchronizer.h"
 #include "respec/Specification.h"
 #include "util/ILockable.h"
 
@@ -33,7 +32,6 @@ AUD_NAMESPACE_BEGIN
 class IHandle;
 class IReader;
 class ISound;
-class ISynchronizer;
 
 /**
  * @interface IDevice
@@ -44,7 +42,7 @@ class ISynchronizer;
  * \warning Thread safety must be insured so that no reader is being called
  *          twice at the same time.
  */
-class IDevice : public ILockable, public ISynchronizerDevice
+class IDevice : public ILockable
 {
 public:
 	/**
@@ -111,14 +109,22 @@ public:
 	 * Sets the overall device volume.
 	 * \param volume The overall device volume.
 	 */
-	virtual void setVolume(float volume)=0;
+	virtual void setVolume(float volume) = 0;
 
 	/**
-	 * Retrieves the synchronizer for this device, which enables accurate synchronization
-	 * between audio playback and video playback for example.
-	 * @return The synchronizer which will be the DefaultSynchronizer if synchonization is not supported.
+	 * The syncFunction is called when a synchronization event happens.
+	 * The function awaits three parameters. The first one is a user defined
+	 * pointer, the second informs about whether playback is on and the third
+	 * is the current playback time in seconds.
 	 */
-	virtual ISynchronizer* getSynchronizer()=0;
+	typedef void (*syncFunction)(void*, int, float);
+
+	virtual void seekSynchronizer(double time) = 0;
+	virtual double getSynchronizerPosition() = 0;
+	virtual void playSynchronizer() = 0;
+	virtual void stopSynchronizer() = 0;
+	virtual void setSyncCallback(syncFunction function, void* data) = 0;
+	virtual int isSynchronizerPlaying() = 0;
 };
 
 AUD_NAMESPACE_END

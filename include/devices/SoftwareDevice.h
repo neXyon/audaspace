@@ -26,7 +26,6 @@
 #include "devices/IHandle.h"
 #include "devices/I3DDevice.h"
 #include "devices/I3DHandle.h"
-#include "devices/DefaultSynchronizer.h"
 #include "util/Buffer.h"
 
 #include <list>
@@ -330,11 +329,9 @@ private:
 	int m_flags;
 
 	/// Synchronizer.
-	DefaultSynchronizer m_synchronizer;
-
 	uint64_t m_synchronizerPosition{0};
 	int m_synchronizerState{0};
-	ISynchronizer::syncFunction m_syncFunction{nullptr};
+	syncFunction m_syncFunction{nullptr};
 	void* m_syncFunctionData{nullptr};
 
 	// delete copy constructor and operator=
@@ -364,7 +361,6 @@ public:
 	virtual void unlock();
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
-	virtual ISynchronizer* getSynchronizer();
 
 	virtual Vector3 getListenerLocation() const;
 	virtual void setListenerLocation(const Vector3& location);
@@ -383,7 +379,7 @@ public:
 	virtual double getSynchronizerPosition();
 	virtual void playSynchronizer();
 	virtual void stopSynchronizer();
-	virtual void setSyncCallback(ISynchronizer::syncFunction function, void* data);
+	virtual void setSyncCallback(syncFunction function, void* data);
 	virtual int isSynchronizerPlaying();
 };
 
