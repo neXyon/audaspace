@@ -144,6 +144,14 @@ void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 	 */
 	device->m_synchronizer.updateTickStart();
 
+	if(device->m_getSynchronizerStartTime)
+	{
+		pw_time tm;
+		AUD_pw_stream_get_time_n(device->m_stream, &tm, sizeof(tm));
+		device->m_synchronizerStartTime = tm.ticks;
+		device->m_getSynchronizerStartTime = false;
+	}
+
 	spa_data& spa_data = pw_buf->buffer->datas[0];
 	spa_chunk* chunk = spa_data.chunk;
 
@@ -323,6 +331,47 @@ PipeWireDevice::~PipeWireDevice()
 ISynchronizer* PipeWireDevice::getSynchronizer()
 {
 	return &m_synchronizer;
+}
+
+void PipeWireDevice::seekSynchronizer(double time)
+{
+	/* Update start time here as we might update the seek position while playing back. */
+	m_getSynchronizerStartTime = true;
+	m_synchronizerStartPosition = time;
+
+	SoftwareDevice::seekSynchronizer(time);
+}
+
+double PipeWireDevice::getSynchronizerPosition()
+{
+	if(!isSynchronizerPlaying() || m_getSynchronizerStartTime)
+	{
+		return m_synchronizerStartPosition;
+	}
+
+	pw_time tm;
+	AUD_pw_stream_get_time_n(m_stream, &tm, sizeof(tm));
+	uint64_t now = AUD_pw_stream_get_nsec(m_stream);
+	int64_t diff = now - tm.now;
+	/* Elapsed time since the last sample was queued. */
+	int64_t elapsed = (tm.rate.denom * diff) / (tm.rate.num * SPA_NSEC_PER_SEC);
+
+	/* Calculate the elapsed time in seconds from the last seek position. */
+	double elapsed_time = (tm.ticks - m_synchronizerStartTime + elapsed) * tm.rate.num / double(tm.rate.denom);
+	return elapsed_time + m_synchronizerStartPosition;
+}
+
+void PipeWireDevice::playSynchronizer()
+{
+	/* Make sure that our start time is up to date. */
+	m_getSynchronizerStartTime = true;
+	SoftwareDevice::playSynchronizer();
+}
+
+void PipeWireDevice::stopSynchronizer()
+{
+	m_synchronizerStartPosition = getSynchronizerPosition();
+	SoftwareDevice::stopSynchronizer();
 }
 
 class PipeWireDeviceFactory : public IDeviceFactory

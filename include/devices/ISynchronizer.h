@@ -28,8 +28,6 @@
 
 AUD_NAMESPACE_BEGIN
 
-class IHandle;
-
 /**
  * @interface ISynchronizer
  * This class enables global synchronization of several audio applications if supported.
@@ -52,18 +50,16 @@ public:
 	typedef void (*syncFunction)(void*, int, float);
 
 	/**
-	 * Sets the playback position of a handle and the synchronizer to a specific time.
-	 * @param handle The handle that should be synchronized/seeked.
+	 * Sets the playback position of the synchronizer to a specific time.
 	 * @param time The absolute time to synchronize to.
 	 */
-	virtual void seek(std::shared_ptr<IHandle> handle, double time) = 0;
+	virtual void seek(double time) = 0;
 
 	/**
 	 * Retrieves the position of the synchronizer.
-	 * @param handle The handle which is synchronized.
 	 * @return The position in seconds.
 	 */
-	virtual double getPosition(std::shared_ptr<IHandle> handle) = 0;
+	virtual double getPosition() = 0;
 
 	/**
 	 * Starts the synchronizer playback.
@@ -87,6 +83,22 @@ public:
 	 * @return Whether the synchronizer plays back.
 	 */
 	virtual int isPlaying() = 0;
+};
+
+class AUD_API ISynchronizerDevice
+{
+public:
+	/**
+	 * Destroys the synchronizer device.
+	 */
+	virtual ~ISynchronizerDevice() {}
+
+	virtual void seekSynchronizer(double time) = 0;
+	virtual double getSynchronizerPosition() = 0;
+	virtual void playSynchronizer() = 0;
+	virtual void stopSynchronizer() = 0;
+	virtual void setSyncCallback(ISynchronizer::syncFunction function, void* data) = 0;
+	virtual int isSynchronizerPlaying() = 0;
 };
 
 AUD_NAMESPACE_END

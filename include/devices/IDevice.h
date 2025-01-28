@@ -22,10 +22,11 @@
  * The IDevice interface.
  */
 
+#include <memory>
+
+#include "devices/ISynchronizer.h"
 #include "respec/Specification.h"
 #include "util/ILockable.h"
-
-#include <memory>
 
 AUD_NAMESPACE_BEGIN
 
@@ -43,7 +44,7 @@ class ISynchronizer;
  * \warning Thread safety must be insured so that no reader is being called
  *          twice at the same time.
  */
-class IDevice : public ILockable
+class IDevice : public ILockable, public ISynchronizerDevice
 {
 public:
 	/**

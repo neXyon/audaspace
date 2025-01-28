@@ -15,35 +15,52 @@
  ******************************************************************************/
 
 #include "devices/DefaultSynchronizer.h"
-#include "devices/IHandle.h"
 
 AUD_NAMESPACE_BEGIN
 
-void DefaultSynchronizer::seek(std::shared_ptr<IHandle> handle, double time)
+void DefaultSynchronizer::seek(double time)
 {
-	handle->seek(time);
+	m_position = time;
+
+	if(m_syncFunction)
+		m_syncFunction(m_data, m_state, m_position);
 }
 
-double DefaultSynchronizer::getPosition(std::shared_ptr<IHandle> handle)
+double DefaultSynchronizer::getPosition()
 {
-	return handle->getPosition();
+	return m_position;
 }
 
 void DefaultSynchronizer::play()
 {
+	m_state = 1;
+
+	if(m_syncFunction)
+		m_syncFunction(m_data, m_state, m_position);
 }
 
 void DefaultSynchronizer::stop()
 {
+	m_state = 0;
+
+	if(m_syncFunction)
+		m_syncFunction(m_data, m_state, m_position);
 }
 
 void DefaultSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, void* data)
 {
+	m_syncFunction = function;
+	m_data = data;
 }
 
 int DefaultSynchronizer::isPlaying()
 {
-	return -1;
+	return m_state;
 }
+
+/*void DefaultSynchronizer::setPosition(double position)
+{
+	m_position = position;
+}*/
 
 AUD_NAMESPACE_END

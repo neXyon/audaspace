@@ -48,8 +48,8 @@ public:
 	 */
 	JackSynchronizer(JackDevice* device);
 
-	virtual void seek(std::shared_ptr<IHandle> handle, double time);
-	virtual double getPosition(std::shared_ptr<IHandle> handle);
+	virtual void seek(double time);
+	virtual double getPosition();
 	virtual void play();
 	virtual void stop();
 	virtual void setSyncCallback(syncFunction function, void* data);

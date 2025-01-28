@@ -816,6 +816,9 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 
 		pauseSounds.clear();
 		stopSounds.clear();
+
+		if(m_synchronizerState)
+			m_synchronizerPosition += length;
 	}
 }
 
@@ -1023,6 +1026,54 @@ void SoftwareDevice::setDistanceModel(DistanceModel model)
 		m_flags |= RENDER_DISTANCE;
 	else
 		m_flags &= ~RENDER_DISTANCE;
+}
+
+void SoftwareDevice::seekSynchronizer(double time)
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	m_synchronizerPosition = uint64_t(time * m_specs.rate);
+
+	if(m_syncFunction)
+		m_syncFunction(m_syncFunctionData, m_synchronizerState, m_synchronizerPosition);
+}
+
+double SoftwareDevice::getSynchronizerPosition()
+{
+	return m_synchronizerPosition / m_specs.rate;
+}
+
+void SoftwareDevice::playSynchronizer()
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	m_synchronizerState = 1;
+
+	if(m_syncFunction)
+		m_syncFunction(m_syncFunctionData, m_synchronizerState, getSynchronizerPosition());
+}
+
+void SoftwareDevice::stopSynchronizer()
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	m_synchronizerState = 0;
+
+	if(m_syncFunction)
+		m_syncFunction(m_syncFunctionData, m_synchronizerState, getSynchronizerPosition());
+}
+
+void SoftwareDevice::setSyncCallback(ISynchronizer::syncFunction function, void* data)
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	m_syncFunction = function;
+	m_syncFunctionData = data;
+}
+
+int SoftwareDevice::isSynchronizerPlaying()
+{
+	return m_synchronizerState;
 }
 
 AUD_NAMESPACE_END

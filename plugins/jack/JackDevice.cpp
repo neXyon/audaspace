@@ -280,19 +280,19 @@ void JackDevice::playing(bool playing)
 	// Do nothing.
 }
 
-void JackDevice::startPlayback()
+void JackDevice::playSynchronizer()
 {
 	AUD_jack_transport_start(m_client);
 	m_nextState = JackTransportRolling;
 }
 
-void JackDevice::stopPlayback()
+void JackDevice::stopSynchronizer()
 {
 	AUD_jack_transport_stop(m_client);
 	m_nextState = JackTransportStopped;
 }
 
-void JackDevice::seekPlayback(double time)
+void JackDevice::seekSynchronizer(double time)
 {
 	if(time >= 0.0f)
 		AUD_jack_transport_locate(m_client, time * m_specs.rate);
@@ -304,14 +304,14 @@ void JackDevice::setSyncCallback(ISynchronizer::syncFunction sync, void* data)
 	m_syncFuncData = data;
 }
 
-double JackDevice::getPlaybackPosition()
+double JackDevice::getSynchronizerPosition()
 {
 	jack_position_t position;
 	AUD_jack_transport_query(m_client, &position);
 	return position.frame / (double) m_specs.rate;
 }
 
-bool JackDevice::doesPlayback()
+int JackDevice::isSynchronizerPlaying()
 {
 	jack_transport_state_t state = AUD_jack_transport_query(m_client, nullptr);
 

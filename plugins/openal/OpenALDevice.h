@@ -236,6 +236,11 @@ private:
 	/// Synchronizer.
 	DefaultSynchronizer m_synchronizer;
 
+	uint64_t m_synchronizerPosition{0};
+	ISynchronizer::syncFunction m_syncFunction{nullptr};
+	void* m_syncFunctionData{nullptr};
+	std::shared_ptr<IHandle> m_silenceHandle;
+
 	/**
 	 * Starts the streaming thread.
 	 * \param Whether the previous thread should be joined.
@@ -282,6 +287,13 @@ public:
 	virtual float getVolume() const;
 	virtual void setVolume(float volume);
 	virtual ISynchronizer* getSynchronizer();
+
+	virtual void seekSynchronizer(double time);
+	virtual double getSynchronizerPosition();
+	virtual void playSynchronizer();
+	virtual void stopSynchronizer();
+	virtual void setSyncCallback(ISynchronizer::syncFunction function, void* data);
+	virtual int isSynchronizerPlaying();
 
 	virtual Vector3 getListenerLocation() const;
 	virtual void setListenerLocation(const Vector3& location);

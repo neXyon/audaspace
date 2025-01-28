@@ -87,6 +87,13 @@ public:
 	virtual void setVolume(float volume);
 	virtual ISynchronizer* getSynchronizer();
 
+	virtual void seekSynchronizer(double time);
+	virtual double getSynchronizerPosition();
+	virtual void playSynchronizer();
+	virtual void stopSynchronizer();
+	virtual void setSyncCallback(ISynchronizer::syncFunction function, void* data);
+	virtual int isSynchronizerPlaying();
+
 	/**
 	 * Registers this plugin.
 	 */

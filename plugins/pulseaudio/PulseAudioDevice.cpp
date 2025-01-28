@@ -332,6 +332,39 @@ ISynchronizer *PulseAudioDevice::getSynchronizer()
 	return &m_synchronizer;
 }
 
+void PulseAudioDevice::seekSynchronizer(double time)
+{
+	/* Update start time here as we might update the seek position while playing back. */
+	AUD_pa_stream_get_time(m_stream, &m_synchronizerStartTime);
+	m_synchronizerStartPosition = time;
+
+	SoftwareDevice::seekSynchronizer(time);
+}
+
+double PulseAudioDevice::getSynchronizerPosition()
+{
+	pa_usec_t time;
+	if(!isSynchronizerPlaying())
+	{
+		return m_synchronizerStartPosition;
+	}
+	AUD_pa_stream_get_time(m_stream, &time);
+	return (time - m_synchronizerStartTime) * 1.0e-6 + m_synchronizerStartPosition;
+}
+
+void PulseAudioDevice::playSynchronizer()
+{
+	/* Make sure that our start time is up to date. */
+	AUD_pa_stream_get_time(m_stream, &m_synchronizerStartTime);
+	SoftwareDevice::playSynchronizer();
+}
+
+void PulseAudioDevice::stopSynchronizer()
+{
+	m_synchronizerStartPosition = getSynchronizerPosition();
+	SoftwareDevice::stopSynchronizer();
+}
+
 class PulseAudioDeviceFactory : public IDeviceFactory
 {
 private:

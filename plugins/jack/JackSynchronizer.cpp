@@ -25,24 +25,24 @@ JackSynchronizer::JackSynchronizer(JackDevice* device) :
 {
 }
 
-void JackSynchronizer::seek(std::shared_ptr<IHandle> handle, double time)
+void JackSynchronizer::seek(double time)
 {
-	m_device->seekPlayback(time);
+	m_device->seekSynchronizer(time);
 }
 
-double JackSynchronizer::getPosition(std::shared_ptr<IHandle> handle)
+double JackSynchronizer::getPosition()
 {
-	return m_device->getPlaybackPosition();
+	return m_device->getSynchronizerPosition();
 }
 
 void JackSynchronizer::play()
 {
-	m_device->startPlayback();
+	m_device->playSynchronizer();
 }
 
 void JackSynchronizer::stop()
 {
-	m_device->stopPlayback();
+	m_device->stopSynchronizer();
 }
 
 void JackSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, void* data)
@@ -52,7 +52,7 @@ void JackSynchronizer::setSyncCallback(ISynchronizer::syncFunction function, voi
 
 int JackSynchronizer::isPlaying()
 {
-	return m_device->doesPlayback();
+	return m_device->isSynchronizerPlaying();
 }
 
 AUD_NAMESPACE_END

@@ -33,12 +33,20 @@ AUD_NAMESPACE_BEGIN
 class AUD_API DefaultSynchronizer : public ISynchronizer
 {
 public:
-	virtual void seek(std::shared_ptr<IHandle> handle, double time);
-	virtual double getPosition(std::shared_ptr<IHandle> handle);
+	virtual void seek(double time);
+	virtual double getPosition();
 	virtual void play();
 	virtual void stop();
 	virtual void setSyncCallback(syncFunction function, void* data);
 	virtual int isPlaying();
+
+protected:
+	uint64_t m_position{0};
+
+private:
+	int m_state{0};
+	syncFunction m_syncFunction{nullptr};
+	void* m_data{nullptr};
 };
 
 AUD_NAMESPACE_END

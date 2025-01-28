@@ -21,6 +21,7 @@
 #include "Exception.h"
 
 #include <cassert>
+#include <limits>
 
 using namespace aud;
 
@@ -290,19 +291,19 @@ AUD_API AUD_Device* AUD_Device_getCurrent()
 	return new AUD_Device(device);
 }
 
-AUD_API void AUD_seekSynchronizer(AUD_Handle* handle, double time)
+AUD_API void AUD_seekSynchronizer(double time)
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
-		synchronizer->seek(*reinterpret_cast<std::shared_ptr<IHandle>*>(handle), time);
+		synchronizer->seek(time);
 }
 
-AUD_API double AUD_getSynchronizerPosition(AUD_Handle* handle)
+AUD_API double AUD_getSynchronizerPosition()
 {
 	auto synchronizer = DeviceManager::getDevice()->getSynchronizer();
 	if(synchronizer)
-		return synchronizer->getPosition(*reinterpret_cast<std::shared_ptr<IHandle>*>(handle));
-	return (*reinterpret_cast<std::shared_ptr<IHandle>*>(handle))->getPosition();
+		return synchronizer->getPosition();
+	return std::numeric_limits<double>::quiet_NaN();
 }
 
 AUD_API void AUD_playSynchronizer()

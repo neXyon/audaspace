@@ -101,6 +101,9 @@ private:
 	 */
 	std::condition_variable m_mixingCondition;
 
+	pa_usec_t m_synchronizerStartTime{0};
+	double m_synchronizerStartPosition{0.0};
+
 	/**
 	 * Updates the ring buffer.
 	 */
@@ -144,6 +147,11 @@ public:
 	virtual ~PulseAudioDevice();
 
 	virtual ISynchronizer* getSynchronizer();
+
+	virtual void seekSynchronizer(double time);
+	virtual double getSynchronizerPosition();
+	virtual void playSynchronizer();
+	virtual void stopSynchronizer();
 
 	/**
 	 * Registers this plugin.

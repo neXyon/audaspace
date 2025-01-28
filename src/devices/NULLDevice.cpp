@@ -155,6 +155,32 @@ ISynchronizer* NULLDevice::getSynchronizer()
 	return nullptr;
 }
 
+void NULLDevice::seekSynchronizer(double time)
+{
+}
+
+double NULLDevice::getSynchronizerPosition()
+{
+	return std::numeric_limits<double>::quiet_NaN();
+}
+
+void NULLDevice::playSynchronizer()
+{
+}
+
+void NULLDevice::stopSynchronizer()
+{
+}
+
+void NULLDevice::setSyncCallback(ISynchronizer::syncFunction function, void* data)
+{
+}
+
+int NULLDevice::isSynchronizerPlaying()
+{
+	return 0;
+}
+
 class NULLDeviceFactory : public IDeviceFactory
 {
 public:

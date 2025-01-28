@@ -163,18 +163,18 @@ public:
 	/**
 	 * Starts jack transport playback.
 	 */
-	void startPlayback();
+	void playSynchronizer();
 
 	/**
 	 * Stops jack transport playback.
 	 */
-	void stopPlayback();
+	void stopSynchronizer();
 
 	/**
 	 * Seeks jack transport playback.
 	 * \param time The time to seek to.
 	 */
-	void seekPlayback(double time);
+	void seekSynchronizer(double time);
 
 	/**
 	 * Sets the sync callback for jack transport playback.
@@ -187,13 +187,13 @@ public:
 	 * Retrieves the jack transport playback time.
 	 * \return The current time position.
 	 */
-	double getPlaybackPosition();
+	double getSynchronizerPosition();
 
 	/**
 	 * Returns whether jack transport plays back.
 	 * \return Whether jack transport plays back.
 	 */
-	bool doesPlayback();
+	int isSynchronizerPlaying();
 
 	/**
 	 * Registers this plugin.

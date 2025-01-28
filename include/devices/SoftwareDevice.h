@@ -332,6 +332,11 @@ private:
 	/// Synchronizer.
 	DefaultSynchronizer m_synchronizer;
 
+	uint64_t m_synchronizerPosition{0};
+	int m_synchronizerState{0};
+	ISynchronizer::syncFunction m_syncFunction{nullptr};
+	void* m_syncFunctionData{nullptr};
+
 	// delete copy constructor and operator=
 	SoftwareDevice(const SoftwareDevice&) = delete;
 	SoftwareDevice& operator=(const SoftwareDevice&) = delete;
@@ -373,6 +378,13 @@ public:
 	virtual void setDopplerFactor(float factor);
 	virtual DistanceModel getDistanceModel() const;
 	virtual void setDistanceModel(DistanceModel model);
+
+	virtual void seekSynchronizer(double time);
+	virtual double getSynchronizerPosition();
+	virtual void playSynchronizer();
+	virtual void stopSynchronizer();
+	virtual void setSyncCallback(ISynchronizer::syncFunction function, void* data);
+	virtual int isSynchronizerPlaying();
 };
 
 AUD_NAMESPACE_END

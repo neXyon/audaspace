@@ -15,15 +15,18 @@
  ******************************************************************************/
 
 #include "OpenALDevice.h"
-#include "devices/DeviceManager.h"
-#include "devices/IDeviceFactory.h"
-#include "respec/ConverterReader.h"
-#include "Exception.h"
-#include "ISound.h"
 
 #include <chrono>
 #include <cstring>
 #include <iostream>
+
+#include "Exception.h"
+#include "ISound.h"
+
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
+#include "generator/SilenceReader.h"
+#include "respec/ConverterReader.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -1391,6 +1394,78 @@ void OpenALDevice::setVolume(float volume)
 ISynchronizer* OpenALDevice::getSynchronizer()
 {
 	return &m_synchronizer;
+}
+
+void OpenALDevice::seekSynchronizer(double time)
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	m_synchronizerPosition = uint64_t(time * m_specs.rate);
+	if(m_silenceHandle)
+		m_silenceHandle->seek(time);
+
+	if(m_syncFunction)
+		m_syncFunction(m_syncFunctionData, m_silenceHandle ? m_silenceHandle->getStatus() == STATUS_PLAYING : 0, m_synchronizerPosition);
+}
+
+double OpenALDevice::getSynchronizerPosition()
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	if(m_silenceHandle)
+		return m_silenceHandle->getPosition();
+
+	return m_synchronizerPosition;
+}
+
+void OpenALDevice::playSynchronizer()
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	if(m_silenceHandle)
+		m_silenceHandle->resume();
+	else
+	{
+		auto reader = std::make_shared<SilenceReader>(m_specs.rate);
+		reader->seek(m_synchronizerPosition);
+		m_silenceHandle = play(reader);
+	}
+
+	if(m_syncFunction)
+		m_syncFunction(m_syncFunctionData, 1, getSynchronizerPosition());
+}
+
+void OpenALDevice::stopSynchronizer()
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	if(m_silenceHandle)
+	{
+		m_synchronizerPosition = m_silenceHandle->getPosition();
+		m_silenceHandle->stop();
+		m_silenceHandle.reset();
+	}
+
+	if(m_syncFunction)
+		m_syncFunction(m_syncFunctionData, 0, getSynchronizerPosition());
+}
+
+void OpenALDevice::setSyncCallback(ISynchronizer::syncFunction function, void* data)
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	m_syncFunction = function;
+	m_syncFunctionData = data;
+}
+
+int OpenALDevice::isSynchronizerPlaying()
+{
+	std::lock_guard<ILockable> lock(*this);
+
+	if(m_silenceHandle)
+		return m_silenceHandle->getStatus() == STATUS_PLAYING;
+
+	return 0;
 }
 
 /******************************************************************************/

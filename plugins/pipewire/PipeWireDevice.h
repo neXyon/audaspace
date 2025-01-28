@@ -89,6 +89,10 @@ private:
 	Buffer m_ringbuffer_data;
 	std::condition_variable m_mixingCondition;
 
+	bool m_getSynchronizerStartTime{false};
+	int64_t m_synchronizerStartTime{0};
+	double m_synchronizerStartPosition{0.0};
+
 	AUD_LOCAL static void handleStateChanged(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error);
 
 	/**
@@ -125,6 +129,12 @@ public:
 	virtual ~PipeWireDevice();
 
 	virtual ISynchronizer* getSynchronizer();
+
+	virtual void seekSynchronizer(double time);
+	virtual double getSynchronizerPosition();
+	virtual void playSynchronizer();
+	virtual void stopSynchronizer();
+
 	/**
 	 * Registers this plugin.
 	 */
