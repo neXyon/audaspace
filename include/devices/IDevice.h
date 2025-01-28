@@ -125,6 +125,7 @@ public:
 	virtual void stopSynchronizer() = 0;
 	virtual void setSyncCallback(syncFunction function, void* data) = 0;
 	virtual int isSynchronizerPlaying() = 0;
+	virtual void resumeOnSync(const std::shared_ptr<IHandle>& handle) = 0;
 };
 
 AUD_NAMESPACE_END

@@ -1463,6 +1463,11 @@ int OpenALDevice::isSynchronizerPlaying()
 	return 0;
 }
 
+void OpenALDevice::resumeOnSync(const std::shared_ptr<IHandle>& handle)
+{
+	handle->resume();
+}
+
 /******************************************************************************/
 /**************************** 3D Device Code **********************************/
 /******************************************************************************/

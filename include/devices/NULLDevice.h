@@ -92,6 +92,7 @@ public:
 	virtual void stopSynchronizer();
 	virtual void setSyncCallback(syncFunction function, void* data);
 	virtual int isSynchronizerPlaying();
+	virtual void resumeOnSync(const std::shared_ptr<IHandle>& handle);
 
 	/**
 	 * Registers this plugin.

@@ -473,8 +473,6 @@ bool SoftwareDevice::SoftwareHandle::setStopCallback(stopCallback callback, void
 	return true;
 }
 
-
-
 /******************************************************************************/
 /******************** SoftwareHandle 3DHandle Code ************************/
 /******************************************************************************/
@@ -1069,6 +1067,11 @@ void SoftwareDevice::setSyncCallback(syncFunction function, void* data)
 int SoftwareDevice::isSynchronizerPlaying()
 {
 	return m_synchronizerState;
+}
+
+void SoftwareDevice::resumeOnSync(const std::shared_ptr<IHandle>& handle)
+{
+	handle->resume();
 }
 
 AUD_NAMESPACE_END

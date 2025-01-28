@@ -41,16 +41,25 @@ void JackDevice::updateRingBuffers()
 
 	while(m_valid)
 	{
+		state = AUD_jack_transport_query(m_client, &position);
+
 		if(m_sync > 1)
 		{
 			if(m_syncFunc)
 			{
-				state = AUD_jack_transport_query(m_client, &position);
 				m_syncFunc(m_syncFuncData, state != JackTransportStopped, position.frame / (float) m_specs.rate);
 			}
 
 			for(i = 0; i < channels; i++)
 				AUD_jack_ringbuffer_reset(m_ringbuffers[i]);
+		}
+
+		if(state == JackTransportRolling)
+		{
+			for(auto& handle : m_handlesToResume)
+				handle->resume();
+
+			m_handlesToResume.clear();
 		}
 
 		size = AUD_jack_ringbuffer_write_space(m_ringbuffers[0]);
@@ -313,6 +322,11 @@ int JackDevice::isSynchronizerPlaying()
 		m_nextState = m_state = state;
 
 	return m_nextState != JackTransportStopped;
+}
+
+void JackDevice::resumeOnSync(const std::shared_ptr<IHandle>& handle)
+{
+	m_handlesToResume.emplace_back(handle);
 }
 
 class JackDeviceFactory : public IDeviceFactory

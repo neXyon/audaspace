@@ -26,14 +26,16 @@
  * The JackDevice class.
  */
 
-#include "devices/SoftwareDevice.h"
-#include "util/Buffer.h"
-
-#include <string>
 #include <condition_variable>
+#include <string>
 #include <thread>
+#include <vector>
+
 #include <jack/jack.h>
 #include <jack/ringbuffer.h>
+
+#include "devices/SoftwareDevice.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -112,6 +114,11 @@ private:
 	void* m_syncFuncData;
 
 	/**
+	 * Handles to be resumed on sync.
+	 */
+	std::vector<std::shared_ptr<IHandle>> m_handlesToResume;
+
+	/**
 	 * The mixing thread.
 	 */
 	std::thread m_mixingThread;
@@ -188,6 +195,8 @@ public:
 	 * \return Whether jack transport plays back.
 	 */
 	int isSynchronizerPlaying();
+
+	void resumeOnSync(const std::shared_ptr<IHandle>& handle) override;
 
 	/**
 	 * Registers this plugin.
