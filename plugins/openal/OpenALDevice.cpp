@@ -1398,9 +1398,6 @@ void OpenALDevice::seekSynchronizer(double time)
 	m_synchronizerPosition = uint64_t(time * m_specs.rate);
 	if(m_silenceHandle)
 		m_silenceHandle->seek(time);
-
-	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, m_silenceHandle ? m_silenceHandle->getStatus() == STATUS_PLAYING : 0, time);
 }
 
 double OpenALDevice::getSynchronizerPosition()
@@ -1425,9 +1422,6 @@ void OpenALDevice::playSynchronizer()
 		reader->seek(m_synchronizerPosition);
 		m_silenceHandle = play(reader);
 	}
-
-	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, 1, getSynchronizerPosition());
 }
 
 void OpenALDevice::stopSynchronizer()
@@ -1440,17 +1434,10 @@ void OpenALDevice::stopSynchronizer()
 		m_silenceHandle->stop();
 		m_silenceHandle.reset();
 	}
-
-	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, 0, getSynchronizerPosition());
 }
 
 void OpenALDevice::setSyncCallback(syncFunction function, void* data)
 {
-	std::lock_guard<ILockable> lock(*this);
-
-	m_syncFunction = function;
-	m_syncFunctionData = data;
 }
 
 int OpenALDevice::isSynchronizerPlaying()

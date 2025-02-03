@@ -1026,9 +1026,6 @@ void SoftwareDevice::seekSynchronizer(double time)
 	std::lock_guard<ILockable> lock(*this);
 
 	m_synchronizerPosition = uint64_t(time * m_specs.rate);
-
-	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, m_synchronizerState, time);
 }
 
 double SoftwareDevice::getSynchronizerPosition()
@@ -1041,9 +1038,6 @@ void SoftwareDevice::playSynchronizer()
 	std::lock_guard<ILockable> lock(*this);
 
 	m_synchronizerState = 1;
-
-	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, m_synchronizerState, getSynchronizerPosition());
 }
 
 void SoftwareDevice::stopSynchronizer()
@@ -1051,17 +1045,10 @@ void SoftwareDevice::stopSynchronizer()
 	std::lock_guard<ILockable> lock(*this);
 
 	m_synchronizerState = 0;
-
-	if(m_syncFunction)
-		m_syncFunction(m_syncFunctionData, m_synchronizerState, getSynchronizerPosition());
 }
 
 void SoftwareDevice::setSyncCallback(syncFunction function, void* data)
 {
-	std::lock_guard<ILockable> lock(*this);
-
-	m_syncFunction = function;
-	m_syncFunctionData = data;
 }
 
 int SoftwareDevice::isSynchronizerPlaying()

@@ -331,8 +331,6 @@ private:
 	/// Synchronizer.
 	uint64_t m_synchronizerPosition{0};
 	int m_synchronizerState{0};
-	syncFunction m_syncFunction{nullptr};
-	void* m_syncFunctionData{nullptr};
 
 	// delete copy constructor and operator=
 	SoftwareDevice(const SoftwareDevice&) = delete;

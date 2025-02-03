@@ -234,8 +234,6 @@ private:
 
 	/// Synchronizer.
 	uint64_t m_synchronizerPosition{0};
-	syncFunction m_syncFunction{nullptr};
-	void* m_syncFunctionData{nullptr};
 	std::shared_ptr<IHandle> m_silenceHandle;
 
 	/**

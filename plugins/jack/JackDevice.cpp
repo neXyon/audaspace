@@ -19,7 +19,6 @@
 #include "devices/DeviceManager.h"
 #include "devices/IDeviceFactory.h"
 #include "Exception.h"
-#include "IReader.h"
 
 #include <cstring>
 #include <algorithm>
