@@ -26,6 +26,7 @@
  * The JackDevice class.
  */
 
+#include <atomic>
 #include <condition_variable>
 #include <string>
 #include <thread>
@@ -89,19 +90,29 @@ private:
 	AUD_LOCAL static int jack_sync(jack_transport_state_t state, jack_position_t* pos, void* data);
 
 	/**
-	 * Next JACK Transport state (-1 if not expected to change).
+	 * Last known JACK Transport state used for stop callbacks.
 	 */
-	jack_transport_state_t m_nextState;
+	jack_transport_state_t m_lastState;
 
 	/**
-	 * Current jack transport status.
+	 * Time for a synchronisation request.
 	 */
-	jack_transport_state_t m_state;
+	float m_lastSyncTime;
 
 	/**
-	 * Syncronisation state.
+	 * Time for a synchronisation request.
 	 */
-	int m_sync;
+	std::atomic<float> m_syncTime;
+
+	/**
+	 * Sync counter to notify the sync thread that a sync is in order.
+	 */
+	std::atomic<int> m_syncCounter;
+
+	/**
+	 * Second sync counter to check against the first one.
+	 */
+	int m_syncCounterComparison;
 
 	/**
 	 * External syncronisation callback function.
