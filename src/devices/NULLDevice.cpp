@@ -176,10 +176,6 @@ int NULLDevice::isSynchronizerPlaying()
 	return 0;
 }
 
-void NULLDevice::resumeOnSync(const std::shared_ptr<IHandle>& handle)
-{
-}
-
 class NULLDeviceFactory : public IDeviceFactory
 {
 public:

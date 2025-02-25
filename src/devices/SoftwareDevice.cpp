@@ -1056,9 +1056,4 @@ int SoftwareDevice::isSynchronizerPlaying()
 	return m_synchronizerState;
 }
 
-void SoftwareDevice::resumeOnSync(const std::shared_ptr<IHandle>& handle)
-{
-	handle->resume();
-}
-
 AUD_NAMESPACE_END

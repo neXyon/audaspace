@@ -319,8 +319,3 @@ AUD_API int AUD_isSynchronizerPlaying()
 {
 	return DeviceManager::getDevice()->isSynchronizerPlaying();
 }
-
-void AUD_resumeOnSync(AUD_Handle* handle)
-{
-	DeviceManager::getDevice()->resumeOnSync(*handle);
-}

@@ -253,8 +253,6 @@ extern AUD_API void AUD_setSynchronizerCallback(AUD_syncFunction function, void*
  */
 extern AUD_API int AUD_isSynchronizerPlaying();
 
-extern AUD_API void AUD_resumeOnSync(AUD_Handle* handle);
-
 #ifdef __cplusplus
 }
 #endif

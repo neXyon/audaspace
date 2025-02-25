@@ -43,35 +43,25 @@ void JackDevice::updateRingBuffers()
 		state = AUD_jack_transport_query(m_client, &position);
 
 		// we sync either when:
-		// - there was a jack sync callback that requests a playing sync (either start playback or seek during playback)
-		// - the jack transport state changed to stop from not stopped (i.e. external stopping)
-		// - the sync time changes when seeking during the stopped state
-		if((m_syncCounter != m_syncCounterComparison) || (state == JackTransportStopped && m_lastState != JackTransportStopped) || (m_lastSyncTime != m_syncTime))
+		// - there was a jack sync callback that requests a playing sync (either start playback or seek during playback) - caused by a m_syncCallRevision change in jack_sync
+		// - the jack transport state changed to stop from not stopped (i.e. external stopping) - checked here
+		// - the sync time changes when seeking during the stopped state - caused by a m_syncCallRevision change in jack_mix
+		if((m_syncCallRevision != m_lastSyncCallRevision) || (state == JackTransportStopped && m_lastState != JackTransportStopped))
 		{
-			m_lastSyncTime = m_syncTime;
-			m_syncCounterComparison = m_syncCounter;
+			int syncRevision = m_syncCallRevision;
+			float syncTime = m_syncTime;
 
 			if(m_syncFunc)
-				m_syncFunc(m_syncFuncData, state != JackTransportStopped, m_lastSyncTime);
+				m_syncFunc(m_syncFuncData, state != JackTransportStopped, syncTime);
 
 			// we reset the ring buffers when we sync to start from the correct position
 			for(i = 0; i < channels; i++)
 				AUD_jack_ringbuffer_reset(m_ringbuffers[i]);
 
-			// ensure that the ring buffer is filled with the data from handles to resume TODO: otherwise the handles would start delayed by up to the ringbuffer size during a sync
-			if(state == JackTransportStarting)
-				state = JackTransportRolling;
+			m_lastSyncCallRevision = syncRevision;
 		}
 
 		m_lastState = state;
-
-		if(state == JackTransportRolling)
-		{
-			for(auto& handle : m_handlesToResume)
-				handle->resume();
-
-			m_handlesToResume.clear();
-		}
 
 		size = AUD_jack_ringbuffer_write_space(m_ringbuffers[0]);
 		for(i = 1; i < channels; i++)
@@ -117,6 +107,10 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 	}
 	else
 	{
+		// ensure that if two consecutive seeks to exactly the same position result in a sync callback call in jack_sync
+		if((state == JackTransportRolling) && (device->m_lastMixState != JackTransportRolling))
+			++device->m_rollingSyncRevision;
+
 		size_t temp;
 		size_t readsamples = AUD_jack_ringbuffer_read_space(device->m_ringbuffers[0]);
 		for(i = 1; i < count; i++)
@@ -133,16 +127,22 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 				std::memset(buffer + readsamples * sizeof(float), 0, (length - readsamples) * sizeof(float));
 		}
 
+		// if we are stopped and the jack transport position changes, we need to notify the mixing thread to call the sync callback
 		if(state == JackTransportStopped)
 		{
 			float syncTime = position.frame / (float) position.frame_rate;
 
 			if(syncTime != device->m_syncTime)
+			{
 				device->m_syncTime = syncTime;
+				++device->m_syncCallRevision;
+			}
 		}
 
 		device->m_mixingCondition.notify_all();
 	}
+
+	device->m_lastMixState = state;
 
 	return 0;
 }
@@ -151,20 +151,26 @@ int JackDevice::jack_sync(jack_transport_state_t state, jack_position_t* pos, vo
 {
 	JackDevice* device = (JackDevice*)data;
 
+	// we return immediately when the state is stopped as this is handled in the mixing thread separately, as not all stops result in a call here from jack.
 	if(state == JackTransportStopped)
 		return 1;
 
 	float syncTime = pos->frame / (float) pos->frame_rate;
 
-	if(syncTime != device->m_syncTime || device->m_lastState == JackTransportStopped)
+	// We need to call the sync callback in the mixing thread if
+	// - the sync time is different, i.e., a new sync to a different time is done
+	// - if the last state is stopped, i.e., we are starting playback
+	// - if the sync time is the same but the rolling revision is increased, i.e., we are syncing repeatedly to the same time (happens especially when jumping back to the start)
+	if((syncTime != device->m_syncTime) || (device->m_lastMixState == JackTransportStopped) || (device->m_rollingSyncRevision != device->m_lastRollingSyncRevision))
 	{
 		device->m_syncTime = syncTime;
+		++device->m_syncCallRevision;
 		device->m_mixingCondition.notify_all();
-		++device->m_syncCounter;
+		device->m_lastRollingSyncRevision = device->m_rollingSyncRevision;
 		return 0;
 	}
 
-	return 1;
+	return device->m_syncCallRevision == device->m_lastSyncCallRevision;
 }
 
 void JackDevice::jack_shutdown(void* data)
@@ -228,12 +234,15 @@ JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersiz
 
 	create();
 
+	m_lastState = JackTransportStopped;
+	m_lastMixState = JackTransportStopped;
 	m_valid = true;
 	m_syncFunc = nullptr;
-	m_lastSyncTime = 0;
 	m_syncTime = 0;
-	m_syncCounter = 0;
-	m_syncCounterComparison = 0;
+	m_syncCallRevision = 0;
+	m_lastSyncCallRevision = 0;
+	m_rollingSyncRevision = 0;
+	m_lastRollingSyncRevision = 0;
 
 	// activate the client
 	if(AUD_jack_activate(m_client))
@@ -324,11 +333,6 @@ double JackDevice::getSynchronizerPosition()
 int JackDevice::isSynchronizerPlaying()
 {
 	return AUD_jack_transport_query(m_client, nullptr);
-}
-
-void JackDevice::resumeOnSync(const std::shared_ptr<IHandle>& handle)
-{
-	m_handlesToResume.emplace_back(handle);
 }
 
 class JackDeviceFactory : public IDeviceFactory

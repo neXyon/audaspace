@@ -95,9 +95,9 @@ private:
 	jack_transport_state_t m_lastState;
 
 	/**
-	 * Time for a synchronisation request.
+	 * Last known JACK Transport state used for stop callbacks.
 	 */
-	float m_lastSyncTime;
+	jack_transport_state_t m_lastMixState;
 
 	/**
 	 * Time for a synchronisation request.
@@ -105,14 +105,26 @@ private:
 	std::atomic<float> m_syncTime;
 
 	/**
-	 * Sync counter to notify the sync thread that a sync is in order.
+	 * Sync revision used to notify the mixing thread that a sync call is necessary.
 	 */
-	std::atomic<int> m_syncCounter;
+	std::atomic<int> m_syncCallRevision;
 
 	/**
-	 * Second sync counter to check against the first one.
+	 * The sync revision that the last sync call in the mixing thread handled.
 	 */
-	int m_syncCounterComparison;
+	std::atomic<int> m_lastSyncCallRevision;
+
+	/**
+	 * Sync revision that is increased every time jack transport enters the rolling state.
+	 */
+	int m_rollingSyncRevision;
+
+	/**
+	 * The last time the jack_sync callback saw the rolling sync revision.
+	 *
+	 * Used to ensure the sync callback will be called when consecutive syncs target the same sync time.
+	 */
+	int m_lastRollingSyncRevision;
 
 	/**
 	 * External syncronisation callback function.
@@ -123,11 +135,6 @@ private:
 	 * Data for the sync function.
 	 */
 	void* m_syncFuncData;
-
-	/**
-	 * Handles to be resumed on sync.
-	 */
-	std::vector<std::shared_ptr<IHandle>> m_handlesToResume;
 
 	/**
 	 * The mixing thread.
@@ -206,8 +213,6 @@ public:
 	 * \return Whether jack transport plays back.
 	 */
 	int isSynchronizerPlaying();
-
-	void resumeOnSync(const std::shared_ptr<IHandle>& handle) override;
 
 	/**
 	 * Registers this plugin.
