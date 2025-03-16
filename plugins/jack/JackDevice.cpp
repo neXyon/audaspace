@@ -25,16 +25,13 @@
 
 AUD_NAMESPACE_BEGIN
 
-void JackDevice::updateRingBuffers()
+void JackDevice::updateRingBuffer()
 {
-	size_t size, temp;
-	unsigned int samplesize = AUD_SAMPLE_SIZE(m_specs);
-	unsigned int i, j;
-	unsigned int channels = m_specs.channels;
 	sample_t* buffer = m_buffer.getBuffer();
-	float* deinterleave = m_deinterleavebuf.getBuffer();
 	jack_transport_state_t state;
 	jack_position_t position;
+
+	size_t sample_size = AUD_DEVICE_SAMPLE_SIZE(m_specs);
 
 	std::unique_lock<std::mutex> lock(m_mixingLock);
 
@@ -54,35 +51,25 @@ void JackDevice::updateRingBuffers()
 			if(m_syncFunc)
 				m_syncFunc(m_syncFuncData, state != JackTransportStopped, syncTime);
 
-			// we reset the ring buffers when we sync to start from the correct position
-			for(i = 0; i < channels; i++)
-				AUD_jack_ringbuffer_reset(m_ringbuffers[i]);
+			// we reset the ring buffer when we sync to start from the correct position
+			m_ring_buffer.reset();
 
 			m_lastSyncCallRevision = syncRevision;
 		}
 
 		m_lastState = state;
 
-		size = AUD_jack_ringbuffer_write_space(m_ringbuffers[0]);
-		for(i = 1; i < channels; i++)
-			if((temp = AUD_jack_ringbuffer_write_space(m_ringbuffers[i])) < size)
-				size = temp;
+		size_t size = m_ring_buffer.getWriteSize();
 
-		while(size > samplesize)
+		while(size > sample_size)
 		{
-			size /= samplesize;
-			mix((data_t*)buffer, size);
-			for(i = 0; i < channels; i++)
-			{
-				for(j = 0; j < size; j++)
-					deinterleave[i * size + j] = buffer[i + j * channels];
-				AUD_jack_ringbuffer_write(m_ringbuffers[i], (char*)(deinterleave + i * size), size * sizeof(float));
-			}
+			size_t samplecount = size / sample_size;
 
-			size = AUD_jack_ringbuffer_write_space(m_ringbuffers[0]);
-			for(i = 1; i < channels; i++)
-				if((temp = AUD_jack_ringbuffer_write_space(m_ringbuffers[i])) < size)
-					size = temp;
+			mix((data_t*) buffer, samplecount);
+
+			m_ring_buffer.write((data_t*) buffer, samplecount * sample_size);
+
+			size = m_ring_buffer.getWriteSize();
 		}
 
 		m_mixingCondition.wait(lock);
@@ -91,10 +78,9 @@ void JackDevice::updateRingBuffers()
 
 int JackDevice::jack_mix(jack_nframes_t length, void* data)
 {
-	JackDevice* device = (JackDevice*)data;
-	unsigned int i;
+	JackDevice* device = (JackDevice*) data;
 	int count = device->m_specs.channels;
-	char* buffer;
+	float* buffer;
 
 	jack_position_t position;
 	jack_transport_state_t state = AUD_jack_transport_query(device->m_client, &position);
@@ -102,7 +88,7 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 	if(state == JackTransportStarting)
 	{
 		// play silence while syncing
-		for(unsigned int i = 0; i < count; i++)
+		for(int i = 0; i < count; i++)
 			std::memset(AUD_jack_port_get_buffer(device->m_ports[i], length), 0, length * sizeof(float));
 	}
 	else
@@ -111,20 +97,25 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 		if((state == JackTransportRolling) && (device->m_lastMixState != JackTransportRolling))
 			++device->m_rollingSyncRevision;
 
-		size_t temp;
-		size_t readsamples = AUD_jack_ringbuffer_read_space(device->m_ringbuffers[0]);
-		for(i = 1; i < count; i++)
-			if((temp = AUD_jack_ringbuffer_read_space(device->m_ringbuffers[i])) < readsamples)
-				readsamples = temp;
+		size_t sample_size = AUD_DEVICE_SAMPLE_SIZE(device->m_specs);
 
-		readsamples = std::min(readsamples / sizeof(float), size_t(length));
+		size_t readsamples = device->m_ring_buffer.getReadSize();
 
-		for(unsigned int i = 0; i < count; i++)
+		readsamples = std::min(readsamples / sample_size, static_cast<size_t>(length));
+
+		data_t* deinterleave_buffer = reinterpret_cast<data_t*>(device->m_deinterleavebuf.getBuffer());
+
+		device->m_ring_buffer.read(deinterleave_buffer, readsamples * sample_size);
+
+		if(readsamples < length)
+			std::memset(deinterleave_buffer + readsamples * sample_size, 0, (length - readsamples) * sample_size);
+
+		for(int i = 0; i < count; i++)
 		{
-			buffer = (char*)AUD_jack_port_get_buffer(device->m_ports[i], length);
-			AUD_jack_ringbuffer_read(device->m_ringbuffers[i], buffer, readsamples * sizeof(float));
-			if(readsamples < length)
-				std::memset(buffer + readsamples * sizeof(float), 0, (length - readsamples) * sizeof(float));
+			buffer = reinterpret_cast<float*>(AUD_jack_port_get_buffer(device->m_ports[i], length));
+
+			for(int j = 0; j < readsamples; j++)
+				buffer[j] = reinterpret_cast<float*>(deinterleave_buffer)[i + j * count];
 		}
 
 		// if we are stopped and the jack transport position changes, we need to notify the mixing thread to call the sync callback
@@ -224,11 +215,11 @@ JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersiz
 
 	m_specs.rate = (SampleRate)AUD_jack_get_sample_rate(m_client);
 
-	buffersize *= sizeof(sample_t);
-	m_ringbuffers = new jack_ringbuffer_t*[specs.channels];
-	for(unsigned int i = 0; i < specs.channels; i++)
-		m_ringbuffers[i] = AUD_jack_ringbuffer_create(buffersize);
-	buffersize *= specs.channels;
+	if(buffersize < 0)
+		buffersize = AUD_jack_get_buffer_size(m_client) * 2;
+
+	buffersize *= AUD_SAMPLE_SIZE(m_specs);
+	m_ring_buffer.resize(buffersize);
 	m_deinterleavebuf.resize(buffersize);
 	m_buffer.resize(buffersize);
 
@@ -249,9 +240,6 @@ JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersiz
 	{
 		AUD_jack_client_close(m_client);
 		delete[] m_ports;
-		for(unsigned int i = 0; i < specs.channels; i++)
-			AUD_jack_ringbuffer_free(m_ringbuffers[i]);
-		delete[] m_ringbuffers;
 		destroy();
 
 		AUD_THROW(DeviceException, "Client activation with JACK failed.");
@@ -267,7 +255,7 @@ JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersiz
 		AUD_jack_free(ports);
 	}
 
-	m_mixingThread = std::thread(&JackDevice::updateRingBuffers, this);
+	m_mixingThread = std::thread(&JackDevice::updateRingBuffer, this);
 }
 
 JackDevice::~JackDevice()
@@ -281,10 +269,6 @@ JackDevice::~JackDevice()
 	m_mixingCondition.notify_all();
 
 	m_mixingThread.join();
-
-	for(unsigned int i = 0; i < m_specs.channels; i++)
-		AUD_jack_ringbuffer_free(m_ringbuffers[i]);
-	delete[] m_ringbuffers;
 
 	destroy();
 }
@@ -343,9 +327,7 @@ private:
 	std::string m_name;
 
 public:
-	JackDeviceFactory() :
-		m_buffersize(AUD_DEFAULT_BUFFER_SIZE),
-		m_name("Audaspace")
+	JackDeviceFactory() : m_buffersize(-1), m_name("Audaspace")
 	{
 		m_specs.format = FORMAT_FLOAT32;
 		m_specs.channels = CHANNELS_STEREO;

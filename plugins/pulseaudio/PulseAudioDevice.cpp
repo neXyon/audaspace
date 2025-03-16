@@ -17,7 +17,6 @@
 #include "PulseAudioDevice.h"
 
 #include "Exception.h"
-#include "IReader.h"
 #include "PulseAudioLibrary.h"
 
 #include "devices/DeviceManager.h"

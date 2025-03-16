@@ -33,10 +33,10 @@
 #include <vector>
 
 #include <jack/jack.h>
-#include <jack/ringbuffer.h>
 
 #include "devices/SoftwareDevice.h"
 #include "util/Buffer.h"
+#include "util/RingBuffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -66,7 +66,7 @@ private:
 	 */
 	Buffer m_deinterleavebuf;
 
-	jack_ringbuffer_t** m_ringbuffers;
+	RingBuffer m_ring_buffer;
 
 	/**
 	 * Whether the device is valid.
@@ -154,7 +154,7 @@ private:
 	/**
 	 * Updates the ring buffers.
 	 */
-	AUD_LOCAL void updateRingBuffers();
+	AUD_LOCAL void updateRingBuffer();
 
 	// delete copy constructor and operator=
 	JackDevice(const JackDevice&) = delete;
