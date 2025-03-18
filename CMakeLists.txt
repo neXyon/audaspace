@@ -38,6 +38,7 @@ endif()
 
 set(SRC
 	src/devices/DeviceManager.cpp
+	src/devices/MixingThreadDevice.cpp
 	src/devices/NULLDevice.cpp
 	src/devices/OpenCloseDevice.cpp
 	src/devices/ReadDevice.cpp
@@ -147,6 +148,7 @@ set(PUBLIC_HDR
 	include/devices/IDeviceFactory.h
 	include/devices/IDevice.h
 	include/devices/IHandle.h
+	include/devices/MixingThreadDevice.h
 	include/devices/NULLDevice.h
 	include/devices/OpenCloseDevice.h
 	include/devices/ReadDevice.h

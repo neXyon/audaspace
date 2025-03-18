@@ -25,57 +25,6 @@
 
 AUD_NAMESPACE_BEGIN
 
-void JackDevice::updateRingBuffer()
-{
-	sample_t* buffer = m_buffer.getBuffer();
-	jack_transport_state_t state;
-	jack_position_t position;
-
-	size_t sample_size = AUD_DEVICE_SAMPLE_SIZE(m_specs);
-
-	std::unique_lock<std::mutex> lock(m_mixingLock);
-
-	while(m_valid)
-	{
-		state = AUD_jack_transport_query(m_client, &position);
-
-		// we sync either when:
-		// - there was a jack sync callback that requests a playing sync (either start playback or seek during playback) - caused by a m_syncCallRevision change in jack_sync
-		// - the jack transport state changed to stop from not stopped (i.e. external stopping) - checked here
-		// - the sync time changes when seeking during the stopped state - caused by a m_syncCallRevision change in jack_mix
-		if((m_syncCallRevision != m_lastSyncCallRevision) || (state == JackTransportStopped && m_lastState != JackTransportStopped))
-		{
-			int syncRevision = m_syncCallRevision;
-			float syncTime = m_syncTime;
-
-			if(m_syncFunc)
-				m_syncFunc(m_syncFuncData, state != JackTransportStopped, syncTime);
-
-			// we reset the ring buffer when we sync to start from the correct position
-			m_ring_buffer.reset();
-
-			m_lastSyncCallRevision = syncRevision;
-		}
-
-		m_lastState = state;
-
-		size_t size = m_ring_buffer.getWriteSize();
-
-		while(size > sample_size)
-		{
-			size_t samplecount = size / sample_size;
-
-			mix((data_t*) buffer, samplecount);
-
-			m_ring_buffer.write((data_t*) buffer, samplecount * sample_size);
-
-			size = m_ring_buffer.getWriteSize();
-		}
-
-		m_mixingCondition.wait(lock);
-	}
-}
-
 int JackDevice::jack_mix(jack_nframes_t length, void* data)
 {
 	JackDevice* device = (JackDevice*) data;
@@ -99,13 +48,13 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 
 		size_t sample_size = AUD_DEVICE_SAMPLE_SIZE(device->m_specs);
 
-		size_t readsamples = device->m_ring_buffer.getReadSize();
+		size_t readsamples = device->getRingBuffer().getReadSize();
 
 		readsamples = std::min(readsamples / sample_size, static_cast<size_t>(length));
 
 		data_t* deinterleave_buffer = reinterpret_cast<data_t*>(device->m_deinterleavebuf.getBuffer());
 
-		device->m_ring_buffer.read(deinterleave_buffer, readsamples * sample_size);
+		device->getRingBuffer().read(deinterleave_buffer, readsamples * sample_size);
 
 		if(readsamples < length)
 			std::memset(deinterleave_buffer + readsamples * sample_size, 0, (length - readsamples) * sample_size);
@@ -130,7 +79,7 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 			}
 		}
 
-		device->m_mixingCondition.notify_all();
+		device->notifyMixingThread();
 	}
 
 	device->m_lastMixState = state;
@@ -156,7 +105,7 @@ int JackDevice::jack_sync(jack_transport_state_t state, jack_position_t* pos, vo
 	{
 		device->m_syncTime = syncTime;
 		++device->m_syncCallRevision;
-		device->m_mixingCondition.notify_all();
+		device->notifyMixingThread();
 		device->m_lastRollingSyncRevision = device->m_rollingSyncRevision;
 		return 0;
 	}
@@ -164,10 +113,38 @@ int JackDevice::jack_sync(jack_transport_state_t state, jack_position_t* pos, vo
 	return device->m_syncCallRevision == device->m_lastSyncCallRevision;
 }
 
+void JackDevice::preMixingWork([[maybe_unused]] bool playing)
+{
+	jack_transport_state_t state;
+	jack_position_t position;
+
+	state = AUD_jack_transport_query(m_client, &position);
+
+	// we sync either when:
+	// - there was a jack sync callback that requests a playing sync (either start playback or seek during playback) - caused by a m_syncCallRevision change in jack_sync
+	// - the jack transport state changed to stop from not stopped (i.e. external stopping) - checked here
+	// - the sync time changes when seeking during the stopped state - caused by a m_syncCallRevision change in jack_mix
+	if((m_syncCallRevision != m_lastSyncCallRevision) || (state == JackTransportStopped && m_lastState != JackTransportStopped))
+	{
+		int syncRevision = m_syncCallRevision;
+		float syncTime = m_syncTime;
+
+		if(m_syncFunc)
+			m_syncFunc(m_syncFuncData, state != JackTransportStopped, syncTime);
+
+		// we reset the ring buffer when we sync to start from the correct position
+		getRingBuffer().reset();
+
+		m_lastSyncCallRevision = syncRevision;
+	}
+
+	m_lastState = state;
+}
+
 void JackDevice::jack_shutdown(void* data)
 {
 	JackDevice* device = (JackDevice*)data;
-	device->m_valid = false;
+	device->stopMixingThread();
 }
 
 JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersize)
@@ -219,15 +196,12 @@ JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersiz
 		buffersize = AUD_jack_get_buffer_size(m_client) * 2;
 
 	buffersize *= AUD_SAMPLE_SIZE(m_specs);
-	m_ring_buffer.resize(buffersize);
 	m_deinterleavebuf.resize(buffersize);
-	m_buffer.resize(buffersize);
 
 	create();
 
 	m_lastState = JackTransportStopped;
 	m_lastMixState = JackTransportStopped;
-	m_valid = true;
 	m_syncFunc = nullptr;
 	m_syncTime = 0;
 	m_syncCallRevision = 0;
@@ -255,27 +229,25 @@ JackDevice::JackDevice(const std::string& name, DeviceSpecs specs, int buffersiz
 		AUD_jack_free(ports);
 	}
 
-	m_mixingThread = std::thread(&JackDevice::updateRingBuffer, this);
+	startMixingThread(buffersize);
 }
 
 JackDevice::~JackDevice()
 {
-	if(m_valid)
+	if(isMixingThreadRunning())
+	{
+		stopMixingThread();
 		AUD_jack_client_close(m_client);
-	m_valid = false;
+	}
 
 	delete[] m_ports;
-
-	m_mixingCondition.notify_all();
-
-	m_mixingThread.join();
 
 	destroy();
 }
 
 void JackDevice::playing(bool playing)
 {
-	// Do nothing.
+	MixingThreadDevice::playing(playing);
 }
 
 void JackDevice::playSynchronizer()
