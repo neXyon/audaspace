@@ -28,10 +28,11 @@
 
 #include <condition_variable>
 #include <thread>
+
 #include <pipewire/pipewire.h>
-#include <spa/utils/ringbuffer.h>
 
 #include "devices/SoftwareDevice.h"
+#include "util/RingBuffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -64,8 +65,7 @@ private:
 	/**
 	 * The mixing ringbuffer and mixing data
 	 */
-	spa_ringbuffer m_ringbuffer;
-	Buffer m_ringbuffer_data;
+	RingBuffer m_ring_buffer;
 	std::condition_variable m_mixingCondition;
 
 	/// Synchronizer.
@@ -78,7 +78,7 @@ private:
 	/**
 	 * Updates the ring buffers.
 	 */
-	AUD_LOCAL void updateRingBuffers();
+	AUD_LOCAL void updateRingBuffer();
 
 	/**
 	 * Mixes the next bytes into the buffer.

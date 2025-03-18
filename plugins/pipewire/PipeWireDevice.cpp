@@ -29,45 +29,43 @@ AUD_NAMESPACE_BEGIN
 void PipeWireDevice::handleStateChanged(void* device_ptr, enum pw_stream_state old, enum pw_stream_state state, const char* error)
 {
 	PipeWireDevice* device = (PipeWireDevice*) device_ptr;
-	//fprintf(stderr, "stream state: \"%s\"\n", pw_stream_state_as_string(state));
-	if (state == PW_STREAM_STATE_PAUSED)
+	// fprintf(stderr, "stream state: \"%s\"\n", pw_stream_state_as_string(state));
+	if(state == PW_STREAM_STATE_PAUSED)
 	{
 		AUD_pw_stream_flush(device->m_stream, false);
 	}
 }
 
-void PipeWireDevice::updateRingBuffers()
+void PipeWireDevice::updateRingBuffer()
 {
 	uint32_t samplesize = AUD_DEVICE_SAMPLE_SIZE(m_specs);
 
-	sample_t* rb_data = m_ringbuffer_data.getBuffer();
-	uint32_t rb_size = m_ringbuffer_data.getSize();
-	uint32_t rb_index;
-	Buffer mix_buffer = Buffer(rb_size);
-	sample_t* mix_buffer_data = mix_buffer.getBuffer();
+	Buffer buffer;
 
 	std::unique_lock<std::mutex> lock(m_mixingLock);
 
-	while (m_run_mixing_thread)
+	while(m_run_mixing_thread)
 	{
-		/* Get the amount of bytes available for writing. */
-		int32_t rb_avail = rb_size - spa_ringbuffer_get_write_index(&m_ringbuffer, &rb_index);
-		if (m_fill_ringbuffer && rb_avail > 0) {
-			/* As we allocated the ring buffer ourselves, we assume that the samplesize and
-			 * the available bytes to read is evenly divisable.
-			 */
-			int32_t sample_count = rb_avail / samplesize;
-			mix(reinterpret_cast<data_t*>(mix_buffer_data), sample_count);
-			spa_ringbuffer_write_data(&m_ringbuffer, rb_data, rb_size, rb_index % rb_size, mix_buffer_data, rb_avail);
-			rb_index += rb_avail;
-			spa_ringbuffer_write_update(&m_ringbuffer, rb_index);
+		size_t size = m_ring_buffer.getWriteSize();
+
+		size_t sample_count = size / samplesize;
+
+		if(sample_count > 0)
+		{
+			size = sample_count * samplesize;
+
+			buffer.assureSize(size);
+
+			mix(reinterpret_cast<data_t*>(buffer.getBuffer()), sample_count);
+
+			m_ring_buffer.write(reinterpret_cast<data_t*>(buffer.getBuffer()), size);
 		}
-		if (!m_fill_ringbuffer) {
-			/* Clear the ringbuffer when we are not playing back to make sure we don't
-			 * keep any outdated data.
-			 */
-			spa_ringbuffer_read_update(&m_ringbuffer, rb_index);
+
+		if(!m_fill_ringbuffer)
+		{
+			m_ring_buffer.reset();
 		}
+
 		m_mixingCondition.wait(lock);
 	}
 }
@@ -104,40 +102,24 @@ void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 	{
 		n_frames = SPA_MIN(pw_buf->requested, n_frames);
 	}
+
+	size_t readsamples = device->m_ring_buffer.getReadSize() / chunk->stride;
+
+	if(!readsamples)
+	{
+		chunk->flags = SPA_CHUNK_FLAG_EMPTY;
+		chunk->size = 0;
+		AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
+		return;
+	}
+
+	if(readsamples < n_frames)
+		n_frames = readsamples;
+
 	chunk->size = n_frames * chunk->stride;
 
-	if(!device->m_fill_ringbuffer)
-	{
-		/* Queue up silence if we are not queuing up any samples.
-		 * If we don't give Pipewire any buffers, it will think we encountered an error.
-		 */
-		memset(spa_data.data, 0, AUD_FORMAT_SIZE(device->m_specs.format) * chunk->size);
-		AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
-		return;
-	}
-	uint32_t rb_index;
-	spa_ringbuffer* ringbuffer = &device->m_ringbuffer;
+	device->m_ring_buffer.read(reinterpret_cast<data_t*>(spa_data.data), chunk->size);
 
-	int32_t rb_avail = spa_ringbuffer_get_read_index(ringbuffer, &rb_index);
-	if (!rb_avail)
-	{
-		/* Nothing to read from the ring buffer. */
-		device->m_mixingCondition.notify_all();
-		memset(spa_data.data, 0, AUD_FORMAT_SIZE(device->m_specs.format) * chunk->size);
-		AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
-		return;
-	}
-
-	/* Here we assume that, if we have available space to read, that the read
-	 * buffer size is always enough to fill the output buffer.
-	 * This is because the PW_KEY_NODE_LATENCY property that we set should guarantee
-	 * that pipewire can't request any bigger buffer sizes than we requested.
-	 * (But they can be smaller)
-	 */
-	uint32_t rb_size = device->m_ringbuffer_data.getSize();
-	sample_t* rb_data = device->m_ringbuffer_data.getBuffer();
-	spa_ringbuffer_read_data(ringbuffer, rb_data, rb_size, rb_index % rb_size, spa_data.data, chunk->size);
-	spa_ringbuffer_read_update(ringbuffer, rb_index + chunk->size);
 	device->m_mixingCondition.notify_all();
 	AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
 }
@@ -200,22 +182,13 @@ PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int b
 	m_events->state_changed = PipeWireDevice::handleStateChanged;
 	m_events->process = PipeWireDevice::mixAudioBuffer;
 
-	pw_properties *stream_props = AUD_pw_properties_new(
-				PW_KEY_MEDIA_TYPE, "Audio",
-				PW_KEY_MEDIA_CATEGORY, "Playback",
-				PW_KEY_MEDIA_ROLE, "Production",
-				NULL);
+	pw_properties* stream_props = AUD_pw_properties_new(PW_KEY_MEDIA_TYPE, "Audio", PW_KEY_MEDIA_CATEGORY, "Playback", PW_KEY_MEDIA_ROLE, "Production", NULL);
 
 	/* Set the requested sample rate and latency. */
 	AUD_pw_properties_setf(stream_props, PW_KEY_NODE_RATE, "1/%u", uint(m_specs.rate));
 	AUD_pw_properties_setf(stream_props, PW_KEY_NODE_LATENCY, "%u/%u", buffersize, uint(m_specs.rate));
 
-	m_stream = AUD_pw_stream_new_simple(
-			AUD_pw_thread_loop_get_loop(m_thread),
-			name.c_str(),
-			stream_props,
-			m_events.get(),
-			this);
+	m_stream = AUD_pw_stream_new_simple(AUD_pw_thread_loop_get_loop(m_thread), name.c_str(), stream_props, m_events.get(), this);
 	if(!m_stream)
 	{
 		AUD_pw_thread_loop_destroy(m_thread);
@@ -229,22 +202,16 @@ PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int b
 
 	uint8_t buffer[1024];
 	spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-	const spa_pod *param = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
+	const spa_pod* param = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
-	AUD_pw_stream_connect(m_stream,
-			  PW_DIRECTION_OUTPUT,
-			  PW_ID_ANY,
-			  static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT |
-			  PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_INACTIVE |
-			  PW_STREAM_FLAG_RT_PROCESS),
-			  &param, 1);
+	AUD_pw_stream_connect(m_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY,
+	                      static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_INACTIVE | PW_STREAM_FLAG_RT_PROCESS), &param, 1);
 	AUD_pw_thread_loop_start(m_thread);
 
 	create();
 
-	spa_ringbuffer_init(&m_ringbuffer);
-	m_ringbuffer_data.resize(buffersize * AUD_DEVICE_SAMPLE_SIZE(m_specs));
-	m_mixingThread = std::thread(&PipeWireDevice::updateRingBuffers, this);
+	m_ring_buffer.resize(buffersize * AUD_DEVICE_SAMPLE_SIZE(m_specs));
+	m_mixingThread = std::thread(&PipeWireDevice::updateRingBuffer, this);
 }
 
 PipeWireDevice::~PipeWireDevice()
@@ -343,7 +310,7 @@ public:
 		m_buffersize = buffersize;
 	}
 
-	virtual void setName(const std::string &name)
+	virtual void setName(const std::string& name)
 	{
 		m_name = name;
 	}
