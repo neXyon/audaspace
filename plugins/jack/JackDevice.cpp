@@ -63,7 +63,7 @@ int JackDevice::jack_mix(jack_nframes_t length, void* data)
 		{
 			buffer = reinterpret_cast<float*>(AUD_jack_port_get_buffer(device->m_ports[i], length));
 
-			for(int j = 0; j < readsamples; j++)
+			for(int j = 0; j < length; j++)
 				buffer[j] = reinterpret_cast<float*>(deinterleave_buffer)[i + j * count];
 		}
 

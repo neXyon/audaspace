@@ -71,14 +71,6 @@ void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 
 	size_t readsamples = device->getRingBuffer().getReadSize() / chunk->stride;
 
-	if(!readsamples)
-	{
-		chunk->flags = SPA_CHUNK_FLAG_EMPTY;
-		chunk->size = 0;
-		AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
-		return;
-	}
-
 	if(readsamples < n_frames)
 		n_frames = readsamples;
 
@@ -90,13 +82,33 @@ void PipeWireDevice::mixAudioBuffer(void* device_ptr)
 	AUD_pw_stream_queue_buffer(device->m_stream, pw_buf);
 }
 
+void PipeWireDevice::preMixingWork(bool playing)
+{
+	if(!playing)
+	{
+		if((getRingBuffer().getReadSize() == 0) && m_active)
+		{
+			AUD_pw_thread_loop_lock(m_thread);
+			AUD_pw_stream_set_active(m_stream, false);
+			AUD_pw_thread_loop_unlock(m_thread);
+			m_active = false;
+		}
+	}
+}
+
 void PipeWireDevice::playing(bool playing)
 {
-	AUD_pw_thread_loop_lock(m_thread);
-	AUD_pw_stream_set_active(m_stream, playing);
-	AUD_pw_thread_loop_unlock(m_thread);
+	std::lock_guard<ILockable> lock(*this);
 
 	MixingThreadDevice::playing(playing);
+
+	if(playing)
+	{
+		AUD_pw_thread_loop_lock(m_thread);
+		AUD_pw_stream_set_active(m_stream, playing);
+		AUD_pw_thread_loop_unlock(m_thread);
+		m_active = true;
+	}
 }
 
 PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int buffersize)
@@ -175,7 +187,7 @@ PipeWireDevice::PipeWireDevice(const std::string& name, DeviceSpecs specs, int b
 
 	create();
 
-	startMixingThread(buffersize * AUD_DEVICE_SAMPLE_SIZE(m_specs));
+	startMixingThread(buffersize * 2 * AUD_DEVICE_SAMPLE_SIZE(m_specs));
 }
 
 PipeWireDevice::~PipeWireDevice()

@@ -41,6 +41,7 @@ private:
 	pw_stream* m_stream;
 	pw_thread_loop* m_thread;
 	std::unique_ptr<pw_stream_events> m_events;
+	bool m_active{false};
 
 	/// Synchronizer.
 	bool m_getSynchronizerStartTime{false};
@@ -60,6 +61,7 @@ private:
 	PipeWireDevice& operator=(const PipeWireDevice&) = delete;
 
 protected:
+	void preMixingWork(bool playing);
 	virtual void playing(bool playing);
 
 public:
