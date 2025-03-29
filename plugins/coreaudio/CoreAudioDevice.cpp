@@ -41,7 +41,7 @@ OSStatus CoreAudioDevice::CoreAudio_mix(void* data, AudioUnitRenderActionFlags* 
 		device->getRingBuffer().read((data_t*) buffer.mData, readsamples * sample_size);
 
 		if(readsamples * sample_size < num_bytes)
-			std::memset(buffer + readsamples * sample_size, 0, num_bytes - readsamples * sample_size);
+			std::memset((data_t*) buffer.mData + readsamples * sample_size, 0, num_bytes - readsamples * sample_size);
 
 		device->notifyMixingThread();
 	}
@@ -139,6 +139,14 @@ void CoreAudioDevice::open()
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with CoreAudio.");
 	}
 
+	status = AudioUnitSetProperty(m_audio_unit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Input, 0, &m_buffersize, sizeof(m_buffersize));
+
+	if(status != noErr)
+	{
+		AudioComponentInstanceDispose(m_audio_unit);
+		AUD_THROW(DeviceException, "Could not set the buffer size for the audio device.");
+	}
+
 	status = AudioUnitInitialize(m_audio_unit);
 
 	if(status != noErr)
@@ -201,9 +209,7 @@ void CoreAudioDevice::close()
 	}
 }
 
-CoreAudioDevice::CoreAudioDevice(DeviceSpecs specs, int buffersize) :
-m_playback(false),
-m_audio_unit(nullptr)
+CoreAudioDevice::CoreAudioDevice(DeviceSpecs specs, int buffersize) : m_buffersize(uint32_t(buffersize)), m_playback(false), m_audio_unit(nullptr)
 {
 	if(specs.channels == CHANNELS_INVALID)
 		specs.channels = CHANNELS_STEREO;
@@ -216,7 +222,7 @@ m_audio_unit(nullptr)
 	open();
 	close();
 	create();
-	startMixingThread(buffersize);
+	startMixingThread(buffersize * 2 * AUD_DEVICE_SAMPLE_SIZE(specs));
 }
 
 CoreAudioDevice::~CoreAudioDevice()

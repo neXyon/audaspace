@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include <AudioToolbox/AudioToolbox.h>
 #include <AudioToolbox/CoreAudioClock.h>
 #include <AudioUnit/AudioUnit.h>
 
@@ -41,6 +42,8 @@ AUD_NAMESPACE_BEGIN
 class AUD_PLUGIN_API CoreAudioDevice : public OpenCloseDevice
 {
 private:
+	uint32_t m_buffersize;
+
 	/**
 	 * Whether there is currently playback.
 	 */
