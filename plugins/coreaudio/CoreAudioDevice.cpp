@@ -151,7 +151,7 @@ void CoreAudioDevice::open()
 			AUD_THROW(DeviceException, "Could not create a CoreAudio clock.");
 		}
 
-		status = CAClockSetProperty(m_clock_ref, kCAClockProperty_TimebaseSource, sizeof(audio_unit), &audio_unit);
+		status = CAClockSetProperty(m_clock_ref, kCAClockProperty_TimebaseSource, sizeof(m_audio_unit), &m_audio_unit);
 
 		if(status != noErr)
 		{

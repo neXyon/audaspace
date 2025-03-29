@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include <AudioToolbox/CoreAudioClock.h>
 #include <AudioUnit/AudioUnit.h>
 
 #include "devices/OpenCloseDevice.h"
