@@ -26,11 +26,24 @@ OSStatus CoreAudioDevice::CoreAudio_mix(void* data, AudioUnitRenderActionFlags* 
 {
 	CoreAudioDevice* device = (CoreAudioDevice*)data;
 
+	size_t sample_size = AUD_DEVICE_SAMPLE_SIZE(device->m_specs);
+
 	for(int i = 0; i < buffer_list->mNumberBuffers; i++)
 	{
 		auto& buffer = buffer_list->mBuffers[i];
 
-		device->mix((data_t*)buffer.mData, buffer.mDataByteSize / AUD_DEVICE_SAMPLE_SIZE(device->m_specs));
+		size_t readsamples = device->getRingBuffer().getReadSize();
+
+		size_t num_bytes = size_t(buffer.mDataByteSize);
+
+		readsamples = std::min(readsamples, num_bytes) / sample_size;
+
+		device->getRingBuffer().read((data_t*) buffer.mData, readsamples * sample_size);
+
+		if(readsamples * sample_size < num_bytes)
+			std::memset(buffer + readsamples * sample_size, 0, num_bytes - readsamples * sample_size);
+
+		device->notifyMixingThread();
 	}
 
 	return noErr;
@@ -203,10 +216,12 @@ m_audio_unit(nullptr)
 	open();
 	close();
 	create();
+	startMixingThread(buffersize);
 }
 
 CoreAudioDevice::~CoreAudioDevice()
 {
+	stopMixingThread();
 	destroy();
 	closeNow();
 }

@@ -26,14 +26,14 @@
 #include <condition_variable>
 #include <thread>
 
-#include "devices/SoftwareDevice.h"
+#include "devices/MixingThreadDevice.h"
 
 AUD_NAMESPACE_BEGIN
 
 /**
- * This device extends the SoftwareDevice with code for running mixing in a separate thread.
+ * This device extends the MixingThreadDevice with code for opening and closing the device on demand.
  */
-class AUD_PLUGIN_API OpenCloseDevice : public SoftwareDevice
+class AUD_PLUGIN_API OpenCloseDevice : public MixingThreadDevice
 {
 private:
 	/**

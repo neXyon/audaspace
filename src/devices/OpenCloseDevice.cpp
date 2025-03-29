@@ -76,5 +76,7 @@ void OpenCloseDevice::playing(bool playing)
 			}
 		}
 	}
+
+	MixingThreadDevice::playing(playing);
 }
 AUD_NAMESPACE_END
