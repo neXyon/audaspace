@@ -49,18 +49,30 @@ OSStatus CoreAudioDevice::CoreAudio_mix(void* data, AudioUnitRenderActionFlags* 
 	return noErr;
 }
 
-void CoreAudioDevice::start()
+void CoreAudioDevice::playing(bool playing)
 {
-	AudioOutputUnitStart(m_audio_unit);
+	if(m_playback != playing)
+	{
+		if(playing)
+			AudioOutputUnitStart(m_audio_unit);
+		else
+			AudioOutputUnitStop(m_audio_unit);
+	}
+
+	m_playback = playing;
 }
 
-void CoreAudioDevice::stop()
+CoreAudioDevice::CoreAudioDevice(DeviceSpecs specs, int buffersize) : m_buffersize(uint32_t(buffersize)), m_playback(false), m_audio_unit(nullptr)
 {
-	AudioOutputUnitStop(m_audio_unit);
-}
+	if(specs.channels == CHANNELS_INVALID)
+		specs.channels = CHANNELS_STEREO;
+	if(specs.format == FORMAT_INVALID)
+		specs.format = FORMAT_FLOAT32;
+	if(specs.rate == RATE_INVALID)
+		specs.rate = RATE_48000;
 
-void CoreAudioDevice::open()
-{
+	m_specs = specs;
+
 	AudioComponentDescription component_description = {};
 
 	component_description.componentType = kAudioUnitType_Output;
@@ -195,10 +207,24 @@ void CoreAudioDevice::open()
 		AudioComponentInstanceDispose(m_audio_unit);
 		throw;
 	}
+
+	/* Workaround CoreAudio quirk that makes the Clock (m_clock_ref) be in an invalid state
+	 * after we try to re-init the device. (It is fine the first time we init the device...)
+	 * We have to do a start/stop toggle to get it into a valid state again. */
+	AudioOutputUnitStart(m_audio_unit);
+	AudioOutputUnitStop(m_audio_unit);
+
+	create();
+
+	startMixingThread(buffersize * 2 * AUD_DEVICE_SAMPLE_SIZE(specs));
 }
 
-void CoreAudioDevice::close()
+CoreAudioDevice::~CoreAudioDevice()
 {
+	stopMixingThread();
+
+	destroy();
+
 	// NOTE: Keep the device open for buggy MacOS versions (see blender issue #121911).
 	if(__builtin_available(macOS 15.2, *))
 	{
@@ -207,29 +233,6 @@ void CoreAudioDevice::close()
 		AudioUnitUninitialize(m_audio_unit);
 		AudioComponentInstanceDispose(m_audio_unit);
 	}
-}
-
-CoreAudioDevice::CoreAudioDevice(DeviceSpecs specs, int buffersize) : m_buffersize(uint32_t(buffersize)), m_playback(false), m_audio_unit(nullptr)
-{
-	if(specs.channels == CHANNELS_INVALID)
-		specs.channels = CHANNELS_STEREO;
-	if(specs.format == FORMAT_INVALID)
-		specs.format = FORMAT_FLOAT32;
-	if(specs.rate == RATE_INVALID)
-		specs.rate = RATE_48000;
-
-	m_specs = specs;
-	open();
-	close();
-	create();
-	startMixingThread(buffersize * 2 * AUD_DEVICE_SAMPLE_SIZE(specs));
-}
-
-CoreAudioDevice::~CoreAudioDevice()
-{
-	stopMixingThread();
-	destroy();
-	closeNow();
 }
 
 void CoreAudioDevice::seekSynchronizer(double time)
