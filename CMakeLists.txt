@@ -288,6 +288,7 @@ if(AUDASPACE_STANDALONE)
 	option(WITH_LIBSNDFILE "Build With LibSndFile" TRUE)
 	option(WITH_OPENAL "Build With OpenAL" TRUE)
 	option(WITH_PYTHON "Build With Python Library" TRUE)
+	option(WITH_RUBBERBAND "Build With Rubber Band Library" TRUE)
 	option(WITH_SDL "Build With SDL" TRUE)
 	option(WITH_STRICT_DEPENDENCIES "Error and abort instead of warning if a library is not found." FALSE)
 	if(APPLE)
@@ -790,6 +791,27 @@ if(WITH_PYTHON)
 		endif()
 		message(WARNING "Python & NumPy libraries not found, language binding will not be built.")
 	endif()
+endif()
+
+if (WITH_RUBBERBAND)
+	set(RUBBERBAND_SRC
+		src/fx/TimeStretch.cpp
+		src/fx/TimeStretchReader.cpp
+	)
+	set(RUBBERBAND_HDR
+		include/fx/TimeStretch.h
+		include/fx/TimeStretchReader.h
+	)
+
+	list(APPEND SRC ${RUBBERBAND_SRC})
+	list(APPEND HDR ${RUBBERBAND_HDR})
+
+	list(APPEND LIBRARIES rubberband_lib)
+	if (APPLE)
+		list(APPEND LIBRARIES  "-framework Accelerate")
+	endif()
+
+	add_library(rubberband_lib STATIC external/rubberband/single/RubberBandSingle.cpp)
 endif()
 
 # SDL
