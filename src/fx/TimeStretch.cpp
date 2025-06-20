@@ -15,21 +15,24 @@
  ******************************************************************************/
 
 #include "fx/TimeStretch.h"
+
 #include "fx/TimeStretchReader.h"
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double ratio, int buffersize) :
-    Effect(sound),
-    m_ratio(ratio),
-    m_buffersize(buffersize)
+TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double ratio, TimeStretchQuality quality) : Effect(sound), m_timeRatio(ratio), m_quality(quality)
 
 {
 }
 
 std::shared_ptr<IReader> TimeStretch::createReader()
 {
-  return std::shared_ptr<IReader>(new TimeStretchReader(getReader(), m_ratio, m_buffersize));
+	return std::shared_ptr<IReader>(new TimeStretchReader(getReader(), m_timeRatio, m_quality));
+}
+
+double TimeStretch::getTimeRatio() const
+{
+	return m_timeRatio;
 }
 
 AUD_NAMESPACE_END

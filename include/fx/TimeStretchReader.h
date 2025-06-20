@@ -14,77 +14,68 @@
  * limitations under the License.
  ******************************************************************************/
 
- #pragma once
+#pragma once
 
- /**
-  * @file ShiftReader.h
-  * @ingroup fx
-  * The ShiftReader class.
-  */
- 
+/**
+ * @file ShiftReader.h
+ * @ingroup fx
+ * The ShiftReader class.
+ */
+
+#include "TimeStretch.h"
+
 #include "fx/EffectReader.h"
 #include "rubberband/RubberBandStretcher.h"
+#include "util/Buffer.h"
 
 using namespace RubberBand;
+
 AUD_NAMESPACE_BEGIN
- 
- /**
-  * This class reads another reader and changes the playback speed while preserving the pitch.
-  */
+
+/**
+ * This class reads another reader and changes the playback speed while preserving the pitch.
+ */
 class AUD_API TimeStretchReader : public EffectReader
 {
 private:
-
 	/**
-	 * Specs.
-	 */
-	Specs m_specs;
-  
-  /**
 	 * The current position.
 	 */
-  int m_position;
+	int m_position;
 
-  /**
-   * The size of buffer while passing data to the stretcher. 
-   */
-  int m_buffersize;
+	/**
+	 * The sound output buffer.
+	 */
+	Buffer m_buffer;
 
-  /**
+	/**
 	 * The length of the output.
 	 */
-  int m_length;
-  
-  
-  /**
-   * The time ratio for the stretcher.
-   */
-  double m_ratio;
+	int m_length;
 
-  /**
-   * Data retrieved from the stretcher.
-   */
-  sample_t* m_processedData;
+	/**
+	 * The time ratio for the stretcher.
+	 */
+	double m_timeRatio;
 
+	/**
+	 * Stretcher
+	 */
+	RubberBandStretcher m_stretcher;
 
-  /**
-   * Stretcher
-   */
-  RubberBandStretcher m_stretcher;
+	// delete copy constructor and operator=
+	TimeStretchReader(const TimeStretchReader&) = delete;
+	TimeStretchReader& operator=(const TimeStretchReader&) = delete;
 
-  // delete copy constructor and operator=
-  TimeStretchReader(const TimeStretchReader&) = delete;
-  TimeStretchReader& operator=(const TimeStretchReader&) = delete;
+	void study();
 
 public:
-  /**
-   * Creates a new stretcher reader.
-   * \param reader The reader to read from.
-   * \param time_ratio The time ratio for the stretcher
-   */
-  TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, int buffersize);
-  virtual ~TimeStretchReader();
-
+	/**
+	 * Creates a new stretcher reader.
+	 * \param reader The reader to read from.
+	 * \param time_ratio The time ratio for the stretcher
+	 */
+	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, TimeStretchQuality quality);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
@@ -92,11 +83,16 @@ public:
 	virtual int getLength() const;
 	virtual int getPosition() const;
 
-  /**
-   * Retrieves the time \ratio for the stretcher.
-   * \return The current time ratio value.
-   */
-  float getRatio() const;
+	/**
+	 * Retrieves the time ratio for the stretcher.
+	 * \return The current time ratio value.
+	 */
+	double getTimeRatio() const;
+
+	/**
+	 * Sets the time ratio for the stretcher.
+	 */
+	void setTimeRatio(double timeRatio);
 };
 
 AUD_NAMESPACE_END

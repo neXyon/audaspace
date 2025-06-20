@@ -14,55 +14,59 @@
  * limitations under the License.
  ******************************************************************************/
 
- #pragma once
+#pragma once
 
- /**
-  * @file TimeStretch.h
-  * @ingroup fx
-  * The TimeStretch class.
-  */
- 
- #include "fx/Effect.h"
- 
- AUD_NAMESPACE_BEGIN
- 
- /**
-  * This sound loops another sound.
-  * \note The reader has to be seekable.
-  */
+/**
+ * @file TimeStretch.h
+ * @ingroup fx
+ * The TimeStretch class.
+ */
 
- class AUD_API TimeStretch : public Effect
- {
- private:
-  /**
-   * The time ratio to stretch by.
-   */
-  const double m_ratio;
+#include "fx/Effect.h"
 
-  /**
-   * The size of buffer while passing data to the stretcher. 
-   */
-  int m_buffersize;
- 
-   // delete copy constructor and operator=
-   TimeStretch(const TimeStretch&) = delete;
-   TimeStretch& operator=(const TimeStretch&) = delete;
- 
- public:
-   /**
-    * Creates a new pitch-corrected sound after stretching by the given ratio.
-    * \param sound The input sound.
-    * \param ratio The ratio for the stretcher
-    */
-   TimeStretch(std::shared_ptr<ISound> sound, double ratio, int buffersize);
- 
-   /**
-    * Returns the time ratio.
-    */
-   double getTimeRatio() const;
- 
-   virtual std::shared_ptr<IReader> createReader();
- };
- 
- AUD_NAMESPACE_END
- 
+AUD_NAMESPACE_BEGIN
+
+enum class TimeStretchQuality
+{
+	FASTEST = 0, // Use the high speed
+	HIGH = 1,    /// Use high quality pitch option
+};
+
+/**
+ * This sound allows a sound to be time-stretched by the specified ratio
+ * \note The reader has to be seekable.
+ */
+class AUD_API TimeStretch : public Effect
+{
+private:
+	/**
+	 * The time ratio to stretch by.
+	 */
+	double m_timeRatio;
+
+	/**
+	 * The quality of the pitch correction when time-stretching
+	 */
+	TimeStretchQuality m_quality;
+
+	// delete copy constructor and operator=
+	TimeStretch(const TimeStretch&) = delete;
+	TimeStretch& operator=(const TimeStretch&) = delete;
+
+public:
+	/**
+	 * Creates a new pitch-corrected sound after stretching by the given ratio.
+	 * \param sound The input sound.
+	 * \param ratio The ratio for the stretcher
+	 */
+	TimeStretch(std::shared_ptr<ISound> sound, double m_timeRatio, TimeStretchQuality quality);
+
+	/**
+	 * Returns the time ratio.
+	 */
+	double getTimeRatio() const;
+
+	virtual std::shared_ptr<IReader> createReader();
+};
+
+AUD_NAMESPACE_END
