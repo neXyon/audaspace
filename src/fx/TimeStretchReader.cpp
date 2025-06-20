@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2016 Jörg Müller
+ * Copyright 2009-2025 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double tim
     m_length(0),
     m_stretcher(reader->getSpecs().rate, reader->getSpecs().channels,
                 (RubberBandStretcher::OptionWindowStandard | RubberBandStretcher::OptionProcessOffline | RubberBandStretcher::OptionThreadingAuto |
-                 (quality == TimeStretchQuality::FASTEST ? RubberBandStretcher::OptionPitchHighSpeed : RubberBandStretcher::OptionPitchHighQuality)),
+                 (quality == TimeStretchQuality::FASTEST ? RubberBandStretcher::OptionPitchHighSpeed | RubberBandStretcher::OptionEngineFaster :
+                                                           RubberBandStretcher::OptionPitchHighQuality | RubberBandStretcher::OptionEngineFiner)),
                 time_ratio)
 {
 	study();
@@ -103,7 +104,6 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	bool reader_eos = false;
 	while(available < length && !reader_eos)
 	{
-		// How many samples do we need?
 		size_t need = m_stretcher.getSamplesRequired();
 		if(need == 0)
 			break;
@@ -135,36 +135,35 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		available = m_stretcher.available();
 	}
 
-	if(available > 0)
-	{
-		int readAmt = std::min(length, available);
-		length = readAmt;
-
-		std::vector<std::vector<sample_t>> output(channels, std::vector<sample_t>(readAmt));
-		std::vector<sample_t*> outputData(channels);
-
-		for(int channel = 0; channel < channels; channel++)
-		{
-			outputData[channel] = output[channel].data();
-		}
-
-		size_t frameRetrieved = m_stretcher.retrieve(outputData.data(), readAmt);
-
-		for(int i = 0; i < frameRetrieved; i++)
-		{
-			for(int channel = 0; channel < channels; channel++)
-			{
-				buffer[i * channels + channel] = output[channel][i];
-			}
-		}
-
-		m_length += frameRetrieved;
-		m_position += frameRetrieved;
-	}
-	else
+	if(available <= 0)
 	{
 		length = 0;
+		return;
 	}
+
+	int readAmt = std::min(length, available);
+	length = readAmt;
+
+	std::vector<std::vector<sample_t>> output(channels, std::vector<sample_t>(readAmt));
+	std::vector<sample_t*> outputData(channels);
+
+	for(int channel = 0; channel < channels; channel++)
+	{
+		outputData[channel] = output[channel].data();
+	}
+
+	size_t frameRetrieved = m_stretcher.retrieve(outputData.data(), readAmt);
+
+	for(int i = 0; i < frameRetrieved; i++)
+	{
+		for(int channel = 0; channel < channels; channel++)
+		{
+			buffer[i * channels + channel] = output[channel][i];
+		}
+	}
+
+	m_length += frameRetrieved;
+	m_position += frameRetrieved;
 
 	eos = m_stretcher.available() == -1;
 }

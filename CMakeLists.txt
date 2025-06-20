@@ -793,25 +793,37 @@ if(WITH_PYTHON)
 	endif()
 endif()
 
-if (WITH_RUBBERBAND)
-	set(RUBBERBAND_SRC
-		src/fx/TimeStretch.cpp
-		src/fx/TimeStretchReader.cpp
-	)
-	set(RUBBERBAND_HDR
-		include/fx/TimeStretch.h
-		include/fx/TimeStretchReader.h
-	)
-
-	list(APPEND SRC ${RUBBERBAND_SRC})
-	list(APPEND HDR ${RUBBERBAND_HDR})
-
-	list(APPEND LIBRARIES rubberband_lib)
-	if (APPLE)
-		list(APPEND LIBRARIES  "-framework Accelerate")
+# Rubber Band Library
+if(WITH_RUBBERBAND)
+	if(AUDASPACE_STANDALONE)
+		find_package(rubberband ${PACKAGE_OPTION})
 	endif()
 
-	add_library(rubberband_lib STATIC external/rubberband/single/RubberBandSingle.cpp)
+	if(RUBBERBAND_FOUND)
+		set(RUBBERBAND_SRC
+			src/fx/TimeStretch.cpp
+			src/fx/TimeStretchReader.cpp
+		)
+		set(RUBBERBAND_HDR
+			include/fx/TimeStretch.h
+			include/fx/TimeStretchReader.h
+		)
+
+		add_definitions(-DWITH_RUBBERBAND)
+
+		list(APPEND INCLUDE ${RUBBERBAND_INCLUDE_DIRS})
+		list(APPEND LIBRARIES ${RUBBERBAND_LIBRARIES})
+
+		list(APPEND SRC ${RUBBERBAND_SRC})
+		list(APPEND HDR ${RUBBERBAND_HDR})
+	else()
+		if(AUDASPACE_STANDALONE)
+			set(WITH_RUBBERBAND FALSE CACHE BOOL "Build with Rubber Band" FORCE)
+		else()
+			set(WITH_RUBBERBAND FALSE)
+		endif()
+		message(WARNING "Rubber Band Library not found, time-stretching functionality will not be built.")
+	endif()
 endif()
 
 # SDL
