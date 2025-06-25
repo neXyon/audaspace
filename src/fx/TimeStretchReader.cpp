@@ -25,68 +25,20 @@
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, TimeStretchQuality quality) :
+TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, TimeStretchQuality quality) :
     EffectReader(reader),
-    m_timeRatio(time_ratio),
+    m_timeRatio(timeRatio),
+    m_pitchScale(pitchScale),
     m_position(0),
     m_length(0),
     m_stretcher(reader->getSpecs().rate, reader->getSpecs().channels,
-                (RubberBandStretcher::OptionWindowStandard | RubberBandStretcher::OptionProcessOffline | RubberBandStretcher::OptionThreadingAuto |
+                (RubberBandStretcher::OptionWindowStandard | RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionThreadingAuto |
                  (quality == TimeStretchQuality::FASTEST ? RubberBandStretcher::OptionPitchHighSpeed | RubberBandStretcher::OptionEngineFaster :
                                                            RubberBandStretcher::OptionPitchHighQuality | RubberBandStretcher::OptionEngineFiner)),
-                time_ratio)
+                timeRatio, pitchScale)
 {
-	study();
-}
-
-void TimeStretchReader::study()
-{
-	Specs specs = m_reader->getSpecs();
-	int buffersize = AUD_DEFAULT_BUFFER_SIZE;
-
-	int samplesize = AUD_SAMPLE_SIZE(specs);
-
-	Buffer buffer(buffersize * samplesize);
-	sample_t* buf = buffer.getBuffer();
-
-	int channels = specs.channels;
-	int length = m_reader->getLength();
-
-	std::vector<std::vector<sample_t>> deinterleaveBlock(channels, std::vector<sample_t>(buffersize));
-	std::vector<const sample_t*> studyInput(channels);
-
-	int len = buffersize;
-	bool eos = false;
-
-	for(unsigned int pos = 0; ((pos < length) || (length <= 0)) && !eos;)
-	{
-		len = buffersize;
-		if((len > length - pos) && (length > 0))
-			len = length - pos;
-		m_reader->read(len, eos, buf);
-
-		for(int i = 0; i < len * channels; i++)
-		{
-			// clamping!
-			if(buf[i] > 1)
-				buf[i] = 1;
-			else if(buf[i] < -1)
-				buf[i] = -1;
-		}
-
-		// De-interleave the buffer
-		for(int channel = 0; channel < channels; channel++)
-		{
-			for(int i = 0; i < len; ++i)
-			{
-				deinterleaveBlock[channel][i] = buf[i * channels + channel];
-			}
-			studyInput[channel] = deinterleaveBlock[channel].data();
-		}
-		m_stretcher.study(studyInput.data(), len, eos);
-		pos += len;
-	}
-	m_reader->seek(0);
+	m_padAmount = m_stretcher.getPreferredStartPad();
+	m_dropAmount = m_stretcher.getStartDelay();
 }
 
 void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
@@ -102,7 +54,7 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 
 	int available = m_stretcher.available();
 	bool reader_eos = false;
-	while(available < length && !reader_eos)
+	while(available < length + m_dropAmount && !reader_eos)
 	{
 		size_t need = m_stretcher.getSamplesRequired();
 		if(need == 0)
@@ -110,10 +62,18 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 
 		len = need;
 
-		m_buffer.assureSize(len * samplesize);
+		m_buffer.assureSize(std::max(m_padAmount, len) * samplesize);
 		buf = m_buffer.getBuffer();
 
-		m_reader->read(len, reader_eos, buf);
+		if(m_padAmount > 0)
+		{
+			std::memset(buf, 0, m_padAmount * samplesize);
+			m_padAmount = 0;
+		}
+		else
+		{
+			m_reader->read(len, reader_eos, buf);
+		}
 
 		std::vector<std::vector<sample_t>> deInterLeaved(channels, std::vector<sample_t>(len));
 		for(int i = 0; i < len; i++)
@@ -144,12 +104,26 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	int readAmt = std::min(length, available);
 	length = readAmt;
 
-	std::vector<std::vector<sample_t>> output(channels, std::vector<sample_t>(readAmt));
+	std::vector<std::vector<sample_t>> output(channels, std::vector<sample_t>(std::max(readAmt, m_dropAmount)));
 	std::vector<sample_t*> outputData(channels);
 
 	for(int channel = 0; channel < channels; channel++)
 	{
 		outputData[channel] = output[channel].data();
+	}
+
+	if(available <= m_dropAmount)
+	{
+		m_stretcher.retrieve(outputData.data(), available);
+		m_dropAmount -= available;
+		length = 0;
+		return;
+	}
+
+	if(m_dropAmount > 0)
+	{
+		m_stretcher.retrieve(outputData.data(), m_dropAmount);
+		m_dropAmount = 0;
 	}
 
 	size_t frameRetrieved = m_stretcher.retrieve(outputData.data(), readAmt);
@@ -175,12 +149,21 @@ double TimeStretchReader::getTimeRatio() const
 
 void TimeStretchReader::setTimeRatio(double timeRatio)
 {
-	m_stretcher.reset();
 	m_stretcher.setTimeRatio(timeRatio);
-	m_reader->seek(0);
-	m_length = 0;
-	m_position = 0;
-	study();
+	m_padAmount = m_stretcher.getPreferredStartPad();
+	m_dropAmount = m_stretcher.getStartDelay();
+}
+
+double TimeStretchReader::getPitchScale() const
+{
+	return m_pitchScale;
+}
+
+void TimeStretchReader::setPitchScale(double timeRatio)
+{
+	m_stretcher.setPitchScale(timeRatio);
+	m_padAmount = m_stretcher.getPreferredStartPad();
+	m_dropAmount = m_stretcher.getStartDelay();
 }
 
 void TimeStretchReader::seek(int position)
@@ -188,7 +171,6 @@ void TimeStretchReader::seek(int position)
 	m_stretcher.reset();
 	m_length = 0;
 	m_reader->seek(position);
-	study();
 }
 
 int TimeStretchReader::getLength() const

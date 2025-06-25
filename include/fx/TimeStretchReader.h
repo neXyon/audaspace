@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2025 Jörg Müller
+ * Copyright 2009-2016 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,16 @@ class AUD_API TimeStretchReader : public EffectReader
 {
 private:
 	/**
+	 * The amount of samples to pad the input audio before processing
+	 */
+	int m_padAmount;
+
+	/**
+	 * The amount of samples drop the output after retreiving
+	 */
+	int m_dropAmount;
+
+	/**
 	 * The current position.
 	 */
 	int m_position;
@@ -59,6 +69,11 @@ private:
 	double m_timeRatio;
 
 	/**
+	 * The pitch scale for the stretcher.
+	 */
+	double m_pitchScale;
+
+	/**
 	 * Stretcher
 	 */
 	RubberBandStretcher m_stretcher;
@@ -75,7 +90,7 @@ public:
 	 * \param reader The reader to read from.
 	 * \param time_ratio The time ratio for the stretcher
 	 */
-	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, TimeStretchQuality quality);
+	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, TimeStretchQuality quality);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
@@ -84,7 +99,7 @@ public:
 	virtual int getPosition() const;
 
 	/**
-	 * Retrieves the time ratio for the stretcher.
+	 * Retrieves the current time ratio for the stretcher.
 	 * \return The current time ratio value.
 	 */
 	double getTimeRatio() const;
@@ -93,6 +108,17 @@ public:
 	 * Sets the time ratio for the stretcher.
 	 */
 	void setTimeRatio(double timeRatio);
+
+	/**
+	 * Retrieves the pitch scale for the stretcher
+	 * \return The current pitch scale value.
+	 */
+	double getPitchScale() const;
+
+	/**
+	 * Sets the pitch scale for the stretcher.
+	 */
+	void setPitchScale(double pitchScale);
 };
 
 AUD_NAMESPACE_END

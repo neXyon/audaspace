@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2025 Jörg Müller
+ * Copyright 2009-2016 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,17 @@ enum class TimeStretchQuality
 };
 
 /**
- * This sound allows a sound to be time-stretched by the specified ratio
+ * This sound allows a sound to be time-stretched and pitch-scaled
  * \note The reader has to be seekable.
  */
 class AUD_API TimeStretch : public Effect
 {
 private:
+	/**
+	 * The pitch scale to change by.
+	 */
+	double m_pitchScale;
+
 	/**
 	 * The time ratio to stretch by.
 	 */
@@ -55,17 +60,22 @@ private:
 
 public:
 	/**
-	 * Creates a new pitch-corrected sound after stretching by the given ratio.
+	 * Creates a new time-stretch, pitch-scaled sound.
 	 * \param sound The input sound.
-	 * \param ratio The ratio for the stretcher
+	 * \param timeRatio The time ratio to stretch by for the stretcher
+	 * \param ratio The pitch scale to change by fort he stretcher
 	 */
-	TimeStretch(std::shared_ptr<ISound> sound, double m_timeRatio, TimeStretchQuality quality);
+	TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQuality quality);
 
 	/**
 	 * Returns the time ratio.
 	 */
 	double getTimeRatio() const;
 
+	/**
+	 * Returns the pitch scale.
+	 */
+	double getPitchScale() const;
 	virtual std::shared_ptr<IReader> createReader();
 };
 

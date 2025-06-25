@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2025 Jörg Müller
+ * Copyright 2009-2016 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,25 @@
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double ratio, TimeStretchQuality quality) : Effect(sound), m_timeRatio(ratio), m_quality(quality)
+TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQuality quality) :
+    Effect(sound), m_timeRatio(timeRatio), m_pitchScale(pitchScale), m_quality(quality)
 
 {
 }
 
 std::shared_ptr<IReader> TimeStretch::createReader()
 {
-	return std::shared_ptr<IReader>(new TimeStretchReader(getReader(), m_timeRatio, m_quality));
+	return std::shared_ptr<IReader>(new TimeStretchReader(getReader(), m_timeRatio, m_pitchScale, m_quality));
 }
 
 double TimeStretch::getTimeRatio() const
 {
 	return m_timeRatio;
+}
+
+double TimeStretch::getPitchScale() const
+{
+	return m_pitchScale;
 }
 
 AUD_NAMESPACE_END
