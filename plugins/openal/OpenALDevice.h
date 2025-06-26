@@ -26,18 +26,19 @@
  * The OpenALDevice class.
  */
 
-#include "devices/IDevice.h"
-#include "devices/IHandle.h"
-#include "devices/I3DDevice.h"
-#include "devices/I3DHandle.h"
-#include "util/Buffer.h"
+#include <list>
+#include <mutex>
+#include <string>
+#include <thread>
 
 #include <al.h>
 #include <alc.h>
-#include <list>
-#include <mutex>
-#include <thread>
-#include <string>
+
+#include "devices/I3DDevice.h"
+#include "devices/I3DHandle.h"
+#include "devices/IDevice.h"
+#include "devices/IHandle.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -109,7 +110,6 @@ private:
 		OpenALHandle& operator=(const OpenALHandle&) = delete;
 
 	public:
-
 		/**
 		 * Creates a new OpenAL handle.
 		 * \param device The OpenAL device the handle belongs to.
@@ -119,7 +119,9 @@ private:
 		 */
 		OpenALHandle(OpenALDevice* device, ALenum format, std::shared_ptr<IReader> reader, bool keep);
 
-		virtual ~OpenALHandle() {}
+		virtual ~OpenALHandle()
+		{
+		}
 		virtual bool pause();
 		virtual bool resume();
 		virtual bool stop();
@@ -132,6 +134,8 @@ private:
 		virtual bool setVolume(float volume);
 		virtual float getPitch();
 		virtual bool setPitch(float pitch);
+		virtual float getTimeStretch();
+		virtual bool setTimeStretch(float timeStretch);
 		virtual int getLoopCount();
 		virtual bool setLoopCount(int count);
 		virtual bool setStopCallback(stopCallback callback = 0, void* data = 0);
@@ -195,12 +199,12 @@ private:
 	/**
 	 * The list of sounds that are currently playing.
 	 */
-	std::list<std::shared_ptr<OpenALHandle> > m_playingSounds;
+	std::list<std::shared_ptr<OpenALHandle>> m_playingSounds;
 
 	/**
 	 * The list of sounds that are currently paused.
 	 */
-	std::list<std::shared_ptr<OpenALHandle> > m_pausedSounds;
+	std::list<std::shared_ptr<OpenALHandle>> m_pausedSounds;
 
 	/**
 	 * The mutex for locking.
@@ -253,7 +257,7 @@ private:
 	 * \param specs The specs to read the channel count from.
 	 * \return Whether the format is valid or not.
 	 */
-	AUD_LOCAL bool getFormat(ALenum &format, Specs specs);
+	AUD_LOCAL bool getFormat(ALenum& format, Specs specs);
 
 	// delete copy constructor and operator=
 	OpenALDevice(const OpenALDevice&) = delete;
@@ -269,7 +273,7 @@ public:
 	 * \note The buffersize will be multiplicated by three for this device.
 	 * \exception DeviceException Thrown if the audio device cannot be opened.
 	 */
-	OpenALDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE, const std::string &name = "");
+	OpenALDevice(DeviceSpecs specs, int buffersize = AUD_DEFAULT_BUFFER_SIZE, const std::string& name = "");
 
 	virtual ~OpenALDevice();
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2016 Jörg Müller
+ * Copyright 2009-2025 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,76 @@
 
 AUD_NAMESPACE_BEGIN
 
-enum class TimeStretchQuality
+enum TimeStretchQualityOption
 {
-	FASTEST = 0, // Use the high speed
-	HIGH = 1,    /// Use high quality pitch option
+	FASTEST = 1 << 0, // Use the high speed
+	HIGH = 1 << 1,    // Use high quality pitch option
+
+	// Crispness options correspond to https://breakfastquay.com/rubberband/usage.txt and https://hg.sr.ht/~breakfastquay/rubberband-qt-example/browse/src/Processor.cpp?rev=tip
+	// NOTE: These only apply when the R2 engine is used, that is when OptionEngineFaster is used
+	CRISP_0 = 1 << 2,
+	CRISP_1 = 1 << 3,
+	CRISP_2 = 1 << 4,
+	CRISP_3 = 1 << 5,
+	CRISP_4 = 1 << 6,
+	CRISP_5 = 1 << 7,
+	CRISP_6 = 1 << 8,
 };
 
+typedef int TimeStretchQualityOptions;
+
+// switch (crispness) {
+// 	case 0:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsSmooth);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
+// 			break;
+// 	case 1:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsCrisp);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorSoft);
+// 			break;
+// 	case 2:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsSmooth);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
+// 			break;
+// 	case 3:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsSmooth);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseLaminar);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
+// 			break;
+// 	case 4:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsMixed);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseLaminar);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
+// 			break;
+// 	case 5:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsCrisp);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseLaminar);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
+// 			break;
+// 	case 6:
+// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsCrisp);
+// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
+// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
+// 			break;
+// 	}
+
+// 	if (windowSort == 0) options |= RubberBandStretcher::OptionWindowShort;
+// 	if (windowSort == 2) options |= RubberBandStretcher::OptionWindowLong;
+
+// 	int windowSort = 1;
+
+// 	if (crispness == 6) {
+// 			windowSort = 0;
+// 	} else if (crispness == 0 || crispness == 1) {
+// 			windowSort = 2;
+// 	}
+
+// (RubberBandStretcher::OptionWindowStandard | RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionThreadingAuto |
+// 	(quality == TimeStretchQuality::FASTEST ? RubberBandStretcher::OptionPitchHighSpeed | RubberBandStretcher::OptionEngineFaster :
+// 																						RubberBandStretcher::OptionPitchHighQuality | RubberBandStretcher::OptionEngineFiner)),
 /**
  * This sound allows a sound to be time-stretched and pitch-scaled
  * \note The reader has to be seekable.
@@ -52,7 +116,7 @@ private:
 	/**
 	 * The quality of the pitch correction when time-stretching
 	 */
-	TimeStretchQuality m_quality;
+	TimeStretchQualityOptions m_quality;
 
 	// delete copy constructor and operator=
 	TimeStretch(const TimeStretch&) = delete;
@@ -65,7 +129,7 @@ public:
 	 * \param timeRatio The time ratio to stretch by for the stretcher
 	 * \param ratio The pitch scale to change by fort he stretcher
 	 */
-	TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQuality quality);
+	TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQualityOptions quality);
 
 	/**
 	 * Returns the time ratio.

@@ -44,10 +44,11 @@ private:
 		NULLHandle& operator=(const NULLHandle&) = delete;
 
 	public:
-
 		NULLHandle();
 
-		virtual ~NULLHandle() {}
+		virtual ~NULLHandle()
+		{
+		}
 		virtual bool pause();
 		virtual bool resume();
 		virtual bool stop();
@@ -60,6 +61,8 @@ private:
 		virtual bool setVolume(float volume);
 		virtual float getPitch();
 		virtual bool setPitch(float pitch);
+		virtual float getTimeStretch();
+		virtual bool setTimeStretch(float pitch);
 		virtual int getLoopCount();
 		virtual bool setLoopCount(int count);
 		virtual bool setStopCallback(stopCallback callback = 0, void* data = 0);

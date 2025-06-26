@@ -113,9 +113,17 @@ bool OpenALDevice::OpenALHandle::reinitialize()
 }
 
 OpenALDevice::OpenALHandle::OpenALHandle(OpenALDevice* device, ALenum format, std::shared_ptr<IReader> reader, bool keep) :
-	m_isBuffered(false), m_reader(reader), m_keep(keep), m_format(format),
-	m_eos(false), m_loopcount(0), m_stop(nullptr), m_stop_data(nullptr), m_status(STATUS_PLAYING),
-	m_relative(1), m_device(device)
+    m_isBuffered(false),
+    m_reader(reader),
+    m_keep(keep),
+    m_format(format),
+    m_eos(false),
+    m_loopcount(0),
+    m_stop(nullptr),
+    m_stop_data(nullptr),
+    m_status(STATUS_PLAYING),
+    m_relative(1),
+    m_device(device)
 {
 	DeviceSpecs specs = m_device->m_specs;
 	specs.specs = m_reader->getSpecs();
@@ -286,7 +294,7 @@ bool OpenALDevice::OpenALHandle::seek(double position)
 		alSourcef(m_source, AL_SEC_OFFSET, position);
 	else
 	{
-		m_reader->seek((int)(position * m_reader->getSpecs().rate));
+		m_reader->seek((int) (position * m_reader->getSpecs().rate));
 		m_eos = false;
 
 		ALint info;
@@ -360,7 +368,7 @@ double OpenALDevice::OpenALHandle::getPosition()
 		alGetSourcei(m_source, AL_BUFFERS_QUEUED, &queued);
 
 		Specs specs = m_reader->getSpecs();
-		position += (m_reader->getPosition() - m_device->m_buffersize * queued) / (float)specs.rate;
+		position += (m_reader->getPosition() - m_device->m_buffersize * queued) / (float) specs.rate;
 	}
 
 	return position;
@@ -437,6 +445,17 @@ bool OpenALDevice::OpenALHandle::setPitch(float pitch)
 	return true;
 }
 
+float OpenALDevice::OpenALHandle::getTimeStretch()
+{
+	float result = std::numeric_limits<float>::quiet_NaN();
+	return result;
+}
+
+bool OpenALDevice::OpenALHandle::setTimeStretch(float timeStretch)
+{
+	return false;
+}
+
 int OpenALDevice::OpenALHandle::getLoopCount()
 {
 	if(!m_status)
@@ -507,7 +526,7 @@ bool OpenALDevice::OpenALHandle::setLocation(const Vector3& location)
 	if(!m_status)
 		return false;
 
-	alSourcefv(m_source, AL_POSITION, (ALfloat*)location.get());
+	alSourcefv(m_source, AL_POSITION, (ALfloat*) location.get());
 
 	return true;
 }
@@ -542,7 +561,7 @@ bool OpenALDevice::OpenALHandle::setVelocity(const Vector3& velocity)
 	if(!m_status)
 		return false;
 
-	alSourcefv(m_source, AL_VELOCITY, (ALfloat*)velocity.get());
+	alSourcefv(m_source, AL_VELOCITY, (ALfloat*) velocity.get());
 
 	return true;
 }
@@ -555,12 +574,9 @@ Quaternion OpenALDevice::OpenALHandle::getOrientation()
 bool OpenALDevice::OpenALHandle::setOrientation(const Quaternion& orientation)
 {
 	ALfloat direction[3];
-	direction[0] = -2 * (orientation.w() * orientation.y() +
-						 orientation.x() * orientation.z());
-	direction[1] = 2 * (orientation.x() * orientation.w() -
-						orientation.z() * orientation.y());
-	direction[2] = 2 * (orientation.x() * orientation.x() +
-						orientation.y() * orientation.y()) - 1;
+	direction[0] = -2 * (orientation.w() * orientation.y() + orientation.x() * orientation.z());
+	direction[1] = 2 * (orientation.x() * orientation.w() - orientation.z() * orientation.y());
+	direction[2] = 2 * (orientation.x() * orientation.x() + orientation.y() * orientation.y()) - 1;
 
 	if(!m_status)
 		return false;
@@ -866,7 +882,7 @@ bool OpenALDevice::OpenALHandle::setConeVolumeOuter(float volume)
 		return false;
 
 	if(volume >= 0.0f && volume <= 1.0f)
-	alSourcef(m_source, AL_CONE_OUTER_GAIN, volume);
+		alSourcef(m_source, AL_CONE_OUTER_GAIN, volume);
 
 	return true;
 }
@@ -897,8 +913,8 @@ void OpenALDevice::updateStreams()
 	ALint info;
 	DeviceSpecs specs = m_specs;
 	ALCenum cerr;
-	std::list<std::shared_ptr<OpenALHandle> > stopSounds;
-	std::list<std::shared_ptr<OpenALHandle> > pauseSounds;
+	std::list<std::shared_ptr<OpenALHandle>> stopSounds;
+	std::list<std::shared_ptr<OpenALHandle>> pauseSounds;
 
 	auto sleepDuration = std::chrono::milliseconds(20);
 
@@ -929,7 +945,7 @@ void OpenALDevice::updateStreams()
 				{
 					// at least try to set the frequency
 
-					ALCint attribs[] = { ALC_FREQUENCY, (ALCint)specs.rate, 0 };
+					ALCint attribs[] = {ALC_FREQUENCY, (ALCint) specs.rate, 0};
 					ALCint* attributes = attribs;
 					if(specs.rate == RATE_INVALID)
 						attributes = nullptr;
@@ -939,7 +955,7 @@ void OpenALDevice::updateStreams()
 
 					m_checkDisconnect = alcIsExtensionPresent(m_device, "ALC_EXT_disconnect");
 
-					alcGetIntegerv(m_device, ALC_FREQUENCY, 1, (ALCint*)&specs.rate);
+					alcGetIntegerv(m_device, ALC_FREQUENCY, 1, (ALCint*) &specs.rate);
 
 					// check for specific formats and channel counts to be played back
 					if(alIsExtensionPresent("AL_EXT_FLOAT32") == AL_TRUE)
@@ -954,9 +970,7 @@ void OpenALDevice::updateStreams()
 
 					m_useMC = alIsExtensionPresent("AL_EXT_MCFORMATS") == AL_TRUE;
 
-					if((!m_useMC && specs.channels > CHANNELS_STEREO) ||
-							specs.channels == CHANNELS_STEREO_LFE ||
-							specs.channels == CHANNELS_SURROUND5)
+					if((!m_useMC && specs.channels > CHANNELS_STEREO) || specs.channels == CHANNELS_STEREO_LFE || specs.channels == CHANNELS_SURROUND5)
 						specs.channels = CHANNELS_STEREO;
 
 					alGetError();
@@ -964,7 +978,7 @@ void OpenALDevice::updateStreams()
 
 					m_specs = specs;
 
-					std::list<std::shared_ptr<OpenALHandle> > stopSounds;
+					std::list<std::shared_ptr<OpenALHandle>> stopSounds;
 
 					for(auto& handle : m_playingSounds)
 						if(handle->reinitialize())
@@ -1064,7 +1078,7 @@ void OpenALDevice::updateStreams()
 								}
 
 								// and queue again
-								alSourceQueueBuffers(sound->m_source, 1,&buffer);
+								alSourceQueueBuffers(sound->m_source, 1, &buffer);
 								if(alGetError() != AL_NO_ERROR)
 								{
 									sound->m_eos = true;
@@ -1134,8 +1148,7 @@ void OpenALDevice::updateStreams()
 /**************************** IDevice Code ************************************/
 /******************************************************************************/
 
-OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, const std::string &name) :
-	m_name(name), m_playing(false), m_buffersize(buffersize)
+OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, const std::string& name) : m_name(name), m_playing(false), m_buffersize(buffersize)
 {
 	// cannot determine how many channels or which format OpenAL uses, but
 	// it at least is able to play 16 bit stereo audio
@@ -1150,7 +1163,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, const std::string 
 		AUD_THROW(DeviceException, "The audio device couldn't be opened with OpenAL.");
 
 	// at least try to set the frequency
-	ALCint attribs[] = { ALC_FREQUENCY, (ALCint)specs.rate, 0 };
+	ALCint attribs[] = {ALC_FREQUENCY, (ALCint) specs.rate, 0};
 	ALCint* attributes = attribs;
 	if(specs.rate == RATE_INVALID)
 		attributes = nullptr;
@@ -1160,7 +1173,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, const std::string 
 
 	m_checkDisconnect = alcIsExtensionPresent(m_device, "ALC_EXT_disconnect");
 
-	alcGetIntegerv(m_device, ALC_FREQUENCY, 1, (ALCint*)&specs.rate);
+	alcGetIntegerv(m_device, ALC_FREQUENCY, 1, (ALCint*) &specs.rate);
 
 	// check for specific formats and channel counts to be played back
 	if(alIsExtensionPresent("AL_EXT_FLOAT32") == AL_TRUE)
@@ -1168,10 +1181,7 @@ OpenALDevice::OpenALDevice(DeviceSpecs specs, int buffersize, const std::string 
 
 	m_useMC = alIsExtensionPresent("AL_EXT_MCFORMATS") == AL_TRUE;
 
-	if((!m_useMC && specs.channels > CHANNELS_STEREO) ||
-			specs.channels == CHANNELS_STEREO_LFE ||
-			specs.channels == CHANNELS_SURROUND5 ||
-			specs.channels > CHANNELS_SURROUND71)
+	if((!m_useMC && specs.channels > CHANNELS_STEREO) || specs.channels == CHANNELS_STEREO_LFE || specs.channels == CHANNELS_SURROUND5 || specs.channels > CHANNELS_SURROUND71)
 		specs.channels = CHANNELS_STEREO;
 
 	alGetError();
@@ -1209,7 +1219,7 @@ DeviceSpecs OpenALDevice::getSpecs() const
 	return m_specs;
 }
 
-bool OpenALDevice::getFormat(ALenum &format, Specs specs)
+bool OpenALDevice::getFormat(ALenum& format, Specs specs)
 {
 	bool valid = true;
 	format = 0;
@@ -1466,7 +1476,7 @@ void OpenALDevice::setListenerLocation(const Vector3& location)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-	alListenerfv(AL_POSITION, (ALfloat*)location.get());
+	alListenerfv(AL_POSITION, (ALfloat*) location.get());
 }
 
 Vector3 OpenALDevice::getListenerVelocity() const
@@ -1481,7 +1491,7 @@ void OpenALDevice::setListenerVelocity(const Vector3& velocity)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-	alListenerfv(AL_VELOCITY, (ALfloat*)velocity.get());
+	alListenerfv(AL_VELOCITY, (ALfloat*) velocity.get());
 }
 
 Quaternion OpenALDevice::getListenerOrientation() const
@@ -1495,18 +1505,12 @@ void OpenALDevice::setListenerOrientation(const Quaternion& orientation)
 
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-	direction[0] = -2 * (orientation.w() * orientation.y() +
-						 orientation.x() * orientation.z());
-	direction[1] = 2 * (orientation.x() * orientation.w() -
-						orientation.z() * orientation.y());
-	direction[2] = 2 * (orientation.x() * orientation.x() +
-						orientation.y() * orientation.y()) - 1;
-	direction[3] = 2 * (orientation.x() * orientation.y() -
-						orientation.w() * orientation.z());
-	direction[4] = 1 - 2 * (orientation.x() * orientation.x() +
-							orientation.z() * orientation.z());
-	direction[5] = 2 * (orientation.w() * orientation.x() +
-						orientation.y() * orientation.z());
+	direction[0] = -2 * (orientation.w() * orientation.y() + orientation.x() * orientation.z());
+	direction[1] = 2 * (orientation.x() * orientation.w() - orientation.z() * orientation.y());
+	direction[2] = 2 * (orientation.x() * orientation.x() + orientation.y() * orientation.y()) - 1;
+	direction[3] = 2 * (orientation.x() * orientation.y() - orientation.w() * orientation.z());
+	direction[4] = 1 - 2 * (orientation.x() * orientation.x() + orientation.z() * orientation.z());
+	direction[5] = 2 * (orientation.w() * orientation.x() + orientation.y() * orientation.z());
 	alListenerfv(AL_ORIENTATION, direction);
 	m_orientation = orientation;
 }
@@ -1618,9 +1622,7 @@ private:
 	std::string m_name;
 
 public:
-	OpenALDeviceFactory(const std::string &name = "") :
-		m_buffersize(AUD_DEFAULT_BUFFER_SIZE),
-		m_name(name)
+	OpenALDeviceFactory(const std::string& name = "") : m_buffersize(AUD_DEFAULT_BUFFER_SIZE), m_name(name)
 	{
 		m_specs.format = FORMAT_FLOAT32;
 		m_specs.channels = CHANNELS_SURROUND51;
@@ -1647,7 +1649,7 @@ public:
 		m_buffersize = buffersize;
 	}
 
-	virtual void setName(const std::string &name)
+	virtual void setName(const std::string& name)
 	{
 	}
 };
@@ -1656,7 +1658,7 @@ void OpenALDevice::registerPlugin()
 {
 	auto names = OpenALDevice::getDeviceNames();
 	DeviceManager::registerDevice("OpenAL", std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory));
-	for(const std::string &name : names)
+	for(const std::string& name : names)
 	{
 		DeviceManager::registerDevice("OpenAL - " + name, std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory(name)));
 	}

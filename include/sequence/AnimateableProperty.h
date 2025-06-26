@@ -22,11 +22,11 @@
  * Defines the AnimateableProperty class as well as existing property types.
  */
 
+#include <list>
+#include <mutex>
+
 #include "util/Buffer.h"
 #include "util/ILockable.h"
-
-#include <mutex>
-#include <list>
 
 AUD_NAMESPACE_BEGIN
 
@@ -36,6 +36,7 @@ enum AnimateablePropertyType
 	AP_VOLUME,
 	AP_PANNING,
 	AP_PITCH,
+	AP_TIME_STRETCH,
 	AP_LOCATION,
 	AP_ORIENTATION
 };
@@ -46,12 +47,14 @@ enum AnimateablePropertyType
 class AUD_API AnimateableProperty : private Buffer
 {
 private:
-	struct Unknown {
+	struct Unknown
+	{
 		int start;
 		int end;
 
-		Unknown(int start, int end) :
-			start(start), end(end) {}
+		Unknown(int start, int end) : start(start), end(end)
+		{
+		}
 	};
 
 	/// The count of floats for a single property.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2016 Jörg Müller
+ * Copyright 2009-2025 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQuality quality) :
+TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQualityOptions quality) :
     Effect(sound), m_timeRatio(timeRatio), m_pitchScale(pitchScale), m_quality(quality)
 
 {

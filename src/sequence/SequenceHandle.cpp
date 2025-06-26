@@ -15,11 +15,13 @@
  ******************************************************************************/
 
 #include "SequenceHandle.h"
-#include "sequence/SequenceEntry.h"
-#include "devices/ReadDevice.h"
-#include "Exception.h"
 
 #include <mutex>
+
+#include "Exception.h"
+
+#include "devices/ReadDevice.h"
+#include "sequence/SequenceEntry.h"
 
 #define KEEP_TIME 10
 #define POSITION_EPSILON (1.0 / static_cast<double>(RATE_48000))
@@ -110,12 +112,7 @@ bool SequenceHandle::updatePosition(double position)
 }
 
 SequenceHandle::SequenceHandle(std::shared_ptr<SequenceEntry> entry, ReadDevice& device) :
-	m_entry(entry),
-	m_valid(true),
-	m_status(0),
-	m_pos_status(0),
-	m_sound_status(0),
-	m_device(device)
+    m_entry(entry), m_valid(true), m_status(0), m_pos_status(0), m_sound_status(0), m_device(device)
 {
 }
 
@@ -212,6 +209,10 @@ void SequenceHandle::update(double position, float frame, float fps)
 	m_handle->setVolume(value);
 	m_entry->m_pitch.read(frame, &value);
 	m_handle->setPitch(value);
+
+	m_entry->m_time_stretch.read(frame, &value);
+	m_handle->setTimeStretch(value);
+
 	m_entry->m_panning.read(frame, &value);
 	SoftwareDevice::setPanning(m_handle.get(), value);
 

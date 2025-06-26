@@ -23,26 +23,27 @@
 
 #include "util/Buffer.h"
 
+using namespace RubberBand;
+
+static int read_call_counter = 0;
+
 AUD_NAMESPACE_BEGIN
 
-TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, TimeStretchQuality quality) :
+TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, TimeStretchQualityOptions quality) :
     EffectReader(reader),
     m_timeRatio(timeRatio),
     m_pitchScale(pitchScale),
     m_position(0),
     m_length(0),
-    m_stretcher(reader->getSpecs().rate, reader->getSpecs().channels,
-                (RubberBandStretcher::OptionWindowStandard | RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionThreadingAuto |
-                 (quality == TimeStretchQuality::FASTEST ? RubberBandStretcher::OptionPitchHighSpeed | RubberBandStretcher::OptionEngineFaster :
-                                                           RubberBandStretcher::OptionPitchHighQuality | RubberBandStretcher::OptionEngineFiner)),
-                timeRatio, pitchScale)
+    m_options(quality),
+    m_stretcher(reader->getSpecs().rate, reader->getSpecs().channels, RubberBandStretcher::OptionProcessRealTime, timeRatio, pitchScale)
 {
-	m_padAmount = m_stretcher.getPreferredStartPad();
-	m_dropAmount = m_stretcher.getStartDelay();
 }
 
 void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 {
+	read_call_counter++;
+	// printf("=== READ CALL #%d with LENGTH %d ===\n", read_call_counter, length);
 	if(length == 0)
 		return;
 
@@ -67,6 +68,7 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 
 		if(m_padAmount > 0)
 		{
+			// printf("PADDING by %i for TIMESTRETCH of %f AVILABLE %i\n", m_padAmount, m_stretcher.getPitchScale(), available);
 			std::memset(buf, 0, m_padAmount * samplesize);
 			m_padAmount = 0;
 		}
@@ -93,8 +95,10 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		m_stretcher.process(processData.data(), len, reader_eos);
 
 		available = m_stretcher.available();
+		printf("AVILABLE %i cond: %i readeos %i  continueLoop? %i \n", available, length + m_dropAmount, reader_eos, available < length + m_dropAmount && !reader_eos);
 	}
 
+	// printf("AVI %i\n", available);
 	if(available <= 0)
 	{
 		length = 0;
@@ -114,9 +118,11 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 
 	if(available <= m_dropAmount)
 	{
-		m_stretcher.retrieve(outputData.data(), available);
-		m_dropAmount -= available;
+		size_t discard = std::min(available, m_dropAmount);
+		m_stretcher.retrieve(outputData.data(), discard);
+		m_dropAmount -= discard;
 		length = 0;
+		printf("DROPPED");
 		return;
 	}
 
@@ -126,6 +132,7 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		m_dropAmount = 0;
 	}
 
+	readAmt = std::min(m_stretcher.available(), length);
 	size_t frameRetrieved = m_stretcher.retrieve(outputData.data(), readAmt);
 
 	for(int i = 0; i < frameRetrieved; i++)
@@ -149,9 +156,13 @@ double TimeStretchReader::getTimeRatio() const
 
 void TimeStretchReader::setTimeRatio(double timeRatio)
 {
-	m_stretcher.setTimeRatio(timeRatio);
-	m_padAmount = m_stretcher.getPreferredStartPad();
-	m_dropAmount = m_stretcher.getStartDelay();
+	if(timeRatio != m_stretcher.getTimeRatio())
+	{
+		m_stretcher.setTimeRatio(timeRatio);
+		m_padAmount = m_stretcher.getPreferredStartPad();
+		m_dropAmount = m_stretcher.getStartDelay();
+		// m_stretcher.reset();
+	}
 }
 
 double TimeStretchReader::getPitchScale() const
@@ -159,11 +170,15 @@ double TimeStretchReader::getPitchScale() const
 	return m_pitchScale;
 }
 
-void TimeStretchReader::setPitchScale(double timeRatio)
+void TimeStretchReader::setPitchScale(double pitchScale)
 {
-	m_stretcher.setPitchScale(timeRatio);
-	m_padAmount = m_stretcher.getPreferredStartPad();
-	m_dropAmount = m_stretcher.getStartDelay();
+	if(pitchScale != m_stretcher.getPitchScale())
+	{
+		m_stretcher.setPitchScale(pitchScale);
+		m_padAmount = m_stretcher.getPreferredStartPad();
+		m_dropAmount = m_stretcher.getStartDelay();
+		// m_stretcher.reset();
+	}
 }
 
 void TimeStretchReader::seek(int position)

@@ -15,43 +15,46 @@
  ******************************************************************************/
 
 #include "sequence/SequenceEntry.h"
-#include "sequence/SequenceReader.h"
 
 #include <limits>
 #include <mutex>
 
+#include "sequence/SequenceReader.h"
+
 AUD_NAMESPACE_BEGIN
 
 SequenceEntry::SequenceEntry(std::shared_ptr<ISound> sound, double begin, double end, double skip, std::shared_ptr<SequenceData> sequence_data, int id) :
-	m_status(0),
-	m_pos_status(1),
-	m_sound_status(0),
-	m_id(id),
-	m_sound(sound),
-	m_begin(begin),
-	m_end(end),
-	m_skip(skip),
-	m_sequence_data(sequence_data),
-	m_muted(false),
-	m_relative(true),
-	m_volume_max(1.0f),
-	m_volume_min(0),
-	m_distance_max(std::numeric_limits<float>::max()),
-	m_distance_reference(1.0f),
-	m_attenuation(1.0f),
-	m_cone_angle_outer(360),
-	m_cone_angle_inner(360),
-	m_cone_volume_outer(0),
-	m_volume(1, 1.0f),
-	m_pitch(1, 1.0f),
-	m_location(3),
-	m_orientation(4)
+    m_status(0),
+    m_pos_status(1),
+    m_sound_status(0),
+    m_id(id),
+    m_sound(sound),
+    m_begin(begin),
+    m_end(end),
+    m_skip(skip),
+    m_sequence_data(sequence_data),
+    m_muted(false),
+    m_relative(true),
+    m_volume_max(1.0f),
+    m_volume_min(0),
+    m_distance_max(std::numeric_limits<float>::max()),
+    m_distance_reference(1.0f),
+    m_attenuation(1.0f),
+    m_cone_angle_outer(360),
+    m_cone_angle_inner(360),
+    m_cone_volume_outer(0),
+    m_volume(1, 1.0f),
+    m_pitch(1, 1.0f),
+    m_time_stretch(1, 1.0f),
+    m_location(3),
+    m_orientation(4)
 {
 	Quaternion q;
 	m_orientation.write(q.get());
 	float f = 1;
 	m_volume.write(&f);
 	m_pitch.write(&f);
+	m_time_stretch.write(&f);
 }
 
 SequenceEntry::~SequenceEntry()
@@ -123,6 +126,8 @@ AnimateableProperty* SequenceEntry::getAnimProperty(AnimateablePropertyType type
 		return &m_volume;
 	case AP_PITCH:
 		return &m_pitch;
+	case AP_TIME_STRETCH:
+		return &m_time_stretch;
 	case AP_PANNING:
 		return &m_panning;
 	case AP_LOCATION:

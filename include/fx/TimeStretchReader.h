@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2009-2016 Jörg Müller
+ * Copyright 2009-2025 Jörg Müller
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 #pragma once
 
 /**
- * @file ShiftReader.h
+ * @file TimeStretchReader.h
  * @ingroup fx
- * The ShiftReader class.
+ * The TimeStretch class.
  */
 
 #include "TimeStretch.h"
@@ -74,15 +74,18 @@ private:
 	double m_pitchScale;
 
 	/**
-	 * Stretcher
+	 * Stretcher.
 	 */
 	RubberBandStretcher m_stretcher;
+
+	/**
+	 * Stretcher options.
+	 */
+	TimeStretchQualityOptions m_options;
 
 	// delete copy constructor and operator=
 	TimeStretchReader(const TimeStretchReader&) = delete;
 	TimeStretchReader& operator=(const TimeStretchReader&) = delete;
-
-	void study();
 
 public:
 	/**
@@ -90,7 +93,7 @@ public:
 	 * \param reader The reader to read from.
 	 * \param time_ratio The time ratio for the stretcher
 	 */
-	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, TimeStretchQuality quality);
+	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, TimeStretchQualityOptions quality);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
@@ -119,6 +122,11 @@ public:
 	 * Sets the pitch scale for the stretcher.
 	 */
 	void setPitchScale(double pitchScale);
+
+	/**
+	 * Sets the configuration for the stretcher
+	 */
+	void setQuality(TimeStretchQualityOptions quality);
 };
 
 AUD_NAMESPACE_END

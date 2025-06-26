@@ -15,11 +15,12 @@
  ******************************************************************************/
 
 #include "devices/NULLDevice.h"
-#include "devices/DeviceManager.h"
-#include "devices/IDeviceFactory.h"
 
 #include <limits>
 #include <string>
+
+#include "devices/DeviceManager.h"
+#include "devices/IDeviceFactory.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -83,6 +84,16 @@ float NULLDevice::NULLHandle::getPitch()
 }
 
 bool NULLDevice::NULLHandle::setPitch(float pitch)
+{
+	return false;
+}
+
+float NULLDevice::NULLHandle::getTimeStretch()
+{
+	return std::numeric_limits<float>::quiet_NaN();
+}
+
+bool NULLDevice::NULLHandle::setTimeStretch(float timeStretch)
 {
 	return false;
 }
@@ -201,7 +212,7 @@ public:
 	{
 	}
 
-	virtual void setName(const std::string &name)
+	virtual void setName(const std::string& name)
 	{
 	}
 };

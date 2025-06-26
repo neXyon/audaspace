@@ -29,10 +29,10 @@ AUD_NAMESPACE_BEGIN
 /// Status of a playback handle.
 enum Status
 {
-	STATUS_INVALID = 0,			/// Invalid handle. Maybe due to stopping.
-	STATUS_PLAYING,				/// Sound is playing.
-	STATUS_PAUSED,				/// Sound is being paused.
-	STATUS_STOPPED				/// Sound is stopped but kept in the device.
+	STATUS_INVALID = 0, /// Invalid handle. Maybe due to stopping.
+	STATUS_PLAYING,     /// Sound is playing.
+	STATUS_PAUSED,      /// Sound is being paused.
+	STATUS_STOPPED      /// Sound is stopped but kept in the device.
 };
 
 /**
@@ -51,7 +51,9 @@ public:
 	/**
 	 * Destroys the handle.
 	 */
-	virtual ~IHandle() {}
+	virtual ~IHandle()
+	{
+	}
 
 	/**
 	 * Pauses a played back sound.
@@ -59,7 +61,7 @@ public:
 	 *        - true if the sound has been paused.
 	 *        - false if the sound isn't playing back or the handle is invalid.
 	 */
-	virtual bool pause()=0;
+	virtual bool pause() = 0;
 
 	/**
 	 * Resumes a paused sound.
@@ -67,7 +69,7 @@ public:
 	 *        - true if the sound has been resumed.
 	 *        - false if the sound isn't paused or the handle is invalid.
 	 */
-	virtual bool resume()=0;
+	virtual bool resume() = 0;
 
 	/**
 	 * Stops a played back or paused sound. The handle is definitely invalid
@@ -76,7 +78,7 @@ public:
 	 *        - true if the sound has been stopped.
 	 *        - false if the handle is invalid.
 	 */
-	virtual bool stop()=0;
+	virtual bool stop() = 0;
 
 	/**
 	 * Gets the behaviour of the device for a played back sound when the sound
@@ -85,7 +87,7 @@ public:
 	 *        - true if the source will be paused when it's end is reached
 	 *        - false if the handle won't kept or is invalid.
 	 */
-	virtual bool getKeep()=0;
+	virtual bool getKeep() = 0;
 
 	/**
 	 * Sets the behaviour of the device for a played back sound when the sound
@@ -95,7 +97,7 @@ public:
 	 *        - true if the behaviour has been changed.
 	 *        - false if the handle is invalid.
 	 */
-	virtual bool setKeep(bool keep)=0;
+	virtual bool setKeep(bool keep) = 0;
 
 	/**
 	 * Seeks in a played back sound.
@@ -105,14 +107,14 @@ public:
 	 *        - false if the handle is invalid.
 	 * \warning Whether the seek works or not depends on the sound source.
 	 */
-	virtual bool seek(double position)=0;
+	virtual bool seek(double position) = 0;
 
 	/**
 	 * Retrieves the current playback position of a sound.
 	 * \return The playback position in seconds, or 0.0 if the handle is
 	 *         invalid.
 	 */
-	virtual double getPosition()=0;
+	virtual double getPosition() = 0;
 
 	/**
 	 * Returns the status of a played back sound.
@@ -125,13 +127,13 @@ public:
 	 *          kept in the device.
 	 * \see Status
 	 */
-	virtual Status getStatus()=0;
+	virtual Status getStatus() = 0;
 
 	/**
 	 * Retrieves the volume of a playing sound.
 	 * \return The volume.
 	 */
-	virtual float getVolume()=0;
+	virtual float getVolume() = 0;
 
 	/**
 	 * Sets the volume of a playing sound.
@@ -140,13 +142,13 @@ public:
 	 *        - true if the handle is valid.
 	 *        - false if the handle is invalid.
 	 */
-	virtual bool setVolume(float volume)=0;
+	virtual bool setVolume(float volume) = 0;
 
 	/**
 	 * Retrieves the pitch of a playing sound.
 	 * \return The pitch.
 	 */
-	virtual float getPitch()=0;
+	virtual float getPitch() = 0;
 
 	/**
 	 * Sets the pitch of a playing sound.
@@ -155,14 +157,28 @@ public:
 	 *        - true if the handle is valid.
 	 *        - false if the handle is invalid.
 	 */
-	virtual bool setPitch(float pitch)=0;
+	virtual bool setPitch(float pitch) = 0;
 
+	/**
+	 * Retrieves the time-stretch of a playing sound.
+	 * \return The time-stretch.
+	 */
+	virtual float getTimeStretch() = 0;
+
+	/**
+	 * Sets the time-stretch of a playing sound.
+	 * \param timeStretch The time-stretch ratio.
+	 * \return
+	 *        - true if the handle is valid.
+	 *        - false if the handle is invalid.
+	 */
+	virtual bool setTimeStretch(float timeStretch) = 0;
 	/**
 	 * Retrieves the loop count of a playing sound.
 	 * A negative value indicates infinity.
 	 * \return The remaining loop count.
 	 */
-	virtual int getLoopCount()=0;
+	virtual int getLoopCount() = 0;
 
 	/**
 	 * Sets the loop count of a playing sound.
@@ -172,7 +188,7 @@ public:
 	 *        - true if the handle is valid.
 	 *        - false if the handle is invalid.
 	 */
-	virtual bool setLoopCount(int count)=0;
+	virtual bool setLoopCount(int count) = 0;
 
 	/**
 	 * Sets the callback function that's called when the end of a playing sound
@@ -183,7 +199,7 @@ public:
 	 *        - true if the handle is valid.
 	 *        - false if the handle is invalid.
 	 */
-	virtual bool setStopCallback(stopCallback callback = 0, void* data = 0)=0;
+	virtual bool setStopCallback(stopCallback callback = 0, void* data = 0) = 0;
 };
 
 AUD_NAMESPACE_END

@@ -22,19 +22,20 @@
  * The SoftwareDevice class.
  */
 
-#include "devices/IDevice.h"
-#include "devices/IHandle.h"
-#include "devices/I3DDevice.h"
-#include "devices/I3DHandle.h"
-#include "util/Buffer.h"
-
 #include <list>
 #include <mutex>
+
+#include "devices/I3DDevice.h"
+#include "devices/I3DHandle.h"
+#include "devices/IDevice.h"
+#include "devices/IHandle.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
 class Mixer;
 class PitchReader;
+class TimeStretchReader;
 class ResampleReader;
 class ChannelMapperReader;
 
@@ -62,6 +63,9 @@ protected:
 		/// The reader source.
 		std::shared_ptr<IReader> m_reader;
 
+		/// The time-stretch reader in between.
+		std::shared_ptr<TimeStretchReader> m_timeStretch;
+
 		/// The pitch reader in between.
 		std::shared_ptr<PitchReader> m_pitch;
 
@@ -79,6 +83,9 @@ protected:
 
 		/// The user set pitch of the source.
 		float m_user_pitch;
+
+		/// The user set time-stretch of the source.
+		float m_user_time_stretch;
 
 		/// The user set volume of the source.
 		float m_user_volume;
@@ -163,7 +170,8 @@ protected:
 		 * \param mapper The channel mapping reader.
 		 * \param keep Whether to keep the handle when the sound ends.
 		 */
-		SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch, std::shared_ptr<ResampleReader> resampler, std::shared_ptr<ChannelMapperReader> mapper, bool keep);
+		SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch, std::shared_ptr<TimeStretchReader> timeStretch,
+		               std::shared_ptr<ResampleReader> resampler, std::shared_ptr<ChannelMapperReader> mapper, bool keep);
 
 		/**
 		 * Updates the handle's playback parameters.
@@ -176,7 +184,9 @@ protected:
 		 */
 		void setSpecs(Specs specs);
 
-		virtual ~SoftwareHandle() {}
+		virtual ~SoftwareHandle()
+		{
+		}
 		virtual bool pause();
 		virtual bool resume();
 		virtual bool stop();
@@ -189,6 +199,8 @@ protected:
 		virtual bool setVolume(float volume);
 		virtual float getPitch();
 		virtual bool setPitch(float pitch);
+		virtual float getTimeStretch();
+		virtual bool setTimeStretch(float timeStretch);
 		virtual int getLoopCount();
 		virtual bool setLoopCount(int count);
 		virtual bool setStopCallback(stopCallback callback = 0, void* data = 0);
@@ -256,7 +268,7 @@ protected:
 	 * \param playing True if device should playback.
 	 * \note This method is only called when the device is locked.
 	 */
-	virtual void playing(bool playing)=0;
+	virtual void playing(bool playing) = 0;
 
 	/**
 	 * Sets the audio output specification of the device.
@@ -285,12 +297,12 @@ private:
 	/**
 	 * The list of sounds that are currently playing.
 	 */
-	std::list<std::shared_ptr<SoftwareHandle> > m_playingSounds;
+	std::list<std::shared_ptr<SoftwareHandle>> m_playingSounds;
 
 	/**
 	 * The list of sounds that are currently paused.
 	 */
-	std::list<std::shared_ptr<SoftwareHandle> > m_pausedSounds;
+	std::list<std::shared_ptr<SoftwareHandle>> m_pausedSounds;
 
 	/**
 	 * Whether there is currently playback.
@@ -337,7 +349,6 @@ private:
 	SoftwareDevice& operator=(const SoftwareDevice&) = delete;
 
 public:
-
 	/**
 	 * Sets the panning of a specific handle.
 	 * \param handle The handle to set the panning from.
