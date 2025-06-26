@@ -43,7 +43,6 @@ TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double tim
 void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	read_call_counter++;
-	// printf("=== READ CALL #%d with LENGTH %d ===\n", read_call_counter, length);
 	if(length == 0)
 		return;
 
@@ -68,7 +67,6 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 
 		if(m_padAmount > 0)
 		{
-			// printf("PADDING by %i for TIMESTRETCH of %f AVILABLE %i\n", m_padAmount, m_stretcher.getPitchScale(), available);
 			std::memset(buf, 0, m_padAmount * samplesize);
 			m_padAmount = 0;
 		}
@@ -95,10 +93,8 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		m_stretcher.process(processData.data(), len, reader_eos);
 
 		available = m_stretcher.available();
-		printf("AVILABLE %i cond: %i readeos %i  continueLoop? %i \n", available, length + m_dropAmount, reader_eos, available < length + m_dropAmount && !reader_eos);
 	}
 
-	// printf("AVI %i\n", available);
 	if(available <= 0)
 	{
 		length = 0;

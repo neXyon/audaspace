@@ -44,58 +44,6 @@ enum TimeStretchQualityOption
 
 typedef int TimeStretchQualityOptions;
 
-// switch (crispness) {
-// 	case 0:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsSmooth);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
-// 			break;
-// 	case 1:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsCrisp);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorSoft);
-// 			break;
-// 	case 2:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsSmooth);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
-// 			break;
-// 	case 3:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsSmooth);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseLaminar);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
-// 			break;
-// 	case 4:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsMixed);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseLaminar);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
-// 			break;
-// 	case 5:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsCrisp);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseLaminar);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
-// 			break;
-// 	case 6:
-// 			stretcher->setTransientsOption(RubberBandStretcher::OptionTransientsCrisp);
-// 			stretcher->setPhaseOption(RubberBandStretcher::OptionPhaseIndependent);
-// 			stretcher->setDetectorOption(RubberBandStretcher::OptionDetectorCompound);
-// 			break;
-// 	}
-
-// 	if (windowSort == 0) options |= RubberBandStretcher::OptionWindowShort;
-// 	if (windowSort == 2) options |= RubberBandStretcher::OptionWindowLong;
-
-// 	int windowSort = 1;
-
-// 	if (crispness == 6) {
-// 			windowSort = 0;
-// 	} else if (crispness == 0 || crispness == 1) {
-// 			windowSort = 2;
-// 	}
-
-// (RubberBandStretcher::OptionWindowStandard | RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionThreadingAuto |
-// 	(quality == TimeStretchQuality::FASTEST ? RubberBandStretcher::OptionPitchHighSpeed | RubberBandStretcher::OptionEngineFaster :
-// 																						RubberBandStretcher::OptionPitchHighQuality | RubberBandStretcher::OptionEngineFiner)),
 /**
  * This sound allows a sound to be time-stretched and pitch-scaled
  * \note The reader has to be seekable.
