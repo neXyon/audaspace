@@ -118,7 +118,6 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		m_stretcher.retrieve(outputData.data(), discard);
 		m_dropAmount -= discard;
 		length = 0;
-		printf("DROPPED");
 		return;
 	}
 
@@ -152,12 +151,12 @@ double TimeStretchReader::getTimeRatio() const
 
 void TimeStretchReader::setTimeRatio(double timeRatio)
 {
-	if(timeRatio != m_stretcher.getTimeRatio())
+	if(timeRatio >= 1.0 / 256.0 && timeRatio <= 256.0 && timeRatio != m_stretcher.getTimeRatio())
 	{
 		m_stretcher.setTimeRatio(timeRatio);
 		m_padAmount = m_stretcher.getPreferredStartPad();
 		m_dropAmount = m_stretcher.getStartDelay();
-		// m_stretcher.reset();
+		m_stretcher.reset();
 	}
 }
 
@@ -168,12 +167,12 @@ double TimeStretchReader::getPitchScale() const
 
 void TimeStretchReader::setPitchScale(double pitchScale)
 {
-	if(pitchScale != m_stretcher.getPitchScale())
+	if(pitchScale >= 1.0 / 256.0 && pitchScale <= 256.0 && pitchScale != m_stretcher.getPitchScale())
 	{
 		m_stretcher.setPitchScale(pitchScale);
 		m_padAmount = m_stretcher.getPreferredStartPad();
 		m_dropAmount = m_stretcher.getStartDelay();
-		// m_stretcher.reset();
+		m_stretcher.reset();
 	}
 }
 
