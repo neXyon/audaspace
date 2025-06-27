@@ -25,8 +25,6 @@
 
 using namespace RubberBand;
 
-static int read_call_counter = 0;
-
 AUD_NAMESPACE_BEGIN
 
 TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, TimeStretchQualityOptions quality) :
@@ -42,7 +40,6 @@ TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double tim
 
 void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	read_call_counter++;
 	if(length == 0)
 		return;
 
