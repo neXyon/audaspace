@@ -163,6 +163,28 @@ public:
 	 * Retrieves the time-stretch of a playing sound.
 	 * \return The time-stretch.
 	 */
+
+
+	/**
+	 * Retrieves the pitch scale of a playing sound.
+	 * \return The pitch.
+	 */
+	virtual float getPitchScale() = 0;
+
+	/**
+	 * Sets the pitch scale of a playing sound.
+	 * \param pitchScale The pitch scale.
+	 * \return
+	 *        - true if the handle is valid.
+	 *        - false if the handle is invalid.
+	 */
+	virtual bool setPitchScale(float pitchScale) = 0;
+
+	/**
+	 * Retrieves the time-stretch of a playing sound.
+	 * \return The time-stretch.
+	 */
+
 	virtual float getTimeStretch() = 0;
 
 	/**

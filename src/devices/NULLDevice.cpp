@@ -88,6 +88,16 @@ bool NULLDevice::NULLHandle::setPitch(float pitch)
 	return false;
 }
 
+float NULLDevice::NULLHandle::getPitchScale()
+{
+	return std::numeric_limits<float>::quiet_NaN();
+}
+
+bool NULLDevice::NULLHandle::setPitchScale(float timeStretch)
+{
+	return false;
+}
+
 float NULLDevice::NULLHandle::getTimeStretch()
 {
 	return std::numeric_limits<float>::quiet_NaN();

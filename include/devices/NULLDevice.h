@@ -61,6 +61,8 @@ private:
 		virtual bool setVolume(float volume);
 		virtual float getPitch();
 		virtual bool setPitch(float pitch);
+		virtual float getPitchScale();
+		virtual bool setPitchScale(float pitchScale);
 		virtual float getTimeStretch();
 		virtual bool setTimeStretch(float pitch);
 		virtual int getLoopCount();

@@ -84,6 +84,9 @@ protected:
 		/// The user set pitch of the source.
 		float m_user_pitch;
 
+		/// The user set pitch scale of the source.
+		float m_user_pitch_scale;
+
 		/// The user set time-stretch of the source.
 		float m_user_time_stretch;
 
@@ -199,6 +202,8 @@ protected:
 		virtual bool setVolume(float volume);
 		virtual float getPitch();
 		virtual bool setPitch(float pitch);
+		virtual float getPitchScale();
+		virtual bool setPitchScale(float pitchScale);
 		virtual float getTimeStretch();
 		virtual bool setTimeStretch(float timeStretch);
 		virtual int getLoopCount();

@@ -111,6 +111,9 @@ private:
 	/// The animated pitch.
 	AnimateableProperty m_pitch;
 
+	/// The animated pitch-scale value.
+	AnimateableProperty m_pitch_scale;
+
 	/// The animated time-stretch value.
 	AnimateableProperty m_time_stretch;
 

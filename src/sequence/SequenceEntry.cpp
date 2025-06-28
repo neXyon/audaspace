@@ -45,6 +45,7 @@ SequenceEntry::SequenceEntry(std::shared_ptr<ISound> sound, double begin, double
     m_cone_volume_outer(0),
     m_volume(1, 1.0f),
     m_pitch(1, 1.0f),
+		m_pitch_scale(1, 1.0f),
     m_time_stretch(1, 1.0f),
     m_location(3),
     m_orientation(4)
@@ -54,6 +55,7 @@ SequenceEntry::SequenceEntry(std::shared_ptr<ISound> sound, double begin, double
 	float f = 1;
 	m_volume.write(&f);
 	m_pitch.write(&f);
+	m_pitch_scale.write(&f);
 	m_time_stretch.write(&f);
 }
 
@@ -126,6 +128,8 @@ AnimateableProperty* SequenceEntry::getAnimProperty(AnimateablePropertyType type
 		return &m_volume;
 	case AP_PITCH:
 		return &m_pitch;
+	case AP_PITCH_SCALE:
+		return &m_pitch_scale;
 	case AP_TIME_STRETCH:
 		return &m_time_stretch;
 	case AP_PANNING:

@@ -445,10 +445,19 @@ bool OpenALDevice::OpenALHandle::setPitch(float pitch)
 	return true;
 }
 
+float OpenALDevice::OpenALHandle::getPitchScale()
+{
+	return std::numeric_limits<float>::quiet_NaN();
+}
+
+bool OpenALDevice::OpenALHandle::setPitchScale(float pitchScale)
+{
+	return false;
+}
+
 float OpenALDevice::OpenALHandle::getTimeStretch()
 {
-	float result = std::numeric_limits<float>::quiet_NaN();
-	return result;
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 bool OpenALDevice::OpenALHandle::setTimeStretch(float timeStretch)

@@ -91,6 +91,7 @@ SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shar
     m_first_reading(true),
     m_keep(keep),
     m_user_pitch(1.0f),
+		m_user_pitch_scale(1.0f),
     m_user_time_stretch(1.0f),
     m_user_volume(1.0f),
     m_user_pan(0.0f),
@@ -120,6 +121,9 @@ void SoftwareDevice::SoftwareHandle::update()
 
 	m_old_volume = m_volume;
 
+	m_timeStretch->setTimeRatio(m_user_time_stretch);
+	m_timeStretch->setPitchScale(m_user_pitch_scale);
+
 	Vector3 SL;
 	if(m_relative)
 		SL = -m_location;
@@ -132,7 +136,6 @@ void SoftwareDevice::SoftwareHandle::update()
 	else
 		flags |= RENDER_DOPPLER | RENDER_DISTANCE;
 
-	m_timeStretch->setTimeRatio(m_user_time_stretch);
 	if(m_pitch->getSpecs().channels != CHANNELS_MONO)
 	{
 		m_volume = m_user_volume;
@@ -144,8 +147,7 @@ void SoftwareDevice::SoftwareHandle::update()
 			m_first_reading = false;
 		}
 
-		// m_pitch->setPitch(m_user_pitch);
-		m_timeStretch->setPitchScale(m_user_pitch);
+		m_pitch->setPitch(m_user_pitch);
 		return;
 	}
 
@@ -164,22 +166,18 @@ void SoftwareDevice::SoftwareHandle::update()
 		float max = m_device->m_speed_of_sound / m_device->m_doppler_factor;
 		if(vss >= max)
 		{
-			// m_pitch->setPitch(PITCH_MAX);
-			m_timeStretch->setPitchScale(PITCH_MAX);
+			m_pitch->setPitch(PITCH_MAX);
 		}
 		else
 		{
 			if(vls > max)
 				vls = max;
 
-			// m_pitch->setPitch((m_device->m_speed_of_sound - m_device->m_doppler_factor * vls) / (m_device->m_speed_of_sound - m_device->m_doppler_factor * vss) * m_user_pitch);
-			m_timeStretch->setPitchScale((m_device->m_speed_of_sound - m_device->m_doppler_factor * vls) / (m_device->m_speed_of_sound - m_device->m_doppler_factor * vss) *
-			                             m_user_pitch);
+			m_pitch->setPitch((m_device->m_speed_of_sound - m_device->m_doppler_factor * vls) / (m_device->m_speed_of_sound - m_device->m_doppler_factor * vss) * m_user_pitch);
 		}
 	}
 	else
-		// m_pitch->setPitch(m_user_pitch);
-		m_timeStretch->setPitchScale(m_user_pitch);
+		m_pitch->setPitch(m_user_pitch);
 
 	if(flags & RENDER_VOLUME)
 	{
@@ -404,8 +402,8 @@ bool SoftwareDevice::SoftwareHandle::seek(double position)
 	if(!m_status)
 		return false;
 
-	// m_pitch->setPitch(m_user_pitch);
-	m_timeStretch->setPitchScale(m_user_pitch);
+	m_pitch->setPitch(m_user_pitch);
+	m_timeStretch->setPitchScale(m_user_pitch_scale);
 	m_timeStretch->setTimeRatio(m_user_time_stretch);
 	m_reader->seek((int) (position * m_reader->getSpecs().rate));
 
@@ -468,6 +466,20 @@ bool SoftwareDevice::SoftwareHandle::setPitch(float pitch)
 		return false;
 	if(pitch > 0.0f)
 		m_user_pitch = pitch;
+	return true;
+}
+
+float SoftwareDevice::SoftwareHandle::getPitchScale()
+{
+	return m_user_pitch_scale;
+}
+
+bool SoftwareDevice::SoftwareHandle::setPitchScale(float pitchScale)
+{
+	if(!m_status)
+		return false;
+	if(pitchScale > 0.0f)
+		m_user_pitch_scale = pitchScale;
 	return true;
 }
 
@@ -927,7 +939,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 
 	std::shared_ptr<PitchReader> pitch = std::shared_ptr<PitchReader>(new PitchReader(reader, 1));
 
-	std::shared_ptr<TimeStretchReader> timeStretch = std::shared_ptr<TimeStretchReader>(new TimeStretchReader(reader, 1, 1, TimeStretchQualityOption::FASTEST));
+	std::shared_ptr<TimeStretchReader> timeStretch = std::shared_ptr<TimeStretchReader>(new TimeStretchReader(pitch, 1, 1, TimeStretchQualityOption::FASTEST));
 
 	reader = std::shared_ptr<IReader>(timeStretch);
 
