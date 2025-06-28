@@ -34,6 +34,10 @@ TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double tim
     m_position(0),
     m_length(0),
     m_options(quality),
+    m_input(reader->getSpecs().channels),
+    m_processData(reader->getSpecs().channels),
+    m_output(reader->getSpecs().channels),
+    m_retrieveData(reader->getSpecs().channels),
     m_stretcher(reader->getSpecs().rate, reader->getSpecs().channels, RubberBandStretcher::OptionProcessRealTime, timeRatio, pitchScale)
 {
 }
@@ -72,22 +76,22 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 			m_reader->read(len, reader_eos, buf);
 		}
 
-		std::vector<std::vector<sample_t>> deInterLeaved(channels, std::vector<sample_t>(len));
-		for(int i = 0; i < len; i++)
+		for(int channel = 0; channel < channels; channel++)
 		{
-			for(int channel = 0; channel < channels; channel++)
+			m_input[channel].assureSize(len * sizeof(sample_t));
+			sample_t* channelBuf = m_input[channel].getBuffer();
+			for(int i = 0; i < len; i++)
 			{
-				deInterLeaved[channel][i] = buf[i * channels + channel];
+				channelBuf[i] = buf[i * channels + channel];
 			}
 		}
 
-		std::vector<sample_t*> processData(channels);
 		for(int channel = 0; channel < channels; channel++)
 		{
-			processData[channel] = deInterLeaved[channel].data();
+			m_processData[channel] = m_input[channel].getBuffer();
 		}
 
-		m_stretcher.process(processData.data(), len, reader_eos);
+		m_stretcher.process(m_processData.data(), len, reader_eos);
 
 		available = m_stretcher.available();
 	}
@@ -101,18 +105,16 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	int readAmt = std::min(length, available);
 	length = readAmt;
 
-	std::vector<std::vector<sample_t>> output(channels, std::vector<sample_t>(std::max(readAmt, m_dropAmount)));
-	std::vector<sample_t*> outputData(channels);
-
 	for(int channel = 0; channel < channels; channel++)
 	{
-		outputData[channel] = output[channel].data();
+		m_output[channel].assureSize(std::max(readAmt, m_dropAmount) * sizeof(sample_t));
+		m_retrieveData[channel] = m_output[channel].getBuffer();
 	}
 
 	if(available <= m_dropAmount)
 	{
 		size_t discard = std::min(available, m_dropAmount);
-		m_stretcher.retrieve(outputData.data(), discard);
+		m_stretcher.retrieve(m_retrieveData.data(), discard);
 		m_dropAmount -= discard;
 		length = 0;
 		return;
@@ -120,18 +122,20 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 
 	if(m_dropAmount > 0)
 	{
-		m_stretcher.retrieve(outputData.data(), m_dropAmount);
+		m_stretcher.retrieve(m_retrieveData.data(), m_dropAmount);
 		m_dropAmount = 0;
 	}
 
 	readAmt = std::min(m_stretcher.available(), length);
-	size_t frameRetrieved = m_stretcher.retrieve(outputData.data(), readAmt);
+	size_t frameRetrieved = m_stretcher.retrieve(m_retrieveData.data(), readAmt);
 
-	for(int i = 0; i < frameRetrieved; i++)
+	// Interleave the retrieved data into buffer
+	for(int channel = 0; channel < channels; channel++)
 	{
-		for(int channel = 0; channel < channels; channel++)
+		sample_t* outputBuf = m_output[channel].getBuffer();
+		for(int i = 0; i < frameRetrieved; i++)
 		{
-			buffer[i * channels + channel] = output[channel][i];
+			buffer[i * channels + channel] = outputBuf[i];
 		}
 	}
 

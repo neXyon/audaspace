@@ -54,9 +54,29 @@ private:
 	int m_position;
 
 	/**
-	 * The sound output buffer.
+	 * The input buffer for the reader
 	 */
 	Buffer m_buffer;
+
+	/**
+	 * The input deinterleaved buffers for each channel
+	 */
+	std::vector<Buffer> m_input;
+
+	/**
+	 * The pointers to the input deinterleaved buffer data for processing
+	 */
+	std::vector<sample_t*> m_processData;
+
+	/**
+	 * The output deinterleaved buffers for each channel
+	 */
+	std::vector<Buffer> m_output;
+
+	/**
+	 * The pointers to the output deinterleaved buffer data
+	 */
+	std::vector<sample_t*> m_retrieveData;
 
 	/**
 	 * The length of the output.
@@ -91,7 +111,7 @@ public:
 	/**
 	 * Creates a new stretcher reader.
 	 * \param reader The reader to read from.
-	 * \param time_ratio The time ratio for the stretcher
+	 * \param time_ratio The time ratio for the stretcher.
 	 */
 	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, TimeStretchQualityOptions quality);
 
