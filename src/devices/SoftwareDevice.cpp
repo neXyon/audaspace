@@ -91,7 +91,7 @@ SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shar
     m_first_reading(true),
     m_keep(keep),
     m_user_pitch(1.0f),
-		m_user_pitch_scale(1.0f),
+    m_user_pitch_scale(1.0f),
     m_user_time_stretch(1.0f),
     m_user_volume(1.0f),
     m_user_pan(0.0f),

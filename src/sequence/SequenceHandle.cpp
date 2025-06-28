@@ -210,7 +210,6 @@ void SequenceHandle::update(double position, float frame, float fps)
 	m_entry->m_pitch.read(frame, &value);
 	m_handle->setPitch(value);
 
-	
 	m_entry->m_pitch_scale.read(frame, &value);
 	m_handle->setPitchScale(value);
 

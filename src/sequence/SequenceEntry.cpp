@@ -45,7 +45,7 @@ SequenceEntry::SequenceEntry(std::shared_ptr<ISound> sound, double begin, double
     m_cone_volume_outer(0),
     m_volume(1, 1.0f),
     m_pitch(1, 1.0f),
-		m_pitch_scale(1, 1.0f),
+    m_pitch_scale(1, 1.0f),
     m_time_stretch(1, 1.0f),
     m_location(3),
     m_orientation(4)

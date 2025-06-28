@@ -164,7 +164,6 @@ public:
 	 * \return The time-stretch.
 	 */
 
-
 	/**
 	 * Retrieves the pitch scale of a playing sound.
 	 * \return The pitch.

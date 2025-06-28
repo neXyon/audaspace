@@ -179,7 +179,8 @@ void TimeStretchReader::seek(int position)
 	m_length = 0;
 	m_reader->seek(position);
 	m_padAmount = m_stretcher.getPreferredStartPad();
-	m_dropAmount = m_stretcher.getStartDelay();;
+	m_dropAmount = m_stretcher.getStartDelay();
+	;
 	m_position = position;
 }
 
