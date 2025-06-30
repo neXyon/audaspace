@@ -33,13 +33,14 @@ TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double tim
     m_pitchScale(pitchScale),
     m_position(0),
     m_length(0),
-    m_options(quality),
+    m_quality(-1),
+    m_finishedReader(false),
     m_input(reader->getSpecs().channels),
     m_processData(reader->getSpecs().channels),
     m_output(reader->getSpecs().channels),
-    m_retrieveData(reader->getSpecs().channels),
-    m_stretcher(reader->getSpecs().rate, reader->getSpecs().channels, RubberBandStretcher::OptionProcessRealTime, timeRatio, pitchScale)
+    m_retrieveData(reader->getSpecs().channels)
 {
+	configure(quality);
 }
 
 void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
@@ -53,15 +54,13 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	int len;
 	sample_t* buf;
 
-	int available = m_stretcher.available();
-	bool reader_eos = false;
-	while(available < length + m_dropAmount && !reader_eos)
+	int available = m_stretcher->available();
+	while(available < length + m_dropAmount && !m_finishedReader)
 	{
-		size_t need = m_stretcher.getSamplesRequired();
-		if(need == 0)
-			break;
-
-		len = need;
+		// size_t need = m_stretcher->getSamplesRequired();
+		// Note for the V3 engine, the needed samples can be 0 sometimes...
+		// For now, choose the block size process size to be 1024. It's actually
+		len = 1024;
 
 		m_buffer.assureSize(std::max(m_padAmount, len) * samplesize);
 		buf = m_buffer.getBuffer();
@@ -73,7 +72,7 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		}
 		else
 		{
-			m_reader->read(len, reader_eos, buf);
+			m_reader->read(len, m_finishedReader, buf);
 		}
 
 		for(int channel = 0; channel < channels; channel++)
@@ -91,9 +90,9 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 			m_processData[channel] = m_input[channel].getBuffer();
 		}
 
-		m_stretcher.process(m_processData.data(), len, reader_eos);
+		m_stretcher->process(m_processData.data(), len, m_finishedReader);
 
-		available = m_stretcher.available();
+		available = m_stretcher->available();
 	}
 
 	if(available <= 0)
@@ -111,23 +110,14 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 		m_retrieveData[channel] = m_output[channel].getBuffer();
 	}
 
-	if(available <= m_dropAmount)
-	{
-		size_t discard = std::min(available, m_dropAmount);
-		m_stretcher.retrieve(m_retrieveData.data(), discard);
-		m_dropAmount -= discard;
-		length = 0;
-		return;
-	}
-
 	if(m_dropAmount > 0)
 	{
-		m_stretcher.retrieve(m_retrieveData.data(), m_dropAmount);
+		m_stretcher->retrieve(m_retrieveData.data(), m_dropAmount);
 		m_dropAmount = 0;
 	}
 
-	readAmt = std::min(m_stretcher.available(), length);
-	size_t frameRetrieved = m_stretcher.retrieve(m_retrieveData.data(), readAmt);
+	readAmt = std::min(m_stretcher->available(), length);
+	size_t frameRetrieved = m_stretcher->retrieve(m_retrieveData.data(), readAmt);
 
 	// Interleave the retrieved data into buffer
 	for(int channel = 0; channel < channels; channel++)
@@ -142,7 +132,7 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	m_length += frameRetrieved;
 	m_position += frameRetrieved;
 
-	eos = m_stretcher.available() == -1;
+	eos = m_stretcher->available() == -1;
 }
 
 double TimeStretchReader::getTimeRatio() const
@@ -152,12 +142,13 @@ double TimeStretchReader::getTimeRatio() const
 
 void TimeStretchReader::setTimeRatio(double timeRatio)
 {
-	if(timeRatio >= 1.0 / 256.0 && timeRatio <= 256.0 && timeRatio != m_stretcher.getTimeRatio())
+	if(timeRatio >= 1.0 / 256.0 && timeRatio <= 256.0 && timeRatio != m_stretcher->getTimeRatio())
 	{
-		m_stretcher.setTimeRatio(timeRatio);
-		m_padAmount = m_stretcher.getPreferredStartPad();
-		m_dropAmount = m_stretcher.getStartDelay();
-		m_stretcher.reset();
+		m_timeRatio = timeRatio;
+		m_stretcher->setTimeRatio(timeRatio);
+		m_padAmount = m_stretcher->getPreferredStartPad();
+		m_dropAmount = m_stretcher->getStartDelay();
+		m_stretcher->reset();
 	}
 }
 
@@ -168,23 +159,24 @@ double TimeStretchReader::getPitchScale() const
 
 void TimeStretchReader::setPitchScale(double pitchScale)
 {
-	if(pitchScale >= 1.0 / 256.0 && pitchScale <= 256.0 && pitchScale != m_stretcher.getPitchScale())
+	if(pitchScale >= 1.0 / 256.0 && pitchScale <= 256.0 && pitchScale != m_stretcher->getPitchScale())
 	{
-		m_stretcher.setPitchScale(pitchScale);
-		m_padAmount = m_stretcher.getPreferredStartPad();
-		m_dropAmount = m_stretcher.getStartDelay();
-		m_stretcher.reset();
+		m_timeRatio = pitchScale;
+		m_stretcher->setPitchScale(pitchScale);
+		m_padAmount = m_stretcher->getPreferredStartPad();
+		m_dropAmount = m_stretcher->getStartDelay();
+		m_stretcher->reset();
 	}
 }
 
 void TimeStretchReader::seek(int position)
 {
-	m_stretcher.reset();
+	m_stretcher->reset();
 	m_length = 0;
 	m_reader->seek(position);
-	m_padAmount = m_stretcher.getPreferredStartPad();
-	m_dropAmount = m_stretcher.getStartDelay();
-	;
+	m_finishedReader = false;
+	m_padAmount = m_stretcher->getPreferredStartPad();
+	m_dropAmount = m_stretcher->getStartDelay();
 	m_position = position;
 }
 
@@ -196,6 +188,88 @@ int TimeStretchReader::getLength() const
 int TimeStretchReader::getPosition() const
 {
 	return m_position;
+}
+
+TimeStretchReader::~TimeStretchReader()
+{
+	delete m_stretcher;
+}
+
+void TimeStretchReader::configure(TimeStretchQualityOptions quality)
+{
+	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime;
+
+	if(quality == m_quality)
+		return;
+
+	if(!m_stretcher)
+	{
+		delete m_stretcher;
+	}
+
+	if(quality & TimeStretchQualityOption::HIGH)
+	{
+		options |= RubberBandStretcher::OptionEngineFiner;
+	}
+	else
+	{
+		options |= RubberBandStretcher::OptionEngineFaster;
+	}
+
+	RubberBandStretcher::Option windowOption = RubberBandStretcher::OptionWindowStandard;
+
+	if(quality & TimeStretchQualityOption::CRISP_0)
+	{
+		options |= RubberBandStretcher::OptionTransientsSmooth;
+		options |= RubberBandStretcher::OptionPhaseIndependent;
+		options |= RubberBandStretcher::OptionDetectorCompound;
+		windowOption = RubberBandStretcher::OptionWindowLong;
+	}
+	else if(quality & TimeStretchQualityOption::CRISP_1)
+	{
+		options |= RubberBandStretcher::OptionTransientsCrisp;
+		options |= RubberBandStretcher::OptionPhaseIndependent;
+		options |= RubberBandStretcher::OptionDetectorSoft;
+		windowOption = RubberBandStretcher::OptionWindowLong;
+	}
+	else if(quality & TimeStretchQualityOption::CRISP_2)
+	{
+		options |= RubberBandStretcher::OptionTransientsSmooth;
+		options |= RubberBandStretcher::OptionPhaseIndependent;
+		options |= RubberBandStretcher::OptionDetectorCompound;
+	}
+	else if(quality & TimeStretchQualityOption::CRISP_3)
+	{
+		options |= RubberBandStretcher::OptionTransientsSmooth;
+		options |= RubberBandStretcher::OptionPhaseLaminar;
+		options |= RubberBandStretcher::OptionDetectorCompound;
+	}
+	else if(quality & TimeStretchQualityOption::CRISP_4)
+	{
+		options |= RubberBandStretcher::OptionTransientsMixed;
+		options |= RubberBandStretcher::OptionPhaseLaminar;
+		options |= RubberBandStretcher::OptionDetectorCompound;
+	}
+	else if(quality & TimeStretchQualityOption::CRISP_5)
+	{
+		options |= RubberBandStretcher::OptionTransientsCrisp;
+		options |= RubberBandStretcher::OptionPhaseLaminar;
+		options |= RubberBandStretcher::OptionDetectorCompound;
+	}
+	else if(quality & TimeStretchQualityOption::CRISP_6)
+	{
+		options |= RubberBandStretcher::OptionTransientsCrisp;
+		options |= RubberBandStretcher::OptionPhaseIndependent;
+		options |= RubberBandStretcher::OptionDetectorCompound;
+		windowOption = RubberBandStretcher::OptionWindowShort;
+	}
+
+	options |= windowOption;
+
+	m_stretcher = new RubberBandStretcher(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, m_timeRatio, m_pitchScale);
+	m_quality = quality;
+	m_padAmount = m_stretcher->getPreferredStartPad();
+	m_dropAmount = m_stretcher->getStartDelay();
 }
 
 AUD_NAMESPACE_END

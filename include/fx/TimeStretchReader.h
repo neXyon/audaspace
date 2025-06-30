@@ -54,6 +54,11 @@ private:
 	int m_position;
 
 	/**
+	 * Whether the reader has reached the end of stream
+	 */
+	bool m_finishedReader;
+
+	/**
 	 * The input buffer for the reader
 	 */
 	Buffer m_buffer;
@@ -96,12 +101,12 @@ private:
 	/**
 	 * Stretcher.
 	 */
-	RubberBandStretcher m_stretcher;
+	RubberBandStretcher* m_stretcher;
 
 	/**
 	 * Stretcher options.
 	 */
-	TimeStretchQualityOptions m_options;
+	TimeStretchQualityOptions m_quality;
 
 	// delete copy constructor and operator=
 	TimeStretchReader(const TimeStretchReader&) = delete;
@@ -114,6 +119,8 @@ public:
 	 * \param time_ratio The time ratio for the stretcher.
 	 */
 	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, TimeStretchQualityOptions quality);
+
+	~TimeStretchReader();
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
@@ -146,7 +153,7 @@ public:
 	/**
 	 * Sets the configuration for the stretcher
 	 */
-	void setQuality(TimeStretchQualityOptions quality);
+	void configure(TimeStretchQualityOptions quality);
 };
 
 AUD_NAMESPACE_END

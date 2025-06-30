@@ -28,7 +28,7 @@ AUD_NAMESPACE_BEGIN
 
 enum TimeStretchQualityOption
 {
-	FASTEST = 1 << 0, // Use the high speed
+	FASTEST = 1 << 0, // Use the high speed pitch speed
 	HIGH = 1 << 1,    // Use high quality pitch option
 
 	// Crispness options correspond to https://breakfastquay.com/rubberband/usage.txt and https://hg.sr.ht/~breakfastquay/rubberband-qt-example/browse/src/Processor.cpp?rev=tip
