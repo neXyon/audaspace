@@ -17,22 +17,22 @@
 #pragma once
 
 /**
- * @file TimeStretch.h
+ * @file TimeStretchPitchScale.h
  * @ingroup fx
- * The TimeStretch class.
+ * The TimeStretchPitchScale class.
  */
 
 #include "fx/Effect.h"
 
 AUD_NAMESPACE_BEGIN
 
-enum TimeStretchQualityOption
+enum StretcherQualityOption
 {
 	FASTEST = 1 << 0, // Use the high speed pitch speed
 	HIGH = 1 << 1,    // Use high quality pitch option
 
 	// Crispness options correspond to https://breakfastquay.com/rubberband/usage.txt and https://hg.sr.ht/~breakfastquay/rubberband-qt-example/browse/src/Processor.cpp?rev=tip
-	// NOTE: These only apply when the R2 engine is used, that is when OptionEngineFaster is used
+	// NOTE: These really only apply when the R2 engine is used, that is when OptionEngineFaster is used, though window size does affect the R3 engine.
 	CRISP_0 = 1 << 2,
 	CRISP_1 = 1 << 3,
 	CRISP_2 = 1 << 4,
@@ -42,42 +42,42 @@ enum TimeStretchQualityOption
 	CRISP_6 = 1 << 8,
 };
 
-typedef int TimeStretchQualityOptions;
+typedef int StretcherQualityOptions;
 
 /**
- * This sound allows a sound to be time-stretched and pitch-scaled
+ * This sound allows a sound to be time-stretched and pitch scaled.
  * \note The reader has to be seekable.
  */
-class AUD_API TimeStretch : public Effect
+class AUD_API TimeStretchPitchScale : public Effect
 {
 private:
 	/**
-	 * The pitch scale to change by.
+	 * The pitch scale to change the sound by.
 	 */
 	double m_pitchScale;
 
 	/**
-	 * The time ratio to stretch by.
+	 * The time ratio to stretch the sound by.
 	 */
 	double m_timeRatio;
 
 	/**
-	 * The quality of the pitch correction when time-stretching
+	 * The quality of the pitch correction when time-stretching.
 	 */
-	TimeStretchQualityOptions m_quality;
+	StretcherQualityOptions m_quality;
 
 	// delete copy constructor and operator=
-	TimeStretch(const TimeStretch&) = delete;
-	TimeStretch& operator=(const TimeStretch&) = delete;
+	TimeStretchPitchScale(const TimeStretchPitchScale&) = delete;
+	TimeStretchPitchScale& operator=(const TimeStretchPitchScale&) = delete;
 
 public:
 	/**
-	 * Creates a new time-stretch, pitch-scaled sound.
+	 * Creates a new time-stretch, pitch scaled sound.
 	 * \param sound The input sound.
-	 * \param timeRatio The time ratio to stretch by for the stretcher
-	 * \param ratio The pitch scale to change by fort he stretcher
+	 * \param timeRatio The time ratio to stretch by for the stretcher.
+	 * \param ratio The pitch scale to change by fort he stretcher.
 	 */
-	TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQualityOptions quality);
+	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality);
 
 	/**
 	 * Returns the time ratio.

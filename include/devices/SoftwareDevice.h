@@ -35,7 +35,7 @@ AUD_NAMESPACE_BEGIN
 
 class Mixer;
 class PitchReader;
-class TimeStretchReader;
+class TimeStretchPitchScaleReader;
 class ResampleReader;
 class ChannelMapperReader;
 
@@ -64,7 +64,7 @@ protected:
 		std::shared_ptr<IReader> m_reader;
 
 		/// The time-stretch reader in between.
-		std::shared_ptr<TimeStretchReader> m_timeStretch;
+		std::shared_ptr<TimeStretchPitchScaleReader> m_timeStretchPitchScale;
 
 		/// The pitch reader in between.
 		std::shared_ptr<PitchReader> m_pitch;
@@ -84,7 +84,7 @@ protected:
 		/// The user set pitch of the source.
 		float m_user_pitch;
 
-		/// The user set pitch scale of the source.
+		/// The user set pitch-scale of the source.
 		float m_user_pitch_scale;
 
 		/// The user set time-stretch of the source.
@@ -173,8 +173,9 @@ protected:
 		 * \param mapper The channel mapping reader.
 		 * \param keep Whether to keep the handle when the sound ends.
 		 */
-		SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch, std::shared_ptr<TimeStretchReader> timeStretch,
-		               std::shared_ptr<ResampleReader> resampler, std::shared_ptr<ChannelMapperReader> mapper, bool keep);
+		SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch,
+		               std::shared_ptr<TimeStretchPitchScaleReader> TimeStretchPitchScale, std::shared_ptr<ResampleReader> resampler, std::shared_ptr<ChannelMapperReader> mapper,
+		               bool keep);
 
 		/**
 		 * Updates the handle's playback parameters.

@@ -93,7 +93,7 @@ float NULLDevice::NULLHandle::getPitchScale()
 	return std::numeric_limits<float>::quiet_NaN();
 }
 
-bool NULLDevice::NULLHandle::setPitchScale(float timeStretch)
+bool NULLDevice::NULLHandle::setPitchScale(float TimeStretchPitchScale)
 {
 	return false;
 }
@@ -103,7 +103,7 @@ float NULLDevice::NULLHandle::getTimeStretch()
 	return std::numeric_limits<float>::quiet_NaN();
 }
 
-bool NULLDevice::NULLHandle::setTimeStretch(float timeStretch)
+bool NULLDevice::NULLHandle::setTimeStretch(float TimeStretchPitchScale)
 {
 	return false;
 }

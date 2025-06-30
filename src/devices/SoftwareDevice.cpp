@@ -27,7 +27,7 @@
 #include "ISound.h"
 
 #include "fx/PitchReader.h"
-#include "fx/TimeStretchReader.h"
+#include "fx/TimeStretchPitchScaleReader.h"
 #include "respec/ChannelMapperReader.h"
 #include "respec/JOSResampleReader.h"
 #include "respec/LinearResampleReader.h"
@@ -81,11 +81,11 @@ bool SoftwareDevice::SoftwareHandle::pause(bool keep)
 }
 
 SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch,
-                                               std::shared_ptr<TimeStretchReader> timeStretch, std::shared_ptr<ResampleReader> resampler,
+                                               std::shared_ptr<TimeStretchPitchScaleReader> timeStretchPitchScale, std::shared_ptr<ResampleReader> resampler,
                                                std::shared_ptr<ChannelMapperReader> mapper, bool keep) :
     m_reader(reader),
     m_pitch(pitch),
-    m_timeStretch(timeStretch),
+    m_timeStretchPitchScale(timeStretchPitchScale),
     m_resampler(resampler),
     m_mapper(mapper),
     m_first_reading(true),
@@ -121,8 +121,8 @@ void SoftwareDevice::SoftwareHandle::update()
 
 	m_old_volume = m_volume;
 
-	m_timeStretch->setTimeRatio(m_user_time_stretch);
-	m_timeStretch->setPitchScale(m_user_pitch_scale);
+	m_timeStretchPitchScale->setTimeRatio(m_user_time_stretch);
+	m_timeStretchPitchScale->setPitchScale(m_user_pitch_scale);
 
 	Vector3 SL;
 	if(m_relative)
@@ -403,8 +403,8 @@ bool SoftwareDevice::SoftwareHandle::seek(double position)
 		return false;
 
 	m_pitch->setPitch(m_user_pitch);
-	m_timeStretch->setPitchScale(m_user_pitch_scale);
-	m_timeStretch->setTimeRatio(m_user_time_stretch);
+	m_timeStretchPitchScale->setPitchScale(m_user_pitch_scale);
+	m_timeStretchPitchScale->setTimeRatio(m_user_time_stretch);
 	m_reader->seek((int) (position * m_reader->getSpecs().rate));
 
 	if(m_status == STATUS_STOPPED)
@@ -939,9 +939,10 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 
 	std::shared_ptr<PitchReader> pitch = std::shared_ptr<PitchReader>(new PitchReader(reader, 1));
 
-	std::shared_ptr<TimeStretchReader> timeStretch = std::shared_ptr<TimeStretchReader>(new TimeStretchReader(pitch, 1, 1, TimeStretchQualityOption::HIGH));
+	std::shared_ptr<TimeStretchPitchScaleReader> timeStretchPitchScale =
+	    std::shared_ptr<TimeStretchPitchScaleReader>(new TimeStretchPitchScaleReader(pitch, 1, 1, StretcherQualityOption::HIGH));
 
-	reader = std::shared_ptr<IReader>(timeStretch);
+	reader = std::shared_ptr<IReader>(timeStretchPitchScale);
 
 	std::shared_ptr<ResampleReader> resampler;
 
@@ -965,7 +966,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 
 	// play sound
 	std::shared_ptr<SoftwareDevice::SoftwareHandle> sound =
-	    std::shared_ptr<SoftwareDevice::SoftwareHandle>(new SoftwareDevice::SoftwareHandle(this, reader, pitch, timeStretch, resampler, mapper, keep));
+	    std::shared_ptr<SoftwareDevice::SoftwareHandle>(new SoftwareDevice::SoftwareHandle(this, reader, pitch, timeStretchPitchScale, resampler, mapper, keep));
 
 	std::lock_guard<ILockable> lock(*this);
 

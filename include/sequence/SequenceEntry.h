@@ -25,7 +25,6 @@
 #include <memory>
 #include <mutex>
 
-#include "fx/TimeStretch.h"
 #include "sequence/AnimateableProperty.h"
 #include "sequence/SequenceData.h"
 #include "util/ILockable.h"

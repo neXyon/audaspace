@@ -14,29 +14,29 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/TimeStretch.h"
+#include "fx/TimeStretchPitchScale.h"
 
-#include "fx/TimeStretchReader.h"
+#include "fx/TimeStretchPitchScaleReader.h"
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretch::TimeStretch(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, TimeStretchQualityOptions quality) :
+TimeStretchPitchScale::TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality) :
     Effect(sound), m_timeRatio(timeRatio), m_pitchScale(pitchScale), m_quality(quality)
 
 {
 }
 
-std::shared_ptr<IReader> TimeStretch::createReader()
+std::shared_ptr<IReader> TimeStretchPitchScale::createReader()
 {
-	return std::shared_ptr<IReader>(new TimeStretchReader(getReader(), m_timeRatio, m_pitchScale, m_quality));
+	return std::shared_ptr<IReader>(new TimeStretchPitchScaleReader(getReader(), m_timeRatio, m_pitchScale, m_quality));
 }
 
-double TimeStretch::getTimeRatio() const
+double TimeStretchPitchScale::getTimeRatio() const
 {
 	return m_timeRatio;
 }
 
-double TimeStretch::getPitchScale() const
+double TimeStretchPitchScale::getPitchScale() const
 {
 	return m_pitchScale;
 }

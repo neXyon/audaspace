@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "fx/TimeStretchReader.h"
+#include "fx/TimeStretchPitchScaleReader.h"
 
 #include <iostream>
 
@@ -26,7 +26,7 @@ using namespace RubberBand;
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, TimeStretchQualityOptions quality) :
+TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality) :
     EffectReader(reader),
     m_timeRatio(timeRatio),
     m_pitchScale(pitchScale),
@@ -42,7 +42,7 @@ TimeStretchReader::TimeStretchReader(std::shared_ptr<IReader> reader, double tim
 	configure(quality);
 }
 
-void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
+void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	if(length == 0)
 		return;
@@ -144,12 +144,12 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	eos = m_stretcher->available() == -1;
 }
 
-double TimeStretchReader::getTimeRatio() const
+double TimeStretchPitchScaleReader::getTimeRatio() const
 {
 	return m_timeRatio;
 }
 
-void TimeStretchReader::setTimeRatio(double timeRatio)
+void TimeStretchPitchScaleReader::setTimeRatio(double timeRatio)
 {
 	if(timeRatio >= 1.0 / 256.0 && timeRatio <= 256.0 && timeRatio != m_stretcher->getTimeRatio())
 	{
@@ -161,12 +161,12 @@ void TimeStretchReader::setTimeRatio(double timeRatio)
 	}
 }
 
-double TimeStretchReader::getPitchScale() const
+double TimeStretchPitchScaleReader::getPitchScale() const
 {
 	return m_pitchScale;
 }
 
-void TimeStretchReader::setPitchScale(double pitchScale)
+void TimeStretchPitchScaleReader::setPitchScale(double pitchScale)
 {
 	if(pitchScale >= 1.0 / 256.0 && pitchScale <= 256.0 && pitchScale != m_stretcher->getPitchScale())
 	{
@@ -178,7 +178,7 @@ void TimeStretchReader::setPitchScale(double pitchScale)
 	}
 }
 
-void TimeStretchReader::seek(int position)
+void TimeStretchPitchScaleReader::seek(int position)
 {
 	m_stretcher->reset();
 	m_length = 0;
@@ -190,22 +190,22 @@ void TimeStretchReader::seek(int position)
 	m_position = position;
 }
 
-int TimeStretchReader::getLength() const
+int TimeStretchPitchScaleReader::getLength() const
 {
 	return m_length;
 }
 
-int TimeStretchReader::getPosition() const
+int TimeStretchPitchScaleReader::getPosition() const
 {
 	return m_position;
 }
 
-TimeStretchReader::~TimeStretchReader()
+TimeStretchPitchScaleReader::~TimeStretchPitchScaleReader()
 {
 	delete m_stretcher;
 }
 
-void TimeStretchReader::configure(TimeStretchQualityOptions quality)
+void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality)
 {
 	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime;
 
@@ -217,7 +217,7 @@ void TimeStretchReader::configure(TimeStretchQualityOptions quality)
 		delete m_stretcher;
 	}
 
-	if(quality & TimeStretchQualityOption::HIGH)
+	if(quality & StretcherQualityOption::HIGH)
 	{
 		options |= RubberBandStretcher::OptionEngineFiner;
 	}
@@ -228,45 +228,45 @@ void TimeStretchReader::configure(TimeStretchQualityOptions quality)
 
 	RubberBandStretcher::Option windowOption = RubberBandStretcher::OptionWindowStandard;
 
-	if(quality & TimeStretchQualityOption::CRISP_0)
+	if(quality & StretcherQualityOption::CRISP_0)
 	{
 		options |= RubberBandStretcher::OptionTransientsSmooth;
 		options |= RubberBandStretcher::OptionPhaseIndependent;
 		options |= RubberBandStretcher::OptionDetectorCompound;
 		windowOption = RubberBandStretcher::OptionWindowLong;
 	}
-	else if(quality & TimeStretchQualityOption::CRISP_1)
+	else if(quality & StretcherQualityOption::CRISP_1)
 	{
 		options |= RubberBandStretcher::OptionTransientsCrisp;
 		options |= RubberBandStretcher::OptionPhaseIndependent;
 		options |= RubberBandStretcher::OptionDetectorSoft;
 		windowOption = RubberBandStretcher::OptionWindowLong;
 	}
-	else if(quality & TimeStretchQualityOption::CRISP_2)
+	else if(quality & StretcherQualityOption::CRISP_2)
 	{
 		options |= RubberBandStretcher::OptionTransientsSmooth;
 		options |= RubberBandStretcher::OptionPhaseIndependent;
 		options |= RubberBandStretcher::OptionDetectorCompound;
 	}
-	else if(quality & TimeStretchQualityOption::CRISP_3)
+	else if(quality & StretcherQualityOption::CRISP_3)
 	{
 		options |= RubberBandStretcher::OptionTransientsSmooth;
 		options |= RubberBandStretcher::OptionPhaseLaminar;
 		options |= RubberBandStretcher::OptionDetectorCompound;
 	}
-	else if(quality & TimeStretchQualityOption::CRISP_4)
+	else if(quality & StretcherQualityOption::CRISP_4)
 	{
 		options |= RubberBandStretcher::OptionTransientsMixed;
 		options |= RubberBandStretcher::OptionPhaseLaminar;
 		options |= RubberBandStretcher::OptionDetectorCompound;
 	}
-	else if(quality & TimeStretchQualityOption::CRISP_5)
+	else if(quality & StretcherQualityOption::CRISP_5)
 	{
 		options |= RubberBandStretcher::OptionTransientsCrisp;
 		options |= RubberBandStretcher::OptionPhaseLaminar;
 		options |= RubberBandStretcher::OptionDetectorCompound;
 	}
-	else if(quality & TimeStretchQualityOption::CRISP_6)
+	else if(quality & StretcherQualityOption::CRISP_6)
 	{
 		options |= RubberBandStretcher::OptionTransientsCrisp;
 		options |= RubberBandStretcher::OptionPhaseIndependent;

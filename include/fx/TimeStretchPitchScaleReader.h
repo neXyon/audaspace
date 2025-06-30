@@ -17,12 +17,12 @@
 #pragma once
 
 /**
- * @file TimeStretchReader.h
+ * @file TimeStretchPitchScaleReader.h
  * @ingroup fx
- * The TimeStretch class.
+ * The TimeStretchPitchScale class.
  */
 
-#include "TimeStretch.h"
+#include "TimeStretchPitchScale.h"
 
 #include "fx/EffectReader.h"
 #include "rubberband/RubberBandStretcher.h"
@@ -33,9 +33,9 @@ using namespace RubberBand;
 AUD_NAMESPACE_BEGIN
 
 /**
- * This class reads another reader and changes the playback speed while preserving the pitch.
+ * This class reads from another reader and applies time stretching and pitch scaling.
  */
-class AUD_API TimeStretchReader : public EffectReader
+class AUD_API TimeStretchPitchScaleReader : public EffectReader
 {
 private:
 	/**
@@ -99,18 +99,18 @@ private:
 	double m_pitchScale;
 
 	/**
-	 * Stretcher.
+	 * Rubberband stretcher.
 	 */
 	RubberBandStretcher* m_stretcher;
 
 	/**
-	 * Stretcher options.
+	 * Rubberband stretcher quality options.
 	 */
-	TimeStretchQualityOptions m_quality;
+	StretcherQualityOptions m_quality;
 
 	// delete copy constructor and operator=
-	TimeStretchReader(const TimeStretchReader&) = delete;
-	TimeStretchReader& operator=(const TimeStretchReader&) = delete;
+	TimeStretchPitchScaleReader(const TimeStretchPitchScaleReader&) = delete;
+	TimeStretchPitchScaleReader& operator=(const TimeStretchPitchScaleReader&) = delete;
 
 public:
 	/**
@@ -118,9 +118,9 @@ public:
 	 * \param reader The reader to read from.
 	 * \param time_ratio The time ratio for the stretcher.
 	 */
-	TimeStretchReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, TimeStretchQualityOptions quality);
+	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, StretcherQualityOptions quality);
 
-	~TimeStretchReader();
+	~TimeStretchPitchScaleReader();
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
@@ -153,7 +153,7 @@ public:
 	/**
 	 * Sets the configuration for the stretcher
 	 */
-	void configure(TimeStretchQualityOptions quality);
+	void configure(StretcherQualityOptions quality);
 };
 
 AUD_NAMESPACE_END
