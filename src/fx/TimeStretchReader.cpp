@@ -16,7 +16,6 @@
 
 #include "fx/TimeStretchReader.h"
 
-#include <chrono>
 #include <iostream>
 
 #include "IReader.h"
@@ -48,6 +47,12 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	if(length == 0)
 		return;
 
+	if(m_pitchScale == 1.0 && m_timeRatio == 1.0)
+	{
+		m_reader->read(length, eos, buffer);
+		return;
+	}
+
 	int samplesize = AUD_SAMPLE_SIZE(m_reader->getSpecs());
 
 	int channels = m_reader->getSpecs().channels;
@@ -58,8 +63,12 @@ void TimeStretchReader::read(int& length, bool& eos, sample_t* buffer)
 	while(available < length + m_dropAmount && !m_finishedReader)
 	{
 		// size_t need = m_stretcher->getSamplesRequired();
-		// Note for the V3 engine, the needed samples can be 0 sometimes...
-		// For now, choose the block size process size to be 1024. It's actually
+		// if (need == 0) break;
+
+		// Note for the V3 engine, the needed samples can be 0 sometimes and it breaks out of the loop too early before getting the necessary length for the buffer
+		// For now, choose the block size process size to be 1024.
+		// It's also actually faster too than to always use getSamplesRequired();
+
 		len = 1024;
 
 		m_buffer.assureSize(std::max(m_padAmount, len) * samplesize);
@@ -146,9 +155,9 @@ void TimeStretchReader::setTimeRatio(double timeRatio)
 	{
 		m_timeRatio = timeRatio;
 		m_stretcher->setTimeRatio(timeRatio);
-		m_padAmount = m_stretcher->getPreferredStartPad();
-		m_dropAmount = m_stretcher->getStartDelay();
-		m_stretcher->reset();
+		// m_padAmount = m_stretcher->getPreferredStartPad();
+		// m_dropAmount = m_stretcher->getStartDelay();
+		// m_stretcher->reset();
 	}
 }
 
@@ -161,11 +170,11 @@ void TimeStretchReader::setPitchScale(double pitchScale)
 {
 	if(pitchScale >= 1.0 / 256.0 && pitchScale <= 256.0 && pitchScale != m_stretcher->getPitchScale())
 	{
-		m_timeRatio = pitchScale;
+		m_pitchScale = pitchScale;
 		m_stretcher->setPitchScale(pitchScale);
-		m_padAmount = m_stretcher->getPreferredStartPad();
-		m_dropAmount = m_stretcher->getStartDelay();
-		m_stretcher->reset();
+		// m_padAmount = m_stretcher->getPreferredStartPad();
+		// m_dropAmount = m_stretcher->getStartDelay();
+		// m_stretcher->reset();
 	}
 }
 
@@ -175,8 +184,9 @@ void TimeStretchReader::seek(int position)
 	m_length = 0;
 	m_reader->seek(position);
 	m_finishedReader = false;
-	m_padAmount = m_stretcher->getPreferredStartPad();
-	m_dropAmount = m_stretcher->getStartDelay();
+	// m_padAmount = m_stretcher->getPreferredStartPad();
+	// m_dropAmount = m_stretcher->getStartDelay();
+	m_stretcher->reset();
 	m_position = position;
 }
 
@@ -268,8 +278,8 @@ void TimeStretchReader::configure(TimeStretchQualityOptions quality)
 
 	m_stretcher = new RubberBandStretcher(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, m_timeRatio, m_pitchScale);
 	m_quality = quality;
-	m_padAmount = m_stretcher->getPreferredStartPad();
-	m_dropAmount = m_stretcher->getStartDelay();
+	// m_padAmount = m_stretcher->getPreferredStartPad();
+	// m_dropAmount = m_stretcher->getStartDelay();
 }
 
 AUD_NAMESPACE_END

@@ -939,7 +939,7 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 
 	std::shared_ptr<PitchReader> pitch = std::shared_ptr<PitchReader>(new PitchReader(reader, 1));
 
-	std::shared_ptr<TimeStretchReader> timeStretch = std::shared_ptr<TimeStretchReader>(new TimeStretchReader(pitch, 1, 1, TimeStretchQualityOption::FASTEST));
+	std::shared_ptr<TimeStretchReader> timeStretch = std::shared_ptr<TimeStretchReader>(new TimeStretchReader(pitch, 1, 1, TimeStretchQualityOption::HIGH));
 
 	reader = std::shared_ptr<IReader>(timeStretch);
 
