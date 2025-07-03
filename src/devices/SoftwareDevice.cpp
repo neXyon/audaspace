@@ -15,13 +15,6 @@
  ******************************************************************************/
 
 #include "devices/SoftwareDevice.h"
-#include "fx/PitchReader.h"
-#include "respec/ChannelMapperReader.h"
-#include "respec/JOSResampleReader.h"
-#include "respec/LinearResampleReader.h"
-#include "respec/Mixer.h"
-#include "Exception.h"
-#include "ISound.h"
 
 #include <algorithm>
 #include <cmath>
@@ -29,6 +22,16 @@
 #include <iostream>
 #include <limits>
 #include <mutex>
+
+#include "Exception.h"
+#include "ISound.h"
+
+#include "fx/PitchReader.h"
+#include "fx/TimeStretchPitchScaleReader.h"
+#include "respec/ChannelMapperReader.h"
+#include "respec/JOSResampleReader.h"
+#include "respec/LinearResampleReader.h"
+#include "respec/Mixer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -77,11 +80,38 @@ bool SoftwareDevice::SoftwareHandle::pause(bool keep)
 	return false;
 }
 
-SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch, std::shared_ptr<ResampleReader> resampler, std::shared_ptr<ChannelMapperReader> mapper, bool keep) :
-	m_reader(reader), m_pitch(pitch), m_resampler(resampler), m_mapper(mapper), m_first_reading(true), m_keep(keep), m_user_pitch(1.0f), m_user_volume(1.0f), m_user_pan(0.0f), m_volume(0.0f), m_old_volume(0.0f), m_loopcount(0),
-	m_relative(true), m_volume_max(1.0f), m_volume_min(0), m_distance_max(std::numeric_limits<float>::max()),
-	m_distance_reference(1.0f), m_attenuation(1.0f), m_cone_angle_outer(M_PI), m_cone_angle_inner(M_PI), m_cone_volume_outer(0),
-	m_flags(RENDER_CONE), m_stop(nullptr), m_stop_data(nullptr), m_status(STATUS_PLAYING), m_device(device)
+SoftwareDevice::SoftwareHandle::SoftwareHandle(SoftwareDevice* device, std::shared_ptr<IReader> reader, std::shared_ptr<PitchReader> pitch,
+                                               std::shared_ptr<TimeStretchPitchScaleReader> timeStretchPitchScale, std::shared_ptr<ResampleReader> resampler,
+                                               std::shared_ptr<ChannelMapperReader> mapper, bool keep) :
+    m_reader(reader),
+    m_pitch(pitch),
+    m_timeStretchPitchScale(timeStretchPitchScale),
+    m_resampler(resampler),
+    m_mapper(mapper),
+    m_first_reading(true),
+    m_keep(keep),
+    m_user_pitch(1.0f),
+    m_user_pitch_scale(1.0f),
+    m_user_time_stretch(1.0f),
+    m_user_volume(1.0f),
+    m_user_pan(0.0f),
+    m_volume(0.0f),
+    m_old_volume(0.0f),
+    m_loopcount(0),
+    m_relative(true),
+    m_volume_max(1.0f),
+    m_volume_min(0),
+    m_distance_max(std::numeric_limits<float>::max()),
+    m_distance_reference(1.0f),
+    m_attenuation(1.0f),
+    m_cone_angle_outer(M_PI),
+    m_cone_angle_inner(M_PI),
+    m_cone_volume_outer(0),
+    m_flags(RENDER_CONE),
+    m_stop(nullptr),
+    m_stop_data(nullptr),
+    m_status(STATUS_PLAYING),
+    m_device(device)
 {
 }
 
@@ -90,6 +120,9 @@ void SoftwareDevice::SoftwareHandle::update()
 	int flags = 0;
 
 	m_old_volume = m_volume;
+
+	m_timeStretchPitchScale->setTimeRatio(m_user_time_stretch);
+	m_timeStretchPitchScale->setPitchScale(m_user_pitch_scale);
 
 	Vector3 SL;
 	if(m_relative)
@@ -152,8 +185,7 @@ void SoftwareDevice::SoftwareHandle::update()
 
 		if(flags & RENDER_DISTANCE)
 		{
-			if(m_device->m_distance_model == DISTANCE_MODEL_INVERSE_CLAMPED ||
-			   m_device->m_distance_model == DISTANCE_MODEL_LINEAR_CLAMPED ||
+			if(m_device->m_distance_model == DISTANCE_MODEL_INVERSE_CLAMPED || m_device->m_distance_model == DISTANCE_MODEL_LINEAR_CLAMPED ||
 			   m_device->m_distance_model == DISTANCE_MODEL_EXPONENT_CLAMPED)
 			{
 				distance = std::max(std::min(m_distance_max, distance), m_distance_reference);
@@ -166,8 +198,7 @@ void SoftwareDevice::SoftwareHandle::update()
 				m_volume = m_distance_reference / (m_distance_reference + m_attenuation * (distance - m_distance_reference));
 				break;
 			case DISTANCE_MODEL_LINEAR:
-			case DISTANCE_MODEL_LINEAR_CLAMPED:
-			{
+			case DISTANCE_MODEL_LINEAR_CLAMPED: {
 				float temp = m_distance_max - m_distance_reference;
 				if(temp == 0)
 				{
@@ -201,7 +232,7 @@ void SoftwareDevice::SoftwareHandle::update()
 			Vector3 SZ = m_orientation.getLookAt();
 
 			float phi = std::acos(float(SZ * SL / (SZ.length() * SL.length())));
-			float t = (phi - m_cone_angle_inner)/(m_cone_angle_outer - m_cone_angle_inner);
+			float t = (phi - m_cone_angle_inner) / (m_cone_angle_outer - m_cone_angle_inner);
 
 			if(t > 0)
 			{
@@ -291,7 +322,6 @@ bool SoftwareDevice::SoftwareHandle::resume()
 				}
 			}
 		}
-
 	}
 
 	return false;
@@ -373,7 +403,9 @@ bool SoftwareDevice::SoftwareHandle::seek(double position)
 		return false;
 
 	m_pitch->setPitch(m_user_pitch);
-	m_reader->seek((int)(position * m_reader->getSpecs().rate));
+	m_timeStretchPitchScale->setPitchScale(m_user_pitch_scale);
+	m_timeStretchPitchScale->setTimeRatio(m_user_time_stretch);
+	m_reader->seek((int) (position * m_reader->getSpecs().rate));
 
 	if(m_status == STATUS_STOPPED)
 		m_status = STATUS_PAUSED;
@@ -391,7 +423,7 @@ double SoftwareDevice::SoftwareHandle::getPosition()
 	if(!m_status)
 		return 0.0f;
 
-	double position = m_reader->getPosition() / (double)m_device->m_specs.rate;
+	double position = m_reader->getPosition() / (double) m_device->m_specs.rate;
 
 	return position;
 }
@@ -434,6 +466,34 @@ bool SoftwareDevice::SoftwareHandle::setPitch(float pitch)
 		return false;
 	if(pitch > 0.0f)
 		m_user_pitch = pitch;
+	return true;
+}
+
+float SoftwareDevice::SoftwareHandle::getPitchScale()
+{
+	return m_user_pitch_scale;
+}
+
+bool SoftwareDevice::SoftwareHandle::setPitchScale(float pitchScale)
+{
+	if(!m_status)
+		return false;
+	if(pitchScale > 0.0f)
+		m_user_pitch_scale = pitchScale;
+	return true;
+}
+
+float SoftwareDevice::SoftwareHandle::getTimeStretch()
+{
+	return m_user_time_stretch;
+}
+
+bool SoftwareDevice::SoftwareHandle::setTimeStretch(float timeStretch)
+{
+	if(!m_status)
+		return false;
+	if(timeStretch > 0.0f)
+		m_user_time_stretch = timeStretch;
 	return true;
 }
 
@@ -738,8 +798,8 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 		int len;
 		int pos;
 		bool eos;
-		std::list<std::shared_ptr<SoftwareDevice::SoftwareHandle> > stopSounds;
-		std::list<std::shared_ptr<SoftwareDevice::SoftwareHandle> > pauseSounds;
+		std::list<std::shared_ptr<SoftwareDevice::SoftwareHandle>> stopSounds;
+		std::list<std::shared_ptr<SoftwareDevice::SoftwareHandle>> pauseSounds;
 		sample_t* buf = m_buffer.getBuffer();
 
 		m_mixer->clear(length);
@@ -809,7 +869,7 @@ void SoftwareDevice::mix(data_t* buffer, int length)
 		for(auto& sound : pauseSounds)
 			sound->pause(true);
 
-		for(auto& sound :  stopSounds)
+		for(auto& sound : stopSounds)
 			sound->stop();
 
 		pauseSounds.clear();
@@ -878,12 +938,16 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 	// pitch
 
 	std::shared_ptr<PitchReader> pitch = std::shared_ptr<PitchReader>(new PitchReader(reader, 1));
-	reader = std::shared_ptr<IReader>(pitch);
+
+	std::shared_ptr<TimeStretchPitchScaleReader> timeStretchPitchScale =
+	    std::shared_ptr<TimeStretchPitchScaleReader>(new TimeStretchPitchScaleReader(pitch, 1, 1, StretcherQualityOption::HIGH));
+
+	reader = std::shared_ptr<IReader>(timeStretchPitchScale);
 
 	std::shared_ptr<ResampleReader> resampler;
 
 	// resample
-	if (m_quality == ResampleQuality::FASTEST)
+	if(m_quality == ResampleQuality::FASTEST)
 	{
 		resampler = std::shared_ptr<ResampleReader>(new LinearResampleReader(reader, m_specs.rate));
 	}
@@ -901,7 +965,8 @@ std::shared_ptr<IHandle> SoftwareDevice::play(std::shared_ptr<IReader> reader, b
 		return std::shared_ptr<IHandle>();
 
 	// play sound
-	std::shared_ptr<SoftwareDevice::SoftwareHandle> sound = std::shared_ptr<SoftwareDevice::SoftwareHandle>(new SoftwareDevice::SoftwareHandle(this, reader, pitch, resampler, mapper, keep));
+	std::shared_ptr<SoftwareDevice::SoftwareHandle> sound =
+	    std::shared_ptr<SoftwareDevice::SoftwareHandle>(new SoftwareDevice::SoftwareHandle(this, reader, pitch, timeStretchPitchScale, resampler, mapper, keep));
 
 	std::lock_guard<ILockable> lock(*this);
 

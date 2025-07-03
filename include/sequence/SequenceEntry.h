@@ -22,12 +22,12 @@
  * The SequenceEntry class.
  */
 
+#include <memory>
+#include <mutex>
+
 #include "sequence/AnimateableProperty.h"
 #include "sequence/SequenceData.h"
 #include "util/ILockable.h"
-
-#include <mutex>
-#include <memory>
 
 AUD_NAMESPACE_BEGIN
 
@@ -39,6 +39,7 @@ class ISound;
 class AUD_API SequenceEntry : public ILockable
 {
 	friend class SequenceHandle;
+
 private:
 	/// The status of the entry. Changes every time a non-animated parameter changes.
 	int m_status;
@@ -108,6 +109,12 @@ private:
 
 	/// The animated pitch.
 	AnimateableProperty m_pitch;
+
+	/// The animated pitch-scale value.
+	AnimateableProperty m_pitch_scale;
+
+	/// The animated time-stretch value.
+	AnimateableProperty m_time_stretch;
 
 	/// The animated location.
 	AnimateableProperty m_location;
