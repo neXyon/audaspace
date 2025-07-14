@@ -20,15 +20,15 @@
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchPitchScale::TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality) :
-    Effect(sound), m_timeRatio(timeRatio), m_pitchScale(pitchScale), m_quality(quality)
+TimeStretchPitchScale::TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant) :
+    Effect(sound), m_timeRatio(timeRatio), m_pitchScale(pitchScale), m_quality(quality), m_preserveFormant(preserveFormant)
 
 {
 }
 
 std::shared_ptr<IReader> TimeStretchPitchScale::createReader()
 {
-	return std::shared_ptr<IReader>(new TimeStretchPitchScaleReader(getReader(), m_timeRatio, m_pitchScale, m_quality));
+	return std::shared_ptr<IReader>(new TimeStretchPitchScaleReader(getReader(), m_timeRatio, m_pitchScale, m_quality, m_preserveFormant));
 }
 
 double TimeStretchPitchScale::getTimeRatio() const
@@ -41,4 +41,8 @@ double TimeStretchPitchScale::getPitchScale() const
 	return m_pitchScale;
 }
 
+bool TimeStretchPitchScale::getPreserveFormant() const
+{
+	return m_preserveFormant;
+}
 AUD_NAMESPACE_END

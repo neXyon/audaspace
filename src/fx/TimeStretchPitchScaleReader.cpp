@@ -26,7 +26,8 @@ using namespace RubberBand;
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality) :
+TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality,
+                                                         bool preserveFormant) :
     EffectReader(reader),
     m_timeRatio(timeRatio),
     m_pitchScale(pitchScale),
@@ -39,7 +40,7 @@ TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader
     m_output(reader->getSpecs().channels),
     m_retrieveData(reader->getSpecs().channels)
 {
-	configure(quality);
+	configure(quality, preserveFormant);
 }
 
 void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
@@ -179,26 +180,21 @@ TimeStretchPitchScaleReader::~TimeStretchPitchScaleReader()
 	delete m_stretcher;
 }
 
-void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality)
+void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality, bool preserveFormant)
 {
-	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime;
-
-	if(quality == m_quality)
+	if(quality == m_quality && preserveFormant == m_preserveFormant)
 		return;
 
-	if(!m_stretcher)
+	if(m_stretcher)
 	{
 		delete m_stretcher;
 	}
 
-	if(quality & StretcherQualityOption::HIGH)
-	{
-		options |= RubberBandStretcher::OptionEngineFiner;
-	}
-	else
-	{
-		options |= RubberBandStretcher::OptionEngineFaster;
-	}
+	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime;
+
+	options |= (quality & StretcherQualityOption::HIGH) ? RubberBandStretcher::OptionEngineFiner : RubberBandStretcher::OptionEngineFaster;
+
+	options |= preserveFormant ? RubberBandStretcher::OptionFormantPreserved : RubberBandStretcher::OptionFormantShifted;
 
 	RubberBandStretcher::Option windowOption = RubberBandStretcher::OptionWindowStandard;
 
@@ -252,6 +248,7 @@ void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality)
 
 	m_stretcher = new RubberBandStretcher(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, m_timeRatio, m_pitchScale);
 	m_quality = quality;
+	m_preserveFormant = preserveFormant;
 }
 
 AUD_NAMESPACE_END

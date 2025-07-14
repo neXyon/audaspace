@@ -52,19 +52,24 @@ class AUD_API TimeStretchPitchScale : public Effect
 {
 private:
 	/**
-	 * The pitch scale to change the sound by.
+	 * The factor by which to adjust the pitch.
 	 */
 	double m_pitchScale;
 
 	/**
-	 * The time ratio to stretch the sound by.
+	 * The factor by which to stretch or compress time.
 	 */
 	double m_timeRatio;
 
 	/**
-	 * The quality of the pitch correction when time-stretching.
+	 * Rubberband stretcher quality options.
 	 */
 	StretcherQualityOptions m_quality;
+
+	/**
+	 * Whether to preserve the vocal formants for the stretcher
+	 */
+	bool m_preserveFormant;
 
 	// delete copy constructor and operator=
 	TimeStretchPitchScale(const TimeStretchPitchScale&) = delete;
@@ -74,10 +79,12 @@ public:
 	/**
 	 * Creates a new time-stretch, pitch scaled sound.
 	 * \param sound The input sound.
-	 * \param timeRatio The time ratio to stretch by for the stretcher.
-	 * \param ratio The pitch scale to change by fort he stretcher.
+	 * \param timeRatio The factor by which to stretch or compress time.
+	 * \param pitchScale The factor by which to adjust the pitch.
+	 * \param quality The quality
+	 * \param preserveFormant
 	 */
-	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality);
+	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
 
 	/**
 	 * Returns the time ratio.
@@ -88,6 +95,11 @@ public:
 	 * Returns the pitch scale.
 	 */
 	double getPitchScale() const;
+
+	/**
+	 * Returns whether formant preservation is enabled.
+	 */
+	bool getPreserveFormant() const;
 	virtual std::shared_ptr<IReader> createReader();
 };
 
