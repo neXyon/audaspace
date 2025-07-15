@@ -16,9 +16,8 @@
 
 #include "fx/TimeStretchPitchScaleReader.h"
 
-#include <iostream>
-
 #include "IReader.h"
+#include "Exception.h"
 
 #include "util/Buffer.h"
 
@@ -40,6 +39,12 @@ TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader
     m_output(reader->getSpecs().channels),
     m_retrieveData(reader->getSpecs().channels)
 {
+	if (pitchScale < 1.0 / 256.0 || pitchScale > 256.0)
+		AUD_THROW(StateException, "The pitch scale must be between 1/256 and 256");
+
+	if (timeRatio < 1.0 / 256.0 || timeRatio > 256.0)
+		AUD_THROW(StateException, "The time-stretch ratio must be between 1/256 and 256");
+		
 	configure(quality, preserveFormant);
 }
 
@@ -56,6 +61,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 	int buf_position = 0;
 	int left = length;
 
+	eos = false;
 	while(buf_position < length)
 	{
 		int len = m_stretcher->getSamplesRequired();
@@ -120,6 +126,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 	}
 
 	length = buf_position;
+	eos = m_stretcher->available() == -1;
 }
 
 double TimeStretchPitchScaleReader::getTimeRatio() const
