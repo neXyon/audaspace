@@ -19,7 +19,7 @@
 /**
  * @file TimeStretchPitchScaleReader.h
  * @ingroup fx
- * The TimeStretchPitchScale class.
+ * The TimeStretchPitchScaleReader class.
  */
 
 #include "TimeStretchPitchScale.h"
@@ -33,7 +33,7 @@ using namespace RubberBand;
 AUD_NAMESPACE_BEGIN
 
 /**
- * This class reads from another reader and applies time stretching and pitch scaling.
+ * This class reads from another reader and applies time-stretching and pitch scaling.
  */
 class AUD_API TimeStretchPitchScaleReader : public EffectReader
 {
@@ -94,7 +94,7 @@ private:
 	RubberBandStretcher* m_stretcher;
 
 	/**
-	 * Whether to preserve the vocal formants for the stretcher
+	 * Whether to preserve the vocal formants for the stretcher.
 	 */
 	bool m_preserveFormant;
 
@@ -138,10 +138,16 @@ public:
 	void setTimeRatio(double timeRatio);
 
 	/**
-	 * Retrieves the pitch scale for the stretcher
+	 * Retrieves the pitch scale for the stretcher.
 	 * \return The current pitch scale value.
 	 */
 	double getPitchScale() const;
+
+	/**
+	 * Retrieves the formant preservation setting.
+	 * \return True if formant preservation is enabled. Otherwise, false.
+	 */
+	bool getPreserveFormant() const;
 
 	/**
 	 * Sets the pitch scale for the stretcher.
@@ -149,7 +155,7 @@ public:
 	void setPitchScale(double pitchScale);
 
 	/**
-	 * Sets the configuration for the stretcher
+	 * Sets the configuration for the stretcher.
 	 */
 	void configure(StretcherQualityOptions quality, bool preserveFormant);
 };

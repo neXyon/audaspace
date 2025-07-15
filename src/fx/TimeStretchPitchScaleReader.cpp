@@ -150,6 +150,11 @@ void TimeStretchPitchScaleReader::setPitchScale(double pitchScale)
 	}
 }
 
+bool TimeStretchPitchScaleReader::getPreserveFormant() const
+{
+	return m_preserveFormant;
+}
+
 void TimeStretchPitchScaleReader::seek(int position)
 {
 	m_length = 0;
