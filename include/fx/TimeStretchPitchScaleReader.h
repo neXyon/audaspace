@@ -44,32 +44,32 @@ private:
 	int m_position;
 
 	/**
-	 * Whether the reader has reached the end of stream
+	 * Whether the reader has reached the end of stream.
 	 */
 	bool m_finishedReader;
 
 	/**
-	 * The input buffer for the reader
+	 * The input buffer for the reader.
 	 */
 	Buffer m_buffer;
 
 	/**
-	 * The input deinterleaved buffers for each channel
+	 * The input deinterleaved buffers for each channel.
 	 */
 	std::vector<Buffer> m_input;
 
 	/**
-	 * The pointers to the input deinterleaved buffer data for processing
+	 * The pointers to the input deinterleaved buffer data for processing.
 	 */
 	std::vector<sample_t*> m_processData;
 
 	/**
-	 * The output deinterleaved buffers for each channel
+	 * The output deinterleaved buffers for each channel.
 	 */
 	std::vector<Buffer> m_output;
 
 	/**
-	 * The pointers to the output deinterleaved buffer data
+	 * The pointers to the output deinterleaved buffer data.
 	 */
 	std::vector<sample_t*> m_retrieveData;
 
@@ -111,9 +111,12 @@ public:
 	/**
 	 * Creates a new stretcher reader.
 	 * \param reader The reader to read from.
-	 * \param time_ratio The time ratio for the stretcher.
+	 * \param timeRatio The factor by which to stretch or compress time.
+	 * \param pitchScale The factor by which to adjust the pitch.
+	 * \param quality The quality of the stretcher.
+	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double time_ratio, double pitch_scale, StretcherQualityOptions quality, bool preserveFormant);
+	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
 
 	~TimeStretchPitchScaleReader();
 

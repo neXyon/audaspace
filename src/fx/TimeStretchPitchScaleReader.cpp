@@ -58,14 +58,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 	int available = m_stretcher->available();
 	while(available < length && !m_finishedReader)
 	{
-		// size_t need = m_stretcher->getSamplesRequired();
-		// if (need == 0) break;
-
-		// Note for the V3 engine, the needed samples can be 0 sometimes and it breaks out of the loop too early before getting the necessary length for the buffer
-		// For now, choose the block size process size to be 1024.
-		// It's also actually faster too than to always use getSamplesRequired();
-
-		len = 1024;
+		len = std::max(int(length / m_timeRatio), 1);
 
 		m_buffer.assureSize(len * samplesize);
 		buf = m_buffer.getBuffer();
@@ -92,7 +85,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 
 		available = m_stretcher->available();
 	}
-
+	
 	if(available <= 0)
 	{
 		length = 0;
