@@ -113,7 +113,7 @@ public:
 	 * \param reader The reader to read from.
 	 * \param timeRatio The factor by which to stretch or compress time.
 	 * \param pitchScale The factor by which to adjust the pitch.
-	 * \param quality The quality of the stretcher.
+	 * \param quality The processing quality level of the stretcher.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
 	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
