@@ -803,10 +803,14 @@ if(WITH_RUBBERBAND)
 		set(RUBBERBAND_SRC
 			src/fx/TimeStretchPitchScale.cpp
 			src/fx/TimeStretchPitchScaleReader.cpp
+			src/fx/AnimateableTimeStretchPitchScale.cpp
+			src/fx/AnimateableTimeStretchPitchScaleReader.cpp
 		)
 		set(RUBBERBAND_HDR
 			include/fx/TimeStretchPitchScale.h
 			include/fx/TimeStretchPitchScaleReader.h
+			include/fx/AnimateableTimeStretchPitchScale.h
+			include/fx/AnimateableTimeStretchPitchScaleReader.h
 		)
 
 		add_definitions(-DWITH_RUBBERBAND)
