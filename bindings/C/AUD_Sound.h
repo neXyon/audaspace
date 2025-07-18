@@ -16,8 +16,8 @@
 
 #pragma once
 
+#include "AUD_Sequence.h"
 #include "AUD_Types.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -420,6 +420,39 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \return A handle of the time-stretched, pitch scaled sound.
      */
     extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOptions quality, bool preserveFormant);
+
+    /**
+     * Time-stretches and pitch scales a sound with animation support
+     * \param sound The handle of the sound.
+     * \param timeRatio The factor by which to stretch or compress time.
+     * \param pitchScale The factor by which to adjust the pitch.
+     * \param quality The processing quality level of the stretcher.
+     * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
+     * \return A handle of the time-stretched, pitch scaled sound.
+     */
+    extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOptions quality,
+                                                                         bool preserveFormant);
+
+    /**
+     * Writes animation data to the AnimatableTimeStretchPitchScale effect
+     * \param sequence The sound scene.
+     * \param type The type of animation data.
+     * \param frame_start Start of the frame range.
+     * \param frame_end End of the frame range.
+     * \param data The data to write.
+     */
+    AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end,
+                                                                                          float* data);
+
+    /**
+     * Writes animation data to the AnimatableTimeStretchPitchScale effect
+     * \param entry The sequenced entry.
+     * \param type The type of animation data.
+     * \param frame The frame this data is for.
+     * \param data The data to write.
+     * \param animated Whether the attribute is animated.
+     */
+    extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 #endif
 
 #ifdef __cplusplus
