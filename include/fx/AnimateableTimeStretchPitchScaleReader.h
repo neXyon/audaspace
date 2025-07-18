@@ -22,10 +22,9 @@
  * The AnimateableTimeStretchPitchScaleReader class.
  */
 
+#include "fx/AnimateableTimeStretchPitchScale.h"
 #include "fx/EffectReader.h"
 #include "fx/TimeStretchPitchScaleReader.h"
-#include "sequence/AnimateableProperty.h"
-#include "util/Buffer.h"
 
 using namespace RubberBand;
 
@@ -38,19 +37,14 @@ class AUD_API AnimateableTimeStretchPitchScaleReader : public EffectReader
 {
 private:
 	/**
+	 * The animateable time stretch, pitch scale effect
+	 */
+	AnimateableTimeStretchPitchScale* m_timeStretchPitchScale;
+
+	/**
 	 * The time stretch and pitch scale reader
 	 */
 	std::shared_ptr<TimeStretchPitchScaleReader> m_reader;
-
-	/**
-	 * The animateable time stretch factor
-	 */
-	AnimateableProperty m_time_stretch;
-
-	/**
-	 * The animateable pitch scale factor
-	 */
-	AnimateableProperty m_pitch_scale;
 
 	/**
 	 * The current position.
@@ -65,20 +59,14 @@ public:
 	/**
 	 * Creates a new animateable time-stretch, pitch scale reader.
 	 * \param reader The input reader.
+	 * \param timeStretchPitchScale The time stretch pitch scale effect.
 	 * \param timeRatio The initial time ratio.
 	 * \param pitchScale The initial pitch scale.
 	 * \param quality The quality options.
 	 * \param preserveFormant Whether to preserve vocal formants.
 	 */
-	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, float timeRatio, float pitchScale, StretcherQualityOptions quality, bool preserveFormant);
-
-	/**
-	 * Retrieves one of the animated properties of the entry.
-	 * \param type Which animated property to retrieve.
-	 * \return A pointer to the animated property, valid as long as the
-	 *         entry is.
-	 */
-	AnimateableProperty* getAnimProperty(AnimateablePropertyType type);
+	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, AnimateableTimeStretchPitchScale* timeStretchPitchScale, float timeRatio, float pitchScale,
+	                                       StretcherQualityOptions quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 

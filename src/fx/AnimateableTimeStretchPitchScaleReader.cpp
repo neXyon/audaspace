@@ -22,9 +22,9 @@
 
 AUD_NAMESPACE_BEGIN
 
-AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, float timeRatio, float pitchScale, StretcherQualityOptions quality,
-                                                                               bool preserveFormant) :
-    EffectReader(reader), m_position(0), m_pitch_scale(1, pitchScale), m_time_stretch(1, timeRatio)
+AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, AnimateableTimeStretchPitchScale* timeStretchPitchScale,
+                                                                               float timeRatio, float pitchScale, StretcherQualityOptions quality, bool preserveFormant) :
+    EffectReader(reader), m_position(0), m_timeStretchPitchScale(timeStretchPitchScale)
 {
 	m_reader = std::make_shared<TimeStretchPitchScaleReader>(reader, timeRatio, pitchScale, quality, preserveFormant);
 }
@@ -41,10 +41,10 @@ void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample
 		int chunk = std::min(step, length - processed);
 		float value;
 
-		m_time_stretch.read(m_position + processed, &value);
+		m_timeStretchPitchScale->m_time_stretch.read(m_position + processed, &value);
 
 		m_reader->setTimeRatio(value);
-		m_pitch_scale.read(m_position + processed, &value);
+		m_timeStretchPitchScale->m_pitch_scale.read(m_position + processed, &value);
 
 		m_reader->setPitchScale(value);
 
@@ -76,19 +76,6 @@ int AnimateableTimeStretchPitchScaleReader::getLength() const
 int AnimateableTimeStretchPitchScaleReader::getPosition() const
 {
 	return m_position;
-}
-
-AnimateableProperty* AnimateableTimeStretchPitchScaleReader::getAnimProperty(AnimateablePropertyType type)
-{
-	switch(type)
-	{
-	case AP_PITCH_SCALE:
-		return &m_pitch_scale;
-	case AP_TIME_STRETCH:
-		return &m_time_stretch;
-	default:
-		return nullptr;
-	}
 }
 
 AUD_NAMESPACE_END

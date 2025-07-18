@@ -24,6 +24,7 @@
 
 #include "fx/Effect.h"
 #include "fx/TimeStretchPitchScale.h"
+#include "sequence/AnimateableProperty.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -33,6 +34,8 @@ AUD_NAMESPACE_BEGIN
  */
 class AUD_API AnimateableTimeStretchPitchScale : public Effect
 {
+	friend class AnimateableTimeStretchPitchScaleReader;
+
 private:
 	/**
 	 * The starting factor by which to adjust the pitch.
@@ -53,6 +56,16 @@ private:
 	 * Whether to preserve the vocal formants for the stretcher
 	 */
 	bool m_preserveFormant;
+
+	/**
+	 * The animateable time-stretch factor
+	 */
+	AnimateableProperty m_time_stretch;
+
+	/**
+	 * The animateable pitch scale factor
+	 */
+	AnimateableProperty m_pitch_scale;
 
 	// delete copy constructor and operator=
 	AnimateableTimeStretchPitchScale(const AnimateableTimeStretchPitchScale&) = delete;
@@ -83,6 +96,14 @@ public:
 	 * Returns whether formant preservation is enabled.
 	 */
 	bool getPreserveFormant() const;
+
+	/**
+	 * Retrieves one of the animated properties of the entry.
+	 * \param type Which animated property to retrieve.
+	 * \return A pointer to the animated property, valid as long as the
+	 *         entry is.
+	 */
+	AnimateableProperty* getAnimProperty(AnimateablePropertyType type);
 
 	virtual std::shared_ptr<IReader> createReader();
 };
