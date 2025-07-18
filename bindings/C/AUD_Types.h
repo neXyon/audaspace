@@ -200,3 +200,21 @@ typedef struct
 	/// Audio data parameters.
 	AUD_DeviceSpecs specs;
 } AUD_StreamInfo;
+
+/**
+ * The Rubber Band stretcher quality options
+ */
+typedef enum
+{
+	AUD_STRETCHER_QUALITY_FASTEST = 1 << 0,
+	AUD_STRETCHER_QUALITY_HIGH = 1 << 1,
+	AUD_STRETCHER_QUALITY_CRISP_0 = 1 << 2,
+	AUD_STRETCHER_QUALITY_CRISP_1 = 1 << 3,
+	AUD_STRETCHER_QUALITY_CRISP_2 = 1 << 4,
+	AUD_STRETCHER_QUALITY_CRISP_3 = 1 << 5,
+	AUD_STRETCHER_QUALITY_CRISP_4 = 1 << 6,
+	AUD_STRETCHER_QUALITY_CRISP_5 = 1 << 7,
+	AUD_STRETCHER_QUALITY_CRISP_6 = 1 << 8,
+} AUD_StretcherQualityOption;
+
+typedef int AUD_StretcherQualityOptions;

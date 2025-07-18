@@ -57,12 +57,18 @@
 #include "fx/Equalizer.h"
 #endif
 
+#ifdef WITH_RUBBERBAND
+#include "fx/AnimateableTimeStretchPitchScale.h"
+#include "fx/TimeStretchPitchScale.h"
+#endif
+
 #include <cassert>
 #include <cstring>
 
 using namespace aud;
 
 #define AUD_CAPI_IMPLEMENTATION
+#include "AUD_Sequence.h"
 #include "AUD_Sound.h"
 
 static inline AUD_Specs convSpecToC(aud::Specs specs)
@@ -788,4 +794,52 @@ AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int s
 	return equalizer;
 }
 
+#endif
+
+#ifdef WITH_RUBBERBAND
+AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOptions quality, bool preserveFormant)
+{
+	assert(sound);
+	try
+	{
+		return new AUD_Sound(new TimeStretchPitchScale(*sound, timeRatio, pitchScale, quality, preserveFormant));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOptions quality, bool preserveFormant)
+{
+	assert(sound);
+	try
+	{
+		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, timeRatio, pitchScale, quality, preserveFormant));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API void AUD_Sound_animatedTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end, float* data)
+{
+	AnimateableProperty* prop = std::dynamic_pointer_cast<AnimateableTimeStretchPitchScale>(*sound)->getAnimProperty(static_cast<AnimateablePropertyType>(type));
+	prop->writeConstantRange(data, frame_start, frame_end);
+}
+
+AUD_API void AUD_Sound_animatedTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated)
+{
+	AnimateableProperty* prop = std::dynamic_pointer_cast<AnimateableTimeStretchPitchScale>(*sound)->getAnimProperty(static_cast<AnimateablePropertyType>(type));
+	if(animated)
+	{
+		if(frame >= 0)
+			prop->write(data, frame, 1);
+	}
+	else
+	{
+		prop->write(data);
+	}
+}
 #endif
