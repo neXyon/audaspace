@@ -99,7 +99,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 
 		int readAmt = std::min(left, available);
 		if(readAmt == 0)
-			break;
+			continue;
 
 		left -= readAmt;
 
