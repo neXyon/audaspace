@@ -206,15 +206,7 @@ typedef struct
  */
 typedef enum
 {
-	AUD_STRETCHER_QUALITY_FASTEST = 1 << 0,
-	AUD_STRETCHER_QUALITY_HIGH = 1 << 1,
-	AUD_STRETCHER_QUALITY_CRISP_0 = 1 << 2,
-	AUD_STRETCHER_QUALITY_CRISP_1 = 1 << 3,
-	AUD_STRETCHER_QUALITY_CRISP_2 = 1 << 4,
-	AUD_STRETCHER_QUALITY_CRISP_3 = 1 << 5,
-	AUD_STRETCHER_QUALITY_CRISP_4 = 1 << 6,
-	AUD_STRETCHER_QUALITY_CRISP_5 = 1 << 7,
-	AUD_STRETCHER_QUALITY_CRISP_6 = 1 << 8,
+	AUD_STRETCHER_QUALITY_HIGH = 0,      /// Prioritize high-quality pitch processing
+	AUD_STRETCHER_QUALITY_FAST = 1,      /// Prioritize speed over audio quality
+	AUD_STRETCHER_QUALITY_CONSISTENT = 2 /// Prioritize consistency for dynamic pitch changes
 } AUD_StretcherQualityOption;
-
-typedef int AUD_StretcherQualityOptions;

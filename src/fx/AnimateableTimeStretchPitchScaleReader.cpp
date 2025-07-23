@@ -23,7 +23,7 @@
 AUD_NAMESPACE_BEGIN
 
 AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, AnimateableTimeStretchPitchScale* timeStretchPitchScale,
-                                                                               float timeRatio, float pitchScale, StretcherQualityOptions quality, bool preserveFormant) :
+                                                                               float timeRatio, float pitchScale, StretcherQualityOption quality, bool preserveFormant) :
     EffectReader(reader), m_position(0), m_timeStretchPitchScale(timeStretchPitchScale)
 {
 	m_reader = std::make_shared<TimeStretchPitchScaleReader>(reader, timeRatio, pitchScale, quality, preserveFormant);

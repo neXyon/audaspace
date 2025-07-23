@@ -26,23 +26,12 @@
 
 AUD_NAMESPACE_BEGIN
 
-enum StretcherQualityOption
+enum class StretcherQualityOption
 {
-	FASTEST = 1 << 0, // Use the high speed pitch speed
-	HIGH = 1 << 1,    // Use high quality pitch option
-
-	// Crispness options correspond to https://breakfastquay.com/rubberband/usage.txt and https://hg.sr.ht/~breakfastquay/rubberband-qt-example/browse/src/Processor.cpp?rev=tip
-	// NOTE: These really only apply when the R2 engine is used, that is when OptionEngineFaster is used, though window size does affect the R3 engine.
-	CRISP_0 = 1 << 2,
-	CRISP_1 = 1 << 3,
-	CRISP_2 = 1 << 4,
-	CRISP_3 = 1 << 5,
-	CRISP_4 = 1 << 6,
-	CRISP_5 = 1 << 7,
-	CRISP_6 = 1 << 8,
+	HIGH = 0,      // Prioritize high-quality pitch processing
+	FAST = 1,      // Prioritize speed over audio quality
+	CONSISTENT = 2 // Prioritize consistency for dynamic pitch changes
 };
-
-typedef int StretcherQualityOptions;
 
 /**
  * This sound allows a sound to be time-stretched and pitch scaled.
@@ -52,22 +41,22 @@ class AUD_API TimeStretchPitchScale : public Effect
 {
 private:
 	/**
-	 * The factor by which to adjust the pitch.
-	 */
-	double m_pitchScale;
-
-	/**
 	 * The factor by which to stretch or compress time.
 	 */
 	double m_timeRatio;
 
 	/**
-	 * Rubberband stretcher quality options.
+	 * The factor by which to adjust the pitch.
 	 */
-	StretcherQualityOptions m_quality;
+	double m_pitchScale;
 
 	/**
-	 * Whether to preserve the vocal formants for the stretcher
+	 * Rubberband stretcher quality options.
+	 */
+	StretcherQualityOption m_quality;
+
+	/**
+	 * Whether to preserve the vocal formants during pitch-shifting
 	 */
 	bool m_preserveFormant;
 
@@ -84,7 +73,7 @@ public:
 	 * \param quality The processing quality level.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
+	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant);
 
 	/**
 	 * Returns the time ratio.

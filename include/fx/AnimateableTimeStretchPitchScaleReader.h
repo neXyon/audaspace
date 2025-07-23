@@ -66,7 +66,7 @@ public:
 	 * \param preserveFormant Whether to preserve vocal formants.
 	 */
 	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, AnimateableTimeStretchPitchScale* timeStretchPitchScale, float timeRatio, float pitchScale,
-	                                       StretcherQualityOptions quality, bool preserveFormant);
+	                                       StretcherQualityOption quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 

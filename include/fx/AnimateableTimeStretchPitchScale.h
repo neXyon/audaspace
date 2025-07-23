@@ -50,7 +50,7 @@ private:
 	/**
 	 * Rubberband stretcher quality options.
 	 */
-	StretcherQualityOptions m_quality;
+	StretcherQualityOption m_quality;
 
 	/**
 	 * Whether to preserve the vocal formants for the stretcher
@@ -80,7 +80,7 @@ public:
 	 * \param quality The processing quality level of the stretcher.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
+	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant);
 
 	/**
 	 * Returns the starting time stretch factor.
