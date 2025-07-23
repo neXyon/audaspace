@@ -423,5 +423,5 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
 #endif
 
 #ifdef __cplusplus
-    }
+}
 #endif

@@ -99,7 +99,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 
 		int readAmt = std::min(left, available);
 		if(readAmt == 0)
-			break;
+			continue;
 
 		left -= readAmt;
 
@@ -181,21 +181,12 @@ int TimeStretchPitchScaleReader::getPosition() const
 	return m_position;
 }
 
-TimeStretchPitchScaleReader::~TimeStretchPitchScaleReader()
-{
-	delete m_stretcher;
-}
-
 void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality, bool preserveFormant)
 {
 	if(quality == m_quality && preserveFormant == m_preserveFormant)
 		return;
 
-	if(m_stretcher)
-	{
-		delete m_stretcher;
-	}
-
+	m_stretcher.reset();
 	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime;
 
 	options |= (quality & StretcherQualityOption::HIGH) ? RubberBandStretcher::OptionEngineFiner : RubberBandStretcher::OptionEngineFaster;
@@ -252,7 +243,7 @@ void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality, boo
 
 	options |= windowOption;
 
-	m_stretcher = new RubberBandStretcher(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, m_timeRatio, m_pitchScale);
+	m_stretcher = std::make_unique<RubberBandStretcher>(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, m_timeRatio, m_pitchScale);
 	m_quality = quality;
 	m_preserveFormant = preserveFormant;
 }

@@ -91,7 +91,7 @@ private:
 	/**
 	 * Rubberband stretcher.
 	 */
-	RubberBandStretcher* m_stretcher;
+	std::unique_ptr<RubberBandStretcher> m_stretcher;
 
 	/**
 	 * Whether to preserve the vocal formants for the stretcher.
@@ -117,8 +117,6 @@ public:
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
 	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
-
-	~TimeStretchPitchScaleReader();
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
