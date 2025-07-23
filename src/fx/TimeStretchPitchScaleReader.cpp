@@ -25,14 +25,14 @@ using namespace RubberBand;
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality,
+TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOption quality,
                                                          bool preserveFormant) :
     EffectReader(reader),
     m_timeRatio(timeRatio),
     m_pitchScale(pitchScale),
     m_position(0),
     m_length(0),
-    m_quality(-1),
+    m_quality(quality),
     m_finishedReader(false),
     m_input(reader->getSpecs().channels),
     m_processData(reader->getSpecs().channels),
@@ -181,68 +181,32 @@ int TimeStretchPitchScaleReader::getPosition() const
 	return m_position;
 }
 
-void TimeStretchPitchScaleReader::configure(StretcherQualityOptions quality, bool preserveFormant)
+void TimeStretchPitchScaleReader::configure(StretcherQualityOption quality, bool preserveFormant)
 {
-	if(quality == m_quality && preserveFormant == m_preserveFormant)
+	if(m_stretcher && quality == m_quality && preserveFormant == m_preserveFormant)
 		return;
 
 	m_stretcher.reset();
-	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime;
 
-	options |= (quality & StretcherQualityOption::HIGH) ? RubberBandStretcher::OptionEngineFiner : RubberBandStretcher::OptionEngineFaster;
+	RubberBandStretcher::Options options = RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionEngineFiner | RubberBandStretcher::OptionChannelsTogether;
+
+	switch(quality)
+	{
+	case StretcherQualityOption::HIGH:
+		options |= RubberBandStretcher::OptionPitchHighQuality;
+		break;
+	case StretcherQualityOption::FAST:
+		options |= RubberBandStretcher::OptionPitchHighSpeed;
+		options |= RubberBandStretcher::OptionWindowShort;
+		break;
+	case StretcherQualityOption::CONSISTENT:
+		options |= RubberBandStretcher::OptionPitchHighConsistency;
+		break;
+	default:
+		break;
+	}
 
 	options |= preserveFormant ? RubberBandStretcher::OptionFormantPreserved : RubberBandStretcher::OptionFormantShifted;
-
-	RubberBandStretcher::Option windowOption = RubberBandStretcher::OptionWindowStandard;
-
-	if(quality & StretcherQualityOption::CRISP_0)
-	{
-		options |= RubberBandStretcher::OptionTransientsSmooth;
-		options |= RubberBandStretcher::OptionPhaseIndependent;
-		options |= RubberBandStretcher::OptionDetectorCompound;
-		windowOption = RubberBandStretcher::OptionWindowLong;
-	}
-	else if(quality & StretcherQualityOption::CRISP_1)
-	{
-		options |= RubberBandStretcher::OptionTransientsCrisp;
-		options |= RubberBandStretcher::OptionPhaseIndependent;
-		options |= RubberBandStretcher::OptionDetectorSoft;
-		windowOption = RubberBandStretcher::OptionWindowLong;
-	}
-	else if(quality & StretcherQualityOption::CRISP_2)
-	{
-		options |= RubberBandStretcher::OptionTransientsSmooth;
-		options |= RubberBandStretcher::OptionPhaseIndependent;
-		options |= RubberBandStretcher::OptionDetectorCompound;
-	}
-	else if(quality & StretcherQualityOption::CRISP_3)
-	{
-		options |= RubberBandStretcher::OptionTransientsSmooth;
-		options |= RubberBandStretcher::OptionPhaseLaminar;
-		options |= RubberBandStretcher::OptionDetectorCompound;
-	}
-	else if(quality & StretcherQualityOption::CRISP_4)
-	{
-		options |= RubberBandStretcher::OptionTransientsMixed;
-		options |= RubberBandStretcher::OptionPhaseLaminar;
-		options |= RubberBandStretcher::OptionDetectorCompound;
-	}
-	else if(quality & StretcherQualityOption::CRISP_5)
-	{
-		options |= RubberBandStretcher::OptionTransientsCrisp;
-		options |= RubberBandStretcher::OptionPhaseLaminar;
-		options |= RubberBandStretcher::OptionDetectorCompound;
-	}
-	else if(quality & StretcherQualityOption::CRISP_6)
-	{
-		options |= RubberBandStretcher::OptionTransientsCrisp;
-		options |= RubberBandStretcher::OptionPhaseIndependent;
-		options |= RubberBandStretcher::OptionDetectorCompound;
-		windowOption = RubberBandStretcher::OptionWindowShort;
-	}
-
-	options |= windowOption;
-
 	m_stretcher = std::make_unique<RubberBandStretcher>(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, m_timeRatio, m_pitchScale);
 	m_quality = quality;
 	m_preserveFormant = preserveFormant;

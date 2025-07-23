@@ -419,7 +419,7 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
      * \return A handle of the time-stretched, pitch scaled sound.
      */
-    extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOptions quality, bool preserveFormant);
+    extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOption quality, bool preserveFormant);
 #endif
 
 #ifdef __cplusplus

@@ -795,12 +795,12 @@ AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int s
 #endif
 
 #ifdef WITH_RUBBERBAND
-AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOptions quality, bool preserveFormant)
+AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOption quality, bool preserveFormant)
 {
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new TimeStretchPitchScale(*sound, timeRatio, pitchScale, quality, preserveFormant));
+		return new AUD_Sound(new TimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQualityOption>(quality), preserveFormant));
 	}
 	catch(Exception&)
 	{

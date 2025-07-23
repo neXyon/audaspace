@@ -101,7 +101,7 @@ private:
 	/**
 	 * Rubberband stretcher quality options.
 	 */
-	StretcherQualityOptions m_quality;
+	StretcherQualityOption m_quality;
 
 	// delete copy constructor and operator=
 	TimeStretchPitchScaleReader(const TimeStretchPitchScaleReader&) = delete;
@@ -116,7 +116,7 @@ public:
 	 * \param quality The processing quality level of the stretcher.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOptions quality, bool preserveFormant);
+	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 
@@ -155,7 +155,7 @@ public:
 	/**
 	 * Sets the configuration for the stretcher.
 	 */
-	void configure(StretcherQualityOptions quality, bool preserveFormant);
+	void configure(StretcherQualityOption quality, bool preserveFormant);
 };
 
 AUD_NAMESPACE_END
