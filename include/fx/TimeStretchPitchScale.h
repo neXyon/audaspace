@@ -41,14 +41,14 @@ class AUD_API TimeStretchPitchScale : public Effect
 {
 private:
 	/**
-	 * The factor by which to adjust the pitch.
-	 */
-	double m_pitchScale;
-
-	/**
 	 * The factor by which to stretch or compress time.
 	 */
 	double m_timeRatio;
+
+	/**
+	 * The factor by which to adjust the pitch.
+	 */
+	double m_pitchScale;
 
 	/**
 	 * Rubberband stretcher quality options.
@@ -56,7 +56,7 @@ private:
 	StretcherQualityOption m_quality;
 
 	/**
-	 * Whether to preserve the vocal formants for the stretcher
+	 * Whether to preserve the vocal formants during pitch-shifting
 	 */
 	bool m_preserveFormant;
 
