@@ -56,10 +56,10 @@ AnimateableProperty* AnimateableTimeStretchPitchScale::getAnimProperty(Animateab
 {
 	switch(type)
 	{
-	case AP_PITCH_SCALE:
-		return &m_pitch_scale;
 	case AP_TIME_STRETCH:
 		return &m_time_stretch;
+	case AP_PITCH_SCALE:
+		return &m_pitch_scale;
 	default:
 		return nullptr;
 	}

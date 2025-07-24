@@ -823,13 +823,14 @@ AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, 
 	}
 }
 
-AUD_API void AUD_Sound_animatedTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end, float* data)
+AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end,
+                                                                                      float* data)
 {
 	AnimateableProperty* prop = std::dynamic_pointer_cast<AnimateableTimeStretchPitchScale>(*sound)->getAnimProperty(static_cast<AnimateablePropertyType>(type));
 	prop->writeConstantRange(data, frame_start, frame_end);
 }
 
-AUD_API void AUD_Sound_animatedTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated)
+AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated)
 {
 	AnimateableProperty* prop = std::dynamic_pointer_cast<AnimateableTimeStretchPitchScale>(*sound)->getAnimProperty(static_cast<AnimateablePropertyType>(type));
 	if(animated)

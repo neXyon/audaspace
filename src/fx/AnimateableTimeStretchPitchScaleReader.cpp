@@ -31,35 +31,16 @@ AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(s
 
 void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	const int step = 1;
-	int processed = 0;
+	float value;
 
-	int channels = m_reader->getSpecs().channels;
+	m_timeStretchPitchScale->m_time_stretch.read(m_position, &value);
 
-	while(processed < length)
-	{
-		int chunk = std::min(step, length - processed);
-		float value;
+	m_reader->setTimeRatio(value);
+	m_timeStretchPitchScale->m_pitch_scale.read(m_position, &value);
 
-		m_timeStretchPitchScale->m_time_stretch.read(m_position + processed, &value);
-
-		m_reader->setTimeRatio(value);
-		m_timeStretchPitchScale->m_pitch_scale.read(m_position + processed, &value);
-
-		m_reader->setPitchScale(value);
-
-		int samplesRead = chunk;
-		m_reader->read(samplesRead, eos, &buffer[processed * channels]);
-
-		if(samplesRead <= 0 || eos)
-		{
-			break;
-		}
-
-		processed += samplesRead;
-	}
-	m_position += processed;
-	length = processed;
+	m_reader->setPitchScale(value);
+	m_reader->read(length, eos, buffer);
+	m_position += length;
 }
 
 void AnimateableTimeStretchPitchScaleReader::seek(int position)
