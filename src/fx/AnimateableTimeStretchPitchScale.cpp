@@ -20,31 +20,33 @@
 
 AUD_NAMESPACE_BEGIN
 
-AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOption quality,
+AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQualityOption quality,
                                                                    bool preserveFormant) :
     Effect(sound),
-    m_timeRatio(timeRatio),
-    m_pitchScale(pitchScale),
     m_quality(quality),
     m_preserveFormant(preserveFormant),
-    m_pitch_scale(1, pitchScale),
-    m_time_stretch(1, timeRatio)
+    m_timeStretch(std::make_shared<AnimateableProperty>(1, timeStretch)),
+    m_pitchScale(std::make_shared<AnimateableProperty>(1, pitchScale))
 {
 }
 
 std::shared_ptr<IReader> AnimateableTimeStretchPitchScale::createReader()
 {
-	return std::shared_ptr<IReader>(new AnimateableTimeStretchPitchScaleReader(getReader(), this, m_timeRatio, m_pitchScale, m_quality, m_preserveFormant));
+	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_timeStretch, m_pitchScale, m_quality, m_preserveFormant);
 }
 
 double AnimateableTimeStretchPitchScale::getTimeRatio() const
 {
-	return m_timeRatio;
+	float timeStretch;
+	m_timeStretch->read(0, &timeStretch);
+	return timeStretch;
 }
 
 double AnimateableTimeStretchPitchScale::getPitchScale() const
 {
-	return m_pitchScale;
+	float pitchScale;
+	m_pitchScale->read(0, &pitchScale);
+	return pitchScale;
 }
 
 bool AnimateableTimeStretchPitchScale::getPreserveFormant() const
@@ -57,9 +59,9 @@ AnimateableProperty* AnimateableTimeStretchPitchScale::getAnimProperty(Animateab
 	switch(type)
 	{
 	case AP_TIME_STRETCH:
-		return &m_time_stretch;
+		return m_timeStretch.get();
 	case AP_PITCH_SCALE:
-		return &m_pitch_scale;
+		return m_pitchScale.get();
 	default:
 		return nullptr;
 	}

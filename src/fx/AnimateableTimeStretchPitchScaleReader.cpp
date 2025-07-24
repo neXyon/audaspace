@@ -22,41 +22,24 @@
 
 AUD_NAMESPACE_BEGIN
 
-AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, AnimateableTimeStretchPitchScale* timeStretchPitchScale,
-                                                                               float timeRatio, float pitchScale, StretcherQualityOption quality, bool preserveFormant) :
-    EffectReader(reader), m_position(0), m_timeStretchPitchScale(timeStretchPitchScale)
+#include <cstdio>
+
+AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch,
+                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQualityOption quality,
+                                                                               bool preserveFormant) :
+    TimeStretchPitchScaleReader(reader, 1.0, 1.0, quality, preserveFormant), m_timeStretch(timeStretch), m_pitchScale(pitchScale)
 {
-	m_reader = std::make_shared<TimeStretchPitchScaleReader>(reader, timeRatio, pitchScale, quality, preserveFormant);
 }
 
 void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	float value;
-
-	m_timeStretchPitchScale->m_time_stretch.read(m_position, &value);
-
-	m_reader->setTimeRatio(value);
-	m_timeStretchPitchScale->m_pitch_scale.read(m_position, &value);
-
-	m_reader->setPitchScale(value);
-	m_reader->read(length, eos, buffer);
-	m_position += length;
-}
-
-void AnimateableTimeStretchPitchScaleReader::seek(int position)
-{
-	m_position = position;
-	m_reader->seek(position);
-}
-
-int AnimateableTimeStretchPitchScaleReader::getLength() const
-{
-	return m_reader->getLength();
-}
-
-int AnimateableTimeStretchPitchScaleReader::getPosition() const
-{
-	return m_position;
+	int position = getPosition();
+	m_timeStretch->read(position, &value);
+	setTimeRatio(value);
+	m_pitchScale->read(position, &value);
+	setPitchScale(value);
+	TimeStretchPitchScaleReader::read(length, eos, buffer);
 }
 
 AUD_NAMESPACE_END

@@ -34,18 +34,16 @@ AUD_NAMESPACE_BEGIN
  */
 class AUD_API AnimateableTimeStretchPitchScale : public Effect
 {
-	friend class AnimateableTimeStretchPitchScaleReader;
-
 private:
 	/**
-	 * The starting factor by which to adjust the pitch.
+	 * The animateable time-stretch property.
 	 */
-	double m_pitchScale;
+	std::shared_ptr<AnimateableProperty> m_timeStretch;
 
 	/**
-	 * The starting factor by which to stretch or compress time.
+	 * The animateable pitch-scale property.
 	 */
-	double m_timeRatio;
+	std::shared_ptr<AnimateableProperty> m_pitchScale;
 
 	/**
 	 * Rubberband stretcher quality options.
@@ -57,16 +55,6 @@ private:
 	 */
 	bool m_preserveFormant;
 
-	/**
-	 * The animateable time-stretch factor
-	 */
-	AnimateableProperty m_time_stretch;
-
-	/**
-	 * The animateable pitch scale factor
-	 */
-	AnimateableProperty m_pitch_scale;
-
 	// delete copy constructor and operator=
 	AnimateableTimeStretchPitchScale(const AnimateableTimeStretchPitchScale&) = delete;
 	AnimateableTimeStretchPitchScale& operator=(const AnimateableTimeStretchPitchScale&) = delete;
@@ -75,12 +63,12 @@ public:
 	/**
 	 * Creates a new time-stretch, pitch-scaled sound that can be animated.
 	 * \param sound The input sound.
-	 * \param timeRatio The factor by which to stretch or compress time.
-	 * \param pitchScale The factor by which to adjust the pitch.
+	 * \param timeRatio The starting factor by which to stretch or compress time.
+	 * \param pitchScale The starting factor by which to adjust the pitch.
 	 * \param quality The processing quality level of the stretcher.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant);
+	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQualityOption quality, bool preserveFormant);
 
 	/**
 	 * Returns the starting time stretch factor.

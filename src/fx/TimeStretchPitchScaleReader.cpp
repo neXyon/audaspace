@@ -71,7 +71,6 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 			sample_t* buf = m_buffer.getBuffer();
 
 			m_reader->read(len, m_finishedReader, buf);
-			m_position += len;
 
 			// Deinterleave the input reader buffer for processing
 			for(int channel = 0; channel < channels; channel++)
@@ -126,6 +125,7 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 	}
 
 	length = buf_position;
+	m_position += length;
 	eos = m_stretcher->available() == -1;
 }
 

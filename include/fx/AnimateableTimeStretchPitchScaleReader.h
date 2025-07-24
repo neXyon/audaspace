@@ -33,23 +33,18 @@ AUD_NAMESPACE_BEGIN
 /**
  * This class reads from another reader and applies time-stretching and pitch scaling with support for animating both properties.
  */
-class AUD_API AnimateableTimeStretchPitchScaleReader : public EffectReader
+class AUD_API AnimateableTimeStretchPitchScaleReader : public TimeStretchPitchScaleReader
 {
 private:
 	/**
-	 * The animateable time stretch, pitch scale effect
+	 * The animateable time-stretch property.
 	 */
-	AnimateableTimeStretchPitchScale* m_timeStretchPitchScale;
+	std::shared_ptr<AnimateableProperty> m_timeStretch;
 
 	/**
-	 * The time stretch and pitch scale reader
+	 * The animateable pitch-scale property.
 	 */
-	std::shared_ptr<TimeStretchPitchScaleReader> m_reader;
-
-	/**
-	 * The current position.
-	 */
-	int m_position;
+	std::shared_ptr<AnimateableProperty> m_pitchScale;
 
 	// delete copy constructor and operator=
 	AnimateableTimeStretchPitchScaleReader(const AnimateableTimeStretchPitchScaleReader&) = delete;
@@ -59,20 +54,15 @@ public:
 	/**
 	 * Creates a new animateable time-stretch, pitch scale reader.
 	 * \param reader The input reader.
-	 * \param timeStretchPitchScale The time stretch pitch scale effect.
-	 * \param timeRatio The initial time ratio.
-	 * \param pitchScale The initial pitch scale.
-	 * \param quality The quality options.
+	 * \param timeStretch The animateable time-stretch property.
+	 * \param pitchScale The animateable pitch-scale property.
+	 * \param quality The stretcher quality options.
 	 * \param preserveFormant Whether to preserve vocal formants.
 	 */
-	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, AnimateableTimeStretchPitchScale* timeStretchPitchScale, float timeRatio, float pitchScale,
+	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch, std::shared_ptr<AnimateableProperty> pitchScale,
 	                                       StretcherQualityOption quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
-
-	virtual void seek(int position) override;
-	virtual int getLength() const override;
-	virtual int getPosition() const override;
 };
 
 AUD_NAMESPACE_END
