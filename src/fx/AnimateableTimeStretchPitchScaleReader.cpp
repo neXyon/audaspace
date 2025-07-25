@@ -22,8 +22,6 @@
 
 AUD_NAMESPACE_BEGIN
 
-#include <cstdio>
-
 AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch,
                                                                                std::shared_ptr<AnimateableProperty> pitchScale, StretcherQualityOption quality,
                                                                                bool preserveFormant) :
