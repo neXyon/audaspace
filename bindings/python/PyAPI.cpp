@@ -31,24 +31,22 @@
 #endif
 
 #ifdef WITH_RUBBERBAND
-
+#include "fx/TimeStretchPitchScale.h"
 #endif
+
+#include "respec/Specification.h"
+#include "devices/IHandle.h"
+#include "devices/I3DDevice.h"
+#include "file/IWriter.h"
+#include "plugin/PluginManager.h"
+#include "sequence/AnimateableProperty.h"
+#include "ISound.h"
+
 #include <memory>
 
 #include <structmember.h>
 
-#include "ISound.h"
-
-#include "devices/I3DDevice.h"
-#include "devices/IHandle.h"
-#include "file/IWriter.h"
-#include "fx/TimeStretchPitchScale.h"
-#include "plugin/PluginManager.h"
-#include "respec/Specification.h"
-#include "sequence/AnimateableProperty.h"
-
 using namespace aud;
-
 // ====================================================================
 
 #define PY_MODULE_ADD_CONSTANT(module, name) PyModule_AddIntConstant(module, #name, name)
