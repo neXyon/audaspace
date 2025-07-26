@@ -54,54 +54,19 @@ private:
 	Buffer m_buffer;
 
 	/**
-	 * The input deinterleaved buffers for each channel.
+	 * The input/output deinterleaved buffers for each channel.
 	 */
-	std::vector<Buffer> m_input;
+	std::vector<Buffer> m_deinterleaved;
 
 	/**
-	 * The pointers to the input deinterleaved buffer data for processing.
+	 * The pointers to the input/output deinterleaved buffer data for processing/retrieving.
 	 */
-	std::vector<sample_t*> m_processData;
-
-	/**
-	 * The output deinterleaved buffers for each channel.
-	 */
-	std::vector<Buffer> m_output;
-
-	/**
-	 * The pointers to the output deinterleaved buffer data.
-	 */
-	std::vector<sample_t*> m_retrieveData;
-
-	/**
-	 * The length of the output.
-	 */
-	int m_length;
-
-	/**
-	 * The time ratio for the stretcher.
-	 */
-	double m_timeRatio;
-
-	/**
-	 * The pitch scale for the stretcher.
-	 */
-	double m_pitchScale;
+	std::vector<sample_t*> m_channelData;
 
 	/**
 	 * Rubberband stretcher.
 	 */
 	std::unique_ptr<RubberBandStretcher> m_stretcher;
-
-	/**
-	 * Whether to preserve the vocal formants for the stretcher.
-	 */
-	bool m_preserveFormant;
-
-	/**
-	 * Rubberband stretcher quality options.
-	 */
-	StretcherQualityOption m_quality;
 
 	// delete copy constructor and operator=
 	TimeStretchPitchScaleReader(const TimeStretchPitchScaleReader&) = delete;
@@ -142,20 +107,9 @@ public:
 	double getPitchScale() const;
 
 	/**
-	 * Retrieves the formant preservation setting.
-	 * \return True if formant preservation is enabled. Otherwise, false.
-	 */
-	bool getPreserveFormant() const;
-
-	/**
 	 * Sets the pitch scale for the stretcher.
 	 */
 	void setPitchScale(double pitchScale);
-
-	/**
-	 * Sets the configuration for the stretcher.
-	 */
-	void configure(StretcherQualityOption quality, bool preserveFormant);
 };
 
 AUD_NAMESPACE_END
