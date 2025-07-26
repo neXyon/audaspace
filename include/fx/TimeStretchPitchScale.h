@@ -26,7 +26,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-enum class StretcherQualityOption
+enum class StretcherQuality
 {
 	HIGH = 0,      // Prioritize high-quality pitch processing
 	FAST = 1,      // Prioritize speed over audio quality
@@ -51,9 +51,9 @@ private:
 	double m_pitchScale;
 
 	/**
-	 * Rubberband stretcher quality options.
+	 * Rubberband stretcher quality.
 	 */
-	StretcherQualityOption m_quality;
+	StretcherQuality m_quality;
 
 	/**
 	 * Whether to preserve the vocal formants during pitch-shifting
@@ -73,7 +73,7 @@ public:
 	 * \param quality The processing quality level.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant);
+	TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQuality quality, bool preserveFormant);
 
 	/**
 	 * Returns the time ratio.

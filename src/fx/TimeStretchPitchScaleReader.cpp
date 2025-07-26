@@ -16,8 +16,10 @@
 
 #include "fx/TimeStretchPitchScaleReader.h"
 
-#include "IReader.h"
+#include <cstring>
+
 #include "Exception.h"
+#include "IReader.h"
 
 #include "util/Buffer.h"
 
@@ -25,8 +27,22 @@ using namespace RubberBand;
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOption quality,
-                                                         bool preserveFormant) :
+void TimeStretchPitchScaleReader::reset()
+{
+	auto startPad{m_stretcher->getPreferredStartPad()};
+
+	m_samplesToDrop = m_stretcher->getStartDelay();
+
+	m_deinterleaved[0].assureSize(startPad * sizeof(sample_t));
+	std::memset(m_deinterleaved[0].getBuffer(), 0, startPad * sizeof(sample_t));
+
+	for(auto& channel : m_channelData)
+		channel = m_deinterleaved[0].getBuffer();
+
+	m_stretcher->process(m_channelData.data(), startPad, m_finishedReader);
+}
+
+TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQuality quality, bool preserveFormant) :
     EffectReader(reader), m_position(0), m_finishedReader(false), m_channelData(reader->getSpecs().channels), m_deinterleaved(reader->getSpecs().channels)
 {
 	if (pitchScale < 1.0 / 256.0 || pitchScale > 256.0)
@@ -39,14 +55,14 @@ TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader
 
 	switch(quality)
 	{
-	case StretcherQualityOption::HIGH:
+	case StretcherQuality::HIGH:
 		options |= RubberBandStretcher::OptionPitchHighQuality;
 		break;
-	case StretcherQualityOption::FAST:
+	case StretcherQuality::FAST:
 		options |= RubberBandStretcher::OptionPitchHighSpeed;
 		options |= RubberBandStretcher::OptionWindowShort;
 		break;
-	case StretcherQualityOption::CONSISTENT:
+	case StretcherQuality::CONSISTENT:
 		options |= RubberBandStretcher::OptionPitchHighConsistency;
 		break;
 	default:
@@ -55,6 +71,8 @@ TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader
 
 	options |= preserveFormant ? RubberBandStretcher::OptionFormantPreserved : RubberBandStretcher::OptionFormantShifted;
 	m_stretcher = std::make_unique<RubberBandStretcher>(m_reader->getSpecs().rate, m_reader->getSpecs().channels, options, timeRatio, pitchScale);
+
+	reset();
 }
 
 void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
@@ -67,11 +85,10 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 
 	sample_t* buf;
 
-	int buf_position = 0;
-	int left = length;
+	int samplesRead = 0;
 
 	eos = false;
-	while(buf_position < length)
+	while(samplesRead < length)
 	{
 		int len = m_stretcher->getSamplesRequired();
 		if(!m_finishedReader && len != 0)
@@ -105,34 +122,40 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 			break;
 		}
 
-		int readAmt = std::min(left, available);
-		if(readAmt == 0)
+		if(available == 0)
 			continue;
 
-		left -= readAmt;
+		available = std::min(m_samplesToDrop ? m_samplesToDrop : length - samplesRead, available);
 
 		for(int channel = 0; channel < channels; channel++)
 		{
-			m_deinterleaved[channel].assureSize(readAmt * sizeof(sample_t));
+			m_deinterleaved[channel].assureSize(available * sizeof(sample_t));
 			m_channelData[channel] = m_deinterleaved[channel].getBuffer();
 		}
 
-		m_stretcher->retrieve(m_channelData.data(), readAmt);
+		m_stretcher->retrieve(m_channelData.data(), available);
 
-		// Interleave the retrieved data into the buffer
-		for(int channel = 0; channel < channels; channel++)
+		if(m_samplesToDrop)
 		{
-			sample_t* outputBuf = m_deinterleaved[channel].getBuffer();
-			for(int i = 0; i < readAmt; i++)
-			{
-				buffer[(buf_position + i) * channels + channel] = outputBuf[i];
-			}
+			m_samplesToDrop -= available;
 		}
+		else
+		{
+			// Interleave the retrieved data into the buffer
+			for(int channel = 0; channel < channels; channel++)
+			{
+				sample_t* outputBuf = m_deinterleaved[channel].getBuffer();
+				for(int i = 0; i < available; i++)
+				{
+					buffer[(samplesRead + i) * channels + channel] = outputBuf[i];
+				}
+			}
 
-		buf_position += readAmt;
+			samplesRead += available;
+		}
 	}
 
-	length = buf_position;
+	length = samplesRead;
 	m_position += length;
 	eos = m_stretcher->available() == -1;
 }
@@ -168,6 +191,7 @@ void TimeStretchPitchScaleReader::seek(int position)
 	m_reader->seek(int(position / getTimeRatio()));
 	m_finishedReader = false;
 	m_stretcher->reset();
+	reset();
 	m_position = position;
 }
 

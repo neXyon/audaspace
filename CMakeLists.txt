@@ -796,7 +796,7 @@ endif()
 # Rubber Band Library
 if(WITH_RUBBERBAND)
 	if(AUDASPACE_STANDALONE)
-		find_package(rubberband ${PACKAGE_OPTION})
+		find_package(Rubberband ${PACKAGE_OPTION})
 	endif()
 
 	if(RUBBERBAND_FOUND)

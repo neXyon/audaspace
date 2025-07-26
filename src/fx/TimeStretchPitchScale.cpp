@@ -20,7 +20,7 @@
 
 AUD_NAMESPACE_BEGIN
 
-TimeStretchPitchScale::TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant) :
+TimeStretchPitchScale::TimeStretchPitchScale(std::shared_ptr<ISound> sound, double timeRatio, double pitchScale, StretcherQuality quality, bool preserveFormant) :
     Effect(sound), m_timeRatio(timeRatio), m_pitchScale(pitchScale), m_quality(quality), m_preserveFormant(preserveFormant)
 
 {

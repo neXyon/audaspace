@@ -68,9 +68,19 @@ private:
 	 */
 	std::unique_ptr<RubberBandStretcher> m_stretcher;
 
+	/**
+	 * Number of samples that need to be dropped at the beginning or after a seek.
+	 */
+	int m_samplesToDrop;
+
 	// delete copy constructor and operator=
 	TimeStretchPitchScaleReader(const TimeStretchPitchScaleReader&) = delete;
 	TimeStretchPitchScaleReader& operator=(const TimeStretchPitchScaleReader&) = delete;
+
+	/**
+	 * Feeds the number of required zeo samples to the stretcher and queries the amount of samples to drop.
+	 */
+	void reset();
 
 public:
 	/**
@@ -81,7 +91,7 @@ public:
 	 * \param quality The processing quality level of the stretcher.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOption quality, bool preserveFormant);
+	TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQuality quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer);
 

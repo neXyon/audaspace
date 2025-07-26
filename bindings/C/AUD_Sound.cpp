@@ -58,8 +58,8 @@
 #endif
 
 #ifdef WITH_RUBBERBAND
-#include "fx/AnimateableTimeStretchPitchScale.h"
 #include "fx/TimeStretchPitchScale.h"
+#include "fx/AnimateableTimeStretchPitchScale.h"
 #endif
 
 #include <cassert>
@@ -797,12 +797,12 @@ AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int s
 #endif
 
 #ifdef WITH_RUBBERBAND
-AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOption quality, bool preserveFormant)
+AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, bool preserveFormant)
 {
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new TimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQualityOption>(quality), preserveFormant));
+		return new AUD_Sound(new TimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQuality>(quality), preserveFormant));
 	}
 	catch(Exception&)
 	{
@@ -810,12 +810,12 @@ AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double time
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQualityOption quality, bool preserveFormant)
+AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, bool preserveFormant)
 {
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQualityOption>(quality), preserveFormant));
+		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQuality>(quality), preserveFormant));
 	}
 	catch(Exception&)
 	{
