@@ -30,17 +30,22 @@
 #include "PyHRTF.h"
 #endif
 
-#include "respec/Specification.h"
-#include "devices/IHandle.h"
-#include "devices/I3DDevice.h"
-#include "file/IWriter.h"
-#include "plugin/PluginManager.h"
-#include "sequence/AnimateableProperty.h"
-#include "ISound.h"
+#ifdef WITH_RUBBERBAND
 
+#endif
 #include <memory>
 
 #include <structmember.h>
+
+#include "ISound.h"
+
+#include "devices/I3DDevice.h"
+#include "devices/IHandle.h"
+#include "file/IWriter.h"
+#include "fx/TimeStretchPitchScale.h"
+#include "plugin/PluginManager.h"
+#include "respec/Specification.h"
+#include "sequence/AnimateableProperty.h"
 
 using namespace aud;
 
@@ -202,6 +207,13 @@ PyInit_aud()
 	PY_MODULE_ADD_CONSTANT(module, STATUS_PAUSED);
 	PY_MODULE_ADD_CONSTANT(module, STATUS_PLAYING);
 	PY_MODULE_ADD_CONSTANT(module, STATUS_STOPPED);
+
+#ifdef WITH_RUBBERBAND
+	// stretcher quality options
+	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_HIGH", static_cast<int>(StretcherQualityOption::HIGH));
+	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_FAST", static_cast<int>(StretcherQualityOption::FAST));
+	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_CONSISTENT", static_cast<int>(StretcherQualityOption::CONSISTENT));
+#endif
 
 	return module;
 }
