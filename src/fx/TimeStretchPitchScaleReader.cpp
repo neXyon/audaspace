@@ -42,8 +42,7 @@ void TimeStretchPitchScaleReader::reset()
 	m_stretcher->process(m_channelData.data(), startPad, m_finishedReader);
 }
 
-TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQualityOption quality,
-                                                         bool preserveFormant) :
+TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQuality quality, bool preserveFormant) :
     EffectReader(reader), m_position(0), m_finishedReader(false), m_channelData(reader->getSpecs().channels), m_deinterleaved(reader->getSpecs().channels)
 {
 	if (pitchScale < 1.0 / 256.0 || pitchScale > 256.0)
@@ -56,14 +55,14 @@ TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader
 
 	switch(quality)
 	{
-	case StretcherQualityOption::HIGH:
+	case StretcherQuality::HIGH:
 		options |= RubberBandStretcher::OptionPitchHighQuality;
 		break;
-	case StretcherQualityOption::FAST:
+	case StretcherQuality::FAST:
 		options |= RubberBandStretcher::OptionPitchHighSpeed;
 		options |= RubberBandStretcher::OptionWindowShort;
 		break;
-	case StretcherQualityOption::CONSISTENT:
+	case StretcherQuality::CONSISTENT:
 		options |= RubberBandStretcher::OptionPitchHighConsistency;
 		break;
 	default:

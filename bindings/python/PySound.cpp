@@ -1794,19 +1794,18 @@ Sound_binaural(Sound* self, PyObject* args)
 
 #ifdef WITH_RUBBERBAND
 
-PyDoc_STRVAR(M_aud_Sound_timeStretchPitchScale_doc,
-	".. method:: timeStretchPitchScale(time_ratio, pitch_scale, quality, preserve_formant)\n\n"
-	"   Applies time-stretching and pitch-scaling to the sound.\n\n"
-	"   :arg time_ratio: The factor by which to stretch or compress time.\n"
-	"   :type time_ratio: float\n"
-	"   :arg pitch_scale: The factor by which to adjust the pitch.\n"
-	"   :type pitch_scale: float\n"
-	"   :arg quality: Rubberband stretcher quality option (0 = HIGH, 1 = FAST, 2 = CONSISTENT).\n"
-	"   :type quality: int\n"
-	"   :arg preserve_formant: Whether to preserve the vocal formants during pitch-shifting.\n"
-	"   :type preserve_formant: bool\n"
-	"   :return: The created :class:`Sound` object.\n"
-	"   :rtype: :class:`Sound`");
+PyDoc_STRVAR(M_aud_Sound_timeStretchPitchScale_doc, ".. method:: timeStretchPitchScale(time_ratio, pitch_scale, quality, preserve_formant)\n\n"
+                                                    "   Applies time-stretching and pitch-scaling to the sound.\n\n"
+                                                    "   :arg time_ratio: The factor by which to stretch or compress time.\n"
+                                                    "   :type time_ratio: float\n"
+                                                    "   :arg pitch_scale: The factor by which to adjust the pitch.\n"
+                                                    "   :type pitch_scale: float\n"
+                                                    "   :arg quality: Rubberband stretcher quality (STRETCHER_QUALITY_*).\n"
+                                                    "   :type quality: int\n"
+                                                    "   :arg preserve_formant: Whether to preserve the vocal formants during pitch-shifting.\n"
+                                                    "   :type preserve_formant: bool\n"
+                                                    "   :return: The created :class:`Sound` object.\n"
+                                                    "   :rtype: :class:`Sound`");
 static PyObject * 
 Sound_timeStretchPitchScale(Sound* self, PyObject* args)
 {
@@ -1830,7 +1829,7 @@ Sound_timeStretchPitchScale(Sound* self, PyObject* args)
 		try
 		{
 			parent->sound = new std::shared_ptr<ISound>(new TimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), time_ratio, pitch_scale,
-			                                                                      static_cast<StretcherQualityOption>(quality), preserve_formant != 0));
+			                                                                      static_cast<StretcherQuality>(quality), preserve_formant != 0));
 		}
 		catch(Exception& e)
 		{

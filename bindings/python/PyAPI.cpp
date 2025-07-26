@@ -207,10 +207,10 @@ PyInit_aud()
 	PY_MODULE_ADD_CONSTANT(module, STATUS_STOPPED);
 
 #ifdef WITH_RUBBERBAND
-	// stretcher quality options
-	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_HIGH", static_cast<int>(StretcherQualityOption::HIGH));
-	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_FAST", static_cast<int>(StretcherQualityOption::FAST));
-	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_CONSISTENT", static_cast<int>(StretcherQualityOption::CONSISTENT));
+	// stretcher quality
+	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_HIGH", static_cast<int>(StretcherQuality::HIGH));
+	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_FAST", static_cast<int>(StretcherQuality::FAST));
+	PyModule_AddIntConstant(module, "STRETCHER_QUALITY_CONSISTENT", static_cast<int>(StretcherQuality::CONSISTENT));
 #endif
 
 	return module;
