@@ -68,9 +68,19 @@ private:
 	 */
 	std::unique_ptr<RubberBandStretcher> m_stretcher;
 
+	/**
+	 * Number of samples that need to be dropped at the beginning or after a seek.
+	 */
+	int m_samplesToDrop;
+
 	// delete copy constructor and operator=
 	TimeStretchPitchScaleReader(const TimeStretchPitchScaleReader&) = delete;
 	TimeStretchPitchScaleReader& operator=(const TimeStretchPitchScaleReader&) = delete;
+
+	/**
+	 * Feeds the number of required zeo samples to the stretcher and queries the amount of samples to drop.
+	 */
+	void reset();
 
 public:
 	/**
