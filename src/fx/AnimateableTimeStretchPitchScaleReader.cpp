@@ -48,4 +48,15 @@ void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample
 	TimeStretchPitchScaleReader::read(length, eos, buffer);
 }
 
+
+void AnimateableTimeStretchPitchScaleReader::seek(int position)
+{
+	float value;
+	m_timeStretch->read(position, &value);
+	setTimeRatio(value);
+	m_pitchScale->read(position, &value);
+	setPitchScale(value);
+	TimeStretchPitchScaleReader::seek(position);
+}
+
 AUD_NAMESPACE_END

@@ -63,6 +63,8 @@ public:
 	                                       StretcherQuality quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
+
+	virtual void seek(int position) override;
 };
 
 AUD_NAMESPACE_END
