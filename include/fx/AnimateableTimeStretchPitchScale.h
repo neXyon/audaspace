@@ -71,16 +71,6 @@ public:
 	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality, bool preserveFormant);
 
 	/**
-	 * Returns the time stretch factor at a position in samples.
-	 */
-	double getTimeRatio(float position) const;
-
-	/**
-	 * Returns the pitch scale factor at a position in samples.
-	 */
-	double getPitchScale(float position) const;
-
-	/**
 	 * Returns whether formant preservation is enabled.
 	 */
 	bool getPreserveFormant() const;
@@ -96,7 +86,7 @@ public:
 	 * \return A pointer to the animated property, valid as long as the
 	 *         entry is.
 	 */
-	AnimateableProperty* getAnimProperty(AnimateablePropertyType type);
+	std::shared_ptr<AnimateableProperty> getAnimProperty(AnimateablePropertyType type);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

@@ -130,6 +130,13 @@ public:
 	void read(float position, float* out);
 
 	/**
+	 * Reads the property's value at the specified position, assuming there is exactly one value
+	 * \param position The position in the animation in frames.
+	 * \return The value at the position.
+	 */
+	float readSingle(float position);
+
+	/**
 	 * Returns whether the property is animated.
 	 * \return Whether the property is animated.
 	 */

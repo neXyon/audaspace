@@ -22,40 +22,28 @@
 
 AUD_NAMESPACE_BEGIN
 
-float getValueAtPosition(std::shared_ptr<AnimateableProperty> prop, float position)
-{
-	float value;
-	prop->read(position, &value);
-	return value;
-}
-
 AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch,
                                                                                std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant) :
-    TimeStretchPitchScaleReader(reader, getValueAtPosition(timeStretch, 0.0), getValueAtPosition(pitchScale, 0.0), quality, preserveFormant),
-    m_timeStretch(timeStretch),
-    m_pitchScale(pitchScale)
+    TimeStretchPitchScaleReader(reader, timeStretch->readSingle(0), pitchScale->readSingle(0), quality, preserveFormant), m_timeStretch(timeStretch), m_pitchScale(pitchScale)
 {
 }
 
 void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 {
-	float value;
 	int position = getPosition();
-	m_timeStretch->read(position, &value);
-	setTimeRatio(value);
-	m_pitchScale->read(position, &value);
-	setPitchScale(value);
+	float timeRatio = m_timeStretch->readSingle(position);
+	setTimeRatio(timeRatio);
+	float pitchScale = m_pitchScale->readSingle(position);
+	setPitchScale(pitchScale);
 	TimeStretchPitchScaleReader::read(length, eos, buffer);
 }
 
-
 void AnimateableTimeStretchPitchScaleReader::seek(int position)
 {
-	float value;
-	m_timeStretch->read(position, &value);
-	setTimeRatio(value);
-	m_pitchScale->read(position, &value);
-	setPitchScale(value);
+	float timeRatio = m_timeStretch->readSingle(position);
+	setTimeRatio(timeRatio);
+	float pitchScale = m_pitchScale->readSingle(position);
+	setPitchScale(pitchScale);
 	TimeStretchPitchScaleReader::seek(position);
 }
 

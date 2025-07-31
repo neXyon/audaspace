@@ -21,12 +21,8 @@
  * @ingroup fx
  * The AnimateableTimeStretchPitchScaleReader class.
  */
-
 #include "fx/AnimateableTimeStretchPitchScale.h"
-#include "fx/EffectReader.h"
 #include "fx/TimeStretchPitchScaleReader.h"
-
-using namespace RubberBand;
 
 AUD_NAMESPACE_BEGIN
 
