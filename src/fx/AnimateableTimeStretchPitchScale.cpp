@@ -35,23 +35,28 @@ std::shared_ptr<IReader> AnimateableTimeStretchPitchScale::createReader()
 	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_timeStretch, m_pitchScale, m_quality, m_preserveFormant);
 }
 
-double AnimateableTimeStretchPitchScale::getTimeRatio() const
+double AnimateableTimeStretchPitchScale::getTimeRatio(float position) const
 {
 	float timeStretch;
-	m_timeStretch->read(0, &timeStretch);
+	m_timeStretch->read(position, &timeStretch);
 	return timeStretch;
 }
 
-double AnimateableTimeStretchPitchScale::getPitchScale() const
+double AnimateableTimeStretchPitchScale::getPitchScale(float position) const
 {
 	float pitchScale;
-	m_pitchScale->read(0, &pitchScale);
+	m_pitchScale->read(position, &pitchScale);
 	return pitchScale;
 }
 
 bool AnimateableTimeStretchPitchScale::getPreserveFormant() const
 {
 	return m_preserveFormant;
+}
+
+StretcherQuality AnimateableTimeStretchPitchScale::getStretcherQuality() const
+{
+	return m_quality;
 }
 
 AnimateableProperty* AnimateableTimeStretchPitchScale::getAnimProperty(AnimateablePropertyType type)

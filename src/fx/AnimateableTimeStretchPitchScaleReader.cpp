@@ -22,10 +22,18 @@
 
 AUD_NAMESPACE_BEGIN
 
+float getValueAtPosition(std::shared_ptr<AnimateableProperty> prop, float position)
+{
+	float value;
+	prop->read(position, &value);
+	return value;
+}
+
 AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch,
-                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality,
-                                                                               bool preserveFormant) :
-    TimeStretchPitchScaleReader(reader, 1.0, 1.0, quality, preserveFormant), m_timeStretch(timeStretch), m_pitchScale(pitchScale)
+                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant) :
+    TimeStretchPitchScaleReader(reader, getValueAtPosition(timeStretch, 0.0), getValueAtPosition(pitchScale, 0.0), quality, preserveFormant),
+    m_timeStretch(timeStretch),
+    m_pitchScale(pitchScale)
 {
 }
 

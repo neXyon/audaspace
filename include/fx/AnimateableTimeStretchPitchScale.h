@@ -71,19 +71,24 @@ public:
 	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality, bool preserveFormant);
 
 	/**
-	 * Returns the starting time stretch factor.
+	 * Returns the time stretch factor at a position in samples.
 	 */
-	double getTimeRatio() const;
+	double getTimeRatio(float position) const;
 
 	/**
-	 * Returns the starting pitch scale factor.
+	 * Returns the pitch scale factor at a position in samples.
 	 */
-	double getPitchScale() const;
+	double getPitchScale(float position) const;
 
 	/**
 	 * Returns whether formant preservation is enabled.
 	 */
 	bool getPreserveFormant() const;
+
+	/**
+	 * Returns the quality of the stretcher.
+	 */
+	StretcherQuality getStretcherQuality() const;
 
 	/**
 	 * Retrieves one of the animated properties of the entry.

@@ -68,7 +68,6 @@
 using namespace aud;
 
 #define AUD_CAPI_IMPLEMENTATION
-#include "AUD_Sequence.h"
 #include "AUD_Sound.h"
 
 static inline AUD_Specs convSpecToC(aud::Specs specs)
@@ -797,7 +796,7 @@ AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int s
 #endif
 
 #ifdef WITH_RUBBERBAND
-AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, bool preserveFormant)
+AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant)
 {
 	assert(sound);
 	try
@@ -810,7 +809,7 @@ AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double time
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, bool preserveFormant)
+AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant)
 {
 	assert(sound);
 	try

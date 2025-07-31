@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "AUD_Sequence.h"
 #include "AUD_Types.h"
 #ifdef __cplusplus
 extern "C" {
@@ -419,7 +418,7 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
      * \return A handle of the time-stretched, pitch scaled sound.
      */
-    extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, bool preserveFormant);
+    extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant);
 
     /**
      * Time-stretches and pitch scales a sound with animation support
