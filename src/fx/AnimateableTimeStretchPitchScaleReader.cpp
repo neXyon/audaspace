@@ -51,9 +51,9 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 	double time = double(position) / double(m_reader->getSpecs().rate);
 	float frame = time * m_fps;
 
-	float timeRatio = m_timeStretch->readSingle(position);
+	float timeRatio = m_timeStretch->readSingle(frame);
 	setTimeRatio(timeRatio);
-	float pitchScale = m_pitchScale->readSingle(position);
+	float pitchScale = m_pitchScale->readSingle(frame);
 	setPitchScale(pitchScale);
 	TimeStretchPitchScaleReader::seek(position);
 }
