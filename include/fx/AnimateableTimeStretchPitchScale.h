@@ -51,9 +51,14 @@ private:
 	StretcherQuality m_quality;
 
 	/**
-	 * Whether to preserve the vocal formants for the stretcher
+	 * Whether to preserve the vocal formants for the stretcher.
 	 */
 	bool m_preserveFormant;
+
+	/**
+	 * The FPS of the animation system.
+	 */
+	float m_fps;
 
 	// delete copy constructor and operator=
 	AnimateableTimeStretchPitchScale(const AnimateableTimeStretchPitchScale&) = delete;
@@ -68,7 +73,7 @@ public:
 	 * \param quality The processing quality level of the stretcher.
 	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
 	 */
-	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality, bool preserveFormant);
+	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality, bool preserveFormant, float fps);
 
 	/**
 	 * Returns whether formant preservation is enabled.
@@ -87,6 +92,18 @@ public:
 	 *         entry is.
 	 */
 	std::shared_ptr<AnimateableProperty> getAnimProperty(AnimateablePropertyType type);
+
+	/**
+	 * Retrieves the animation system's FPS.
+	 * \return The scene's FPS.
+	 */
+	float getFPS() const;
+
+	/**
+	 * Sets the animation system's FPS.
+	 * \param fps The new FPS.
+	 */
+	void setFPS(float fps);
 
 	virtual std::shared_ptr<IReader> createReader();
 };

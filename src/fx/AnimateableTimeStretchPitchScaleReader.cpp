@@ -23,23 +23,34 @@
 AUD_NAMESPACE_BEGIN
 
 AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch,
-                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant) :
-    TimeStretchPitchScaleReader(reader, timeStretch->readSingle(0), pitchScale->readSingle(0), quality, preserveFormant), m_timeStretch(timeStretch), m_pitchScale(pitchScale)
+                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant,
+                                                                               float fps) :
+    TimeStretchPitchScaleReader(reader, timeStretch->readSingle(0), pitchScale->readSingle(0), quality, preserveFormant),
+    m_timeStretch(timeStretch),
+    m_pitchScale(pitchScale),
+    m_fps(fps)
 {
 }
 
 void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	int position = getPosition();
-	float timeRatio = m_timeStretch->readSingle(position);
+
+	double time = double(position) / double(m_reader->getSpecs().rate);
+	float frame = time * m_fps;
+
+	float timeRatio = m_timeStretch->readSingle(frame);
 	setTimeRatio(timeRatio);
-	float pitchScale = m_pitchScale->readSingle(position);
+	float pitchScale = m_pitchScale->readSingle(frame);
 	setPitchScale(pitchScale);
 	TimeStretchPitchScaleReader::read(length, eos, buffer);
 }
 
 void AnimateableTimeStretchPitchScaleReader::seek(int position)
 {
+	double time = double(position) / double(m_reader->getSpecs().rate);
+	float frame = time * m_fps;
+
 	float timeRatio = m_timeStretch->readSingle(position);
 	setTimeRatio(timeRatio);
 	float pitchScale = m_pitchScale->readSingle(position);

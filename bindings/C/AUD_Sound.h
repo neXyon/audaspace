@@ -440,8 +440,7 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \param frame_end End of the frame range.
      * \param data The data to write.
      */
-    AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end,
-                                                                                          float* data);
+    AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end, float* data);
 
     /**
      * Writes animation data to the AnimatableTimeStretchPitchScale effect
@@ -452,6 +451,20 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \param animated Whether the attribute is animated.
      */
     extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
+
+    /**
+     * Sets the fps of an animated time-stretch, pitch-scaled sound.
+     * \param sound The sound to set the fps from.
+     * \param value The new fps to set.
+     */
+    extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setFPS(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
+
+    /**
+     * Retrieves the fps of an animated time-stretch, pitch-scaled sound.
+     * \param sequence The sound to get the fps from.
+     * \return The fps of the sound.
+     */
+    extern AUD_API float AUD_Sound_animateableTimeStretchPitchScale_getFPS(AUD_Sound* sequence);
 #endif
 
 #ifdef __cplusplus

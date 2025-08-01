@@ -42,6 +42,11 @@ private:
 	 */
 	std::shared_ptr<AnimateableProperty> m_pitchScale;
 
+	/**
+	 * The FPS of the animation system.
+	 */
+	float m_fps;
+
 	// delete copy constructor and operator=
 	AnimateableTimeStretchPitchScaleReader(const AnimateableTimeStretchPitchScaleReader&) = delete;
 	AnimateableTimeStretchPitchScaleReader& operator=(const AnimateableTimeStretchPitchScaleReader&) = delete;
@@ -56,7 +61,7 @@ public:
 	 * \param preserveFormant Whether to preserve vocal formants.
 	 */
 	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch, std::shared_ptr<AnimateableProperty> pitchScale,
-	                                       StretcherQuality quality, bool preserveFormant);
+	                                       StretcherQuality quality, bool preserveFormant, float fps);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 

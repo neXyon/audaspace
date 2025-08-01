@@ -809,12 +809,12 @@ AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double time
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant)
+AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant, float fps)
 {
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQuality>(quality), preserveFormant));
+		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQuality>(quality), preserveFormant, fps));
 	}
 	catch(Exception&)
 	{
@@ -842,4 +842,17 @@ AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setAnimationData(AUD_Sou
 		prop->write(data);
 	}
 }
+
+AUD_API float AUD_Sound_animateableTimeStretchPitchScale_getFPS(AUD_Sound* sound)
+{
+	assert(sound);
+	return dynamic_cast<AnimateableTimeStretchPitchScale*>(sound->get())->getFPS();
+}
+
+AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setFPS(AUD_Sound* sound, float value)
+{
+	assert(sound);
+	dynamic_cast<AnimateableTimeStretchPitchScale*>(sound->get())->setFPS(value);
+}
+
 #endif

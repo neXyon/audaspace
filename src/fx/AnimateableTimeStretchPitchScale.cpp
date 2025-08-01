@@ -21,10 +21,11 @@
 AUD_NAMESPACE_BEGIN
 
 AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality,
-                                                                   bool preserveFormant) :
+                                                                   bool preserveFormant, float fps) :
     Effect(sound),
     m_quality(quality),
     m_preserveFormant(preserveFormant),
+    m_fps(fps),
     m_timeStretch(std::make_shared<AnimateableProperty>(1, timeStretch)),
     m_pitchScale(std::make_shared<AnimateableProperty>(1, pitchScale))
 {
@@ -32,7 +33,7 @@ AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_p
 
 std::shared_ptr<IReader> AnimateableTimeStretchPitchScale::createReader()
 {
-	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_timeStretch, m_pitchScale, m_quality, m_preserveFormant);
+	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_timeStretch, m_pitchScale, m_quality, m_preserveFormant, m_fps);
 }
 
 bool AnimateableTimeStretchPitchScale::getPreserveFormant() const
@@ -56,6 +57,16 @@ std::shared_ptr<AnimateableProperty> AnimateableTimeStretchPitchScale::getAnimPr
 	default:
 		return nullptr;
 	}
+}
+
+float AnimateableTimeStretchPitchScale::getFPS() const
+{
+	return m_fps;
+}
+
+void AnimateableTimeStretchPitchScale::setFPS(float fps)
+{
+	m_fps = fps;
 }
 
 AUD_NAMESPACE_END
