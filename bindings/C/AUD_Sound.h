@@ -440,7 +440,8 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \param frame_end End of the frame range.
      * \param data The data to write.
      */
-    AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end, float* data);
+    AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end,
+                                                                                          float* data);
 
     /**
      * Writes animation data to the AnimatableTimeStretchPitchScale effect

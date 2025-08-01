@@ -95,7 +95,7 @@ public:
 
 	/**
 	 * Retrieves the animation system's FPS.
-	 * \return The scene's FPS.
+	 * \return The animation system's FPS.
 	 */
 	float getFPS() const;
 
