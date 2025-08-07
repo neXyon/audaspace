@@ -46,14 +46,49 @@ void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample
 
 void AnimateableTimeStretchPitchScaleReader::seek(int position)
 {
-	double time = double(position) / double(m_reader->getSpecs().rate);
+	double sampleRate = double(m_reader->getSpecs().rate);
+
+	double time = double(position) / sampleRate;
 	float frame = time * m_fps;
 
 	float timeRatio = m_timeStretch->readSingle(frame);
 	setTimeRatio(timeRatio);
 	float pitchScale = m_pitchScale->readSingle(frame);
 	setPitchScale(pitchScale);
-	TimeStretchPitchScaleReader::seek(position);
+
+int inputSampleIndex = 0;
+double outputSamplePos = 0.0;
+
+float ratio = 1.0f;
+float lastRatio = 1.0f;
+
+
+
+
+// TODO: Change block size based the read length? Or set it to just one
+int blockSize = 1024;
+
+while (outputSamplePos < position)
+{
+    double outputTime = outputSamplePos / sampleRate;
+    float frame = outputTime * m_fps;
+
+    ratio = m_timeStretch->readSingle(frame);
+    if (ratio <= 0.0f)
+        ratio = lastRatio;
+    else
+        lastRatio = ratio;
+
+    outputSamplePos += ratio * blockSize;
+    inputSampleIndex += blockSize;
 }
+
+	m_reader->seek(inputSampleIndex);
+	m_finishedReader = false;
+	m_stretcher->reset();
+	reset();
+	m_position = position;
+}
+
 
 AUD_NAMESPACE_END
