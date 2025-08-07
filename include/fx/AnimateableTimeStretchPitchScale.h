@@ -86,10 +86,10 @@ public:
 	StretcherQuality getStretcherQuality() const;
 
 	/**
-	 * Retrieves one of the animated properties of the entry.
+	 * Retrieves one of the animated properties of the sound.
 	 * \param type Which animated property to retrieve.
 	 * \return A pointer to the animated property, valid as long as the
-	 *         entry is.
+	 *         sound is.
 	 */
 	std::shared_ptr<AnimateableProperty> getAnimProperty(AnimateablePropertyType type);
 
