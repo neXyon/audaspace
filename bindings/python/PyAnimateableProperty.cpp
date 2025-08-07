@@ -19,16 +19,8 @@
 
 #include "sequence/AnimateableProperty.h"
 
-// #include "PySound.h"
-// #include "PyHandle.h"
-
-// #include "Exception.h"
-// #include "devices/IDevice.h"
-// #include "devices/I3DDevice.h"
-// #include "devices/DeviceManager.h"
-// #include "devices/IDeviceFactory.h"
-
-// #include <structmember.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <numpy/ndarrayobject.h>
 
 using namespace aud;
 
@@ -39,11 +31,10 @@ static PyObject* AnimateableProperty_new(PyTypeObject* type, PyObject* args, PyO
 	AnimateablePropertyP* self = (AnimateablePropertyP*) type->tp_alloc(type, 0);
 
 	int count;
-	float value = 0.0f;
+	float value;
 
 	if(self != nullptr)
 	{
-		PyObject* object;
 		if(!PyArg_ParseTuple(args, "i|f:animateableProperty", &count, &value))
 			return nullptr;
 
@@ -76,22 +67,223 @@ static void AnimateableProperty_dealloc(AnimateablePropertyP* self)
 	Py_TYPE(self)->tp_free((PyObject*) self);
 }
 
+static PyObject* AnimateableProperty_read(AnimateablePropertyP* self, PyObject* args)
+{
+	float position;
+
+	if(!PyArg_ParseTuple(args, "f", &position))
+		return nullptr;
+
+	int count = (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->getCount();
+	npy_intp dims[1] = {count};
+	PyObject* np_array = PyArray_SimpleNew(1, dims, NPY_FLOAT32);
+	if(!np_array)
+		return nullptr;
+
+	float* out = (float*) PyArray_DATA((PyArrayObject*) np_array);
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->read(position, out);
+		return np_array;
+	}
+	catch(aud::Exception& e)
+	{
+		Py_DECREF(np_array);
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_AnimateableProperty_read_doc, ".. method:: read(position)\n\n"
+                                                 "   Reads the properties value at the given position.\n\n"
+                                                 "   :param position: The position in the animation in frames.\n"
+                                                 "   :type position: float\n"
+                                                 "   :return: A numpy array of values representing the properties value.\n"
+                                                 "   :rtype: :class:`numpy.ndarray`\n");
+
+static PyObject* AnimateableProperty_readSingle(AnimateablePropertyP* self, PyObject* args)
+{
+	float position;
+
+	if(!PyArg_ParseTuple(args, "f", &position))
+		return nullptr;
+
+	try
+	{
+		float value = (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->readSingle(position);
+		return Py_BuildValue("f", value);
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_AnimateableProperty_readSingle_doc, ".. method:: readSingle(position)\n\n"
+                                                       "   Reads the properties value at the given position, assuming there is exactly one value.\n\n"
+                                                       "   :param position: The position in the animation in frames.\n"
+                                                       "   :type position: float\n"
+                                                       "   :return: The value at that position.\n"
+                                                       "   :rtype: float\n\n");
+
+static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject* args)
+{
+	PyObject* array_obj;
+	int position;
+	int count;
+
+	int arg_count = PyTuple_Size(args);
+	if(arg_count != 1 && arg_count != 3)
+	{
+		PyErr_SetString(PyExc_TypeError, "write() takes either (data) or (data, position, count)");
+		return nullptr;
+	}
+
+	if(arg_count == 1)
+	{
+		if(!PyArg_ParseTuple(args, "O", &array_obj))
+			return nullptr;
+	}
+	else
+	{
+		if(!PyArg_ParseTuple(args, "Oii", &array_obj, &position, &count))
+			return nullptr;
+	}
+
+	PyArrayObject* np_array = (PyArrayObject*) PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+	if(!np_array)
+	{
+		PyErr_SetString(PyExc_TypeError, "data must be a numpy array of dtype float32");
+		return nullptr;
+	}
+
+	float* data_ptr = (float*) PyArray_DATA(np_array);
+
+	try
+	{
+		auto& prop = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty);
+		if(arg_count == 1)
+		{
+			prop->write(data_ptr);
+		}
+		else
+		{
+			prop->write(data_ptr, position, count);
+		}
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+	}
+
+	Py_DECREF(np_array);
+	Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(M_aud_AnimateableProperty_write_doc, ".. method:: write(data[, position, count])\n\n"
+                                                  "   Writes the properties value.\n\n"
+                                                  "   If `position` and `count` are also given, the property is marked animated and\n"
+                                                  "   the values are written starting at `position` for `count` frames.\n\n"
+                                                  "   :param data: numpy array of float32 values.\n"
+                                                  "   :type data: numpy.ndarray\n"
+                                                  "   :param position: The starting position in frames.\n"
+                                                  "   :type position: int\n"
+                                                  "   :param count: The number of frames to write.\n"
+                                                  "   :type count: int\n\n");
+
+static PyObject* AnimateableProperty_writeConstantRange(AnimateablePropertyP* self, PyObject* args)
+{
+	PyObject* array_obj;
+	int position_start;
+	int position_end;
+
+	if(!PyArg_ParseTuple(args, "Oii", &array_obj, &position_start, &position_end))
+		return nullptr;
+
+	PyArrayObject* np_array = (PyArrayObject*) PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+	if(!np_array)
+	{
+		PyErr_SetString(PyExc_TypeError, "data must be a numpy array of dtype float32");
+		return nullptr;
+	}
+
+	float* data_ptr = (float*) PyArray_DATA(np_array);
+
+	try
+	{
+		(*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->writeConstantRange(data_ptr, position_start, position_end);
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+
+	Py_DECREF(np_array);
+	Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(M_aud_AnimateableProperty_writeConstantRange_doc, ".. method:: writeConstantRange(data, position_start, position_end)\n\n"
+                                                               "   Fills the properties frame range with a constant value and marks it animated.\n\n"
+                                                               "   :param data: numpy array of float values representing the constant value.\n"
+                                                               "   :type data: numpy.ndarray\n"
+                                                               "   :param position_start: The start position in frames.\n"
+                                                               "   :type position_start: int\n"
+                                                               "   :param position_end: The end position in frames.\n"
+                                                               "   :type position_end: int\n\n");
+
 static PyMethodDef AnimateableProperty_methods[] = {
-    {(char*) "writeConstantRange", (PyCFunction) AnimateableProperty_writeConstantRange, METH_VARARGS, M_aud_AnimateableProperty_writeConstantRange_doc},
+
     {(char*) "read", (PyCFunction) AnimateableProperty_read, METH_VARARGS, M_aud_AnimateableProperty_read_doc},
     {(char*) "readSingle", (PyCFunction) AnimateableProperty_readSingle, METH_VARARGS, M_aud_AnimateableProperty_readSingle_doc},
     {(char*) "write", (PyCFunction) AnimateableProperty_write, METH_VARARGS, M_aud_AnimateableProperty_write_doc},
+    {(char*) "writeConstantRange", (PyCFunction) AnimateableProperty_writeConstantRange, METH_VARARGS, M_aud_AnimateableProperty_writeConstantRange_doc},
     {nullptr} /* Sentinel */
 };
 
+static PyObject* AnimateableProperty_get_count(AnimateablePropertyP* self, void* nothing)
+{
+	try
+	{
+		int count = (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->getCount();
+		return Py_BuildValue("i", count);
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_AnimateableProperty_count_doc, "The count of floats for a property.");
+
+static PyObject* AnimateableProperty_get_animated(AnimateablePropertyP* self, void* nothing)
+{
+	try
+	{
+		bool animated = (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->isAnimated();
+		return PyBool_FromLong(animated);
+	}
+	catch(aud::Exception& e)
+	{
+		PyErr_SetString(AUDError, e.what());
+		return nullptr;
+	}
+}
+
+PyDoc_STRVAR(M_aud_AnimateableProperty_animated_doc, "Whether the property is animated.");
+
 static PyGetSetDef AnimateableProperty_properties[] = {
     {(char*) "count", (getter) AnimateableProperty_get_count, nullptr, M_aud_AnimateableProperty_count_doc, nullptr},
-    {(char*) "animated", (getter) AnimateableProperty_get_animated, nullptr, M_aud_AnimateableProperty_animated_doc, nullptr} {nullptr} /* Sentinel */
+    {(char*) "animated", (getter) AnimateableProperty_get_animated, nullptr, M_aud_AnimateableProperty_animated_doc, nullptr},
+    {nullptr} /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_AnimateableProperty_doc, "An AnimateableProperty object stores an array of float values for animating sound properties (e.g. pan, volume, pitch-scale)");
 
-// Note that AnimateablePropertyType name is already taken - a better name can be selected
+// Note that AnimateablePropertyType name is already taken
 PyTypeObject AnimateablePropertyPyType = {
     PyVarObject_HEAD_INIT(nullptr, 0) "aud.AnimateableProperty", /* tp_name */
     sizeof(AnimateablePropertyP),                                /* tp_basicsize */
@@ -150,6 +342,7 @@ AUD_API AnimateablePropertyP* checkAnimateableProperty(PyObject* animateableProp
 
 bool initializeAnimateableProperty()
 {
+	import_array1(false);
 	return PyType_Ready(&AnimateablePropertyPyType) >= 0;
 }
 
