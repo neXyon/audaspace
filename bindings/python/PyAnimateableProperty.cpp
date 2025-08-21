@@ -80,7 +80,7 @@ static PyObject* AnimateableProperty_read(AnimateablePropertyP* self, PyObject* 
 	if(!np_array)
 		return nullptr;
 
-	float* out = (float*) PyArray_DATA((PyArrayObject*) np_array);
+	float* out = static_cast<float*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(np_array)));
 
 	try
 	{
@@ -132,7 +132,7 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 {
 	PyObject* array_obj;
 	int position;
-	int count;
+	int count = 1;
 
 	int arg_count = PyTuple_Size(args);
 	if(arg_count != 1 && arg_count != 3)
@@ -152,14 +152,25 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 			return nullptr;
 	}
 
-	PyArrayObject* np_array = (PyArrayObject*) PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+	PyArrayObject* np_array = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST));
+
 	if(!np_array)
 	{
 		PyErr_SetString(PyExc_TypeError, "data must be a numpy array of dtype float32");
 		return nullptr;
 	}
 
-	float* data_ptr = (float*) PyArray_DATA(np_array);
+	int required = count * (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->getCount();
+	npy_intp size = PyArray_SIZE(np_array);
+
+	if(size < required)
+	{
+		PyErr_SetString(PyExc_ValueError, "input array size is smaller than required amount");
+		Py_DECREF(np_array);
+		return nullptr;
+	}
+
+	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
 
 	try
 	{
@@ -202,14 +213,24 @@ static PyObject* AnimateableProperty_writeConstantRange(AnimateablePropertyP* se
 	if(!PyArg_ParseTuple(args, "Oii", &array_obj, &position_start, &position_end))
 		return nullptr;
 
-	PyArrayObject* np_array = (PyArrayObject*) PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+	PyArrayObject* np_array = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST));
 	if(!np_array)
 	{
 		PyErr_SetString(PyExc_TypeError, "data must be a numpy array of dtype float32");
 		return nullptr;
 	}
 
-	float* data_ptr = (float*) PyArray_DATA(np_array);
+	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
+
+	int required = (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->getCount();
+	npy_intp size = PyArray_SIZE(np_array);
+
+	if(size < required)
+	{
+		PyErr_SetString(PyExc_ValueError, "input array size is smaller than required amount");
+		Py_DECREF(np_array);
+		return nullptr;
+	}
 
 	try
 	{

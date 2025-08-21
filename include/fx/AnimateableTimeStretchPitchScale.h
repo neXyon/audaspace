@@ -76,6 +76,17 @@ public:
 	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality, bool preserveFormant, float fps);
 
 	/**
+	 * Creates a new time-stretch, pitch-scaled sound that can be animated.
+	 * \param sound The input sound.
+	 * \param timeRatio The animateable time-stretch property.
+	 * \param pitchScale The animateable pitch-scale property.
+	 * \param quality The processing quality level of the stretcher.
+	 * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
+	 */
+	AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, std::shared_ptr<AnimateableProperty> timeStretch, std::shared_ptr<AnimateableProperty> pitchScale,
+	                                 StretcherQuality quality, bool preserveFormant, float fps);
+
+	/**
 	 * Returns whether formant preservation is enabled.
 	 */
 	bool getPreserveFormant() const;
@@ -88,8 +99,7 @@ public:
 	/**
 	 * Retrieves one of the animated properties of the sound.
 	 * \param type Which animated property to retrieve.
-	 * \return A pointer to the animated property, valid as long as the
-	 *         sound is.
+	 * \return A shared pointer to the animated property
 	 */
 	std::shared_ptr<AnimateableProperty> getAnimProperty(AnimateablePropertyType type);
 

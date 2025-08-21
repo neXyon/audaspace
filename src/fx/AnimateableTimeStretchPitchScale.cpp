@@ -31,6 +31,12 @@ AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_p
 {
 }
 
+AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, std::shared_ptr<AnimateableProperty> timeStretch,
+                                                                   std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant, float fps) :
+    Effect(sound), m_quality(quality), m_preserveFormant(preserveFormant), m_fps(fps), m_timeStretch(timeStretch), m_pitchScale(pitchScale)
+{
+}
+
 std::shared_ptr<IReader> AnimateableTimeStretchPitchScale::createReader()
 {
 	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_timeStretch, m_pitchScale, m_quality, m_preserveFormant, m_fps);
