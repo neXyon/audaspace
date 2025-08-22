@@ -32,12 +32,11 @@ AUD_NAMESPACE_BEGIN
 class AUD_API AnimateableTimeStretchPitchScaleReader : public TimeStretchPitchScaleReader
 {
 private:
-
 	/**
 	 * The FPS of the animation system.
 	 */
 	float m_fps;
-	
+
 	/**
 	 * The animateable time-stretch property.
 	 */
@@ -62,8 +61,8 @@ public:
 	 * \param quality The stretcher quality options.
 	 * \param preserveFormant Whether to preserve vocal formants.
 	 */
-	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, float fp, std::shared_ptr<AnimateableProperty> timeStretch, std::shared_ptr<AnimateableProperty> pitchScale,
-	                                       StretcherQuality quality, bool preserveFormant);
+	AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, float fp, std::shared_ptr<AnimateableProperty> timeStretch,
+	                                       std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 

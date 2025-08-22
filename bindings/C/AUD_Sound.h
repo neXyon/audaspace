@@ -431,7 +431,8 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
      * \return A handle of the time-stretched, pitch scaled sound.
      */
-    extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, float fps, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant);
+    extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, float fps, double timeRatio, double pitchScale, AUD_StretcherQuality quality,
+                                                                         char preserveFormant);
 
     /**
      * Writes animation data to the AnimatableTimeStretchPitchScale effect

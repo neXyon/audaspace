@@ -35,7 +35,6 @@ AUD_NAMESPACE_BEGIN
 class AUD_API AnimateableTimeStretchPitchScale : public Effect
 {
 private:
-
 	/**
 	 * The FPS of the animation system.
 	 */

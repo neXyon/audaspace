@@ -1846,7 +1846,7 @@ Sound_timeStretchPitchScale(Sound* self, PyObject* args)
 
 PyDoc_STRVAR(M_aud_Sound_animateableTimeStretchPitchScale_doc, ".. method:: animateableTimeStretchPitchScale(fps[, time_ratio, pitch_scale, quality, preserve_formant])\n\n"
                                                                "   Applies time-stretching and pitch-scaling to the sound.\n\n"
-																															 "   :arg fps: The FPS of the animation system.\n"
+                                                               "   :arg fps: The FPS of the animation system.\n"
                                                                "   :type fps float\n"
                                                                "   :arg time_ratio: The factor by which to stretch or compress time.\n"
                                                                "   :type time_ratio: float or :class:`AnimateablePropertyP`\n"
@@ -1878,7 +1878,8 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 		return nullptr;
 	}
 
-	if (object1 == Py_None) {
+	if(object1 == Py_None)
+	{
 		time_ratio = std::make_shared<aud::AnimateableProperty>(1, 1);
 	}
 	else if(PyNumber_Check(object1))
@@ -1895,7 +1896,8 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 		time_ratio = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(time_ratio_prop->animateableProperty);
 	}
 
-	if (object2 == Py_None) {
+	if(object2 == Py_None)
+	{
 		pitch_scale = std::make_shared<aud::AnimateableProperty>(1, 1);
 	}
 	else if(PyNumber_Check(object2))
@@ -1911,7 +1913,6 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 		}
 		pitch_scale = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(pitch_scale_prop->animateableProperty);
 	}
-
 
 	if(quality < 0 || quality > 2)
 	{

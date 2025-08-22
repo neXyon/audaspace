@@ -23,8 +23,8 @@ AUD_NAMESPACE_BEGIN
 AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float fps, float timeStretch, float pitchScale, StretcherQuality quality,
                                                                    bool preserveFormant) :
     Effect(sound),
-		m_fps(fps),
-		m_timeStretch(std::make_shared<AnimateableProperty>(1, timeStretch)),
+    m_fps(fps),
+    m_timeStretch(std::make_shared<AnimateableProperty>(1, timeStretch)),
     m_pitchScale(std::make_shared<AnimateableProperty>(1, pitchScale)),
     m_quality(quality),
     m_preserveFormant(preserveFormant)

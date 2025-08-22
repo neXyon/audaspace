@@ -20,9 +20,9 @@
 #include "sequence/AnimateableProperty.h"
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/ndarrayobject.h>
-
 #include <memory>
+
+#include <numpy/ndarrayobject.h>
 
 using namespace aud;
 
@@ -161,7 +161,6 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 		return nullptr;
 	}
 
-
 	auto& prop = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty);
 	int prop_count = prop->getCount();
 	npy_intp size = PyArray_SIZE(np_array);
@@ -171,24 +170,24 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 	bool valid_shape = false;
 
 	// For 1D arrays, the total number of elements must be a multiple of the property count
-	if (ndim == 1)
+	if(ndim == 1)
 	{
-			valid_shape = (size % prop_count == 0);
+		valid_shape = (size % prop_count == 0);
 	}
 	// For 2D arrays, the number of elements in the second dimension must be the property count
-	else if (ndim == 2)
+	else if(ndim == 2)
 	{
-			npy_intp* shape = PyArray_DIMS(np_array);
-			valid_shape = (shape[1] == prop_count);
+		npy_intp* shape = PyArray_DIMS(np_array);
+		valid_shape = (shape[1] == prop_count);
 	}
 
-	if (!valid_shape)
+	if(!valid_shape)
 	{
-			PyErr_SetString(PyExc_ValueError, "array shape is invalid: must be 1D with length multiple of property count or 2D with the last dimension equal to property count");
-			Py_DECREF(np_array);
-			return nullptr;
+		PyErr_SetString(PyExc_ValueError, "array shape is invalid: must be 1D with length multiple of property count or 2D with the last dimension equal to property count");
+		Py_DECREF(np_array);
+		return nullptr;
 	}
-		
+
 	int count = (int) (size / prop_count);
 
 	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
@@ -240,9 +239,9 @@ static PyObject* AnimateableProperty_writeConstantRange(AnimateablePropertyP* se
 	int ndim = PyArray_NDIM(np_array);
 	if(ndim != 1)
 	{
-			PyErr_SetString(PyExc_ValueError, "data must be a 1D numpy array");
-			Py_DECREF(np_array);
-			return nullptr;
+		PyErr_SetString(PyExc_ValueError, "data must be a 1D numpy array");
+		Py_DECREF(np_array);
+		return nullptr;
 	}
 
 	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
@@ -254,9 +253,9 @@ static PyObject* AnimateableProperty_writeConstantRange(AnimateablePropertyP* se
 
 	if(size != prop_count)
 	{
-			PyErr_Format(PyExc_ValueError, "input array length (%lld) does not match property count (%d)", size, prop_count);
-			Py_DECREF(np_array);
-			return nullptr;
+		PyErr_Format(PyExc_ValueError, "input array length (%lld) does not match property count (%d)", size, prop_count);
+		Py_DECREF(np_array);
+		return nullptr;
 	}
 
 	try
