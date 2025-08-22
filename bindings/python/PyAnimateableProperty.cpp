@@ -22,6 +22,8 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/ndarrayobject.h>
 
+#include <memory>
+
 using namespace aud;
 
 extern PyObject* AUDError;
@@ -132,12 +134,11 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 {
 	PyObject* array_obj;
 	int position;
-	int count = 1;
 
 	int arg_count = PyTuple_Size(args);
-	if(arg_count != 1 && arg_count != 3)
+	if(arg_count != 1 && arg_count != 2)
 	{
-		PyErr_SetString(PyExc_TypeError, "write() takes either (data) or (data, position, count)");
+		PyErr_SetString(PyExc_TypeError, "write() takes either (data) or (data, position)");
 		return nullptr;
 	}
 
@@ -148,7 +149,7 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 	}
 	else
 	{
-		if(!PyArg_ParseTuple(args, "Oii", &array_obj, &position, &count))
+		if(!PyArg_ParseTuple(args, "Oi", &array_obj, &position))
 			return nullptr;
 	}
 
@@ -160,21 +161,39 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 		return nullptr;
 	}
 
-	int required = count * (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->getCount();
+
+	auto& prop = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty);
+	int prop_count = prop->getCount();
 	npy_intp size = PyArray_SIZE(np_array);
 
-	if(size < required)
+	int ndim = PyArray_NDIM(np_array);
+
+	bool valid_shape = false;
+
+	// For 1D arrays, the total number of elements must be a multiple of the property count
+	if (ndim == 1)
 	{
-		PyErr_SetString(PyExc_ValueError, "input array size is smaller than required amount");
-		Py_DECREF(np_array);
-		return nullptr;
+			valid_shape = (size % prop_count == 0);
+	}
+	// For 2D arrays, the number of elements in the second dimension must be the property count
+	else if (ndim == 2)
+	{
+			npy_intp* shape = PyArray_DIMS(np_array);
+			valid_shape = (shape[1] == prop_count);
 	}
 
-	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
+	if (!valid_shape)
+	{
+			PyErr_SetString(PyExc_ValueError, "array shape is invalid: must be 1D with length multiple of property count or 2D with the last dimension equal to property count");
+			Py_DECREF(np_array);
+			return nullptr;
+	}
+		
+	int count = (int) (size / prop_count);
 
+	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
 	try
 	{
-		auto& prop = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty);
 		if(arg_count == 1)
 		{
 			prop->write(data_ptr);
@@ -193,16 +212,14 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 	Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(M_aud_AnimateableProperty_write_doc, ".. method:: write(data[, position, count])\n\n"
+PyDoc_STRVAR(M_aud_AnimateableProperty_write_doc, ".. method:: write(data[, position])\n\n"
                                                   "   Writes the properties value.\n\n"
-                                                  "   If `position` and `count` are also given, the property is marked animated and\n"
-                                                  "   the values are written starting at `position` for `count` frames.\n\n"
+                                                  "   If `position` is also given, the property is marked animated and\n"
+                                                  "   the values are written starting at `position`.\n\n"
                                                   "   :param data: numpy array of float32 values.\n"
                                                   "   :type data: numpy.ndarray\n"
                                                   "   :param position: The starting position in frames.\n"
-                                                  "   :type position: int\n"
-                                                  "   :param count: The number of frames to write.\n"
-                                                  "   :type count: int\n\n");
+                                                  "   :type position: int\n\n");
 
 static PyObject* AnimateableProperty_writeConstantRange(AnimateablePropertyP* self, PyObject* args)
 {
@@ -220,21 +237,31 @@ static PyObject* AnimateableProperty_writeConstantRange(AnimateablePropertyP* se
 		return nullptr;
 	}
 
+	int ndim = PyArray_NDIM(np_array);
+	if(ndim != 1)
+	{
+			PyErr_SetString(PyExc_ValueError, "data must be a 1D numpy array");
+			Py_DECREF(np_array);
+			return nullptr;
+	}
+
 	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
 
-	int required = (*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->getCount();
+	auto& prop = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty);
+	int prop_count = prop->getCount();
+
 	npy_intp size = PyArray_SIZE(np_array);
 
-	if(size < required)
+	if(size != prop_count)
 	{
-		PyErr_SetString(PyExc_ValueError, "input array size is smaller than required amount");
-		Py_DECREF(np_array);
-		return nullptr;
+			PyErr_Format(PyExc_ValueError, "input array length (%lld) does not match property count (%d)", size, prop_count);
+			Py_DECREF(np_array);
+			return nullptr;
 	}
 
 	try
 	{
-		(*reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(self->animateableProperty))->writeConstantRange(data_ptr, position_start, position_end);
+		prop->writeConstantRange(data_ptr, position_start, position_end);
 	}
 	catch(aud::Exception& e)
 	{

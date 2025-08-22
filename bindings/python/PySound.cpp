@@ -1844,8 +1844,10 @@ Sound_timeStretchPitchScale(Sound* self, PyObject* args)
 	return (PyObject*)parent;
 }
 
-PyDoc_STRVAR(M_aud_Sound_animateableTimeStretchPitchScale_doc, ".. method:: animateableTimeStretchPitchScale(time_ratio, pitch_scale, quality, preserve_formant, fps)\n\n"
+PyDoc_STRVAR(M_aud_Sound_animateableTimeStretchPitchScale_doc, ".. method:: animateableTimeStretchPitchScale(fps[, time_ratio, pitch_scale, quality, preserve_formant])\n\n"
                                                                "   Applies time-stretching and pitch-scaling to the sound.\n\n"
+																															 "   :arg fps: The FPS of the animation system.\n"
+                                                               "   :type fps float\n"
                                                                "   :arg time_ratio: The factor by which to stretch or compress time.\n"
                                                                "   :type time_ratio: float or :class:`AnimateablePropertyP`\n"
                                                                "   :arg pitch_scale: The factor by which to adjust the pitch.\n"
@@ -1854,25 +1856,32 @@ PyDoc_STRVAR(M_aud_Sound_animateableTimeStretchPitchScale_doc, ".. method:: anim
                                                                "   :type quality: int\n"
                                                                "   :arg preserve_formant: Whether to preserve the vocal formants during pitch-shifting.\n"
                                                                "   :type preserve_formant: bool\n"
-                                                               "   :arg fps: The FPS of the animation system.\n"
-                                                               "   :type fps float\n"
                                                                "   :return: The created :class:`Sound` object.\n"
                                                                "   :rtype: :class:`Sound`");
 static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* args, PyObject* kwds)
 {
-	PyObject* object1;
-	PyObject* object2;
+	float fps;
+	PyObject* object1 = Py_None;
+	PyObject* object2 = Py_None;
 	int quality = 0;
 	int preserve_formant = 0;
-	float fps = 30.0;
 
-	if(!PyArg_ParseTuple(args, "OO|ipf:animateableTimeStretchPitchScale", &object1, &object2, &quality, &preserve_formant, &fps))
+	if(!PyArg_ParseTuple(args, "f|OOip:animateableTimeStretchPitchScale", &fps, &object1, &object2, &quality, &preserve_formant))
 		return nullptr;
 
 	std::shared_ptr<aud::AnimateableProperty> time_ratio;
 	std::shared_ptr<aud::AnimateableProperty> pitch_scale;
 
-	if(PyNumber_Check(object1))
+	if(fps <= 0)
+	{
+		PyErr_SetString(PyExc_ValueError, "FPS must be greater 0!");
+		return nullptr;
+	}
+
+	if (object1 == Py_None) {
+		time_ratio = std::make_shared<aud::AnimateableProperty>(1, 1);
+	}
+	else if(PyNumber_Check(object1))
 	{
 		time_ratio = std::make_shared<aud::AnimateableProperty>(1, PyFloat_AsDouble(object1));
 	}
@@ -1886,7 +1895,10 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 		time_ratio = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(time_ratio_prop->animateableProperty);
 	}
 
-	if(PyNumber_Check(object2))
+	if (object2 == Py_None) {
+		pitch_scale = std::make_shared<aud::AnimateableProperty>(1, 1);
+	}
+	else if(PyNumber_Check(object2))
 	{
 		pitch_scale = std::make_shared<aud::AnimateableProperty>(1, PyFloat_AsDouble(object2));
 	}
@@ -1900,11 +1912,6 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 		pitch_scale = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(pitch_scale_prop->animateableProperty);
 	}
 
-	if(fps <= 0)
-	{
-		PyErr_SetString(PyExc_ValueError, "FPS must be greater 0!");
-		return nullptr;
-	}
 
 	if(quality < 0 || quality > 2)
 	{
@@ -1919,8 +1926,8 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 	{
 		try
 		{
-			parent->sound = new std::shared_ptr<ISound>(new AnimateableTimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), time_ratio, pitch_scale,
-			                                                                                 static_cast<StretcherQuality>(quality), preserve_formant != 0, fps));
+			parent->sound = new std::shared_ptr<ISound>(new AnimateableTimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), fps, time_ratio, pitch_scale,
+			                                                                                 static_cast<StretcherQuality>(quality), preserve_formant != 0));
 		}
 		catch(Exception& e)
 		{
