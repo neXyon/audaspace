@@ -20,13 +20,12 @@
 
 AUD_NAMESPACE_BEGIN
 
-AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, std::shared_ptr<AnimateableProperty> timeStretch,
-                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant,
-                                                                               float fps) :
+AnimateableTimeStretchPitchScaleReader::AnimateableTimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, float fps, std::shared_ptr<AnimateableProperty> timeStretch,
+                                                                               std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant) :
     TimeStretchPitchScaleReader(reader, timeStretch->readSingle(0), pitchScale->readSingle(0), quality, preserveFormant),
+    m_fps(fps),
     m_timeStretch(timeStretch),
-    m_pitchScale(pitchScale),
-    m_fps(fps)
+    m_pitchScale(pitchScale)
 {
 }
 

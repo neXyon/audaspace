@@ -809,12 +809,12 @@ AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double time
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant, float fps)
+AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, float fps, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant)
 {
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, timeRatio, pitchScale, static_cast<StretcherQuality>(quality), preserveFormant, fps));
+		return new AUD_Sound(new AnimateableTimeStretchPitchScale(*sound, fps, timeRatio, pitchScale, static_cast<StretcherQuality>(quality), preserveFormant));
 	}
 	catch(Exception&)
 	{

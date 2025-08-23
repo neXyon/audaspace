@@ -20,20 +20,26 @@
 
 AUD_NAMESPACE_BEGIN
 
-AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float timeStretch, float pitchScale, StretcherQuality quality,
-                                                                   bool preserveFormant, float fps) :
+AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float fps, float timeStretch, float pitchScale, StretcherQuality quality,
+                                                                   bool preserveFormant) :
     Effect(sound),
-    m_quality(quality),
-    m_preserveFormant(preserveFormant),
     m_fps(fps),
     m_timeStretch(std::make_shared<AnimateableProperty>(1, timeStretch)),
-    m_pitchScale(std::make_shared<AnimateableProperty>(1, pitchScale))
+    m_pitchScale(std::make_shared<AnimateableProperty>(1, pitchScale)),
+    m_quality(quality),
+    m_preserveFormant(preserveFormant)
+{
+}
+
+AnimateableTimeStretchPitchScale::AnimateableTimeStretchPitchScale(std::shared_ptr<ISound> sound, float fps, std::shared_ptr<AnimateableProperty> timeStretch,
+                                                                   std::shared_ptr<AnimateableProperty> pitchScale, StretcherQuality quality, bool preserveFormant) :
+    Effect(sound), m_fps(fps), m_timeStretch(timeStretch), m_pitchScale(pitchScale), m_quality(quality), m_preserveFormant(preserveFormant)
 {
 }
 
 std::shared_ptr<IReader> AnimateableTimeStretchPitchScale::createReader()
 {
-	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_timeStretch, m_pitchScale, m_quality, m_preserveFormant, m_fps);
+	return std::make_shared<AnimateableTimeStretchPitchScaleReader>(getReader(), m_fps, m_timeStretch, m_pitchScale, m_quality, m_preserveFormant);
 }
 
 bool AnimateableTimeStretchPitchScale::getPreserveFormant() const
