@@ -1796,10 +1796,10 @@ Sound_binaural(Sound* self, PyObject* args)
 
 #ifdef WITH_RUBBERBAND
 
-PyDoc_STRVAR(M_aud_Sound_timeStretchPitchScale_doc, ".. method:: timeStretchPitchScale(time_ratio, pitch_scale, quality, preserve_formant)\n\n"
+PyDoc_STRVAR(M_aud_Sound_timeStretchPitchScale_doc, ".. method:: timeStretchPitchScale(time_stretch, pitch_scale, quality, preserve_formant)\n\n"
                                                     "   Applies time-stretching and pitch-scaling to the sound.\n\n"
-                                                    "   :arg time_ratio: The factor by which to stretch or compress time.\n"
-                                                    "   :type time_ratio: float\n"
+                                                    "   :arg time_stretch: The factor by which to stretch or compress time.\n"
+                                                    "   :type time_stretch: float\n"
                                                     "   :arg pitch_scale: The factor by which to adjust the pitch.\n"
                                                     "   :type pitch_scale: float\n"
                                                     "   :arg quality: Rubberband stretcher quality (STRETCHER_QUALITY_*).\n"
@@ -1808,18 +1808,22 @@ PyDoc_STRVAR(M_aud_Sound_timeStretchPitchScale_doc, ".. method:: timeStretchPitc
                                                     "   :type preserve_formant: bool\n"
                                                     "   :return: The created :class:`Sound` object.\n"
                                                     "   :rtype: :class:`Sound`");
-static PyObject * 
-Sound_timeStretchPitchScale(Sound* self, PyObject* args)
+static PyObject* Sound_timeStretchPitchScale(Sound* self, PyObject* args, PyObject* kwds)
 {
-	double time_ratio, pitch_scale;
+	double time_stretch = 1.0;
+	double pitch_scale = 1.0;
 	int quality = 0;
 	int preserve_formant = 0;
-	if(!PyArg_ParseTuple(args, "dd|ip:timeStretchPitchScale", &time_ratio, &pitch_scale, &quality, &preserve_formant))
+	static const char* kwlist[] = {"time_stretch", "pitch_scale", "quality", "preserve_formant", nullptr};
+
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "|ddip:timeStretchPitchScale", const_cast<char**>(kwlist), &time_stretch, &pitch_scale, &quality, &preserve_formant))
+	{
 		return nullptr;
+	}
 
 	if(quality < 0 || quality > 2)
 	{
-		PyErr_WarnEx(PyExc_UserWarning, "Invalid quality value: using default (0 = HIGH)", 1);
+		PyErr_WarnEx(PyExc_UserWarning, "Invalid quality value: using default (0 = STRETCHER_QUALITY_HIGH)", 1);
 		quality = 0;
 	}
 
@@ -1830,7 +1834,7 @@ Sound_timeStretchPitchScale(Sound* self, PyObject* args)
 	{
 		try
 		{
-			parent->sound = new std::shared_ptr<ISound>(new TimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), time_ratio, pitch_scale,
+			parent->sound = new std::shared_ptr<ISound>(new TimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), time_stretch, pitch_scale,
 			                                                                      static_cast<StretcherQuality>(quality), preserve_formant != 0));
 		}
 		catch(Exception& e)
@@ -1844,12 +1848,12 @@ Sound_timeStretchPitchScale(Sound* self, PyObject* args)
 	return (PyObject*)parent;
 }
 
-PyDoc_STRVAR(M_aud_Sound_animateableTimeStretchPitchScale_doc, ".. method:: animateableTimeStretchPitchScale(fps[, time_ratio, pitch_scale, quality, preserve_formant])\n\n"
+PyDoc_STRVAR(M_aud_Sound_animateableTimeStretchPitchScale_doc, ".. method:: animateableTimeStretchPitchScale(fps[, time_stretch, pitch_scale, quality, preserve_formant])\n\n"
                                                                "   Applies time-stretching and pitch-scaling to the sound.\n\n"
                                                                "   :arg fps: The FPS of the animation system.\n"
                                                                "   :type fps float\n"
-                                                               "   :arg time_ratio: The factor by which to stretch or compress time.\n"
-                                                               "   :type time_ratio: float or :class:`AnimateablePropertyP`\n"
+                                                               "   :arg time_stretch: The factor by which to stretch or compress time.\n"
+                                                               "   :type time_stretch: float or :class:`AnimateablePropertyP`\n"
                                                                "   :arg pitch_scale: The factor by which to adjust the pitch.\n"
                                                                "   :type pitch_scale: float or :class:`AnimateablePropertyP`\n "
                                                                "   :arg quality: Rubberband stretcher quality (STRETCHER_QUALITY_*).\n"
@@ -1866,10 +1870,14 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 	int quality = 0;
 	int preserve_formant = 0;
 
-	if(!PyArg_ParseTuple(args, "f|OOip:animateableTimeStretchPitchScale", &fps, &object1, &object2, &quality, &preserve_formant))
-		return nullptr;
+	static const char* kwlist[] = {"fps", "time_stretch", "pitch_scale", "quality", "preserve_formant", nullptr};
 
-	std::shared_ptr<aud::AnimateableProperty> time_ratio;
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "f|OOip:animateableTimeStretchPitchScale", const_cast<char**>(kwlist), &fps, &object1, &object2, &quality, &preserve_formant))
+	{
+		return nullptr;
+	}
+
+	std::shared_ptr<aud::AnimateableProperty> time_stretch;
 	std::shared_ptr<aud::AnimateableProperty> pitch_scale;
 
 	if(fps <= 0)
@@ -1880,25 +1888,25 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 
 	if(object1 == Py_None)
 	{
-		time_ratio = std::make_shared<aud::AnimateableProperty>(1, 1);
+		time_stretch = std::make_shared<aud::AnimateableProperty>(1, 1.0);
 	}
 	else if(PyNumber_Check(object1))
 	{
-		time_ratio = std::make_shared<aud::AnimateableProperty>(1, PyFloat_AsDouble(object1));
+		time_stretch = std::make_shared<aud::AnimateableProperty>(1, PyFloat_AsDouble(object1));
 	}
 	else
 	{
-		AnimateablePropertyP* time_ratio_prop = checkAnimateableProperty(object1);
-		if(!time_ratio_prop)
+		AnimateablePropertyP* time_stretch_prop = checkAnimateableProperty(object1);
+		if(!time_stretch_prop)
 		{
 			return nullptr;
 		}
-		time_ratio = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(time_ratio_prop->animateableProperty);
+		time_stretch = *reinterpret_cast<std::shared_ptr<aud::AnimateableProperty>*>(time_stretch_prop->animateableProperty);
 	}
 
 	if(object2 == Py_None)
 	{
-		pitch_scale = std::make_shared<aud::AnimateableProperty>(1, 1);
+		pitch_scale = std::make_shared<aud::AnimateableProperty>(1, 1.0);
 	}
 	else if(PyNumber_Check(object2))
 	{
@@ -1916,7 +1924,7 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 
 	if(quality < 0 || quality > 2)
 	{
-		PyErr_WarnEx(PyExc_UserWarning, "Invalid quality value: using default (0 = HIGH)", 1);
+		PyErr_WarnEx(PyExc_UserWarning, "Invalid quality value: using default (0 = STRETCHER_QUALITY_HIGH)", 1);
 		quality = 0;
 	}
 
@@ -1927,8 +1935,8 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 	{
 		try
 		{
-			parent->sound = new std::shared_ptr<ISound>(new AnimateableTimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), fps, time_ratio, pitch_scale,
-			                                                                                 static_cast<StretcherQuality>(quality), preserve_formant != 0));
+			parent->sound = new std::shared_ptr<ISound>(new AnimateableTimeStretchPitchScale(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound), fps, time_stretch,
+			                                                                                 pitch_scale, static_cast<StretcherQuality>(quality), preserve_formant != 0));
 		}
 		catch(Exception& e)
 		{
@@ -1944,126 +1952,50 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 #endif
 
 static PyMethodDef Sound_methods[] = {
-	{"data", (PyCFunction)Sound_data, METH_NOARGS,
-	 M_aud_Sound_data_doc
-	},
-	{"write", (PyCFunction)Sound_write, METH_VARARGS | METH_KEYWORDS,
-	 M_aud_Sound_write_doc
-	},
-	{"buffer", (PyCFunction)Sound_buffer, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_buffer_doc
-	},
-	{"cache", (PyCFunction)Sound_cache, METH_NOARGS,
-	 M_aud_Sound_cache_doc
-	},
-	{"file", (PyCFunction)Sound_file, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_file_doc
-	},
-	{"sawtooth", (PyCFunction)Sound_sawtooth, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_sawtooth_doc
-	},
-	{"silence", (PyCFunction)Sound_silence, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_silence_doc
-	},
-	{"sine", (PyCFunction)Sound_sine, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_sine_doc
-	},
-	{"square", (PyCFunction)Sound_square, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_square_doc
-	},
-	{"triangle", (PyCFunction)Sound_triangle, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_triangle_doc
-	},
-	{"accumulate", (PyCFunction)Sound_accumulate, METH_VARARGS,
-	 M_aud_Sound_accumulate_doc
-	},
-	{"ADSR", (PyCFunction)Sound_ADSR, METH_VARARGS,
-	 M_aud_Sound_ADSR_doc
-	},
-	{"delay", (PyCFunction)Sound_delay, METH_VARARGS,
-	 M_aud_Sound_delay_doc
-	},
-	{"envelope", (PyCFunction)Sound_envelope, METH_VARARGS,
-	 M_aud_Sound_envelope_doc
-	},
-	{"fadein", (PyCFunction)Sound_fadein, METH_VARARGS,
-	 M_aud_Sound_fadein_doc
-	},
-	{"fadeout", (PyCFunction)Sound_fadeout, METH_VARARGS,
-	 M_aud_Sound_fadeout_doc
-	},
-	{"filter", (PyCFunction)Sound_filter, METH_VARARGS,
-	 M_aud_Sound_filter_doc
-	},
-	{"highpass", (PyCFunction)Sound_highpass, METH_VARARGS,
-	 M_aud_Sound_highpass_doc
-	},
-	{"limit", (PyCFunction)Sound_limit, METH_VARARGS,
-	 M_aud_Sound_limit_doc
-	},
-	{"loop", (PyCFunction)Sound_loop, METH_VARARGS,
-	 M_aud_Sound_loop_doc
-	},
-	{"lowpass", (PyCFunction)Sound_lowpass, METH_VARARGS,
-	 M_aud_Sound_lowpass_doc
-	},
-	{"modulate", (PyCFunction)Sound_modulate, METH_O,
-	 M_aud_Sound_modulate_doc
-	},
-	{"pitch", (PyCFunction)Sound_pitch, METH_VARARGS,
-	 M_aud_Sound_pitch_doc
-	},
-	{"rechannel", (PyCFunction)Sound_rechannel, METH_VARARGS,
-	 M_aud_Sound_rechannel_doc
-	},
-	{"resample", (PyCFunction)Sound_resample, METH_VARARGS,
-	 M_aud_Sound_resample_doc
-	},
-	{"reverse", (PyCFunction)Sound_reverse, METH_NOARGS,
-	 M_aud_Sound_reverse_doc
-	},
-	{"sum", (PyCFunction)Sound_sum, METH_NOARGS,
-	 M_aud_Sound_sum_doc
-	},
-	{"threshold", (PyCFunction)Sound_threshold, METH_VARARGS,
-	 M_aud_Sound_threshold_doc
-	},
-	{"volume", (PyCFunction)Sound_volume, METH_VARARGS,
-	 M_aud_Sound_volume_doc
-	},
-	{"join", (PyCFunction)Sound_join, METH_O,
-	 M_aud_Sound_join_doc
-	},
-	{"mix", (PyCFunction)Sound_mix, METH_O,
-	 M_aud_Sound_mix_doc
-	},
-	{ "pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
-	 M_aud_Sound_pingpong_doc
-	},
-	{ "list", (PyCFunction)Sound_list, METH_VARARGS | METH_CLASS,
-	 M_aud_Sound_list_doc
-	},
-	{ "mutable", (PyCFunction)Sound_mutable, METH_NOARGS,
-	 M_aud_Sound_mutable_doc
-	},
-	{ "addSound", (PyCFunction)Sound_list_addSound, METH_O,
-	M_aud_Sound_list_addSound_doc
-	},
+    {"data", (PyCFunction) Sound_data, METH_NOARGS, M_aud_Sound_data_doc},
+    {"write", (PyCFunction) Sound_write, METH_VARARGS | METH_KEYWORDS, M_aud_Sound_write_doc},
+    {"buffer", (PyCFunction) Sound_buffer, METH_VARARGS | METH_CLASS, M_aud_Sound_buffer_doc},
+    {"cache", (PyCFunction) Sound_cache, METH_NOARGS, M_aud_Sound_cache_doc},
+    {"file", (PyCFunction) Sound_file, METH_VARARGS | METH_CLASS, M_aud_Sound_file_doc},
+    {"sawtooth", (PyCFunction) Sound_sawtooth, METH_VARARGS | METH_CLASS, M_aud_Sound_sawtooth_doc},
+    {"silence", (PyCFunction) Sound_silence, METH_VARARGS | METH_CLASS, M_aud_Sound_silence_doc},
+    {"sine", (PyCFunction) Sound_sine, METH_VARARGS | METH_CLASS, M_aud_Sound_sine_doc},
+    {"square", (PyCFunction) Sound_square, METH_VARARGS | METH_CLASS, M_aud_Sound_square_doc},
+    {"triangle", (PyCFunction) Sound_triangle, METH_VARARGS | METH_CLASS, M_aud_Sound_triangle_doc},
+    {"accumulate", (PyCFunction) Sound_accumulate, METH_VARARGS, M_aud_Sound_accumulate_doc},
+    {"ADSR", (PyCFunction) Sound_ADSR, METH_VARARGS, M_aud_Sound_ADSR_doc},
+    {"delay", (PyCFunction) Sound_delay, METH_VARARGS, M_aud_Sound_delay_doc},
+    {"envelope", (PyCFunction) Sound_envelope, METH_VARARGS, M_aud_Sound_envelope_doc},
+    {"fadein", (PyCFunction) Sound_fadein, METH_VARARGS, M_aud_Sound_fadein_doc},
+    {"fadeout", (PyCFunction) Sound_fadeout, METH_VARARGS, M_aud_Sound_fadeout_doc},
+    {"filter", (PyCFunction) Sound_filter, METH_VARARGS, M_aud_Sound_filter_doc},
+    {"highpass", (PyCFunction) Sound_highpass, METH_VARARGS, M_aud_Sound_highpass_doc},
+    {"limit", (PyCFunction) Sound_limit, METH_VARARGS, M_aud_Sound_limit_doc},
+    {"loop", (PyCFunction) Sound_loop, METH_VARARGS, M_aud_Sound_loop_doc},
+    {"lowpass", (PyCFunction) Sound_lowpass, METH_VARARGS, M_aud_Sound_lowpass_doc},
+    {"modulate", (PyCFunction) Sound_modulate, METH_O, M_aud_Sound_modulate_doc},
+    {"pitch", (PyCFunction) Sound_pitch, METH_VARARGS, M_aud_Sound_pitch_doc},
+    {"rechannel", (PyCFunction) Sound_rechannel, METH_VARARGS, M_aud_Sound_rechannel_doc},
+    {"resample", (PyCFunction) Sound_resample, METH_VARARGS, M_aud_Sound_resample_doc},
+    {"reverse", (PyCFunction) Sound_reverse, METH_NOARGS, M_aud_Sound_reverse_doc},
+    {"sum", (PyCFunction) Sound_sum, METH_NOARGS, M_aud_Sound_sum_doc},
+    {"threshold", (PyCFunction) Sound_threshold, METH_VARARGS, M_aud_Sound_threshold_doc},
+    {"volume", (PyCFunction) Sound_volume, METH_VARARGS, M_aud_Sound_volume_doc},
+    {"join", (PyCFunction) Sound_join, METH_O, M_aud_Sound_join_doc},
+    {"mix", (PyCFunction) Sound_mix, METH_O, M_aud_Sound_mix_doc},
+    {"pingpong", (PyCFunction) Sound_pingpong, METH_NOARGS, M_aud_Sound_pingpong_doc},
+    {"list", (PyCFunction) Sound_list, METH_VARARGS | METH_CLASS, M_aud_Sound_list_doc},
+    {"mutable", (PyCFunction) Sound_mutable, METH_NOARGS, M_aud_Sound_mutable_doc},
+    {"addSound", (PyCFunction) Sound_list_addSound, METH_O, M_aud_Sound_list_addSound_doc},
 #ifdef WITH_CONVOLUTION
-	{ "convolver", (PyCFunction)Sound_convolver, METH_VARARGS,
-	M_aud_Sound_convolver_doc
-	},
-	{ "binaural", (PyCFunction)Sound_binaural, METH_VARARGS,
-	M_aud_Sound_binaural_doc
-	},
+    {"convolver", (PyCFunction) Sound_convolver, METH_VARARGS, M_aud_Sound_convolver_doc},
+    {"binaural", (PyCFunction) Sound_binaural, METH_VARARGS, M_aud_Sound_binaural_doc},
 #endif
 #ifdef WITH_RUBBERBAND
-	{"timeStretchPitchScale", (PyCFunction)Sound_timeStretchPitchScale, METH_VARARGS,
-	M_aud_Sound_timeStretchPitchScale_doc},
-	{"animateableTimeStretchPitchScale", (PyCFunction) Sound_animateableTimeStretchPitchScale, METH_VARARGS, 
-	M_aud_Sound_animateableTimeStretchPitchScale_doc},
+    {"timeStretchPitchScale", (PyCFunction) Sound_timeStretchPitchScale, METH_VARARGS | METH_KEYWORDS, M_aud_Sound_timeStretchPitchScale_doc},
+    {"animateableTimeStretchPitchScale", (PyCFunction) Sound_animateableTimeStretchPitchScale, METH_VARARGS | METH_KEYWORDS, M_aud_Sound_animateableTimeStretchPitchScale_doc},
 #endif
-	{nullptr}  /* Sentinel */
+    {nullptr} /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Sound_specs_doc,

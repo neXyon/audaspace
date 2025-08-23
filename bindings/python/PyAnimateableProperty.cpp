@@ -133,25 +133,10 @@ PyDoc_STRVAR(M_aud_AnimateableProperty_readSingle_doc, ".. method:: readSingle(p
 static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject* args)
 {
 	PyObject* array_obj;
-	int position;
+	int position = -1;
 
-	int arg_count = PyTuple_Size(args);
-	if(arg_count != 1 && arg_count != 2)
-	{
-		PyErr_SetString(PyExc_TypeError, "write() takes either (data) or (data, position)");
+	if(!PyArg_ParseTuple(args, "O|i", &array_obj, &position))
 		return nullptr;
-	}
-
-	if(arg_count == 1)
-	{
-		if(!PyArg_ParseTuple(args, "O", &array_obj))
-			return nullptr;
-	}
-	else
-	{
-		if(!PyArg_ParseTuple(args, "Oi", &array_obj, &position))
-			return nullptr;
-	}
 
 	PyArrayObject* np_array = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(array_obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST));
 
@@ -188,13 +173,26 @@ static PyObject* AnimateableProperty_write(AnimateablePropertyP* self, PyObject*
 		return nullptr;
 	}
 
-	int count = (int) (size / prop_count);
+	int count = static_cast<int>(size / prop_count);
+
+	if(count < 1)
+	{
+		PyErr_SetString(PyExc_ValueError, "input array must have at least 1 element");
+		Py_DECREF(np_array);
+		return nullptr;
+	}
 
 	float* data_ptr = reinterpret_cast<float*>(PyArray_DATA(np_array));
 	try
 	{
-		if(arg_count == 1)
+		if(position == -1)
 		{
+			if(count != 1)
+			{
+				PyErr_SetString(PyExc_ValueError, "input array must have exactly 1 element when position is not specified");
+				Py_DECREF(np_array);
+				return nullptr;
+			}
 			prop->write(data_ptr);
 		}
 		else
