@@ -1952,50 +1952,126 @@ static PyObject* Sound_animateableTimeStretchPitchScale(Sound* self, PyObject* a
 #endif
 
 static PyMethodDef Sound_methods[] = {
-    {"data", (PyCFunction) Sound_data, METH_NOARGS, M_aud_Sound_data_doc},
-    {"write", (PyCFunction) Sound_write, METH_VARARGS | METH_KEYWORDS, M_aud_Sound_write_doc},
-    {"buffer", (PyCFunction) Sound_buffer, METH_VARARGS | METH_CLASS, M_aud_Sound_buffer_doc},
-    {"cache", (PyCFunction) Sound_cache, METH_NOARGS, M_aud_Sound_cache_doc},
-    {"file", (PyCFunction) Sound_file, METH_VARARGS | METH_CLASS, M_aud_Sound_file_doc},
-    {"sawtooth", (PyCFunction) Sound_sawtooth, METH_VARARGS | METH_CLASS, M_aud_Sound_sawtooth_doc},
-    {"silence", (PyCFunction) Sound_silence, METH_VARARGS | METH_CLASS, M_aud_Sound_silence_doc},
-    {"sine", (PyCFunction) Sound_sine, METH_VARARGS | METH_CLASS, M_aud_Sound_sine_doc},
-    {"square", (PyCFunction) Sound_square, METH_VARARGS | METH_CLASS, M_aud_Sound_square_doc},
-    {"triangle", (PyCFunction) Sound_triangle, METH_VARARGS | METH_CLASS, M_aud_Sound_triangle_doc},
-    {"accumulate", (PyCFunction) Sound_accumulate, METH_VARARGS, M_aud_Sound_accumulate_doc},
-    {"ADSR", (PyCFunction) Sound_ADSR, METH_VARARGS, M_aud_Sound_ADSR_doc},
-    {"delay", (PyCFunction) Sound_delay, METH_VARARGS, M_aud_Sound_delay_doc},
-    {"envelope", (PyCFunction) Sound_envelope, METH_VARARGS, M_aud_Sound_envelope_doc},
-    {"fadein", (PyCFunction) Sound_fadein, METH_VARARGS, M_aud_Sound_fadein_doc},
-    {"fadeout", (PyCFunction) Sound_fadeout, METH_VARARGS, M_aud_Sound_fadeout_doc},
-    {"filter", (PyCFunction) Sound_filter, METH_VARARGS, M_aud_Sound_filter_doc},
-    {"highpass", (PyCFunction) Sound_highpass, METH_VARARGS, M_aud_Sound_highpass_doc},
-    {"limit", (PyCFunction) Sound_limit, METH_VARARGS, M_aud_Sound_limit_doc},
-    {"loop", (PyCFunction) Sound_loop, METH_VARARGS, M_aud_Sound_loop_doc},
-    {"lowpass", (PyCFunction) Sound_lowpass, METH_VARARGS, M_aud_Sound_lowpass_doc},
-    {"modulate", (PyCFunction) Sound_modulate, METH_O, M_aud_Sound_modulate_doc},
-    {"pitch", (PyCFunction) Sound_pitch, METH_VARARGS, M_aud_Sound_pitch_doc},
-    {"rechannel", (PyCFunction) Sound_rechannel, METH_VARARGS, M_aud_Sound_rechannel_doc},
-    {"resample", (PyCFunction) Sound_resample, METH_VARARGS, M_aud_Sound_resample_doc},
-    {"reverse", (PyCFunction) Sound_reverse, METH_NOARGS, M_aud_Sound_reverse_doc},
-    {"sum", (PyCFunction) Sound_sum, METH_NOARGS, M_aud_Sound_sum_doc},
-    {"threshold", (PyCFunction) Sound_threshold, METH_VARARGS, M_aud_Sound_threshold_doc},
-    {"volume", (PyCFunction) Sound_volume, METH_VARARGS, M_aud_Sound_volume_doc},
-    {"join", (PyCFunction) Sound_join, METH_O, M_aud_Sound_join_doc},
-    {"mix", (PyCFunction) Sound_mix, METH_O, M_aud_Sound_mix_doc},
-    {"pingpong", (PyCFunction) Sound_pingpong, METH_NOARGS, M_aud_Sound_pingpong_doc},
-    {"list", (PyCFunction) Sound_list, METH_VARARGS | METH_CLASS, M_aud_Sound_list_doc},
-    {"mutable", (PyCFunction) Sound_mutable, METH_NOARGS, M_aud_Sound_mutable_doc},
-    {"addSound", (PyCFunction) Sound_list_addSound, METH_O, M_aud_Sound_list_addSound_doc},
+	{"data", (PyCFunction)Sound_data, METH_NOARGS,
+	 M_aud_Sound_data_doc
+	},
+	{"write", (PyCFunction)Sound_write, METH_VARARGS | METH_KEYWORDS,
+	 M_aud_Sound_write_doc
+	},
+	{"buffer", (PyCFunction)Sound_buffer, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_buffer_doc
+	},
+	{"cache", (PyCFunction)Sound_cache, METH_NOARGS,
+	 M_aud_Sound_cache_doc
+	},
+	{"file", (PyCFunction)Sound_file, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_file_doc
+	},
+	{"sawtooth", (PyCFunction)Sound_sawtooth, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_sawtooth_doc
+	},
+	{"silence", (PyCFunction)Sound_silence, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_silence_doc
+	},
+	{"sine", (PyCFunction)Sound_sine, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_sine_doc
+	},
+	{"square", (PyCFunction)Sound_square, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_square_doc
+	},
+	{"triangle", (PyCFunction)Sound_triangle, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_triangle_doc
+	},
+	{"accumulate", (PyCFunction)Sound_accumulate, METH_VARARGS,
+	 M_aud_Sound_accumulate_doc
+	},
+	{"ADSR", (PyCFunction)Sound_ADSR, METH_VARARGS,
+	 M_aud_Sound_ADSR_doc
+	},
+	{"delay", (PyCFunction)Sound_delay, METH_VARARGS,
+	 M_aud_Sound_delay_doc
+	},
+	{"envelope", (PyCFunction)Sound_envelope, METH_VARARGS,
+	 M_aud_Sound_envelope_doc
+	},
+	{"fadein", (PyCFunction)Sound_fadein, METH_VARARGS,
+	 M_aud_Sound_fadein_doc
+	},
+	{"fadeout", (PyCFunction)Sound_fadeout, METH_VARARGS,
+	 M_aud_Sound_fadeout_doc
+	},
+	{"filter", (PyCFunction)Sound_filter, METH_VARARGS,
+	 M_aud_Sound_filter_doc
+	},
+	{"highpass", (PyCFunction)Sound_highpass, METH_VARARGS,
+	 M_aud_Sound_highpass_doc
+	},
+	{"limit", (PyCFunction)Sound_limit, METH_VARARGS,
+	 M_aud_Sound_limit_doc
+	},
+	{"loop", (PyCFunction)Sound_loop, METH_VARARGS,
+	 M_aud_Sound_loop_doc
+	},
+	{"lowpass", (PyCFunction)Sound_lowpass, METH_VARARGS,
+	 M_aud_Sound_lowpass_doc
+	},
+	{"modulate", (PyCFunction)Sound_modulate, METH_O,
+	 M_aud_Sound_modulate_doc
+	},
+	{"pitch", (PyCFunction)Sound_pitch, METH_VARARGS,
+	 M_aud_Sound_pitch_doc
+	},
+	{"rechannel", (PyCFunction)Sound_rechannel, METH_VARARGS,
+	 M_aud_Sound_rechannel_doc
+	},
+	{"resample", (PyCFunction)Sound_resample, METH_VARARGS,
+	 M_aud_Sound_resample_doc
+	},
+	{"reverse", (PyCFunction)Sound_reverse, METH_NOARGS,
+	 M_aud_Sound_reverse_doc
+	},
+	{"sum", (PyCFunction)Sound_sum, METH_NOARGS,
+	 M_aud_Sound_sum_doc
+	},
+	{"threshold", (PyCFunction)Sound_threshold, METH_VARARGS,
+	 M_aud_Sound_threshold_doc
+	},
+	{"volume", (PyCFunction)Sound_volume, METH_VARARGS,
+	 M_aud_Sound_volume_doc
+	},
+	{"join", (PyCFunction)Sound_join, METH_O,
+	 M_aud_Sound_join_doc
+	},
+	{"mix", (PyCFunction)Sound_mix, METH_O,
+	 M_aud_Sound_mix_doc
+	},
+	{ "pingpong", (PyCFunction)Sound_pingpong, METH_NOARGS,
+	 M_aud_Sound_pingpong_doc
+	},
+	{ "list", (PyCFunction)Sound_list, METH_VARARGS | METH_CLASS,
+	 M_aud_Sound_list_doc
+	},
+	{ "mutable", (PyCFunction)Sound_mutable, METH_NOARGS,
+	 M_aud_Sound_mutable_doc
+	},
+	{ "addSound", (PyCFunction)Sound_list_addSound, METH_O,
+	M_aud_Sound_list_addSound_doc
+	},
 #ifdef WITH_CONVOLUTION
-    {"convolver", (PyCFunction) Sound_convolver, METH_VARARGS, M_aud_Sound_convolver_doc},
-    {"binaural", (PyCFunction) Sound_binaural, METH_VARARGS, M_aud_Sound_binaural_doc},
+	{ "convolver", (PyCFunction)Sound_convolver, METH_VARARGS,
+	M_aud_Sound_convolver_doc
+	},
+	{ "binaural", (PyCFunction)Sound_binaural, METH_VARARGS,
+	M_aud_Sound_binaural_doc
+	},
 #endif
 #ifdef WITH_RUBBERBAND
-    {"timeStretchPitchScale", (PyCFunction) Sound_timeStretchPitchScale, METH_VARARGS | METH_KEYWORDS, M_aud_Sound_timeStretchPitchScale_doc},
-    {"animateableTimeStretchPitchScale", (PyCFunction) Sound_animateableTimeStretchPitchScale, METH_VARARGS | METH_KEYWORDS, M_aud_Sound_animateableTimeStretchPitchScale_doc},
+	{"timeStretchPitchScale", (PyCFunction)Sound_timeStretchPitchScale, METH_VARARGS | METH_KEYWORDS,
+	M_aud_Sound_timeStretchPitchScale_doc},
+	{"animateableTimeStretchPitchScale", (PyCFunction) Sound_animateableTimeStretchPitchScale, METH_VARARGS | METH_KEYWORDS, 
+	M_aud_Sound_animateableTimeStretchPitchScale_doc},
 #endif
-    {nullptr} /* Sentinel */
+	{nullptr}  /* Sentinel */
 };
 
 PyDoc_STRVAR(M_aud_Sound_specs_doc,
