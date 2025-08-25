@@ -82,6 +82,7 @@ protected:
 	 * Whether the reader has reached the end of stream.
 	 */
 	bool m_finishedReader;
+
 public:
 	/**
 	 * Creates a new stretcher reader.
