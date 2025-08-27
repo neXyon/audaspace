@@ -92,6 +92,8 @@ set(SRC
 	src/fx/VolumeReader.cpp
 	src/fx/VolumeSound.cpp
 	src/fx/VolumeStorage.cpp
+	src/fx/Compressor.cpp
+	src/fx/CompressorReader.cpp
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -167,6 +169,8 @@ set(PUBLIC_HDR
 	include/fx/ButterworthCalculator.h
 	include/fx/Butterworth.h
 	include/fx/CallbackIIRFilterReader.h
+	include/fx/Compressor.h
+	include/fx/CompressorReader.h
 	include/fx/Delay.h
 	include/fx/DelayReader.h
 	include/fx/DynamicIIRFilter.h

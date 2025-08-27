@@ -14,16 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "generator/Sawtooth.h"
-#include "generator/Sine.h"
-#include "generator/Silence.h"
-#include "generator/Square.h"
-#include "generator/Triangle.h"
+#include "Exception.h"
+
 #include "file/File.h"
 #include "file/FileWriter.h"
-#include "util/StreamBuffer.h"
-#include "fx/Accumulator.h"
 #include "fx/ADSR.h"
+#include "fx/Accumulator.h"
+#include "fx/Compressor.h"
 #include "fx/Delay.h"
 #include "fx/Envelope.h"
 #include "fx/Fader.h"
@@ -33,23 +30,28 @@
 #include "fx/Loop.h"
 #include "fx/Lowpass.h"
 #include "fx/Modulator.h"
+#include "fx/MutableSound.h"
 #include "fx/Pitch.h"
 #include "fx/Reverse.h"
+#include "fx/SoundList.h"
 #include "fx/Sum.h"
 #include "fx/Threshold.h"
 #include "fx/Volume.h"
-#include "fx/SoundList.h"
-#include "fx/MutableSound.h"
-#include "sequence/Double.h"
-#include "sequence/Superpose.h"
-#include "sequence/PingPong.h"
-#include "respec/LinearResample.h"
-#include "respec/JOSResample.h"
-#include "respec/JOSResampleReader.h"
+#include "generator/Sawtooth.h"
+#include "generator/Silence.h"
+#include "generator/Sine.h"
+#include "generator/Square.h"
+#include "generator/Triangle.h"
 #include "respec/ChannelMapper.h"
 #include "respec/ChannelMapperReader.h"
+#include "respec/JOSResample.h"
+#include "respec/JOSResampleReader.h"
+#include "respec/LinearResample.h"
+#include "sequence/Double.h"
+#include "sequence/PingPong.h"
+#include "sequence/Superpose.h"
 #include "util/Buffer.h"
-#include "Exception.h"
+#include "util/StreamBuffer.h"
 
 #ifdef WITH_CONVOLUTION
 #include "fx/BinauralSound.h"
@@ -58,8 +60,8 @@
 #endif
 
 #ifdef WITH_RUBBERBAND
-#include "fx/TimeStretchPitchScale.h"
 #include "fx/AnimateableTimeStretchPitchScale.h"
+#include "fx/TimeStretchPitchScale.h"
 #endif
 
 #include <cassert>
@@ -100,7 +102,7 @@ AUD_API int AUD_Sound_getLength(AUD_Sound* sound)
 	return (*sound)->createReader()->getLength();
 }
 
-AUD_API int AUD_Sound_getFileStreams(AUD_Sound* sound, AUD_StreamInfo **stream_infos)
+AUD_API int AUD_Sound_getFileStreams(AUD_Sound* sound, AUD_StreamInfo** stream_infos)
 {
 	assert(sound);
 
@@ -160,7 +162,8 @@ AUD_API void AUD_Sound_freeData(sample_t* data)
 	delete[] data;
 }
 
-AUD_API const char* AUD_Sound_write(AUD_Sound* sound, const char* filename, AUD_SampleRate rate, AUD_Channels channels, AUD_SampleFormat format, AUD_Container container, AUD_Codec codec, int bitrate, int buffersize)
+AUD_API const char* AUD_Sound_write(AUD_Sound* sound, const char* filename, AUD_SampleRate rate, AUD_Channels channels, AUD_SampleFormat format, AUD_Container container,
+                                    AUD_Codec codec, int bitrate, int buffersize)
 {
 	assert(sound);
 	assert(filename);
@@ -438,6 +441,21 @@ AUD_API AUD_Sound* AUD_Sound_fadeout(AUD_Sound* sound, float start, float length
 	}
 }
 
+AUD_API AUD_Sound* AUD_Sound_compressor(AUD_Sound* sound, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float kneeWidthDb,
+                                        float lookaheadSec)
+{
+	assert(sound);
+
+	try
+	{
+		return new AUD_Sound(new Compressor(*sound, thresholdRatio, ratio, attackSec, releaseSec, makeupGainRatio, kneeWidthDb, lookaheadSec));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
 AUD_API AUD_Sound* AUD_Sound_filter(AUD_Sound* sound, float* b, int b_length, float* a, int a_length)
 {
 	assert(sound);
@@ -580,7 +598,7 @@ AUD_API AUD_Sound* AUD_Sound_resample(AUD_Sound* sound, AUD_SampleRate rate, AUD
 		specs.channels = CHANNELS_INVALID;
 		specs.rate = rate;
 		specs.format = FORMAT_INVALID;
-		if (quality == AUD_RESAMPLE_QUALITY_FASTEST)
+		if(quality == AUD_RESAMPLE_QUALITY_FASTEST)
 		{
 			return new AUD_Sound(new LinearResample(*sound, specs));
 		}
@@ -731,7 +749,6 @@ AUD_API int AUD_SoundList_addSound(AUD_Sound* list, AUD_Sound* sound)
 	}
 	else
 		return 0;
-
 }
 
 AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound)
@@ -783,13 +800,13 @@ AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Sou
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int size, float maxFreqEq, int sizeConversion)
+AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float* definition, int size, float maxFreqEq, int sizeConversion)
 {
 	assert(sound);
 
-	std::shared_ptr<Buffer> buf = std::shared_ptr<Buffer>(new Buffer(sizeof(float)*size));
-	std::memcpy(buf->getBuffer(), definition, sizeof(float)*size);
-	AUD_Sound *equalizer=new AUD_Sound(new Equalizer(*sound, buf, size, maxFreqEq, sizeConversion));
+	std::shared_ptr<Buffer> buf = std::shared_ptr<Buffer>(new Buffer(sizeof(float) * size));
+	std::memcpy(buf->getBuffer(), definition, sizeof(float) * size);
+	AUD_Sound* equalizer = new AUD_Sound(new Equalizer(*sound, buf, size, maxFreqEq, sizeConversion));
 	return equalizer;
 }
 

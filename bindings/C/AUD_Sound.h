@@ -76,7 +76,8 @@ extern AUD_API void AUD_Sound_freeData(sample_t* data);
  * \return A nullptr or an error message in case of error.
  * \note Most parameters can be set to zero for default values.
  */
-extern AUD_API const char* AUD_Sound_write(AUD_Sound* sound, const char* filename, AUD_SampleRate rate, AUD_Channels channels, AUD_SampleFormat format, AUD_Container container, AUD_Codec codec, int bitrate, int buffersize);
+extern AUD_API const char* AUD_Sound_write(AUD_Sound* sound, const char* filename, AUD_SampleRate rate, AUD_Channels channels, AUD_SampleFormat format, AUD_Container container,
+                                           AUD_Codec codec, int bitrate, int buffersize);
 
 /**
  * Creates a sound from a data buffer.
@@ -225,6 +226,21 @@ extern AUD_API AUD_Sound* AUD_Sound_fadein(AUD_Sound* sound, float start, float 
  * \return A handle of the faded sound.
  */
 extern AUD_API AUD_Sound* AUD_Sound_fadeout(AUD_Sound* sound, float start, float length);
+
+/**
+ * Applies a compressor effect to a sound.
+ * \param sound The sound to compress.
+ * \param thresholdRatio Threshold as ratio (1.0 = 0 dB).
+ * \param ratio Compression ratio.
+ * \param attackSec Attack time in seconds.
+ * \param releaseSec Release time in seconds.
+ * \param makeupGainRatio Makeup gain as ratio (1.0 = 0 dB).
+ * \param kneeWidthDb Knee width in dB.
+ * \param lookaheadSec Lookahead time in seconds.
+ * \return A handle of the compressed sound.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_compressor(AUD_Sound* sound, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float kneeWidthDb,
+                                               float lookaheadSec);
 
 /**
  * Filter a sound.
@@ -380,94 +396,94 @@ extern AUD_API AUD_Sound* AUD_Sound_copy(AUD_Sound* sound);
 extern AUD_API AUD_Sound* AUD_Sound_list(int random);
 
 /**
-* Adds a new sound to a sound list.
+ * Adds a new sound to a sound list.
  * \param list The sound list in which the sound will be added.
  * \param sound The sound that will be added to the list.
  * \return 0 if the sound couldn't be added (the list parameter isn't a sound list).
-*/
+ */
 extern AUD_API int AUD_SoundList_addSound(AUD_Sound* list, AUD_Sound* sound);
 
 /**
  * Creates a sound that will be restarted when sought backwards. If the original sound is a sound list, the playing sound can change.
  * \param sound The handle of the sound.
  * \return A handle of the mutable sound.
-*/
+ */
 extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
 
 #ifdef WITH_CONVOLUTION
-	extern AUD_API AUD_Sound* AUD_Sound_Convolver(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool);
-	extern AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Source* source, AUD_ThreadPool* threadPool);
+extern AUD_API AUD_Sound* AUD_Sound_Convolver(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool);
+extern AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Source* source, AUD_ThreadPool* threadPool);
 
-	/**
-	 * Creates an Equalizer for the sound
-	 * \param sound The handle of the sound
-	 * \param definition buffer of size*sizeof(float) with the array of equalization values
-	 * \param maxFreqEq Maximum frequency refered by the array
-	 * \param sizeConversion Size of the transformation. Must be 2^number (for example 1024, 2048,...)
-	 * \return A handle to the Equalizer refered to that sound
-	 */
-	extern AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int size, float maxFreqEq, int sizeConversion);
+/**
+ * Creates an Equalizer for the sound
+ * \param sound The handle of the sound
+ * \param definition buffer of size*sizeof(float) with the array of equalization values
+ * \param maxFreqEq Maximum frequency refered by the array
+ * \param sizeConversion Size of the transformation. Must be 2^number (for example 1024, 2048,...)
+ * \return A handle to the Equalizer refered to that sound
+ */
+extern AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float* definition, int size, float maxFreqEq, int sizeConversion);
 #endif
 
 #ifdef WITH_RUBBERBAND
-    /**
-     * Time-stretches and pitch scales a sound.
-     * \param sound The handle of the sound.
-     * \param timeRatio The factor by which to stretch or compress time.
-     * \param pitchScale The factor by which to adjust the pitch.
-     * \param quality The processing quality level of the stretcher.
-     * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
-     * \return A handle of the time-stretched, pitch scaled sound.
-     */
-    extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant);
+/**
+ * Time-stretches and pitch scales a sound.
+ * \param sound The handle of the sound.
+ * \param timeRatio The factor by which to stretch or compress time.
+ * \param pitchScale The factor by which to adjust the pitch.
+ * \param quality The processing quality level of the stretcher.
+ * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
+ * \return A handle of the time-stretched, pitch scaled sound.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_timeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant);
 
-    /**
-     * Time-stretches and pitch scales a sound with animation support
-     * \param sound The handle of the sound.
-     * \param fps The fps
-     * \param timeRatio The initial factor by which to stretch or compress time.
-     * \param pitchScale The initial factor by which to adjust the pitch.
-     * \param quality The processing quality level of the stretcher.
-     * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
-     * \return A handle of the time-stretched, pitch scaled sound.
-     */
-    extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, float fps, double timeRatio, double pitchScale, AUD_StretcherQuality quality,
-                                                                         char preserveFormant);
+/**
+ * Time-stretches and pitch scales a sound with animation support
+ * \param sound The handle of the sound.
+ * \param fps The fps
+ * \param timeRatio The initial factor by which to stretch or compress time.
+ * \param pitchScale The initial factor by which to adjust the pitch.
+ * \param quality The processing quality level of the stretcher.
+ * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
+ * \return A handle of the time-stretched, pitch scaled sound.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, float fps, double timeRatio, double pitchScale, AUD_StretcherQuality quality,
+                                                                     char preserveFormant);
 
-    /**
-     * Writes animation data to the AnimatableTimeStretchPitchScale effect
-     * \param sequence The sound scene.
-     * \param type The type of animation data.
-     * \param frame_start Start of the frame range.
-     * \param frame_end End of the frame range.
-     * \param data The data to write.
-     */
-    AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end,
-                                                                                          float* data);
+/**
+ * Writes animation data to the AnimatableTimeStretchPitchScale effect
+ * \param sequence The sound scene.
+ * \param type The type of animation data.
+ * \param frame_start Start of the frame range.
+ * \param frame_end End of the frame range.
+ * \param data The data to write.
+ */
+AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setConstantRangeAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame_start, int frame_end,
+                                                                                      float* data);
 
-    /**
-     * Writes animation data to the AnimatableTimeStretchPitchScale effect
-     * \param entry The sequenced entry.
-     * \param type The type of animation data.
-     * \param frame The frame this data is for.
-     * \param data The data to write.
-     * \param animated Whether the attribute is animated.
-     */
-    extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
+/**
+ * Writes animation data to the AnimatableTimeStretchPitchScale effect
+ * \param entry The sequenced entry.
+ * \param type The type of animation data.
+ * \param frame The frame this data is for.
+ * \param data The data to write.
+ * \param animated Whether the attribute is animated.
+ */
+extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setAnimationData(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 
-    /**
-     * Sets the fps of an animated time-stretch, pitch-scaled sound.
-     * \param sound The sound to set the fps from.
-     * \param value The new fps to set.
-     */
-    extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setFPS(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
+/**
+ * Sets the fps of an animated time-stretch, pitch-scaled sound.
+ * \param sound The sound to set the fps from.
+ * \param value The new fps to set.
+ */
+extern AUD_API void AUD_Sound_animateableTimeStretchPitchScale_setFPS(AUD_Sound* sound, AUD_AnimateablePropertyType type, int frame, float* data, char animated);
 
-    /**
-     * Retrieves the fps of an animated time-stretch, pitch-scaled sound.
-     * \param sequence The sound to get the fps from.
-     * \return The fps of the sound.
-     */
-    extern AUD_API float AUD_Sound_animateableTimeStretchPitchScale_getFPS(AUD_Sound* sequence);
+/**
+ * Retrieves the fps of an animated time-stretch, pitch-scaled sound.
+ * \param sequence The sound to get the fps from.
+ * \return The fps of the sound.
+ */
+extern AUD_API float AUD_Sound_animateableTimeStretchPitchScale_getFPS(AUD_Sound* sequence);
 #endif
 
 #ifdef __cplusplus

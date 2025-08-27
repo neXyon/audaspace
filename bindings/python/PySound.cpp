@@ -897,6 +897,65 @@ Sound_fadeout(Sound* self, PyObject* args)
 	return (PyObject *)parent;
 }
 
+PyDoc_STRVAR(M_aud_Sound_compressor_doc,
+".. method:: compressor(thresholdRatio, ratio, attackSec, releaseSec, makeupGainRatio, kneeWidthDb, lookaheadSec)\n\n"
+"   Applies a compressor effect to the sound.\n\n"
+"   :arg thresholdRatio: Threshold as ratio (1.0 = 0 dB).\n"
+"   :type thresholdRatio: float\n"
+"   :arg ratio: Compression ratio.\n"
+"   :type ratio: float\n"
+"   :arg attackSec: Attack time in seconds.\n"
+"   :type attackSec: float\n"
+"   :arg releaseSec: Release time in seconds.\n"
+"   :type releaseSec: float\n"
+"   :arg makeupGainRatio: Makeup gain as ratio (1.0 = 0 dB).\n"
+"   :type makeupGainRatio: float\n"
+"   :arg kneeWidthDb: Knee width in dB.\n"
+"   :type kneeWidthDb: float\n"
+"   :arg lookaheadSec: Lookahead time in seconds.\n"
+"   :type lookaheadSec: float\n"
+"   :return: The created :class:`Sound` object.\n"
+"   :rtype: :class:`Sound`");
+
+static PyObject *
+Sound_compressor(Sound* self, PyObject* args)
+{
+    float thresholdRatio, ratio, attackSec, releaseSec, makeupGainRatio, kneeWidthDb, lookaheadSec;
+
+    if(!PyArg_ParseTuple(args, "fffffff:compressor", &thresholdRatio, &ratio, &attackSec, &releaseSec, &makeupGainRatio, &kneeWidthDb, &lookaheadSec))
+        return nullptr;
+
+    PyTypeObject* type = Py_TYPE(self);
+    Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+    if(parent != nullptr)
+    {
+        try
+        {
+            parent->sound = new std::shared_ptr<ISound>(
+                AUD_Sound_compressor(
+                    reinterpret_cast<AUD_Sound*>(self),
+                    thresholdRatio,
+                    ratio,
+                    attackSec,
+                    releaseSec,
+                    makeupGainRatio,
+                    kneeWidthDb,
+                    lookaheadSec
+                )
+            );
+        }
+        catch(Exception& e)
+        {
+            Py_DECREF(parent);
+            PyErr_SetString(AUDError, e.what());
+            return nullptr;
+        }
+    }
+
+    return (PyObject *)parent;
+}
+
 PyDoc_STRVAR(M_aud_Sound_filter_doc,
 			 ".. method:: filter(b, a = (1,))\n\n"
 			 "   Filters a sound with the supplied IIR filter coefficients.\n"
@@ -1987,6 +2046,9 @@ static PyMethodDef Sound_methods[] = {
 	},
 	{"ADSR", (PyCFunction)Sound_ADSR, METH_VARARGS,
 	 M_aud_Sound_ADSR_doc
+	},
+	{"compressor", (PyCFunction)Sound_compressor, METH_VARARGS, 
+	 M_aud_Sound_compressor_doc
 	},
 	{"delay", (PyCFunction)Sound_delay, METH_VARARGS,
 	 M_aud_Sound_delay_doc
