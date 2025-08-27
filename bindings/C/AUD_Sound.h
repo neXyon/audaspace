@@ -424,13 +424,15 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
     /**
      * Time-stretches and pitch scales a sound with animation support
      * \param sound The handle of the sound.
-     * \param timeRatio The factor by which to stretch or compress time.
-     * \param pitchScale The factor by which to adjust the pitch.
+     * \param fps The fps
+     * \param timeRatio The initial factor by which to stretch or compress time.
+     * \param pitchScale The initial factor by which to adjust the pitch.
      * \param quality The processing quality level of the stretcher.
      * \param preserveFormant Whether to preserve the vocal formants for the stretcher.
      * \return A handle of the time-stretched, pitch scaled sound.
      */
-    extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, double timeRatio, double pitchScale, AUD_StretcherQuality quality, char preserveFormant);
+    extern AUD_API AUD_Sound* AUD_Sound_animateableTimeStretchPitchScale(AUD_Sound* sound, float fps, double timeRatio, double pitchScale, AUD_StretcherQuality quality,
+                                                                         char preserveFormant);
 
     /**
      * Writes animation data to the AnimatableTimeStretchPitchScale effect
