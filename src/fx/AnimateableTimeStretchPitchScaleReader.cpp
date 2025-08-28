@@ -60,6 +60,7 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 	float ratio = 1.0f;
 	float lastRatio = 1.0f;
 
+	// TODO: update the block size?
 	const int blockSize = 1024;
 
 	while(outputSamplePos < position)
