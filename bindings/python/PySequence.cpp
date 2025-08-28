@@ -214,8 +214,7 @@ Sequence_setAnimationData(Sequence* self, PyObject* args)
 
 	py_data_len= PySequence_Size(py_data);
 
-	std::vector<float> data;
-	data.resize(py_data_len);
+	std::vector<float> data(py_data_len);
 
 	PyObject* py_value;
 	float value;
@@ -230,7 +229,7 @@ Sequence_setAnimationData(Sequence* self, PyObject* args)
 			return nullptr;
 		}
 
-		data.push_back(value);
+		data[i] = value;
 	}
 
 	if(!PyBool_Check(animatedo))

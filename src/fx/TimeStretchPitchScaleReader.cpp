@@ -82,9 +82,6 @@ void TimeStretchPitchScaleReader::read(int& length, bool& eos, sample_t* buffer)
 
 	int samplesize = AUD_SAMPLE_SIZE(m_reader->getSpecs());
 	int channels = m_reader->getSpecs().channels;
-
-	sample_t* buf;
-
 	int samplesRead = 0;
 
 	eos = false;
