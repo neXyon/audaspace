@@ -43,7 +43,7 @@ void TimeStretchPitchScaleReader::reset()
 }
 
 TimeStretchPitchScaleReader::TimeStretchPitchScaleReader(std::shared_ptr<IReader> reader, double timeRatio, double pitchScale, StretcherQuality quality, bool preserveFormant) :
-    EffectReader(reader), m_position(0), m_finishedReader(false), m_channelData(reader->getSpecs().channels), m_deinterleaved(reader->getSpecs().channels)
+    EffectReader(reader), m_position(0), m_finishedReader(false), m_deinterleaved(reader->getSpecs().channels), m_channelData(reader->getSpecs().channels)
 {
 	if (pitchScale < 1.0 / 256.0 || pitchScale > 256.0)
 		AUD_THROW(StateException, "The pitch scale must be between 1/256 and 256");
