@@ -136,6 +136,14 @@ public:
 	 */
 	float readSingle(float position);
 
+
+	/**
+	 * Reads the property's value at the specified frame.
+	 * \param position The integer frame
+	 * \return The value at the frame.
+	 */
+	float readFrame(int frame) const;
+	
 	/**
 	 * Returns whether the property is animated.
 	 * \return Whether the property is animated.
