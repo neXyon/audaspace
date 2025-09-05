@@ -142,8 +142,8 @@ public:
 	 * \param position The integer frame
 	 * \return The value at the frame.
 	 */
-	float readFrame(int frame) const;
-	
+	float readFrameSingle(int frame) const;
+
 	/**
 	 * Returns whether the property is animated.
 	 * \return Whether the property is animated.

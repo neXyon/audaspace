@@ -43,92 +43,48 @@ void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample
 	setPitchScale(pitchScale);
 	TimeStretchPitchScaleReader::read(length, eos, buffer);
 }
+
 void AnimateableTimeStretchPitchScaleReader::seek(int position)
 {
-    double sampleRate = double(m_reader->getSpecs().rate);
-    double time = double(position) / sampleRate;
-    float frame = time * m_fps;
+	double sampleRate = double(m_reader->getSpecs().rate);
+	double time = double(position) / sampleRate;
+	float frame = time * m_fps;
 
-    float timeRatio = m_timeStretch->readSingle(frame);
-    setTimeRatio(timeRatio);
-    float pitchScale = m_pitchScale->readSingle(frame);
-    setPitchScale(pitchScale);
+	float timeRatio = m_timeStretch->readSingle(frame);
+	setTimeRatio(timeRatio);
+	float pitchScale = m_pitchScale->readSingle(frame);
+	setPitchScale(pitchScale);
 
-    int inputSamplePos = 0;
-    double outputSamplePos = 0.0;
+	int inputSamplePos = 0;
+	double outputSamplePos = 0.0;
 
-    float ratio = 1.0f;
-    float lastRatio = 1.0f;
+	float ratio = 1.0f;
+	float lastRatio = 1.0f;
 
-    const double frameDuration = 1.0 / m_fps; 
-    const double samplesPerFrame = frameDuration * sampleRate;
-    int frameIndex = 0;
-		
+	const double frameDuration = 1.0 / m_fps;
+	const double samplesPerFrame = frameDuration * sampleRate;
+	int frameIndex = 0;
 
-		// TODO: update the block size or make it adaptive?
-		const int blockSize = 4096;
+	while(outputSamplePos < position)
+	{
+		ratio = m_timeStretch->readFrameSingle(frameIndex);
 
+		if(ratio <= 0.0f)
+			ratio = lastRatio;
+		else
+			lastRatio = ratio;
 
+		outputSamplePos += samplesPerFrame;
+		inputSamplePos += static_cast<int>(samplesPerFrame / ratio);
 
-		auto t2_beg = std::chrono::high_resolution_clock::now();
-		while(outputSamplePos < position)
-		{
-			double outputTime = outputSamplePos / sampleRate;
-			float frame = outputTime * m_fps;
+		frameIndex++;
+	}
 
-			ratio = m_timeStretch->readSingle(frame);
-			if(ratio <= 0.0f)
-				ratio = lastRatio;
-			else
-				lastRatio = ratio;
-
-			outputSamplePos += blockSize;
-			inputSamplePos += static_cast<int>(blockSize / ratio);
-		}
-		
-		auto t2_end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double, std::milli> t2_elapsed = t2_end - t2_beg;
-
-		if (position != 0)
-			printf("Sample-based seek (Approach #2): %d (%.3f ms)\n", inputSamplePos, t2_elapsed.count());
-
-
-		outputSamplePos = 0;
-		ratio = 1.0;
-		lastRatio = 1.0;
-		inputSamplePos = 0;
-
-		auto t1_beg = std::chrono::high_resolution_clock::now();
-    while (outputSamplePos < position)
-    {
-			ratio = m_timeStretch->readFrame(frameIndex);
-
-			if (ratio <= 0.0f)
-					ratio = lastRatio;
-			else
-					lastRatio = ratio;
-
-			outputSamplePos += samplesPerFrame;
-			inputSamplePos += static_cast<int>(samplesPerFrame / ratio);
-
-			frameIndex++;
-    }
-		auto t1_end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double, std::milli> t1_elapsed = t1_end - t1_beg;
-
-		if (position != 0)
-			printf("Frame-based seek (Approach #1): %d (%.3f ms)\n", inputSamplePos, t1_elapsed.count());
-
-		
-
-
- 
-
-    m_reader->seek(inputSamplePos);
-    m_finishedReader = false;
-    m_stretcher->reset();
-    reset();
-    m_position = position;
+	m_reader->seek(inputSamplePos);
+	m_finishedReader = false;
+	m_stretcher->reset();
+	reset();
+	m_position = position;
 }
 AUD_NAMESPACE_END
 

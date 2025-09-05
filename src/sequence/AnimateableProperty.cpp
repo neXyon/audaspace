@@ -237,8 +237,7 @@ float AnimateableProperty::readSingle(float position)
 	return value;
 }
 
-
-float AnimateableProperty::readFrame(int index) const
+float AnimateableProperty::readFrameSingle(int index) const
 {
 	assert(m_count == 1);
 
