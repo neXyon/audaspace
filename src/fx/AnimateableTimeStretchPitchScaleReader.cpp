@@ -14,7 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include <chrono>
 #include "fx/AnimateableTimeStretchPitchScaleReader.h"
 
 #include "IReader.h"
