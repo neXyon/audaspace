@@ -67,11 +67,6 @@ public:
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 
 	virtual void seek(int position) override;
-
-
-	int inputReaderGetPosition() const {
-    return m_reader->getPosition();
-	}
 };
 
 AUD_NAMESPACE_END
