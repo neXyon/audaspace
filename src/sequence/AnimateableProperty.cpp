@@ -242,4 +242,9 @@ bool AnimateableProperty::isAnimated() const
 	return m_isAnimated;
 }
 
+sample_t* AnimateableProperty::getBuffer() const
+{
+	return Buffer::getBuffer();
+}
+
 AUD_NAMESPACE_END

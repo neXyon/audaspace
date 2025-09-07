@@ -141,6 +141,11 @@ public:
 	 * \return Whether the property is animated.
 	 */
 	bool isAnimated() const;
+
+	/**
+	 * Returns the pointer to the buffer in memory.
+	 */
+	sample_t* getBuffer() const;
 };
 
 AUD_NAMESPACE_END

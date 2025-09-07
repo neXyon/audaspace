@@ -47,19 +47,14 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 {
 	double sampleRate = double(m_reader->getSpecs().rate);
 	double time = double(position) / sampleRate;
-	float frame = time * m_fps;
+	double frame = time * m_fps;
 
 	float timeRatio = m_timeStretch->readSingle(frame);
 	setTimeRatio(timeRatio);
 	float pitchScale = m_pitchScale->readSingle(frame);
 	setPitchScale(pitchScale);
 
-
-
 	const double samplesPerFrame = sampleRate / m_fps;
-	int frameIndex = 0;
-
-
 	const int totalFrames = static_cast<int>(position / samplesPerFrame);
 
 	double inputSamplePos = 0.0;
@@ -67,12 +62,10 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 	float ratio = 1.0f;
 	float lastRatio = 1.0f;
 
-	const Buffer& buf = static_cast<const Buffer&>(*m_timeStretch);
-
+	sample_t* buf = m_timeStretch->getBuffer();
 	for(int frameIndex = 0; frameIndex < totalFrames; frameIndex++)
 	{
 		ratio = buf[frameIndex];
-
 		if(ratio <= 0.0f)
 			ratio = lastRatio;
 		else
@@ -82,11 +75,20 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 		inputSamplePos += samplesPerFrame / ratio;
 	}
 
+	double remainderSamples = position - outputSamplePos;
+	double remainderFrame = remainderSamples / samplesPerFrame;
+	float remainderRatio = m_timeStretch->readSingle(totalFrames + remainderFrame);
+	if(remainderRatio <= 0.0f)
+		remainderRatio = lastRatio;
+
+	inputSamplePos += remainderSamples / remainderRatio;
+
 	m_reader->seek(static_cast<int>(inputSamplePos));
 	m_finishedReader = false;
 	m_stretcher->reset();
 	reset();
 	m_position = position;
 }
+
 AUD_NAMESPACE_END
 
