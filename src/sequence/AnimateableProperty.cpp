@@ -237,28 +237,6 @@ float AnimateableProperty::readSingle(float position)
 	return value;
 }
 
-float AnimateableProperty::readFrameSingle(int index) const
-{
-	assert(m_count == 1);
-
-	int last = getSize() / (sizeof(float) * m_count) - 1;
-
-	if(index >= last)
-	{
-		index = last;
-	}
-
-	if(index < 0)
-	{
-		index = 0;
-	}
-
-	sample_t* buf = getBuffer();
-
-	return buf[index];
-}
-
-
 bool AnimateableProperty::isAnimated() const
 {
 	return m_isAnimated;
