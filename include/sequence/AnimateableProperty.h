@@ -143,9 +143,9 @@ public:
 	bool isAnimated() const;
 
 	/**
-	 * Returns the pointer to the buffer in memory.
+	 * Returns this object cast as a Buffer.
 	 */
-	sample_t* getBuffer() const;
+	const Buffer* buffer();
 };
 
 AUD_NAMESPACE_END

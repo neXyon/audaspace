@@ -54,34 +54,45 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 	float pitchScale = m_pitchScale->readSingle(frame);
 	setPitchScale(pitchScale);
 
+	const int totalFrames = static_cast<int>(frame);
 	const double samplesPerFrame = sampleRate / m_fps;
-	const int totalFrames = static_cast<int>(position / samplesPerFrame);
 
-	double inputSamplePos = 0.0;
-	double outputSamplePos = 0.0;
 	float ratio = 1.0f;
 	float lastRatio = 1.0f;
 
-	sample_t* buf = m_timeStretch->getBuffer();
-	for(int frameIndex = 0; frameIndex < totalFrames; frameIndex++)
+	double inputSamplePos = 0.0;
+
+	const Buffer* buf = m_timeStretch->buffer();
+
+	int bufferFrames = buf->getSize() / (sizeof(float) * m_timeStretch->getCount());
+
+	for(int frameIndex = 0; frameIndex < std::min(bufferFrames, totalFrames); frameIndex++)
 	{
-		ratio = buf[frameIndex];
-		if(ratio <= 0.0f)
+		ratio = buf->getBuffer()[frameIndex];
+		if(ratio < 1.0 / 256.0)
 			ratio = lastRatio;
 		else
 			lastRatio = ratio;
-
-		outputSamplePos += samplesPerFrame;
 		inputSamplePos += samplesPerFrame / ratio;
 	}
 
-	double remainderSamples = position - outputSamplePos;
-	double remainderFrame = remainderSamples / samplesPerFrame;
-	float remainderRatio = m_timeStretch->readSingle(totalFrames + remainderFrame);
-	if(remainderRatio <= 0.0f)
-		remainderRatio = lastRatio;
+	if(frame > bufferFrames)
+	{
+		// The position is past the end of animation buffer and so use the last read ratio
+		// This already includes the fractional frame
+		inputSamplePos += (samplesPerFrame * (frame - bufferFrames)) / lastRatio;
+	}
+	else
+	{
+		// The position is before the end of the animation buffer and so read one last time for the remaining fractional frame
+		double remainderFrame = frame - totalFrames;
 
-	inputSamplePos += remainderSamples / remainderRatio;
+		float remainderRatio = m_timeStretch->readSingle(totalFrames);
+		if(remainderRatio < 1.0 / 256.0)
+			remainderRatio = lastRatio;
+
+		inputSamplePos += (samplesPerFrame * remainderFrame) / remainderRatio;
+	}
 
 	m_reader->seek(static_cast<int>(inputSamplePos));
 	m_finishedReader = false;
