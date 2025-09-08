@@ -242,4 +242,9 @@ bool AnimateableProperty::isAnimated() const
 	return m_isAnimated;
 }
 
+const Buffer* AnimateableProperty::buffer()
+{
+	return this;
+}
+
 AUD_NAMESPACE_END
