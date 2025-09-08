@@ -45,9 +45,9 @@ void AnimateableTimeStretchPitchScaleReader::read(int& length, bool& eos, sample
 
 void AnimateableTimeStretchPitchScaleReader::seek(int position)
 {
-	double sampleRate = double(m_reader->getSpecs().rate);
-	double time = double(position) / sampleRate;
-	double frame = time * m_fps;
+	const double sampleRate = double(m_reader->getSpecs().rate);
+	const double samplesPerFrame = sampleRate / m_fps;
+	const double frame = double(position) / samplesPerFrame;
 
 	float timeRatio = m_timeStretch->readSingle(frame);
 	setTimeRatio(timeRatio);
@@ -55,41 +55,33 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 	setPitchScale(pitchScale);
 
 	const int totalFrames = static_cast<int>(frame);
-	const double samplesPerFrame = sampleRate / m_fps;
 
 	float ratio = 1.0f;
-	float lastRatio = 1.0f;
 
 	double inputSamplePos = 0.0;
 
-	const Buffer* buf = m_timeStretch->buffer();
+	const sample_t* animationSamples = m_timeStretch->getBuffer().getBuffer();
 
-	int bufferFrames = buf->getSize() / (sizeof(float) * m_timeStretch->getCount());
+	const int bufferFrames = m_timeStretch->getBuffer().getSize() / (sizeof(sample_t) * m_timeStretch->getCount());
 
 	for(int frameIndex = 0; frameIndex < std::min(bufferFrames, totalFrames); frameIndex++)
 	{
-		ratio = buf->getBuffer()[frameIndex];
-		if(ratio < 1.0 / 256.0)
-			ratio = lastRatio;
-		else
-			lastRatio = ratio;
+		ratio = std::max(animationSamples[frameIndex], 1.0f / 256.0f);
 		inputSamplePos += samplesPerFrame / ratio;
 	}
 
-	if(frame > bufferFrames)
+	if(totalFrames > bufferFrames)
 	{
 		// The position is past the end of animation buffer and so use the last read ratio
 		// This already includes the fractional frame
-		inputSamplePos += (samplesPerFrame * (frame - bufferFrames)) / lastRatio;
+		inputSamplePos += (samplesPerFrame * (frame - bufferFrames)) / ratio;
 	}
 	else
 	{
 		// The position is before the end of the animation buffer and so read one last time for the remaining fractional frame
 		double remainderFrame = frame - totalFrames;
 
-		float remainderRatio = m_timeStretch->readSingle(totalFrames);
-		if(remainderRatio < 1.0 / 256.0)
-			remainderRatio = lastRatio;
+		float remainderRatio = std::max(m_timeStretch->readSingle(frame), 1.0f / 256.0f);
 
 		inputSamplePos += (samplesPerFrame * remainderFrame) / remainderRatio;
 	}
@@ -102,4 +94,3 @@ void AnimateableTimeStretchPitchScaleReader::seek(int position)
 }
 
 AUD_NAMESPACE_END
-

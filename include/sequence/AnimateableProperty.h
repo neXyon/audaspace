@@ -145,7 +145,7 @@ public:
 	/**
 	 * Returns this object cast as a Buffer.
 	 */
-	const Buffer* buffer();
+	const Buffer& getBuffer();
 };
 
 AUD_NAMESPACE_END
