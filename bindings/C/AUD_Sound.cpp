@@ -51,6 +51,8 @@
 #include "util/Buffer.h"
 #include "Exception.h"
 
+#include "fx/Echo.h"
+
 #ifdef WITH_CONVOLUTION
 #include "fx/BinauralSound.h"
 #include "fx/ConvolverSound.h"
@@ -776,6 +778,19 @@ AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Sou
 	try
 	{
 		return new AUD_Sound(new BinauralSound(*sound, *hrtfs, *source, *threadPool));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
+AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, double delaySec, double feedback, double mix)
+{
+	assert(sound);
+	try
+	{
+		return new AUD_Sound(new Echo(*sound, delaySec, feedback, mix));
 	}
 	catch(Exception&)
 	{
