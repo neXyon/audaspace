@@ -785,12 +785,12 @@ AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Sou
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, double delaySec, double feedback, double mix)
+AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float feedback, float mix, bool resetBuffer)
 {
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new Echo(*sound, delaySec, feedback, mix));
+		return new AUD_Sound(new Echo(*sound, delay, feedback, mix, resetBuffer));
 	}
 	catch(Exception&)
 	{

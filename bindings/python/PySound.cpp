@@ -1687,24 +1687,27 @@ Sound_list_addSound(Sound* self, PyObject* object)
 	}
 }
 
-PyDoc_STRVAR(M_aud_Sound_echo_doc, ".. method:: Echo(delay_sec, feedback, mix)\n\n"
+PyDoc_STRVAR(M_aud_Sound_echo_doc, ".. method:: Echo(delay, feedback, mix)\n\n"
                                                     "   Adds Echo effect to the sound.\n\n"
-                                                    "   :arg delay_sec: The delay time in seconds.\n"
-                                                    "   :type delay_sec: float\n"
+                                                    "   :arg delay: The delay time in seconds.\n"
+                                                    "   :type delay: float\n"
                                                     "   :arg feedback: The feedback amount (0.0 to 1.0).\n"
                                                     "   :type feedback: float\n"
                                                     "   :arg mix: The wet/dry mix (0.0 to 1.0).\n"
                                                     "   :type mix: float\n"
+                                                    "   :arg reset_buffer: Whether to reset the delay buffer on seek.\n"
+                                                    "   :type reset_buffer: bool\n"
                                                     "   :return: The created :class:`Sound` object.\n"
                                                     "   :rtype: :class:`Sound`");
 static PyObject* Sound_echo(Sound* self, PyObject* args, PyObject* kwds)
 {
-	double delay_sec = 0.5;
-	double feedback = 0.5;
-	double mix = 0.5;
-	static const char* kwlist[] = {"delay_sec", "feedback", "mix", nullptr};
+	float delay = 0.5;
+	float feedback = 0.5;
+	float mix = 0.5;
+	bool reset_buffer = true;
+	static const char* kwlist[] = {"delay", "feedback", "mix", "reset_buffer", nullptr};
 
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "ddd:echo", const_cast<char**>(kwlist), &delay_sec, &feedback, &mix))
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "fff|b:echo", const_cast<char**>(kwlist), &delay, &feedback, &mix, &reset_buffer))
 	{
 		return nullptr;
 	}
@@ -1717,7 +1720,7 @@ static PyObject* Sound_echo(Sound* self, PyObject* args, PyObject* kwds)
 		try
 		{
 			auto input = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
-			auto echo = std::make_shared<Echo>(input, delay_sec, feedback, mix);
+			auto echo = std::make_shared<Echo>(input, delay, feedback, mix, reset_buffer);
 			parent->sound = new std::shared_ptr<ISound>(echo);
 		}
 		catch(Exception& e)
@@ -1727,7 +1730,7 @@ static PyObject* Sound_echo(Sound* self, PyObject* args, PyObject* kwds)
 			return nullptr;
 		}
 	}
-	
+
 	return (PyObject*)parent;
 }
 

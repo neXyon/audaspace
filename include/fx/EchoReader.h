@@ -27,26 +27,29 @@
 #include "fx/EffectReader.h"
 #include "util/Buffer.h"
 
+
 AUD_NAMESPACE_BEGIN
 
 class AUD_API EchoReader : public EffectReader
 {
 private:
-    double m_delaySec;
-    double m_feedback;
-    double m_mix;
+    float m_delay;
+    float m_feedback;
+    float m_mix;
 
-    std::vector<std::unique_ptr<Buffer>> m_delayBuffer; // Per-channel circular buffer
-    std::vector<int> m_writePos;
+    Buffer m_inBuffer;
+
+    Buffer m_delayBuffer;
+    int m_writePos;
     int m_delaySamples;
+    int m_channels;
+    bool m_resetBuffer;
 
 public:
-    EchoReader(std::shared_ptr<IReader> reader, double delaySec, double feedback, double mix);
+    EchoReader(std::shared_ptr<IReader> reader, float delay, float feedback, float mix, bool resetBuffer);
 
     virtual void read(int& length, bool& eos, sample_t* buffer) override;
-    virtual void seek(int position) override;
-    virtual int getLength() const override;
-    virtual int getPosition() const override;
+	virtual void seek(int position);
 };
 
 AUD_NAMESPACE_END
