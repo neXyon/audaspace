@@ -92,6 +92,8 @@ set(SRC
 	src/fx/VolumeReader.cpp
 	src/fx/VolumeSound.cpp
 	src/fx/VolumeStorage.cpp
+	src/fx/Echo.cpp
+	src/fx/EchoReader.cpp
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -206,6 +208,8 @@ set(PUBLIC_HDR
 	include/fx/VolumeReader.h
 	include/fx/VolumeSound.h
 	include/fx/VolumeStorage.h
+	include/fx/Echo.h
+	include/fx/EchoReader.h
 	include/generator/Sawtooth.h
 	include/generator/SawtoothReader.h
 	include/generator/Silence.h
