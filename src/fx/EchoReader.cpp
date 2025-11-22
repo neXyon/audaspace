@@ -53,11 +53,11 @@ void EchoReader::read(int& length, bool& eos, sample_t* buffer)
 			sample_t inSample = m_inBuffer.getBuffer()[i * specs.channels + channel];
 			sample_t delayedSample = delayPosition < m_samplesAvailable * specs.channels ? delayBuffer[delayPosition] : 0;
 
-			sample_t outSample = inSample * (1.0f - m_mix) + delayedSample * m_mix;
-			buffer[i * specs.channels + channel] = outSample;
+			sample_t outSample = inSample + delayedSample * m_feedback;
+			buffer[i * specs.channels + channel] = inSample * (1.0f - m_mix) + outSample * m_mix;
 
 			// Update delay buffer with feedback
-			delayBuffer[delayPosition] = inSample + delayedSample * m_feedback;
+			delayBuffer[delayPosition] = outSample;
 		}
 	}
 
