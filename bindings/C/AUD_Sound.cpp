@@ -798,6 +798,18 @@ AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float feedback,
 	}
 }
 
+AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, float threshold, float ratio, float attack, float release, float makeupGain, float kneeWidth, float lookahead){
+	assert(sound);
+	try
+	{
+		return new AUD_Sound(new Compressor(*sound, threshold, ratio, attack, release, makeupGain, kneeWidth, lookahead));
+	}
+	catch(Exception&)
+	{
+		return nullptr;
+	}
+}
+
 AUD_API AUD_Sound* AUD_Sound_equalize(AUD_Sound* sound, float *definition, int size, float maxFreqEq, int sizeConversion)
 {
 	assert(sound);
