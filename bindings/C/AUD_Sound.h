@@ -405,6 +405,20 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      */
 extern AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float feedback, float mix, bool resetBuffer);
 
+/**
+ * Adds Compressor effect to the sound.
+ * \param sound The handle of the sound.
+ * \param threshold The threshold in dB.
+ * \param ratio The compression ratio.
+ * \param attack The attack time in seconds.
+ * \param release The release time in seconds.
+ * \param makeupGain The makeup gain in dB.
+ * \param kneeWidth The knee width in dB.
+ * \param lookahead The lookahead time in seconds.
+ * \return A handle of the compressed sound.
+ */
+extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, float threshold, float ratio, float attack, float release, float makeupGain, float kneeWidth, float lookahead);
+
 #ifdef WITH_CONVOLUTION
 	extern AUD_API AUD_Sound* AUD_Sound_Convolver(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool);
 	extern AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Source* source, AUD_ThreadPool* threadPool);
