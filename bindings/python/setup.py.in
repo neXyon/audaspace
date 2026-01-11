@@ -23,16 +23,50 @@ if len(sys.argv) > 2 and sys.argv[1] == '--build-docs':
     ret = subprocess.call(sys.argv[2:])
     sys.exit(ret)
 
-
 # the following line is not working due to https://bugs.python.org/issue9023
 #source_directory = os.path.relpath('@PYTHON_SOURCE_DIRECTORY@')
 source_directory = '@PYTHON_SOURCE_DIRECTORY@'
 
 extra_args = []
+extra_link_args = []
 
 if sys.platform == 'win32':
     extra_args.append('/EHsc')
     extra_args.append('/DAUD_BUILD_SHARED_LIBRARY')
+elif sys.platform == 'darwin':
+    extra_link_args.extend([
+        '-Wl,-rpath,@loader_path',
+        '-Wl,-rpath,@loader_path/.dylibs',
+    ])
+    extra_args.append('-std=c++17')
+    
+    archflags = os.environ.get('ARCHFLAGS', '')
+    if archflags:
+        arch_parts = archflags.split()
+        for part in arch_parts:
+            if part not in ['-arch']:
+                extra_args.append('-arch')
+                extra_args.append(part)
+                extra_link_args.append('-arch')
+                extra_link_args.append(part)
+    
+    cflags = os.environ.get('CFLAGS', '')
+    if cflags and '-arch' in cflags:
+        for flag in cflags.split():
+            if flag not in extra_args:
+                extra_args.append(flag)
+    
+    cxxflags = os.environ.get('CXXFLAGS', '')
+    if cxxflags and '-arch' in cxxflags:
+        for flag in cxxflags.split():
+            if flag not in extra_args:
+                extra_args.append(flag)
+    
+    ldflags = os.environ.get('LDFLAGS', '')
+    if ldflags and '-arch' in ldflags:
+        for flag in ldflags.split():
+            if flag not in extra_link_args:
+                extra_link_args.append(flag)
 else:
     extra_args.append('-std=c++17')
 
@@ -48,9 +82,10 @@ audaspace = Extension(
                       'aud',
                       include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include'), numpy.get_include()] + (['@FFTW_INCLUDE_DIR@'] if '@WITH_FFTW@' == 'ON' else []),
                       libraries = ['audaspace'],
-                      library_dirs = ['.', 'Release', 'Debug'],
+                      library_dirs = ['.', 'Release', 'Debug', '@CMAKE_CURRENT_BINARY_DIR@', '@CMAKE_CURRENT_BINARY_DIR@/..', '@CMAKE_CURRENT_BINARY_DIR@/../lib'],
                       language = 'c++',
                       extra_compile_args = extra_args,
+                      extra_link_args = extra_link_args,
                       define_macros = macros,
                       sources = [os.path.join(source_directory, file) for file in ['PyAnimateableProperty.cpp', 'PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp', 'PyPlaybackManager.cpp', 'PyDynamicMusic.cpp', 'PyThreadPool.cpp', 'PySource.cpp'] + (['PyImpulseResponse.cpp', 'PyHRTF.cpp'] if '@WITH_FFTW@' == 'ON' else [])]
 )
@@ -64,7 +99,5 @@ setup(
       url = 'https://github.com/audaspace/audaspace',
       license = 'Apache License 2.0',
       long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
-      ext_modules = [audaspace],
-      headers = [os.path.join(source_directory, file) for file in ['PyAnimateableProperty.h', 'PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PySource.h'] + (['PyImpulseResponse.h', 'PyHRTF.h'] if '@WITH_FFTW@' == 'ON' else [])] + ['Audaspace.h']
+      ext_modules = [audaspace]
 )
-
