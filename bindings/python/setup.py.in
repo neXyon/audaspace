@@ -97,7 +97,11 @@ setup(
       author = 'Jörg Müller',
       author_email = 'nexyon@gmail.com',
       url = 'https://github.com/audaspace/audaspace',
-      license = 'Apache License 2.0',
-      long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
+      license = 'Apache License 2.0',      
+      long_description=codecs.open(
+          os.path.join(source_directory, '../../README.md'),
+          'r', 'utf-8'
+      ).read(),
+      long_description_content_type='text/markdown',
       ext_modules = [audaspace]
 )
