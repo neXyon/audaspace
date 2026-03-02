@@ -18,6 +18,7 @@
 #include "devices/IDeviceFactory.h"
 #include "devices/IDevice.h"
 #include "devices/I3DDevice.h"
+#include "Exception.h"
 
 #include <limits>
 #include <string>
@@ -27,6 +28,8 @@ AUD_NAMESPACE_BEGIN
 
 std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> DeviceManager::m_factories;
 std::shared_ptr<IDevice> DeviceManager::m_device;
+CaptureDeviceNamesCallback DeviceManager::m_captureDeviceNamesCallback = nullptr;
+CaptureReaderCallback DeviceManager::m_captureReaderCallback = nullptr;
 
 void DeviceManager::registerDevice(const std::string &name, std::shared_ptr<IDeviceFactory> factory)
 {
@@ -117,6 +120,34 @@ std::vector<std::string> DeviceManager::getAvailableDeviceNames()
 		names.push_back(device.name);
 
 	return names;
+}
+
+std::vector<std::string> DeviceManager::getAvailableCaptureDeviceNames()
+{
+	if(m_captureDeviceNamesCallback == nullptr)
+		return {};
+
+	return m_captureDeviceNamesCallback();
+}
+
+void DeviceManager::registerCaptureDeviceNamesCallback(CaptureDeviceNamesCallback callback)
+{
+	m_captureDeviceNamesCallback = callback;
+}
+
+std::shared_ptr<IReader> DeviceManager::openCaptureDevice(const std::string& name,
+                                                          Specs specs,
+                                                          int buffersize)
+{
+	if(m_captureReaderCallback == nullptr)
+		AUD_THROW(DeviceException, "Capture is not available in this Audaspace build.");
+
+	return m_captureReaderCallback(name, specs, buffersize);
+}
+
+void DeviceManager::registerCaptureReaderCallback(CaptureReaderCallback callback)
+{
+	m_captureReaderCallback = callback;
 }
 
 AUD_NAMESPACE_END

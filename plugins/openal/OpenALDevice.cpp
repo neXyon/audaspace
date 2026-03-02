@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "OpenALDevice.h"
+#include "OpenALReader.h"
 
 #include <chrono>
 #include <cstring>
@@ -1652,6 +1653,18 @@ public:
 	}
 };
 
+static std::vector<std::string> openal_capture_device_names()
+{
+	return OpenALReader::getDeviceNames();
+}
+
+static std::shared_ptr<IReader> openal_capture_reader(const std::string& name,
+                                                      Specs specs,
+                                                      int buffersize)
+{
+	return std::shared_ptr<IReader>(new OpenALReader(specs, buffersize, name));
+}
+
 void OpenALDevice::registerPlugin()
 {
 	auto names = OpenALDevice::getDeviceNames();
@@ -1660,6 +1673,8 @@ void OpenALDevice::registerPlugin()
 	{
 		DeviceManager::registerDevice("OpenAL - " + name, std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory(name)));
 	}
+	DeviceManager::registerCaptureDeviceNamesCallback(openal_capture_device_names);
+	DeviceManager::registerCaptureReaderCallback(openal_capture_reader);
 }
 
 #ifdef OPENAL_PLUGIN

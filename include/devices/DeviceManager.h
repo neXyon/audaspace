@@ -23,6 +23,7 @@
  */
 
 #include "Audaspace.h"
+#include "respec/Specification.h"
 
 #include <memory>
 #include <vector>
@@ -34,6 +35,12 @@ AUD_NAMESPACE_BEGIN
 class IDevice;
 class IDeviceFactory;
 class I3DDevice;
+class IReader;
+
+typedef std::vector<std::string> (*CaptureDeviceNamesCallback)();
+typedef std::shared_ptr<IReader> (*CaptureReaderCallback)(const std::string& name,
+                                                          Specs specs,
+                                                          int buffersize);
 
 /**
  * This class manages all device plugins and maintains a device if asked to do so.
@@ -47,6 +54,8 @@ private:
 	static std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> m_factories;
 
 	static std::shared_ptr<IDevice> m_device;
+	static CaptureDeviceNamesCallback m_captureDeviceNamesCallback;
+	static CaptureReaderCallback m_captureReaderCallback;
 
 	// delete copy constructor and operator=
 	DeviceManager(const DeviceManager&) = delete;
@@ -125,6 +134,34 @@ public:
 	 * @return A list of strings with the names of available devices.
 	 */
 	static std::vector<std::string> getAvailableDeviceNames();
+
+	/**
+	 * Returns a list of available capture devices.
+	 * @return A list of strings with the names of available capture devices.
+	 */
+	static std::vector<std::string> getAvailableCaptureDeviceNames();
+
+	/**
+	 * Registers a callback for listing capture devices.
+	 * @param callback Callback for capture device name retrieval.
+	 */
+	static void registerCaptureDeviceNamesCallback(CaptureDeviceNamesCallback callback);
+
+	/**
+	 * Opens an input capture reader.
+	 * @param name The capture device name.
+	 * @param specs The desired specification.
+	 * @param buffersize The capture buffer size in samples.
+	 */
+	static std::shared_ptr<IReader> openCaptureDevice(const std::string& name,
+	                                                 Specs specs,
+	                                                 int buffersize = AUD_DEFAULT_BUFFER_SIZE);
+
+	/**
+	 * Registers a callback for opening capture readers.
+	 * @param callback Callback that creates a capture reader.
+	 */
+	static void registerCaptureReaderCallback(CaptureReaderCallback callback);
 };
 
 AUD_NAMESPACE_END
