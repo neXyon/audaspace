@@ -37,10 +37,11 @@ class IDeviceFactory;
 class I3DDevice;
 class IReader;
 
-typedef std::vector<std::string> (*CaptureDeviceNamesCallback)();
-typedef std::shared_ptr<IReader> (*CaptureReaderCallback)(const std::string& name,
-                                                          Specs specs,
-                                                          int buffersize);
+struct CaptureDeviceFactory
+{
+	std::vector<std::string> (*getDeviceNames)();
+	std::shared_ptr<IReader> (*openDevice)(const std::string& name, Specs specs, int buffersize);
+};
 
 /**
  * This class manages all device plugins and maintains a device if asked to do so.
@@ -54,8 +55,7 @@ private:
 	static std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> m_factories;
 
 	static std::shared_ptr<IDevice> m_device;
-	static CaptureDeviceNamesCallback m_captureDeviceNamesCallback;
-	static CaptureReaderCallback m_captureReaderCallback;
+	static std::unordered_map<std::string, CaptureDeviceFactory> m_capture_factories;
 
 	// delete copy constructor and operator=
 	DeviceManager(const DeviceManager&) = delete;
@@ -142,10 +142,11 @@ public:
 	static std::vector<std::string> getAvailableCaptureDeviceNames();
 
 	/**
-	 * Registers a callback for listing capture devices.
-	 * @param callback Callback for capture device name retrieval.
+	 * Registers a capture backend. Mirrors registerDevice() for output devices.
+	 * @param name Backend name, e.g. "OpenAL".
+	 * @param factory Struct with getDeviceNames and openDevice function pointers.
 	 */
-	static void registerCaptureDeviceNamesCallback(CaptureDeviceNamesCallback callback);
+	static void registerCaptureDevice(const std::string& name, CaptureDeviceFactory factory);
 
 	/**
 	 * Opens an input capture reader.
@@ -157,11 +158,6 @@ public:
 	                                                 Specs specs,
 	                                                 int buffersize = AUD_DEFAULT_BUFFER_SIZE);
 
-	/**
-	 * Registers a callback for opening capture readers.
-	 * @param callback Callback that creates a capture reader.
-	 */
-	static void registerCaptureReaderCallback(CaptureReaderCallback callback);
 };
 
 AUD_NAMESPACE_END

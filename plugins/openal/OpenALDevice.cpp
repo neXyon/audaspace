@@ -1653,18 +1653,6 @@ public:
 	}
 };
 
-static std::vector<std::string> openal_capture_device_names()
-{
-	return OpenALReader::getDeviceNames();
-}
-
-static std::shared_ptr<IReader> openal_capture_reader(const std::string& name,
-                                                      Specs specs,
-                                                      int buffersize)
-{
-	return std::shared_ptr<IReader>(new OpenALReader(specs, buffersize, name));
-}
-
 void OpenALDevice::registerPlugin()
 {
 	auto names = OpenALDevice::getDeviceNames();
@@ -1673,8 +1661,14 @@ void OpenALDevice::registerPlugin()
 	{
 		DeviceManager::registerDevice("OpenAL - " + name, std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory(name)));
 	}
-	DeviceManager::registerCaptureDeviceNamesCallback(openal_capture_device_names);
-	DeviceManager::registerCaptureReaderCallback(openal_capture_reader);
+	DeviceManager::registerCaptureDevice("OpenAL", {
+		[]() -> std::vector<std::string> {
+			return OpenALReader::getDeviceNames();
+		},
+		[](const std::string& name, Specs specs, int buffersize) {
+			return std::shared_ptr<IReader>(new OpenALReader(specs, buffersize, name));
+		}
+	});
 }
 
 #ifdef OPENAL_PLUGIN

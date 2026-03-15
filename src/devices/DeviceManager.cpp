@@ -28,8 +28,7 @@ AUD_NAMESPACE_BEGIN
 
 std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> DeviceManager::m_factories;
 std::shared_ptr<IDevice> DeviceManager::m_device;
-CaptureDeviceNamesCallback DeviceManager::m_captureDeviceNamesCallback = nullptr;
-CaptureReaderCallback DeviceManager::m_captureReaderCallback = nullptr;
+std::unordered_map<std::string, CaptureDeviceFactory> DeviceManager::m_capture_factories;
 
 void DeviceManager::registerDevice(const std::string &name, std::shared_ptr<IDeviceFactory> factory)
 {
@@ -124,30 +123,48 @@ std::vector<std::string> DeviceManager::getAvailableDeviceNames()
 
 std::vector<std::string> DeviceManager::getAvailableCaptureDeviceNames()
 {
-	if(m_captureDeviceNamesCallback == nullptr)
-		return {};
+	std::vector<std::string> names;
 
-	return m_captureDeviceNamesCallback();
+	for(auto& entry : m_capture_factories)
+	{
+		if(entry.second.getDeviceNames == nullptr)
+			continue;
+
+		for(const auto& device : entry.second.getDeviceNames())
+			names.push_back(entry.first + " - " + device);
+	}
+
+	return names;
 }
 
-void DeviceManager::registerCaptureDeviceNamesCallback(CaptureDeviceNamesCallback callback)
+void DeviceManager::registerCaptureDevice(const std::string& name, CaptureDeviceFactory factory)
 {
-	m_captureDeviceNamesCallback = callback;
+	m_capture_factories[name] = factory;
 }
 
 std::shared_ptr<IReader> DeviceManager::openCaptureDevice(const std::string& name,
                                                           Specs specs,
                                                           int buffersize)
 {
-	if(m_captureReaderCallback == nullptr)
+	if(m_capture_factories.empty())
 		AUD_THROW(DeviceException, "Capture is not available in this Audaspace build.");
 
-	return m_captureReaderCallback(name, specs, buffersize);
-}
+	const std::string separator = " - ";
+	const auto separator_pos = name.find(separator);
+	if(separator_pos == std::string::npos)
+		AUD_THROW(DeviceException, "The capture device couldn't be opened.");
 
-void DeviceManager::registerCaptureReaderCallback(CaptureReaderCallback callback)
-{
-	m_captureReaderCallback = callback;
+	const std::string backend = name.substr(0, separator_pos);
+	const std::string device = name.substr(separator_pos + separator.size());
+
+	auto it = m_capture_factories.find(backend);
+	if(it == m_capture_factories.end())
+		AUD_THROW(DeviceException, "The capture device couldn't be opened.");
+
+	if(it->second.openDevice == nullptr)
+		AUD_THROW(DeviceException, "The capture device couldn't be opened.");
+
+	return it->second.openDevice(device, specs, buffersize);
 }
 
 AUD_NAMESPACE_END
