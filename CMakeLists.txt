@@ -146,6 +146,7 @@ set(PUBLIC_HDR
 	include/devices/DeviceManager.h
 	include/devices/I3DDevice.h
 	include/devices/I3DHandle.h
+	include/devices/ICaptureDeviceFactory.h
 	include/devices/IDeviceFactory.h
 	include/devices/IDevice.h
 	include/devices/IHandle.h
