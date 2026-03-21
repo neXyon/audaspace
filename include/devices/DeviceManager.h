@@ -34,14 +34,9 @@ AUD_NAMESPACE_BEGIN
 
 class IDevice;
 class IDeviceFactory;
+class ICaptureDeviceFactory;
 class I3DDevice;
 class IReader;
-
-struct CaptureDeviceFactory
-{
-	std::vector<std::string> (*getDeviceNames)();
-	std::shared_ptr<IReader> (*openDevice)(const std::string& name, Specs specs, int buffersize);
-};
 
 /**
  * This class manages all device plugins and maintains a device if asked to do so.
@@ -55,7 +50,7 @@ private:
 	static std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> m_factories;
 
 	static std::shared_ptr<IDevice> m_device;
-	static std::unordered_map<std::string, CaptureDeviceFactory> m_capture_factories;
+	static std::unordered_map<std::string, std::shared_ptr<ICaptureDeviceFactory>> m_capture_factories;
 
 	// delete copy constructor and operator=
 	DeviceManager(const DeviceManager&) = delete;
@@ -142,11 +137,18 @@ public:
 	static std::vector<std::string> getAvailableCaptureDeviceNames();
 
 	/**
-	 * Registers a capture backend. Mirrors registerDevice() for output devices.
-	 * @param name Backend name, e.g. "OpenAL".
-	 * @param factory Struct with getDeviceNames and openDevice function pointers.
+	 * Returns the factory for a specific capture device.
+	 * @param name The representative name of the capture device.
+	 * @return The factory if it was found, or nullptr otherwise.
 	 */
-	static void registerCaptureDevice(const std::string& name, CaptureDeviceFactory factory);
+	static std::shared_ptr<ICaptureDeviceFactory> getCaptureDeviceFactory(const std::string& name);
+
+	/**
+	 * Registers a capture device factory.
+	 * @param name A representative name for the capture device.
+	 * @param factory The factory that creates the capture reader.
+	 */
+	static void registerCaptureDevice(const std::string& name, std::shared_ptr<ICaptureDeviceFactory> factory);
 
 	/**
 	 * Opens an input capture reader.

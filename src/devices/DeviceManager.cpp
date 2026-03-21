@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include "devices/DeviceManager.h"
+#include "devices/ICaptureDeviceFactory.h"
 #include "devices/IDeviceFactory.h"
 #include "devices/IDevice.h"
 #include "devices/I3DDevice.h"
@@ -28,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 
 std::unordered_map<std::string, std::shared_ptr<IDeviceFactory>> DeviceManager::m_factories;
 std::shared_ptr<IDevice> DeviceManager::m_device;
-std::unordered_map<std::string, CaptureDeviceFactory> DeviceManager::m_capture_factories;
+std::unordered_map<std::string, std::shared_ptr<ICaptureDeviceFactory>> DeviceManager::m_capture_factories;
 
 void DeviceManager::registerDevice(const std::string &name, std::shared_ptr<IDeviceFactory> factory)
 {
@@ -124,20 +125,25 @@ std::vector<std::string> DeviceManager::getAvailableDeviceNames()
 std::vector<std::string> DeviceManager::getAvailableCaptureDeviceNames()
 {
 	std::vector<std::string> names;
+	names.reserve(m_capture_factories.size());
 
 	for(auto& entry : m_capture_factories)
-	{
-		if(entry.second.getDeviceNames == nullptr)
-			continue;
-
-		for(const auto& device : entry.second.getDeviceNames())
-			names.push_back(entry.first + " - " + device);
-	}
+		names.push_back(entry.first);
 
 	return names;
 }
 
-void DeviceManager::registerCaptureDevice(const std::string& name, CaptureDeviceFactory factory)
+std::shared_ptr<ICaptureDeviceFactory> DeviceManager::getCaptureDeviceFactory(const std::string& name)
+{
+	auto it = m_capture_factories.find(name);
+
+	if(it == m_capture_factories.end())
+		return nullptr;
+
+	return it->second;
+}
+
+void DeviceManager::registerCaptureDevice(const std::string& name, std::shared_ptr<ICaptureDeviceFactory> factory)
 {
 	m_capture_factories[name] = factory;
 }
@@ -146,25 +152,7 @@ std::shared_ptr<IReader> DeviceManager::openCaptureDevice(const std::string& nam
                                                           Specs specs,
                                                           int buffersize)
 {
-	if(m_capture_factories.empty())
-		AUD_THROW(DeviceException, "Capture is not available in this Audaspace build.");
-
-	const std::string separator = " - ";
-	const auto separator_pos = name.find(separator);
-	if(separator_pos == std::string::npos)
-		AUD_THROW(DeviceException, "The capture device couldn't be opened.");
-
-	const std::string backend = name.substr(0, separator_pos);
-	const std::string device = name.substr(separator_pos + separator.size());
-
-	auto it = m_capture_factories.find(backend);
-	if(it == m_capture_factories.end())
-		AUD_THROW(DeviceException, "The capture device couldn't be opened.");
-
-	if(it->second.openDevice == nullptr)
-		AUD_THROW(DeviceException, "The capture device couldn't be opened.");
-
-	return it->second.openDevice(device, specs, buffersize);
+	return getCaptureDeviceFactory(name)->openDevice(specs, buffersize);
 }
 
 AUD_NAMESPACE_END

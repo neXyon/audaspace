@@ -25,6 +25,7 @@
 #include "ISound.h"
 
 #include "devices/DeviceManager.h"
+#include "devices/ICaptureDeviceFactory.h"
 #include "devices/IDeviceFactory.h"
 #include "generator/SilenceReader.h"
 #include "respec/ConverterReader.h"
@@ -1653,22 +1654,42 @@ public:
 	}
 };
 
+class OpenALCaptureDeviceFactory : public ICaptureDeviceFactory
+{
+private:
+	std::string m_name;
+
+public:
+	OpenALCaptureDeviceFactory(const std::string& name = "") :
+		m_name(name)
+	{
+	}
+
+	virtual std::shared_ptr<IReader> openDevice(Specs specs, int buffersize)
+	{
+		return std::shared_ptr<IReader>(new OpenALReader(specs, buffersize, m_name));
+	}
+
+	virtual void setName(const std::string& name)
+	{
+		m_name = name;
+	}
+};
+
 void OpenALDevice::registerPlugin()
 {
 	auto names = OpenALDevice::getDeviceNames();
+	auto capture_names = OpenALReader::getDeviceNames();
 	DeviceManager::registerDevice("OpenAL", std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory));
+	DeviceManager::registerCaptureDevice("OpenAL", std::shared_ptr<ICaptureDeviceFactory>(new OpenALCaptureDeviceFactory));
 	for(const std::string &name : names)
 	{
 		DeviceManager::registerDevice("OpenAL - " + name, std::shared_ptr<IDeviceFactory>(new OpenALDeviceFactory(name)));
 	}
-	DeviceManager::registerCaptureDevice("OpenAL", {
-		[]() -> std::vector<std::string> {
-			return OpenALReader::getDeviceNames();
-		},
-		[](const std::string& name, Specs specs, int buffersize) {
-			return std::shared_ptr<IReader>(new OpenALReader(specs, buffersize, name));
-		}
-	});
+	for(const std::string& name : capture_names)
+	{
+		DeviceManager::registerCaptureDevice("OpenAL - " + name, std::shared_ptr<ICaptureDeviceFactory>(new OpenALCaptureDeviceFactory(name)));
+	}
 }
 
 #ifdef OPENAL_PLUGIN
