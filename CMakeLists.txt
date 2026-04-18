@@ -14,7 +14,7 @@
 # limitations under the License.
 ################################################################################
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 include(CMakeDependentOption)
 
 if(POLICY CMP0054)
@@ -766,17 +766,14 @@ endif()
 # Python
 if(WITH_PYTHON)
 	if(AUDASPACE_STANDALONE)
-		find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
-		find_package(NumPy ${PACKAGE_OPTION})
+		find_package(Python COMPONENTS Interpreter Development NumPy ${PACKAGE_OPTION})
 	endif()
 
-	if(PYTHONLIBS_FOUND AND NUMPY_FOUND)
-		list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIRS})
+	if(Python_FOUND)
+		list(APPEND INCLUDE ${Python_INCLUDE_DIRS} ${Python_NumPy_INCLUDE_DIRS})
 
 		if(WITH_PYTHON_MODULE)
-			find_package(PythonInterp 3.2 ${PACKAGE_OPTION})
-
-			if(NOT PYTHONINTERP_FOUND)
+			if(NOT Python_EXECUTABLE)
 				set(WITH_PYTHON_MODULE FALSE)
 				message(WARNING "Python interpreter not found, module will not be built.")
 			endif()
@@ -1223,8 +1220,8 @@ if(WITH_PYTHON)
 	# When Blender is built as a Python module, `PYTHON_LIBRARIES` won't be defined.
 	# NOTE: AUDASPACE has its own `WITH_PYTHON_MODULE` option with different meaning,
 	# so we check the variable is defined instead.
-	if(DEFINED PYTHON_LIBRARIES)
-		target_link_libraries(audaspace-py audaspace ${PYTHON_LIBRARIES})
+	if(DEFINED Python_LIBRARIES)
+		target_link_libraries(audaspace-py audaspace ${Python_LIBRARIES})
 	else()
 		target_link_libraries(audaspace-py audaspace)
 	endif()
@@ -1245,17 +1242,17 @@ if(WITH_PYTHON)
 		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
 		if(APPLE)
-			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
+			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${Python_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
 		elseif(WIN32)
 			set(ENV{VS100COMNTOOLS} $ENV{VS120COMNTOOLS})
-			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
+			add_custom_command(OUTPUT build COMMAND ${Python_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
 		else()
-			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
+			add_custom_command(OUTPUT build COMMAND ${Python_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
 		endif()
 		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${PYTHON_SRC} ${PYTHON_HDR})
 		add_dependencies(pythonmodule audaspace)
 
-		install(CODE "EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
+		install(CODE "EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
 	endif()
 endif()
 
@@ -1284,7 +1281,7 @@ if(WITH_BINDING_DOCS)
 	if(SPHINX_FOUND)
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 
-		add_custom_target(bindings_doc ALL COMMAND ${PYTHON_EXECUTABLE} setup.py --build-docs ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" DEPENDS pythonmodule COMMENT "Building C/Python HTML documentation with Sphinx.")
+		add_custom_target(bindings_doc ALL COMMAND ${Python_EXECUTABLE} setup.py --build-docs ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" DEPENDS pythonmodule COMMENT "Building C/Python HTML documentation with Sphinx.")
 	else()
 		if(AUDASPACE_STANDALONE)
 			set(WITH_BINDING_DOCS FALSE CACHE BOOL "Build C/Python HTML Documentation with Sphinx" FORCE)
