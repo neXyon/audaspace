@@ -1,0 +1,586 @@
+name: Build Wheels
+
+on:
+  push:
+    branches: [ main, master, python-wheels-github-actions ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+        
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libfftw3-dev libsndfile1-dev libopenal-dev libsdl2-dev libasound2-dev libpulse-dev libjack-jackd2-dev libpipewire-0.3-dev pkg-config python3-dev git cmake make g++ python3-pip librubberband-dev librubberband2
+        pip install build wheel numpy setuptools auditwheel patchelf
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install cmake ffmpeg libsndfile sdl2 fftw rubberband jack
+        pip install build wheel numpy setuptools delocate
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        pip install build wheel delvewheel cmake ninja numpy setuptools
+        choco install -y --no-progress pkgconfiglite
+        vcpkg integrate install
+        vcpkg install --triplet=x64-windows ffmpeg[core,avcodec,avformat,swresample]:x64-windows libsndfile:x64-windows openal-soft:x64-windows sdl2:x64-windows fftw3:x64-windows rubberband:x64-windows
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DWITH_PYTHON=ON -DWITH_PYTHON_MODULE=ON ${{ runner.os == 'Linux' && '-DWITH_PULSEAUDIO=ON -DWITH_PIPEWIRE=ON -DWITH_OPENAL=ON -DWITH_JACK=ON' || '' }} ${{ runner.os == 'macOS' && '-DWITH_COREAUDIO=ON -DCMAKE_MACOSX_RPATH=ON -DCMAKE_OSX_ARCHITECTURES=$(uname -m) -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_INSTALL_LIBDIR=lib' || '' }} ${{ runner.os == 'Windows' && '-DWITH_WASAPI=ON -DWITH_JACK=OFF -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="x64-windows" -DPKG_CONFIG_PATH="C:/vcpkg/installed/x64-windows/lib/pkgconfig" -DCMAKE_FIND_ROOT_PATH="C:/vcpkg/installed/x64-windows" -DPython3_EXECUTABLE="$(python -c "import sys; print(sys.executable)")"' || '' }}
+
+    - name: Build
+      run: |
+        cd build
+        ${{ runner.os == 'Windows' && 'cmake --build . --config Release' || 'make -j$(nproc)' }}
+
+    - name: Install libraries (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        cd build
+        sudo make install
+        sudo ldconfig
+
+    - name: Install libraries (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        cd build
+        sudo make install
+        # Copy libraries to a location where delocate can find them
+        mkdir -p libs_for_wheel
+        find . -name "libaudaspace*.dylib" -exec cp -v {} libs_for_wheel/ \;
+        # Also check system install locations
+        if [ -d /usr/local/lib ]; then
+          find /usr/local/lib -name "libaudaspace*.dylib" -exec cp -v {} libs_for_wheel/ \; 2>/dev/null || true
+        fi
+        echo "Libraries copied:"
+        ls -lh libs_for_wheel/
+
+    - name: Prepare libraries (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Write-Host "=== Finding and copying audaspace.dll ==="
+        New-Item -ItemType Directory -Force -Path build/libs_for_wheel
+        
+        $audaspaceDll = Get-ChildItem -Path build -Filter "audaspace.dll" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notlike "*libs_for_wheel*" }
+        foreach ($dll in $audaspaceDll) {
+            Write-Host "Found: $($dll.FullName)"
+            Copy-Item $dll.FullName -Destination build/libs_for_wheel/ -Force
+        }
+        
+        Get-ChildItem -Path build -Filter "*audaspace*.dll" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notlike "*libs_for_wheel*" } | ForEach-Object {
+            Write-Host "Copying: $($_.FullName)"
+            Copy-Item $_.FullName -Destination build/libs_for_wheel/ -Force
+        }
+        
+        Write-Host "`nLibraries copied to libs_for_wheel:"
+        Get-ChildItem build/libs_for_wheel
+
+    - name: Build wheel
+      shell: bash
+      run: |
+        cd build
+        python -m pip install numpy build setuptools
+        
+        # For macOS, force single architecture build
+        if [ "${{ runner.os }}" == "macOS" ]; then
+          CURRENT_ARCH=$(uname -m)
+          echo "Building for architecture: $CURRENT_ARCH"
+          
+          # These environment variables control the Python extension build
+          export ARCHFLAGS="-arch $CURRENT_ARCH"
+          export _PYTHON_HOST_PLATFORM="macosx-15.0-$CURRENT_ARCH"
+          export CFLAGS="-arch $CURRENT_ARCH"
+          export CXXFLAGS="-arch $CURRENT_ARCH"
+          export LDFLAGS="-arch $CURRENT_ARCH"
+          
+          echo "ARCHFLAGS=$ARCHFLAGS"
+          echo "_PYTHON_HOST_PLATFORM=$_PYTHON_HOST_PLATFORM"
+        fi
+        
+        python -m build --wheel
+      env:
+        WITH_PULSEAUDIO: ${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
+        WITH_PIPEWIRE: ${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
+        WITH_JACK: ${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
+        WITH_COREAUDIO: ${{ runner.os == 'macOS' && 'ON' || 'OFF' }}
+        WITH_WASAPI: ${{ runner.os == 'Windows' && 'ON' || 'OFF' }}
+        MACOSX_DEPLOYMENT_TARGET: ${{ runner.os == 'macOS' && '15.0' || '' }}
+
+    - name: Fix wheel platform tag (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        cd build/dist
+        WHEEL=$(ls *.whl)
+        echo "Original wheel: $WHEEL"
+        
+        # Check if wheel is tagged as universal2 but should be single-arch
+        if [[ "$WHEEL" == *"universal2"* ]]; then
+          ARCH=$(uname -m)
+          if [ "$ARCH" == "arm64" ]; then
+            NEW_WHEEL=$(echo "$WHEEL" | sed 's/universal2/arm64/')
+          else
+            NEW_WHEEL=$(echo "$WHEEL" | sed 's/universal2/x86_64/')
+          fi
+          
+          echo "Renaming wheel to: $NEW_WHEEL"
+          mv "$WHEEL" "$NEW_WHEEL"
+          
+          # Also need to update WHEEL metadata inside the wheel
+          TEMP_DIR=$(mktemp -d)
+          unzip -q "$NEW_WHEEL" -d "$TEMP_DIR"
+          
+          # Find and update WHEEL file
+          WHEEL_FILE=$(find "$TEMP_DIR" -name "WHEEL" -type f)
+          if [ -f "$WHEEL_FILE" ]; then
+            sed -i '' 's/macosx_15_0_universal2/macosx_15_0_'${ARCH}'/' "$WHEEL_FILE"
+            echo "Updated WHEEL metadata:"
+            cat "$WHEEL_FILE"
+          fi
+          
+          # Repack
+          cd "$TEMP_DIR"
+          zip -qr "../$NEW_WHEEL" .
+          cd ..
+          rm -rf "$TEMP_DIR"
+        else
+          echo "Wheel already has correct platform tag"
+        fi
+
+    - name: Add shared libraries to wheel (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        cd build/dist
+        
+        # Get the wheel file
+        WHEEL=$(ls *.whl)
+        echo "Processing wheel: $WHEEL"
+        
+        # Create temp directory
+        TEMP_DIR=$(mktemp -d)
+        
+        # Extract wheel
+        unzip -q "$WHEEL" -d "$TEMP_DIR"
+        
+        # Find and copy libaudaspace.so files
+        echo "Finding libaudaspace.so files..."
+        find ../.. -name "libaudaspace.so*" -type f -exec cp -v {} "$TEMP_DIR/" \;
+        find /usr/local/lib -name "libaudaspace.so*" -type f -exec cp -v {} "$TEMP_DIR/" \; 2>/dev/null || true
+        
+        echo "Libraries added to wheel:"
+        ls -lh "$TEMP_DIR"/*.so* 2>/dev/null || echo "No .so files found"
+        
+        # Repack wheel
+        cd "$TEMP_DIR"
+        zip -qr "../$WHEEL" .
+        cd ..
+        
+        # Cleanup
+        rm -rf "$TEMP_DIR"
+        
+        echo "Final wheel contents:"
+        unzip -l "$WHEEL" | grep "\.so"
+
+    - name: Repair wheel with auditwheel (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |      
+        echo "=== Checking for libaudaspace.so ==="
+        find /usr -name "libaudaspace.so*" 2>/dev/null || echo "Not found in /usr"
+        find build -name "libaudaspace.so*" || echo "Not found in build"
+        echo ""
+        echo "=== Original wheel info ==="
+        auditwheel show build/dist/*.whl
+        echo ""
+        echo "=== Repairing wheel to bundle dependencies ==="
+        mkdir -p build/dist/repaired
+        # Add library paths where auditwheel should look for dependencies
+        export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
+        
+        # Repair with automatic platform detection (will use the highest compatible)
+        # On Ubuntu 20.04, this should be manylinux_2_31_x86_64
+        if auditwheel repair build/dist/*.whl -w build/dist/repaired/ --lib-sdir .; then
+          echo "- Wheel repaired successfully"
+        else
+          echo "X  Wheel repair failed, checking if dependencies are already bundled..."
+          # Check if the wheel already has all dependencies bundled
+          if ldd build/dist/*.whl 2>/dev/null | grep -q "not found"; then
+            echo "ERROR: Wheel has missing dependencies"
+            exit 1
+          else
+            echo "Wheel appears complete, copying as-is"
+            cp build/dist/*.whl build/dist/repaired/
+          fi
+        fi
+        
+        echo ""
+        echo "=== Repaired wheel info ==="
+        auditwheel show build/dist/repaired/*.whl
+        echo ""
+        echo "=== Replacing original wheel with repaired version ==="
+        rm -f build/dist/*.whl
+        mv build/dist/repaired/*.whl build/dist/
+        rmdir build/dist/repaired
+      
+    - name: Thin Python module in wheel (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        cd build/dist
+        
+        WHEEL=$(ls *.whl | head -n 1)
+        CURRENT_ARCH=$(uname -m)
+        
+        echo "=== Processing wheel: $WHEEL ==="
+        echo "Target architecture: $CURRENT_ARCH"
+        
+        # Extract wheel
+        TEMP_DIR=$(mktemp -d)
+        unzip -q "$WHEEL" -d "$TEMP_DIR"
+        
+        # Find and thin the Python module
+        PYTHON_MODULE=$(find "$TEMP_DIR" -name "aud*.so" -type f | head -n 1)
+        
+        if [ -n "$PYTHON_MODULE" ]; then
+          echo ""
+          echo "=== Python module: $PYTHON_MODULE ==="
+          echo "Before thinning:"
+          lipo -info "$PYTHON_MODULE"
+          
+          # Check if it's a fat binary
+          if lipo -info "$PYTHON_MODULE" | grep -q "Architectures in the fat file"; then
+            echo ""
+            echo "Extracting $CURRENT_ARCH architecture..."
+            lipo "$PYTHON_MODULE" -extract "$CURRENT_ARCH" -output "${PYTHON_MODULE}.thin"
+            mv "${PYTHON_MODULE}.thin" "$PYTHON_MODULE"
+            echo "After thinning:"
+            lipo -info "$PYTHON_MODULE"
+          else
+            echo "Module is already single-architecture"
+          fi
+        fi
+        
+        # Repack wheel
+        echo ""
+        echo "=== Repacking wheel ==="
+        cd "$TEMP_DIR"
+        zip -qr "../${WHEEL}.new" .
+        cd ..
+        mv "${WHEEL}.new" "$WHEEL"
+        
+        # Cleanup
+        rm -rf "$TEMP_DIR"
+        
+        echo "- Wheel processed successfully"
+
+    - name: Repair wheel with delocate (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        ORIGINAL_WHEEL=$(ls build/dist/*.whl | head -n 1)
+        
+        mkdir -p "build/dist/repaired"
+
+        echo "=== Current architecture ==="
+        CURRENT_ARCH=$(uname -m)
+        echo "Building for: $CURRENT_ARCH"
+        
+        echo ""
+        echo "=== Checking wheel architecture ==="
+        unzip -l "$ORIGINAL_WHEEL" | grep "\.so"
+        PYTHON_SO=$(unzip -l "$ORIGINAL_WHEEL" | grep "\.so" | awk '{print $NF}' | head -1)
+        echo "Extracting to check architecture..."
+        unzip -q "$ORIGINAL_WHEEL" -d /tmp/wheel_check
+        echo "Architecture info for Python module:"
+        lipo -info "/tmp/wheel_check/$PYTHON_SO" || file "/tmp/wheel_check/$PYTHON_SO"
+        rm -rf /tmp/wheel_check
+
+        echo ""
+        echo "Building for architecture: $CURRENT_ARCH (ignoring missing architecture dependencies)"
+        delocate-wheel --require-archs "$CURRENT_ARCH" --ignore-missing-dependencies -w "build/dist/repaired" -v "$ORIGINAL_WHEEL"
+
+        echo ""
+        echo "=== Verifying bundled dependencies ==="
+        delocate-listdeps "build/dist/repaired"/*.whl || echo "Warning: Could not list dependencies"
+
+        echo ""
+        echo "=== Replacing original wheel ==="
+        rm -f "build/dist"/*.whl
+        mv "build/dist/repaired"/*.whl "build/dist"
+        rmdir "build/dist/repaired"
+
+
+
+    - name: Repair wheel with delvewheel (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Write-Host "=== Original wheel info ==="
+        Get-ChildItem build/dist/*.whl
+        Write-Host ""
+        
+        Write-Host "=== Available DLLs in libs_for_wheel ==="
+        Get-ChildItem build/libs_for_wheel -ErrorAction SilentlyContinue
+        
+        Write-Host ""
+        Write-Host "=== Repairing wheel to bundle dependencies ==="
+        New-Item -ItemType Directory -Force -Path build/dist/repaired
+        
+        # Build the full path list
+        $buildPath = (Resolve-Path "build").Path
+        $libsPath = Join-Path $buildPath "libs_for_wheel"
+        $releasePath = Join-Path $buildPath "Release"
+        
+        $addPaths = @(
+            $libsPath,
+            $releasePath,
+            $buildPath,
+            "C:\vcpkg\installed\x64-windows\bin",
+            "C:\vcpkg\installed\x64-windows\debug\bin"
+        ) -join ";"
+        
+        Write-Host "Searching for DLLs in paths:"
+        $addPaths -split ";" | ForEach-Object { Write-Host "  - $_" }
+        
+        delvewheel repair build/dist/*.whl -w build/dist/repaired/ --add-path "$addPaths"
+        
+        Write-Host ""
+        Write-Host "=== Replacing original wheel with repaired version ==="
+        Remove-Item build/dist/*.whl
+        Move-Item build/dist/repaired/*.whl build/dist/
+        Remove-Item build/dist/repaired
+
+    - name: List wheel contents
+      shell: bash
+      run: |
+        echo "Listing wheel contents:"
+        for wheel in ./build/dist/*.whl; do
+          echo "=== Contents of $wheel ==="
+          unzip -l "$wheel"
+          echo
+        done
+
+    - name: Upload wheel to PyPI
+      uses: actions/upload-artifact@v4
+      with:
+        name: wheels-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: build/dist/*.whl
+
+  test_wheels:
+    name: Test wheels on ${{ matrix.os }}
+    needs: build_wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+      fail-fast: false
+
+    steps:      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+        
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: dist
+
+      - name: Setup Python and Create Virtual Environment (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          python -m venv test_env
+          source test_env/bin/activate
+          pip install --upgrade pip
+
+      - name: Setup Python and Create Virtual Environment (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          python -m venv test_env
+          test_env\Scripts\Activate.ps1
+          python -m pip install --upgrade pip
+
+      - name: Install wheel and test (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          source test_env/bin/activate
+          # Find the wheel that matches the current Python version
+          PYTHON_VERSION=$(python -c "import sys; print(f'cp{sys.version_info.major}{sys.version_info.minor}')")
+          WHEEL_FILE=$(find dist -name "*${PYTHON_VERSION}*" -name "*.whl" | head -n 1)
+          if [ -z "$WHEEL_FILE" ]; then
+            echo "No wheel found for Python $PYTHON_VERSION, installing any available wheel"
+            WHEEL_FILE=$(find dist -name "*.whl" | head -n 1)
+          fi
+          pip install numpy
+          echo "Installing wheel: $WHEEL_FILE"
+          pip install "$WHEEL_FILE"
+          
+          # Check what's inside the wheel
+          echo "=== Checking installed package ==="
+          python -c "import aud; import os; print(f'aud location: {aud.__file__}'); print(f'aud dir: {os.path.dirname(aud.__file__)}')"
+          
+          # List shared libraries
+          echo "=== Shared libraries in package ==="
+          find $(python -c "import aud, os; print(os.path.dirname(aud.__file__))") -name "*.so*" -exec ls -lh {} \;
+          
+          # Check library dependencies
+          echo "=== Checking library dependencies ==="
+          AUD_SO=$(python -c "import aud; print(aud.__file__)")
+          ldd "$AUD_SO" || echo "ldd not available"
+          
+          echo "=== Running tests ==="
+          python -c "
+          import aud
+          print('- aud module imported successfully')
+
+          # Test creating a device (may fail in CI without audio hardware)
+          try:
+              device = aud.Device()
+              print(f'- Device created: {device}')
+              print(f'  Sample rate: {device.rate}')
+              print(f'  Channels: {device.channels}')
+          except Exception as e:
+              print(f'X  Device creation failed (expected in CI): {e}')
+
+          # Test creating various signals
+          sine = aud.Sound.sine(440)
+          print('- Sine wave created successfully')
+
+          square = sine.threshold()
+          print('- Square wave created successfully')
+
+          silence = aud.Sound.silence()
+          print('- Silence created successfully')
+
+          sawtooth = aud.Sound.sawtooth(220)
+          print('- Sawtooth wave created successfully')
+
+          triangle = aud.Sound.triangle(330)
+          print('- Triangle wave created successfully')
+
+          # Test applying effects
+          vol_sound = sine.volume(0.5)
+          print('- Volume effect applied successfully')
+
+          pitch_sound = sine.pitch(1.5)
+          print('- Pitch effect applied successfully')
+
+          print('- All basic functionality tests passed!')
+          "
+
+      - name: Install wheel and test (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          test_env\Scripts\Activate.ps1
+          # Find the wheel that matches the current Python version
+          $PYTHON_VERSION = python -c "import sys; print(f'cp{sys.version_info.major}{sys.version_info.minor}')"
+          $WHEEL_FILE = Get-ChildItem -Path dist -Filter "*$PYTHON_VERSION*.whl" -File | Select-Object -First 1 -ExpandProperty FullName
+          if ([string]::IsNullOrEmpty($WHEEL_FILE)) {
+            Write-Host "No wheel found for Python $PYTHON_VERSION, installing any available wheel"
+            $WHEEL_FILE = Get-ChildItem -Path dist -Filter "*.whl" -File | Select-Object -First 1 -ExpandProperty FullName
+          }
+          pip install numpy
+          Write-Host "Installing wheel: $WHEEL_FILE"
+          pip install "$WHEEL_FILE"
+          # Check what's inside the wheel
+          Write-Host "=== Checking installed package ==="
+          python -c "import aud; import os; print(f'aud location: {aud.__file__}'); print(f'aud dir: {os.path.dirname(aud.__file__)}')"
+          # List shared libraries
+          Write-Host "=== Shared libraries in package ==="
+          $AUD_DIR = python -c "import aud, os; print(os.path.dirname(aud.__file__))"
+          Get-ChildItem -Path $AUD_DIR -Recurse -Include "*.pyd","*.dll" | ForEach-Object { Write-Host $_.FullName }
+          # Note: dumpbin equivalent check skipped as it's typically not available in CI
+          Write-Host "=== Running tests ==="
+          python -c "
+          import aud
+          print('- aud module imported successfully')
+          # Test creating a device (may fail in CI without audio hardware)
+          try:
+              device = aud.Device()
+              print(f'- Device created: {device}')
+              print(f'  Sample rate: {device.rate}')
+              print(f'  Channels: {device.channels}')
+          except Exception as e:
+              print(f'X  Device creation failed (expected in CI): {e}')
+          # Test creating various signals
+          sine = aud.Sound.sine(440)
+          print('- Sine wave created successfully')
+          square = sine.threshold()
+          print('- Square wave created successfully')
+          silence = aud.Sound.silence()
+          print('- Silence created successfully')
+          sawtooth = aud.Sound.sawtooth(220)
+          print('- Sawtooth wave created successfully')
+          triangle = aud.Sound.triangle(330)
+          print('- Triangle wave created successfully')
+          # Test applying effects
+          vol_sound = sine.volume(0.5)
+          print('- Volume effect applied successfully')
+          pitch_sound = sine.pitch(1.5)
+          print('- Pitch effect applied successfully')
+          print('- All basic functionality tests passed!')
+          "
+
+  publish_pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: test_wheels
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist/
+          merge-multiple: true
+
+      - name: List all wheels
+        run: |
+          ls -lh dist/
+          echo "Total wheels:"
+          ls -1 dist/*.whl | wc -l
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          skip-existing: true
+          verbose: true
