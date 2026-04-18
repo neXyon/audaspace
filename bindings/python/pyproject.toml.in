@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel", "numpy"]
+build-backend = "setuptools.build_meta"
+
+# [project]
+# name = "audaspace"
+# version = "@AUDASPACE_LONG_VERSION@"
+# description = "Audaspace is a high level audio library."
+# authors = [
+#     {name = "Jörg Müller", email = "nexyon@gmail.com"},
+# ]
+# dependencies = [
+#     "numpy",
+# ]
+#license = {text = "Apache License 2.0"}
+
