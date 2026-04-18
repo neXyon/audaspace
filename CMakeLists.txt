@@ -1239,20 +1239,18 @@ if(WITH_PYTHON)
 
 	if(WITH_PYTHON_MODULE)
 		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
+		configure_file(${PYTHON_SOURCE_DIRECTORY}/pyproject.toml.in ${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml ESCAPE_QUOTES @ONLY)
 		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
 
-		if(APPLE)
-			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${Python_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
-		elseif(WIN32)
-			set(ENV{VS100COMNTOOLS} $ENV{VS120COMNTOOLS})
-			add_custom_command(OUTPUT build COMMAND ${Python_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
-		else()
-			add_custom_command(OUTPUT build COMMAND ${Python_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
-		endif()
-		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${PYTHON_SRC} ${PYTHON_HDR})
+		add_custom_target(pythonmodule ALL
+			COMMAND ${Python_EXECUTABLE} -m build
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+			COMMENT "Building Python module"
+			DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/pyproject.toml.in ${PYTHON_SRC} ${PYTHON_HDR}
+		)
 		add_dependencies(pythonmodule audaspace)
 
-		install(CODE "EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
+		install(CODE "EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} -m pip install . --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX}))")
 	endif()
 endif()
 

@@ -27,6 +27,7 @@ if len(sys.argv) > 2 and sys.argv[1] == '--build-docs':
 # the following line is not working due to https://bugs.python.org/issue9023
 #source_directory = os.path.relpath('@PYTHON_SOURCE_DIRECTORY@')
 source_directory = '@PYTHON_SOURCE_DIRECTORY@'
+build_directory = '@CMAKE_CURRENT_BINARY_DIR@'
 
 extra_args = []
 
@@ -46,7 +47,7 @@ if '@WITH_RUBBERBAND@' == 'ON':
 
 audaspace = Extension(
                       'aud',
-                      include_dirs = ['@CMAKE_CURRENT_BINARY_DIR@', os.path.join(source_directory, '../../include'), numpy.get_include()] + (['@FFTW_INCLUDE_DIR@'] if '@WITH_FFTW@' == 'ON' else []),
+                      include_dirs = [build_directory, os.path.join(source_directory, '../../include'), numpy.get_include()] + (['@FFTW_INCLUDE_DIR@'] if '@WITH_FFTW@' == 'ON' else []),
                       libraries = ['audaspace'],
                       library_dirs = ['.', 'Release', 'Debug'],
                       language = 'c++',
@@ -65,6 +66,6 @@ setup(
       license = 'Apache License 2.0',
       long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
       ext_modules = [audaspace],
-      headers = [os.path.join(source_directory, file) for file in ['PyAnimateableProperty.h', 'PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PySource.h'] + (['PyImpulseResponse.h', 'PyHRTF.h'] if '@WITH_FFTW@' == 'ON' else [])] + ['Audaspace.h']
+      headers = [os.path.join(source_directory, file) for file in ['PyAnimateableProperty.h', 'PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PySource.h'] + (['PyImpulseResponse.h', 'PyHRTF.h'] if '@WITH_FFTW@' == 'ON' else [])] + [os.path.join(build_directory, 'Audaspace.h')]
 )
 
