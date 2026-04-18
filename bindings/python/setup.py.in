@@ -49,7 +49,7 @@ audaspace = Extension(
                       'aud',
                       include_dirs = [build_directory, os.path.join(source_directory, '../../include'), numpy.get_include()] + (['@FFTW_INCLUDE_DIR@'] if '@WITH_FFTW@' == 'ON' else []),
                       libraries = ['audaspace'],
-                      library_dirs = ['.', 'Release', 'Debug'],
+                      library_dirs = [os.path.join(build_directory, path) for path in ['.', 'Release', 'Debug']],
                       language = 'c++',
                       extra_compile_args = extra_args,
                       define_macros = macros,

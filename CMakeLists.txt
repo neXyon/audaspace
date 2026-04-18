@@ -1250,7 +1250,7 @@ if(WITH_PYTHON)
 		)
 		add_dependencies(pythonmodule audaspace)
 
-		install(CODE "EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} -m pip install . --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX}))")
+		install(CODE "EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} -m pip install . --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
 	endif()
 endif()
 
