@@ -14,7 +14,7 @@
 # limitations under the License.
 ################################################################################
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.31)
 include(CMakeDependentOption)
 
 if(POLICY CMP0054)
@@ -273,7 +273,7 @@ else()
 	set(LIBRARIES ${CMAKE_DL_LIBS} -lpthread)
 endif()
 
-set(STATIC_PLUGINS "")
+set(STATIC_PLUGINS "NULLDevice")
 
 # dependencies
 
@@ -359,7 +359,7 @@ if(AUDASPACE_STANDALONE)
 	endif()
 
 	if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-		set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "" FORCE)
+		set(CMAKE_OSX_DEPLOYMENT_TARGET "15.0" CACHE STRING "" FORCE)
 	endif()
 endif()
 
@@ -403,18 +403,6 @@ if(WITH_C)
 		bindings/C/AUD_Special.h
 		bindings/C/AUD_Types.h
 	)
-
-	if(WITH_FFTW)
-		list(APPEND C_SRC
-			bindings/C/AUD_HRTF.cpp
-			bindings/C/AUD_ImpulseResponse.cpp
-		)
-
-		list(APPEND C_HDR
-			bindings/C/AUD_HRTF.h
-			bindings/C/AUD_ImpulseResponse.h
-		)
-	endif()
 
 	if(NOT SEPARATE_C)
 		list(APPEND SRC ${C_SRC})
@@ -549,6 +537,17 @@ if(WITH_FFTW)
 			file(GLOB FFTW_DLLS ${LIBRARY_PATH}/fftw/bin/*.dll)
 			list(APPEND DLLS ${FFTW_DLLS})
 		endif()
+
+		# Add C bindings for FFTW-dependent features
+		list(APPEND C_SRC
+			bindings/C/AUD_HRTF.cpp
+			bindings/C/AUD_ImpulseResponse.cpp
+		)
+
+		list(APPEND C_HDR
+			bindings/C/AUD_HRTF.h
+			bindings/C/AUD_ImpulseResponse.h
+		)
 	else()
 		if(AUDASPACE_STANDALONE)
 			set(WITH_FFTW FALSE CACHE BOOL "Build With FFTW" FORCE)
@@ -766,17 +765,26 @@ endif()
 # Python
 if(WITH_PYTHON)
 	if(AUDASPACE_STANDALONE)
-		find_package(PythonLibs 3.2 ${PACKAGE_OPTION})
-		find_package(NumPy ${PACKAGE_OPTION})
+		find_package(Python3 COMPONENTS Interpreter Development ${PACKAGE_OPTION})
+		if(Python3_FOUND)
+			set(PYTHONLIBS_FOUND TRUE)
+			set(PYTHON_INCLUDE_DIRS ${Python3_INCLUDE_DIRS})
+			set(PYTHON_LIBRARIES ${Python3_LIBRARIES})
+		endif()
 	endif()
 
-	if(PYTHONLIBS_FOUND AND NUMPY_FOUND)
-		list(APPEND INCLUDE ${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIRS})
+	find_package(Python3 COMPONENTS Interpreter Development NumPy ${PACKAGE_OPTION})
+
+	if(Python3_FOUND AND Python3_NumPy_FOUND)
+		list(APPEND INCLUDE ${Python3_INCLUDE_DIRS} ${Python3_NumPy_INCLUDE_DIRS})
+		set(PYTHONLIBS_FOUND TRUE)
+		set(NUMPY_FOUND TRUE)
+		set(PYTHON_INCLUDE_DIRS ${Python3_INCLUDE_DIRS})
+		set(NUMPY_INCLUDE_DIRS ${Python3_NumPy_INCLUDE_DIRS})
+		set(PYTHON_LIBRARIES ${Python3_LIBRARIES})
 
 		if(WITH_PYTHON_MODULE)
-			find_package(PythonInterp 3.2 ${PACKAGE_OPTION})
-
-			if(NOT PYTHONINTERP_FOUND)
+			if(NOT Python3_Interpreter_FOUND)
 				set(WITH_PYTHON_MODULE FALSE)
 				message(WARNING "Python interpreter not found, module will not be built.")
 			endif()
@@ -962,7 +970,23 @@ set(LIB_DESTINATION "lib${LIB_SUFFIX}")
 
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
-set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+set_target_properties(audaspace PROPERTIES
+    SOVERSION ${AUDASPACE_VERSION}
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH "${AUD_RPATH}"
+)
+
+if(APPLE)
+	set(CMAKE_MACOSX_RPATH ON)
+
+    set_target_properties(audaspace PROPERTIES
+		MACOSX_RPATH ON
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_NAME_DIR "@loader_path"
+        INSTALL_RPATH "@loader_path;@loader_path/../lib"
+    )
+
+endif()
 
 if(AUDASPACE_STANDALONE)
 	install(TARGETS audaspace
@@ -1230,6 +1254,14 @@ if(WITH_PYTHON)
 	endif()
 	set_target_properties(audaspace-py PROPERTIES SOVERSION ${AUDASPACE_VERSION})
 
+	if(APPLE)
+		set_target_properties(audaspace-py PROPERTIES 
+			INSTALL_NAME_DIR "@loader_path"
+			BUILD_WITH_INSTALL_RPATH TRUE
+			INSTALL_RPATH "@loader_path;@loader_path/../lib"
+		)
+	endif()
+
 	if(AUDASPACE_STANDALONE)
 		install(TARGETS audaspace-py
 			RUNTIME DESTINATION ${BIN_DESTINATION}
@@ -1243,19 +1275,42 @@ if(WITH_PYTHON)
 	if(WITH_PYTHON_MODULE)
 		set(PYTHON_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python)
 		configure_file(${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${CMAKE_CURRENT_BINARY_DIR}/setup.py ESCAPE_QUOTES @ONLY)
+		configure_file(${PYTHON_SOURCE_DIRECTORY}/pyproject.toml.in ${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml ESCAPE_QUOTES @ONLY)
 
 		if(APPLE)
-			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
+			add_custom_command(OUTPUT build COMMAND MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py build_ext --inplace && ${CMAKE_COMMAND} -E touch build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 		elseif(WIN32)
 			set(ENV{VS100COMNTOOLS} $ENV{VS120COMNTOOLS})
-			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
+			add_custom_command(OUTPUT build COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py build_ext --inplace && ${CMAKE_COMMAND} -E touch build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 		else()
-			add_custom_command(OUTPUT build COMMAND ${PYTHON_EXECUTABLE} setup.py build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} setup.py)
+			add_custom_command(OUTPUT build COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py build_ext --inplace && ${CMAKE_COMMAND} -E touch build DEPENDS ${PYTHON_SRC} ${PYTHON_HDR} ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 		endif()
-		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${PYTHON_SOURCE_DIRECTORY}/setup.py.in ${PYTHON_SRC} ${PYTHON_HDR})
+		add_custom_target(pythonmodule ALL DEPENDS build SOURCES ${CMAKE_CURRENT_BINARY_DIR}/setup.py ${PYTHON_SRC} ${PYTHON_HDR})
 		add_dependencies(pythonmodule audaspace)
 
-		install(CODE "EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} setup.py install --root=\$ENV{DESTDIR} --prefix=${CMAKE_INSTALL_PREFIX})")
+		# Install Python module for scikit-build-core compatibility
+		install(CODE "
+			execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR} --target pythonmodule)
+			execute_process(COMMAND find ${CMAKE_CURRENT_BINARY_DIR} -name \"*aud*.so\" -exec cp {} ${CMAKE_INSTALL_PREFIX} \;
+			                ERROR_QUIET)
+			# Set RPATH for the module
+			file(GLOB MODULE_FILE \"${CMAKE_INSTALL_PREFIX}/*aud*.so\")
+			if(MODULE_FILE)
+				if(APPLE)
+					execute_process(COMMAND install_name_tool -add_rpath @loader_path/lib \${MODULE_FILE})
+				elseif(UNIX)
+					execute_process(COMMAND patchelf --set-rpath \"\\\$ORIGIN/lib\" \"\${MODULE_FILE}\" 
+					                ERROR_QUIET)
+				endif()
+				# Set RPATH for libraries on macOS
+				if(APPLE)
+					file(GLOB LIB_FILES \"\${CMAKE_INSTALL_PREFIX}/lib/libaudaspace*.dylib\")
+					foreach(LIB_FILE \${LIB_FILES})
+						execute_process(COMMAND install_name_tool -add_rpath @loader_path \${LIB_FILE})
+					endforeach()
+				endif()
+			endif()
+		")
 	endif()
 endif()
 
@@ -1284,7 +1339,7 @@ if(WITH_BINDING_DOCS)
 	if(SPHINX_FOUND)
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 
-		add_custom_target(bindings_doc ALL COMMAND ${PYTHON_EXECUTABLE} setup.py --build-docs ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" DEPENDS pythonmodule COMMENT "Building C/Python HTML documentation with Sphinx.")
+		add_custom_target(bindings_doc ALL COMMAND ${Python3_EXECUTABLE} setup.py --build-docs ${SPHINX_EXECUTABLE} -q -b html -c "${CMAKE_CURRENT_BINARY_DIR}" -d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/bindings/doc" "${CMAKE_CURRENT_BINARY_DIR}/doc/bindings" DEPENDS pythonmodule COMMENT "Building C/Python HTML documentation with Sphinx.")
 	else()
 		if(AUDASPACE_STANDALONE)
 			set(WITH_BINDING_DOCS FALSE CACHE BOOL "Build C/Python HTML Documentation with Sphinx" FORCE)
