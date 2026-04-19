@@ -262,6 +262,7 @@ jobs:
         
         # Extract wheel
         TEMP_DIR=$(mktemp -d)
+        OLD_DIR=$(pwd)
         unzip -q "$WHEEL" -d "$TEMP_DIR"
         
         # Find and thin the Python module
@@ -290,9 +291,9 @@ jobs:
         echo ""
         echo "=== Repacking wheel ==="
         cd "$TEMP_DIR"
-        zip -qr "../${WHEEL}.new" .
-        cd ..
-        mv "${WHEEL}.new" "$WHEEL"
+        rm "${OLD_DIR}/${WHEEL}"
+        zip -qr "${OLD_DIR}/${WHEEL}" .
+        cd ${OLD_DIR}
         
         # Cleanup
         rm -rf "$TEMP_DIR"
