@@ -30,7 +30,6 @@ source_directory = '@PYTHON_SOURCE_DIRECTORY@'
 build_directory = '@CMAKE_CURRENT_BINARY_DIR@'
 
 extra_args = []
-extra_link_args = []
 
 if sys.platform == 'win32':
     extra_args.append('/EHsc')
@@ -87,7 +86,6 @@ audaspace = Extension(
                       library_dirs = [os.path.join(build_directory, path) for path in ['.', 'Release', 'Debug']],
                       language = 'c++',
                       extra_compile_args = extra_args,
-                      extra_link_args = extra_link_args,
                       define_macros = macros,
                       sources = [os.path.join(source_directory, file) for file in ['PyAnimateableProperty.cpp', 'PyAPI.cpp', 'PyDevice.cpp', 'PyHandle.cpp', 'PySound.cpp', 'PySequenceEntry.cpp', 'PySequence.cpp', 'PyPlaybackManager.cpp', 'PyDynamicMusic.cpp', 'PyThreadPool.cpp', 'PySource.cpp'] + (['PyImpulseResponse.cpp', 'PyHRTF.cpp'] if '@WITH_FFTW@' == 'ON' else [])]
 )
