@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
+        os: ['ubuntu-latest']#, 'macos-15', 'macos-15-intel', 'windows-latest']
         python-version: ['3.14'] # ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
@@ -31,7 +31,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libfftw3-dev libsndfile1-dev libopenal-dev libsdl2-dev libasound2-dev libpulse-dev libjack-jackd2-dev libpipewire-0.3-dev pkg-config python3-dev git cmake make g++ python3-pip librubberband-dev librubberband2
+        sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libfftw3-dev libsndfile1-dev libopenal-dev libsdl2-dev libasound2-dev libpulse-dev libjack-jackd2-dev libpipewire-0.3-dev pkg-config python3-dev git cmake make g++ python3-pip librubberband-dev librubberband2 gdb
         pip install build wheel numpy setuptools auditwheel patchelf
 
     - name: Install dependencies (macOS)
@@ -371,7 +371,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
+        os: ['ubuntu-latest']#, 'macos-15', 'macos-15-intel', 'windows-latest']
         python-version: ['3.14'] # ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
@@ -380,7 +380,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-        
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt install -y gdb
+
       - name: Download wheels
         uses: actions/download-artifact@v4
         with:
