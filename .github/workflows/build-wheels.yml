@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.14'] # ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
     steps:
@@ -70,6 +70,20 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         cd build
+
+        CURRENT_ARCH=$(uname -m)
+        echo "Building for architecture: $CURRENT_ARCH"
+        
+        # These environment variables control the Python extension build
+        export ARCHFLAGS="-arch $CURRENT_ARCH"
+        export _PYTHON_HOST_PLATFORM="macosx-15.0-$CURRENT_ARCH"
+        export CFLAGS="-arch $CURRENT_ARCH"
+        export CXXFLAGS="-arch $CURRENT_ARCH"
+        export LDFLAGS="-arch $CURRENT_ARCH"
+        
+        echo "ARCHFLAGS=$ARCHFLAGS"
+        echo "_PYTHON_HOST_PLATFORM=$_PYTHON_HOST_PLATFORM"
+
         sudo make install
         # Copy libraries to a location where delocate can find them
         mkdir -p libs_for_wheel
@@ -101,37 +115,6 @@ jobs:
         
         Write-Host "`nLibraries copied to libs_for_wheel:"
         Get-ChildItem build/libs_for_wheel
-
-    - name: Build wheel
-      shell: bash
-      run: |
-        cd build
-        python -m pip install numpy build setuptools
-        
-        # For macOS, force single architecture build
-        if [ "${{ runner.os }}" == "macOS" ]; then
-          CURRENT_ARCH=$(uname -m)
-          echo "Building for architecture: $CURRENT_ARCH"
-          
-          # These environment variables control the Python extension build
-          export ARCHFLAGS="-arch $CURRENT_ARCH"
-          export _PYTHON_HOST_PLATFORM="macosx-15.0-$CURRENT_ARCH"
-          export CFLAGS="-arch $CURRENT_ARCH"
-          export CXXFLAGS="-arch $CURRENT_ARCH"
-          export LDFLAGS="-arch $CURRENT_ARCH"
-          
-          echo "ARCHFLAGS=$ARCHFLAGS"
-          echo "_PYTHON_HOST_PLATFORM=$_PYTHON_HOST_PLATFORM"
-        fi
-        
-        python -m build --wheel
-      env:
-        WITH_PULSEAUDIO: ${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
-        WITH_PIPEWIRE: ${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
-        WITH_JACK: ${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
-        WITH_COREAUDIO: ${{ runner.os == 'macOS' && 'ON' || 'OFF' }}
-        WITH_WASAPI: ${{ runner.os == 'Windows' && 'ON' || 'OFF' }}
-        MACOSX_DEPLOYMENT_TARGET: ${{ runner.os == 'macOS' && '15.0' || '' }}
 
     - name: Fix wheel platform tag (macOS)
       if: runner.os == 'macOS'
@@ -401,7 +384,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.14'] # ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
     steps:      
