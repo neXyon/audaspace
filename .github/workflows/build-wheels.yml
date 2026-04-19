@@ -307,6 +307,10 @@ jobs:
         rm -rf /tmp/wheel_check
 
         echo ""
+        echo "=== Verifying bundled dependencies ==="
+        delocate-listdeps -d "$ORIGINAL_WHEEL"
+
+        echo ""
         echo "Building for architecture: $CURRENT_ARCH (ignoring missing architecture dependencies)"
         delocate-wheel --require-archs "$CURRENT_ARCH" --ignore-missing-dependencies -w "build/dist/repaired" -v "$ORIGINAL_WHEEL"
 
