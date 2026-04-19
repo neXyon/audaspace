@@ -34,6 +34,40 @@ extra_args = []
 if sys.platform == 'win32':
     extra_args.append('/EHsc')
     extra_args.append('/DAUD_BUILD_SHARED_LIBRARY')
+elif sys.platform == 'darwin':
+    extra_link_args.extend([
+        '-Wl,-rpath,@loader_path',
+        '-Wl,-rpath,@loader_path/.dylibs',
+    ])
+    extra_args.append('-std=c++17')
+
+    archflags = os.environ.get('ARCHFLAGS', '')
+    if archflags:
+        arch_parts = archflags.split()
+        for part in arch_parts:
+            if part not in ['-arch']:
+                extra_args.append('-arch')
+                extra_args.append(part)
+                extra_link_args.append('-arch')
+                extra_link_args.append(part)
+
+    cflags = os.environ.get('CFLAGS', '')
+    if cflags and '-arch' in cflags:
+        for flag in cflags.split():
+            if flag not in extra_args:
+                extra_args.append(flag)
+
+    cxxflags = os.environ.get('CXXFLAGS', '')
+    if cxxflags and '-arch' in cxxflags:
+        for flag in cxxflags.split():
+            if flag not in extra_args:
+                extra_args.append(flag)
+
+    ldflags = os.environ.get('LDFLAGS', '')
+    if ldflags and '-arch' in ldflags:
+        for flag in ldflags.split():
+            if flag not in extra_link_args:
+                extra_link_args.append(flag)
 else:
     extra_args.append('-std=c++17')
 
