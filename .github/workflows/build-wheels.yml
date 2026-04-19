@@ -433,7 +433,7 @@ jobs:
           ldd "$AUD_SO" || echo "ldd not available"
           
           echo "=== Running tests ==="
-          python -c "
+          python -u -c "
           import aud
           print('- aud module imported successfully')
 
