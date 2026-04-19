@@ -71,19 +71,6 @@ jobs:
       run: |
         cd build
 
-        CURRENT_ARCH=$(uname -m)
-        echo "Building for architecture: $CURRENT_ARCH"
-        
-        # These environment variables control the Python extension build
-        export ARCHFLAGS="-arch $CURRENT_ARCH"
-        export _PYTHON_HOST_PLATFORM="macosx-15.0-$CURRENT_ARCH"
-        export CFLAGS="-arch $CURRENT_ARCH"
-        export CXXFLAGS="-arch $CURRENT_ARCH"
-        export LDFLAGS="-arch $CURRENT_ARCH"
-        
-        echo "ARCHFLAGS=$ARCHFLAGS"
-        echo "_PYTHON_HOST_PLATFORM=$_PYTHON_HOST_PLATFORM"
-
         sudo make install
         # Copy libraries to a location where delocate can find them
         mkdir -p libs_for_wheel
