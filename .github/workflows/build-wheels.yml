@@ -52,21 +52,6 @@ jobs:
       run: |
         mkdir build
         cd build
-        # For macOS, force single architecture build
-        if [ "${{ runner.os }}" == "macOS" ]; then
-          CURRENT_ARCH=$(uname -m)
-          echo "Building for architecture: $CURRENT_ARCH"
-          
-          # These environment variables control the Python extension build
-          export ARCHFLAGS="-arch $CURRENT_ARCH"
-          export _PYTHON_HOST_PLATFORM="macosx-15.0-$CURRENT_ARCH"
-          export CFLAGS="-arch $CURRENT_ARCH"
-          export CXXFLAGS="-arch $CURRENT_ARCH"
-          export LDFLAGS="-arch $CURRENT_ARCH"
-          
-          echo "ARCHFLAGS=$ARCHFLAGS"
-          echo "_PYTHON_HOST_PLATFORM=$_PYTHON_HOST_PLATFORM"
-        fi
         cmake .. -DCMAKE_BUILD_TYPE=Release -DWITH_PYTHON=ON -DWITH_PYTHON_MODULE=ON ${{ runner.os == 'Linux' && '-DWITH_PULSEAUDIO=ON -DWITH_PIPEWIRE=ON -DWITH_OPENAL=ON -DWITH_JACK=ON' || '' }} ${{ runner.os == 'macOS' && '-DWITH_COREAUDIO=ON -DCMAKE_MACOSX_RPATH=ON -DCMAKE_OSX_ARCHITECTURES=$(uname -m) -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_INSTALL_LIBDIR=lib' || '' }} ${{ runner.os == 'Windows' && '-DWITH_WASAPI=ON -DWITH_JACK=OFF -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="x64-windows" -DPKG_CONFIG_PATH="C:/vcpkg/installed/x64-windows/lib/pkgconfig" -DCMAKE_FIND_ROOT_PATH="C:/vcpkg/installed/x64-windows" -DPython3_EXECUTABLE="$(python -c "import sys; print(sys.executable)")"' || '' }}
 
     - name: Build
