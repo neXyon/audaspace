@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest']#, 'macos-15', 'macos-15-intel', 'windows-latest']
+        os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
         python-version: ['3.14'] # ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
@@ -371,7 +371,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest']#, 'macos-15', 'macos-15-intel', 'windows-latest']
+        os: ['ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
         python-version: ['3.14'] # ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
@@ -443,15 +443,6 @@ jobs:
           import aud
           print('- aud module imported successfully')
 
-          # Test creating a device (may fail in CI without audio hardware)
-          try:
-              device = aud.Device()
-              print(f'- Device created: {device}')
-              print(f'  Sample rate: {device.rate}')
-              print(f'  Channels: {device.channels}')
-          except Exception as e:
-              print(f'X  Device creation failed (expected in CI): {e}')
-
           # Test creating various signals
           sine = aud.Sound.sine(440)
           print('- Sine wave created successfully')
@@ -505,14 +496,6 @@ jobs:
           python -c "
           import aud
           print('- aud module imported successfully')
-          # Test creating a device (may fail in CI without audio hardware)
-          try:
-              device = aud.Device()
-              print(f'- Device created: {device}')
-              print(f'  Sample rate: {device.rate}')
-              print(f'  Channels: {device.channels}')
-          except Exception as e:
-              print(f'X  Device creation failed (expected in CI): {e}')
           # Test creating various signals
           sine = aud.Sound.sine(440)
           print('- Sine wave created successfully')
