@@ -31,7 +31,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libfftw3-dev libsndfile1-dev libopenal-dev libsdl2-dev libasound2-dev libpulse-dev libjack-jackd2-dev libpipewire-0.3-dev pkg-config python3-dev git cmake make g++ python3-pip librubberband-dev librubberband2 gdb
+        sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libfftw3-dev libsndfile1-dev libopenal-dev libsdl2-dev libasound2-dev libpulse-dev libjack-jackd2-dev libpipewire-0.3-dev pkg-config python3-dev git cmake make g++ python3-pip librubberband-dev librubberband2
         pip install build wheel numpy setuptools auditwheel patchelf
 
     - name: Install dependencies (macOS)
@@ -439,7 +439,7 @@ jobs:
           ldd "$AUD_SO" || echo "ldd not available"
           
           echo "=== Running tests ==="
-          PYTHONFAULTHANDLER=1 gdb -batch -ex "run" -ex "bt" --args python -u -c "
+          PYTHONFAULTHANDLER=1 python -u -c "
           import aud
           print('- aud module imported successfully')
 
