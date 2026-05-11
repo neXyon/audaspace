@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'windows-latest'] #'ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
+        os: [ 'macos-15'] #'ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
         python-version: ['3.14'] #['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
@@ -371,7 +371,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'windows-latest'] #'ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
+        os: [ 'macos-15'] #'ubuntu-latest', 'macos-15', 'macos-15-intel', 'windows-latest']
         python-version: ['3.14'] #['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
