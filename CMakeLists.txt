@@ -960,6 +960,7 @@ set(LIB_DESTINATION "lib${LIB_SUFFIX}")
 add_library(audaspace ${LIBRARY_TYPE} ${SRC} ${HDR})
 target_link_libraries(audaspace ${LIBRARIES})
 set_target_properties(audaspace PROPERTIES SOVERSION ${AUDASPACE_VERSION})
+set_target_properties(audaspace PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 if(AUDASPACE_STANDALONE)
 	install(TARGETS audaspace
