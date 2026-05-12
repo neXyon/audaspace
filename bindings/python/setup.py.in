@@ -65,6 +65,7 @@ setup(
       url = 'https://github.com/audaspace/audaspace',
       license = 'Apache License 2.0',
       long_description = codecs.open(os.path.join(source_directory, '../../README.md'), 'r', 'utf-8').read(),
+      long_description_content_type = 'text/markdown',
       ext_modules = [audaspace],
       headers = [os.path.join(source_directory, file) for file in ['PyAnimateableProperty.h', 'PyAPI.h', 'PyDevice.h', 'PyHandle.h', 'PySound.h', 'PySequenceEntry.h', 'PySequence.h', 'PyPlaybackManager.h', 'PyDynamicMusic.h', 'PyThreadPool.h', 'PySource.h'] + (['PyImpulseResponse.h', 'PyHRTF.h'] if '@WITH_FFTW@' == 'ON' else [])] + [os.path.join(build_directory, 'Audaspace.h')]
 )
