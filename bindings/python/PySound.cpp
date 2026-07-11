@@ -133,7 +133,8 @@ PyDoc_STRVAR(M_aud_Sound_data_doc,
 static PyObject *
 Sound_data(Sound* self)
 {
-	try {
+	try
+	{
 		std::shared_ptr<ISound> sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
 
 		auto stream_buffer = std::dynamic_pointer_cast<StreamBuffer>(sound);
@@ -153,7 +154,9 @@ Sound_data(Sound* self)
 		std::memcpy(data, buffer->getBuffer(), buffer->getSize());
 
 		return reinterpret_cast<PyObject*>(array);
-	} catch (Exception& e) {
+	}
+	catch(Exception& e)
+	{
 		PyErr_SetString(AUDError, e.what());
 		return nullptr;
 	}
