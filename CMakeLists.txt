@@ -19,7 +19,7 @@ include(CMakeDependentOption)
 
 project(audaspace)
 
-set(AUDASPACE_VERSION 1.9)
+set(AUDASPACE_VERSION 1.10)
 set(AUDASPACE_LONG_VERSION ${AUDASPACE_VERSION}.0)
 
 if(DEFINED AUDASPACE_CMAKE_CFG)
