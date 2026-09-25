@@ -26,32 +26,33 @@ AUD_NAMESPACE_BEGIN
 class CompressorReader : public EffectReader
 {
 public:
-    // All time units are now in seconds, gains are ratios (1.0 = 0 dB)
-    CompressorReader(std::shared_ptr<IReader> reader, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float kneeWidthDb, float lookaheadSec);
-    virtual void read(int& length, bool& eos, sample_t* buffer) override;
+	// All time units are now in seconds, gains are ratios (1.0 = 0 dB)
+	CompressorReader(std::shared_ptr<IReader> reader, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float kneeWidthDb,
+	                 float lookaheadSec);
+	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 
 private:
-    float m_thresholdRatio;      // Threshold as ratio (1.0 = 0 dB)
-    float m_ratio;               // Compression ratio
-    float m_attackSec;           // Attack time in seconds
-    float m_releaseSec;          // Release time in seconds
-    float m_makeupGainRatio;     // Makeup gain as ratio (1.0 = 0 dB)
-    float m_kneeWidthDb;         // Knee width in dB
-    int m_lookaheadSamples;      // Lookahead in samples
-    aud::Buffer m_delayBuffer;
-    aud::Buffer m_sidechainBuffer;
-    int m_delayBufferWritePos;
+	float m_thresholdRatio;  // Threshold as ratio (1.0 = 0 dB)
+	float m_ratio;           // Compression ratio
+	float m_attackSec;       // Attack time in seconds
+	float m_releaseSec;      // Release time in seconds
+	float m_makeupGainRatio; // Makeup gain as ratio (1.0 = 0 dB)
+	float m_kneeWidthDb;     // Knee width in dB
+	int m_lookaheadSamples;  // Lookahead in samples
+	aud::Buffer m_delayBuffer;
+	aud::Buffer m_sidechainBuffer;
+	int m_delayBufferWritePos;
 
-    float m_attackCoeff;
-    float m_releaseCoeff;
-    std::vector<float> m_rmsState;
+	float m_attackCoeff;
+	float m_releaseCoeff;
+	std::vector<float> m_rmsState;
 
-    int m_channels;
-    int m_windowSize;
-    std::vector<float> m_envelope;
+	int m_channels;
+	int m_windowSize;
+	std::vector<float> m_envelope;
 
-    CompressorReader(const CompressorReader&) = delete;
-    CompressorReader& operator=(const CompressorReader&) = delete;
+	CompressorReader(const CompressorReader&) = delete;
+	CompressorReader& operator=(const CompressorReader&) = delete;
 };
 
 AUD_NAMESPACE_END

@@ -52,6 +52,7 @@
 #include "Exception.h"
 
 #include "fx/Echo.h"
+#include "fx/Compressor.h"
 
 #ifdef WITH_CONVOLUTION
 #include "fx/BinauralSound.h"
