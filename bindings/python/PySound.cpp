@@ -61,6 +61,7 @@
 #include "sequence/Superpose.h"
 
 #include "fx/Echo.h"
+#include "fx/Compressor.h"
 
 #ifdef WITH_CONVOLUTION
 #include "fx/BinauralSound.h"
@@ -1742,6 +1743,63 @@ static PyObject* Sound_echo(Sound* self, PyObject* args, PyObject* kwds)
 	return (PyObject*)parent;
 }
 
+PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(threshold, ratio, attack, release, makeup_gain, knee, lookahead)\n\n"
+                                       "   Applies a dynamic range compressor to the sound.\n\n"
+                                       "   :arg threshold: The threshold ratio (0.0 to 1.0) over which to start compression.\n"
+                                       "   :type threshold: float\n"
+                                       "   :arg ratio: The compression ratio (e.g., 4.0 for 4:1).\n"
+                                       "   :type ratio: float\n"
+                                       "   :arg attack: The attack time in seconds.\n"
+                                       "   :type attack: float\n"
+                                       "   :arg release: The release time in seconds.\n"
+                                       "   :type release: float\n"
+                                       "   :arg makeup_gain: The output gain ratio to apply after compression (1.0 for no gain).\n"
+                                       "   :type makeup_gain: float\n"
+                                       "   :arg knee: The knee ratio (1.0 for hard knee, higher for soft knee).\n"
+                                       "   :type knee: float\n"
+                                       "   :arg lookahead: The lookahead time in seconds.\n"
+                                       "   :type lookahead: float\n"
+                                       "   :return: The created :class:`Sound` object.\n"
+                                       "   :rtype: :class:`Sound`");
+static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
+{
+	float threshold = 0.063f;
+	float ratio = 4.0f;
+	float attack_sec = 0.01f;
+	float release_sec = 0.1f;
+	float makeup_gain = 1.0f;
+	float knee = 2.0f;
+	float lookahead_sec = 0.0f;
+
+	static const char* kwlist[] = {"threshold", "ratio", "attack", "release", "makeup_gain", "knee", "lookahead", nullptr};
+
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "fffffff:compress", const_cast<char**>(kwlist), &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain, &knee, &lookahead_sec))
+	{
+		return nullptr;
+	}
+
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*) type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			auto input = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
+			auto compressor = std::make_shared<Compressor>(input, threshold, ratio, attack_sec, release_sec, makeup_gain, knee, lookahead_sec);
+			parent->sound = new std::shared_ptr<ISound>(compressor);
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject*) parent;
+}
+
 #ifdef WITH_CONVOLUTION
 
 PyDoc_STRVAR(M_aud_Sound_convolver_doc,
@@ -2116,6 +2174,8 @@ static PyMethodDef Sound_methods[] = {
 	},
 	{"echo", (PyCFunction)Sound_echo, METH_VARARGS | METH_KEYWORDS,
 	M_aud_Sound_echo_doc},
+	{"compress", (PyCFunction)Sound_compress, METH_VARARGS | METH_KEYWORDS,
+	M_aud_Sound_compress_doc},
 
 #ifdef WITH_CONVOLUTION
 	{ "convolver", (PyCFunction)Sound_convolver, METH_VARARGS,
