@@ -800,11 +800,12 @@ AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float feedback,
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, float threshold, float ratio, float attack, float release, float makeupGain, float kneeWidth, float lookahead){
+AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, float threshold, float ratio, float attack, float release, float makeupGain, float knee, float lookahead)
+{
 	assert(sound);
 	try
 	{
-		return new AUD_Sound(new Compressor(*sound, threshold, ratio, attack, release, makeupGain, kneeWidth, lookahead));
+		return new AUD_Sound(new Compressor(*sound, threshold, ratio, attack, release, makeupGain, knee, lookahead));
 	}
 	catch(Exception&)
 	{

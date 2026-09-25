@@ -20,8 +20,8 @@
 
 AUD_NAMESPACE_BEGIN
 
-Compressor::Compressor(std::shared_ptr<ISound> sound, float threshold, float ratio, float attack, float release, float makeupGain, float kneeWidth, float lookaheadMs) :
-    Effect(sound), m_threshold(threshold), m_ratio(ratio), m_attack(attack), m_release(release), m_makeupGain(makeupGain), m_kneeWidth(kneeWidth), m_lookaheadMs(lookaheadMs)
+Compressor::Compressor(std::shared_ptr<ISound> sound, float threshold, float ratio, float attack, float release, float makeupGain, float knee, float lookahead) :
+    Effect(sound), m_threshold(threshold), m_ratio(ratio), m_attack(attack), m_release(release), m_makeupGain(makeupGain), m_knee(knee), m_lookahead(lookahead)
 {
 }
 
@@ -53,7 +53,7 @@ float Compressor::getGain() const
 std::shared_ptr<IReader> Compressor::createReader()
 {
 	// Implementation for creating a reader specific to the compressor effect
-	return std::shared_ptr<IReader>(new CompressorReader(m_sound->createReader(), m_threshold, m_ratio, m_attack, m_release, m_makeupGain, m_kneeWidth, m_lookaheadMs));
+	return std::shared_ptr<IReader>(new CompressorReader(m_sound->createReader(), m_threshold, m_ratio, m_attack, m_release, m_makeupGain, m_knee, m_lookahead));
 }
 
 AUD_NAMESPACE_END

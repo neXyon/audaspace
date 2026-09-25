@@ -23,16 +23,11 @@
 
 AUD_NAMESPACE_BEGIN
 
-CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float kneeWidthDb,
+CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float knee,
                                    float lookaheadSec) :
-    EffectReader(reader),
-    m_thresholdRatio(thresholdRatio),
-    m_ratio(ratio),
-    m_attackSec(attackSec),
-    m_releaseSec(releaseSec),
-    m_makeupGainRatio(makeupGainRatio),
-    m_kneeWidthDb(kneeWidthDb)
+    EffectReader(reader), m_thresholdRatio(thresholdRatio), m_ratio(ratio), m_attackSec(attackSec), m_releaseSec(releaseSec), m_makeupGainRatio(makeupGainRatio)
 {
+	m_kneeDb = (knee > 1.0f) ? 20.0f * std::log10(knee) : 0.0f;
 	Specs specs = m_reader->getSpecs();
 	m_channels = specs.channels;
 	m_lookaheadSamples = 0;
@@ -77,7 +72,10 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 		float thresholdRatio = m_thresholdRatio;
 		float ratio = m_ratio;
 		float makeup = m_makeupGainRatio;
-		float kneeDb = m_kneeWidthDb;
+		float kneeDb = m_kneeDb;
+		float threshold_db = 20.0f * log10(thresholdRatio);
+		float kneestart = threshold_db - kneeDb / 2.0f;
+		float kneeend = threshold_db + kneeDb / 2.0f;
 
 		if(m_rmsState.size() != channels)
 		{
@@ -106,9 +104,6 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 			m_rmsState[ch] = rms_coeff * m_rmsState[ch] + (1.0f - rms_coeff) * sq;
 			float detector = std::sqrt(std::max(m_rmsState[ch], min_rms));
 			float detector_db = 20.0f * log10(detector + min_rms);
-			float threshold_db = 20.0f * log10(thresholdRatio);
-			float kneestart = threshold_db - kneeDb / 2.0f;
-			float kneeend = threshold_db + kneeDb / 2.0f;
 			float gainReduction_db = 0.0f;
 
 			if(detector_db < kneestart)
@@ -164,7 +159,10 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 		float thresholdRatio = m_thresholdRatio;
 		float ratio = m_ratio;
 		float makeup = m_makeupGainRatio;
-		float kneeDb = m_kneeWidthDb;
+		float kneeDb = m_kneeDb;
+		float threshold_db = 20.0f * log10(thresholdRatio);
+		float kneestart = threshold_db - kneeDb / 2.0f;
+		float kneeend = threshold_db + kneeDb / 2.0f;
 
 		if(m_rmsState.size() != channels)
 		{
@@ -189,9 +187,6 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 			m_rmsState[ch] = rms_coeff * m_rmsState[ch] + (1.0f - rms_coeff) * sq;
 			float detector = std::sqrt(std::max(m_rmsState[ch], min_rms));
 			float detector_db = 20.0f * log10(detector + min_rms);
-			float threshold_db = 20.0f * log10(thresholdRatio);
-			float kneestart = threshold_db - kneeDb / 2.0f;
-			float kneeend = threshold_db + kneeDb / 2.0f;
 			float gainReduction_db = 0.0f;
 
 			if(detector_db < kneestart)

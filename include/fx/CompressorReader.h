@@ -27,8 +27,7 @@ class CompressorReader : public EffectReader
 {
 public:
 	// All time units are now in seconds, gains are ratios (1.0 = 0 dB)
-	CompressorReader(std::shared_ptr<IReader> reader, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float kneeWidthDb,
-	                 float lookaheadSec);
+	CompressorReader(std::shared_ptr<IReader> reader, float thresholdRatio, float ratio, float attackSec, float releaseSec, float makeupGainRatio, float knee, float lookaheadSec);
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 
 private:
@@ -37,7 +36,7 @@ private:
 	float m_attackSec;       // Attack time in seconds
 	float m_releaseSec;      // Release time in seconds
 	float m_makeupGainRatio; // Makeup gain as ratio (1.0 = 0 dB)
-	float m_kneeWidthDb;     // Knee width in dB
+	float m_kneeDb;          // Knee width in dB
 	int m_lookaheadSamples;  // Lookahead in samples
 	aud::Buffer m_delayBuffer;
 	aud::Buffer m_sidechainBuffer;

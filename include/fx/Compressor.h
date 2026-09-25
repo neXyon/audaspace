@@ -32,8 +32,8 @@ private:
 	float m_attack;
 	float m_release;
 	float m_makeupGain;
-	float m_kneeWidth;
-	float m_lookaheadMs;
+	float m_knee;
+	float m_lookahead;
 
 	// delete copy constructor and assignment operator
 	Compressor(const Compressor&) = delete;
@@ -43,15 +43,15 @@ public:
 	/**
 	 * @brief Construct a new Compressor object
 	 *
-	 * @param threshold Threshold level in dBFS (e.g., -18.0)
-	 * @param ratio Compression ratio (e.g., 4.0 means 4:1)
-	 * @param attack Attack time in milliseconds
-	 * @param release Release time in milliseconds
-	 * @param gain Output gain in dB
-	 * @param kneeWidth Knee width in dB
-	 * @param lookaheadMs Lookahead time in milliseconds
+	 * @param threshold The threshold ratio (0.0 to 1.0) over which to start compression.
+	 * @param ratio The compression ratio (e.g., 4.0 for 4:1).
+	 * @param attack The attack time in seconds.
+	 * @param release The release time in seconds.
+	 * @param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
+	 * @param knee The knee ratio (1.0 for hard knee, higher for soft knee).
+	 * @param lookahead The lookahead time in seconds.
 	 */
-	Compressor(std::shared_ptr<ISound> sound, float threshold, float ratio, float attack, float release, float makeupGain, float kneeWidth, float lookaheadMs);
+	Compressor(std::shared_ptr<ISound> sound, float threshold, float ratio, float attack, float release, float makeupGain, float knee, float lookahead);
 
 	float getThreshold() const;
 
