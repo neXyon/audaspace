@@ -34,10 +34,8 @@ AUD_NAMESPACE_BEGIN
 class AUD_API CompressorReader : public EffectReader
 {
 private:
-	float m_threshold;  /* Threshold ratio (0.0 to 1.0) over which to start compression */
-	float m_ratio;      /* Compression ratio (e.g., 4.0 for 4:1) */
-	float m_attack;     /* Attack time in seconds */
-	float m_release;    /* Release time in seconds */
+	static constexpr float m_floor = 1e-6f; /* Minimum amplitude floor to prevent log10(0) */
+
 	float m_makeupGain; /* Output gain ratio to apply after compression (1.0 for no gain) */
 
 	float m_thresholdDb;      /* Threshold in decibels */
@@ -46,6 +44,9 @@ private:
 	float m_alphaRelease;     /* Release smoothing factor: exp(-1 / (rate * release)) */
 
 	float m_gainReductionDb{0.0f}; /* Smoothed gain reduction state in decibels */
+
+	static inline float linearToDb(float linear);
+	static inline float dbToLinear(float db);
 
 public:
 	/**

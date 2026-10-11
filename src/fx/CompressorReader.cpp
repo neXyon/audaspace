@@ -18,39 +18,36 @@
 
 #include <cmath>
 
-namespace
-{
-	inline float linearToDb(float linear)
-	{
-		if(linear <= 1e-6f)
-		{
-			return -120.0f;
-		}
-		return 20.0f * std::log10(linear);
-	}
-
-	inline float dbToLinear(float db)
-	{
-		if(db <= -120)
-		{
-			return 0.0f;
-		}
-		return std::pow(10.0f, db / 20.0f);
-	}
-} // namespace
-
 AUD_NAMESPACE_BEGIN
 
+inline float CompressorReader::linearToDb(float linear)
+{
+	if(linear <= m_floor)
+	{
+		return 20.0f * std::log10(m_floor);
+	}
+	return 20.0f * std::log10(linear);
+}
+
+inline float CompressorReader::dbToLinear(float db)
+{
+	if(db <= 20.0f * std::log10(m_floor))
+	{
+		return 0.0f;
+	}
+	return std::pow(10.0f, db / 20.0f);
+}
+
 CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, float threshold, float ratio, float attack, float release, float makeupGain) :
-    EffectReader(reader), m_threshold(threshold), m_ratio(ratio), m_attack(attack), m_release(release), m_makeupGain(makeupGain)
+    EffectReader(reader), m_makeupGain(makeupGain)
 {
 	// Precalculate compression parameters and smoothing factors
-	m_thresholdDb = linearToDb(m_threshold);
-	m_compressionSlope = (m_ratio > 1.0f) ? (1.0f - 1.0f / m_ratio) : 0.0f;
+	m_thresholdDb = linearToDb(threshold);
+	m_compressionSlope = (ratio > 1.0f) ? (1.0f - 1.0f / ratio) : 0.0f;
 
 	SampleRate sampleRate = m_reader->getSpecs().rate;
-	m_alphaAttack = (sampleRate > 0 && m_attack > 0) ? std::exp(-1.0f / (sampleRate * m_attack)) : 0.0f;
-	m_alphaRelease = (sampleRate > 0 && m_release > 0) ? std::exp(-1.0f / (sampleRate * m_release)) : 0.0f;
+	m_alphaAttack = (sampleRate > 0 && attack > 0) ? std::exp(-1.0f / (sampleRate * attack)) : 0.0f;
+	m_alphaRelease = (sampleRate > 0 && release > 0) ? std::exp(-1.0f / (sampleRate * release)) : 0.0f;
 }
 
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
