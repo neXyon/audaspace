@@ -34,7 +34,7 @@ AUD_NAMESPACE_BEGIN
 class AUD_API CompressorReader : public EffectReader
 {
 private:
-	static constexpr float m_floor = 1e-6f; /* Minimum amplitude floor to prevent log10(0) */
+	static constexpr float MINIMUM_AMPLITUDE = 1e-6f; /* Minimum amplitude floor to prevent log10(0) */
 
 	float m_makeupGain; /* Output gain ratio to apply after compression (1.0 for no gain) */
 

@@ -22,16 +22,16 @@ AUD_NAMESPACE_BEGIN
 
 inline float CompressorReader::linearToDb(float linear)
 {
-	if(linear <= m_floor)
+	if(linear <= MINIMUM_AMPLITUDE)
 	{
-		return 20.0f * std::log10(m_floor);
+		return 20.0f * std::log10(MINIMUM_AMPLITUDE);
 	}
 	return 20.0f * std::log10(linear);
 }
 
 inline float CompressorReader::dbToLinear(float db)
 {
-	if(db <= 20.0f * std::log10(m_floor))
+	if(db <= 20.0f * std::log10(MINIMUM_AMPLITUDE))
 	{
 		return 0.0f;
 	}
