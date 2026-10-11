@@ -405,6 +405,18 @@ extern AUD_API AUD_Sound* AUD_Sound_mutable(AUD_Sound* sound);
      */
 extern AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float feedback, float mix, bool resetBuffer);
 
+    /**
+     * Adds Compressor effect to the sound.
+     * \param sound The handle of the sound.
+     * \param threshold The threshold ratio (0.0 to 1.0) over which to start compression.
+     * \param ratio The compression ratio (e.g., 4.0 for 4:1).
+     * \param attack The attack time in seconds.
+     * \param release The release time in seconds.
+     * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
+     * \return A handle of the compressed sound.
+    */
+extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, float threshold, float ratio, float attack, float release, float makeupGain);
+
 #ifdef WITH_CONVOLUTION
 	extern AUD_API AUD_Sound* AUD_Sound_Convolver(AUD_Sound* sound, AUD_ImpulseResponse* filter, AUD_ThreadPool* threadPool);
 	extern AUD_API AUD_Sound* AUD_Sound_Binaural(AUD_Sound* sound, AUD_HRTF* hrtfs, AUD_Source* source, AUD_ThreadPool* threadPool);
