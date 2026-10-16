@@ -92,6 +92,8 @@ set(SRC
 	src/fx/EchoReader.cpp
 	src/fx/Compressor.cpp
 	src/fx/CompressorReader.cpp
+	src/fx/PeakDetector.cpp
+	src/fx/PeakDetectorReader.cpp
 	src/generator/Sawtooth.cpp
 	src/generator/SawtoothReader.cpp
 	src/generator/Silence.cpp
@@ -211,6 +213,8 @@ set(PUBLIC_HDR
 	include/fx/EchoReader.h
 	include/fx/Compressor.h
 	include/fx/CompressorReader.h
+	include/fx/PeakDetector.h
+	include/fx/PeakDetectorReader.h
 	include/generator/Sawtooth.h
 	include/generator/SawtoothReader.h
 	include/generator/Silence.h
