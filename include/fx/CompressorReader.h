@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "fx/EffectReader.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -36,12 +37,14 @@ class AUD_API CompressorReader : public EffectReader
 private:
 	static constexpr float MINIMUM_AMPLITUDE = 1e-6f; /* Minimum amplitude floor to prevent log10(0) */
 
-	float m_makeupGain; /* Output gain ratio to apply after compression (1.0 for no gain) */
+	std::shared_ptr<IReader> m_reader2; /* The second reader whose amplitude determines the amount of compression (usually the output of a peak or RMS detector) */
+	float m_makeupGain;                 /* Output gain ratio to apply after compression (1.0 for no gain) */
 
 	float m_thresholdDb;      /* Threshold in decibels */
 	float m_compressionSlope; /* Compression slope in dB: 1.0 - 1.0 / ratio */
 	float m_alphaAttack;      /* Attack smoothing factor: exp(-1 / (rate * attack)) */
 	float m_alphaRelease;     /* Release smoothing factor: exp(-1 / (rate * release)) */
+	Buffer m_buffer;
 
 	float m_gainReductionDb{0.0f}; /* Smoothed gain reduction state in decibels */
 
@@ -51,17 +54,19 @@ private:
 public:
 	/**
 	 * Creates a new compressor reader.
-	 * \param reader The reader to read from.
+	 * \param reader1 The reader to read and compress.
+	 * \param reader2 The second reader whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).
 	 * \param threshold The threshold ratio (0.0 to 1.0) over which to start compression.
 	 * \param ratio The compression ratio (e.g., 4.0 for 4:1).
 	 * \param attack The attack time in seconds.
 	 * \param release The release time in seconds.
 	 * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
 	 */
-	CompressorReader(std::shared_ptr<IReader> reader, float threshold, float ratio, float attack, float release, float makeupGain);
+	CompressorReader(std::shared_ptr<IReader> reader1, std::shared_ptr<IReader> reader2, float threshold, float ratio, float attack, float release, float makeupGain);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 	virtual void seek(int position) override;
+	virtual bool isSeekable() const override;
 };
 
 AUD_NAMESPACE_END

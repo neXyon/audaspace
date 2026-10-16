@@ -17,6 +17,9 @@
 #include "fx/CompressorReader.h"
 
 #include <cmath>
+#include <cstring>
+
+#include "Exception.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -38,8 +41,9 @@ inline float CompressorReader::dbToLinear(float db)
 	return std::pow(10.0f, db / 20.0f);
 }
 
-CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, float threshold, float ratio, float attack, float release, float makeupGain) :
-    EffectReader(reader), m_makeupGain(makeupGain)
+CompressorReader::CompressorReader(std::shared_ptr<IReader> reader1, std::shared_ptr<IReader> reader2, float threshold, float ratio, float attack, float release,
+                                   float makeupGain) :
+    EffectReader(reader1), m_reader2(reader2), m_makeupGain(makeupGain)
 {
 	// Precalculate compression parameters and smoothing factors
 	m_thresholdDb = linearToDb(threshold);
@@ -52,6 +56,11 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, float thresh
 
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 {
+	Specs specs = m_reader->getSpecs();
+	Specs specs2 = m_reader2->getSpecs();
+	if(!AUD_COMPARE_SPECS(specs, specs2))
+		AUD_THROW(StateException, "CompressorReader: Both readers must have the same sample rate and channel count.");
+
 	m_reader->read(length, eos, buffer);
 
 	if(length == 0)
@@ -59,23 +68,28 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 		return;
 	}
 
-	Specs specs = m_reader->getSpecs();
+	int samplesize = AUD_SAMPLE_SIZE(specs);
+	m_buffer.assureSize(length * samplesize);
+	sample_t* buf = m_buffer.getBuffer();
+
+	int len2 = length;
+	bool eos2 = false;
+	m_reader2->read(len2, eos2, buf);
+
+	if(len2 < length)
+	{
+		std::memset(buf + len2 * specs.channels, 0, (length - len2) * samplesize);
+	}
+
 	const Channels channels = specs.channels;
 	const int totalSamples = length * channels;
 
 	for(int i = 0; i < totalSamples; i += channels)
 	{
-		// Peak detection across all channels
-		float peak = 0.0f;
-		for(int ch = 0; ch < channels; ch++)
-		{
-			peak = std::max(peak, std::abs(buffer[i + ch]));
-		}
-
-		const float peakDb = linearToDb(peak);
+		const float levelDb = linearToDb(buf[i]);
 
 		// Calculate target gain reduction in decibels
-		const float overshootDb = peakDb - m_thresholdDb;
+		const float overshootDb = levelDb - m_thresholdDb;
 		const float targetReductionDb = (overshootDb > 0.0f) ? (overshootDb * m_compressionSlope) : 0.0f;
 
 		// Apply attack or release smoothing
@@ -100,8 +114,14 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 void CompressorReader::seek(int position)
 {
 	m_reader->seek(position);
+	m_reader2->seek(position);
 
 	m_gainReductionDb = 0.0f;
+}
+
+bool CompressorReader::isSeekable() const
+{
+	return m_reader->isSeekable() && m_reader2->isSeekable();
 }
 
 AUD_NAMESPACE_END
