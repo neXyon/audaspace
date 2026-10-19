@@ -29,7 +29,7 @@ AUD_NAMESPACE_BEGIN
 class AUD_API Compressor : public Effect
 {
 private:
-	std::shared_ptr<ISound> m_sound2; /* The second sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector) */
+	std::shared_ptr<ISound> m_sidechain; /* The sidechain sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector) */
 	float m_threshold;                /* Threshold ratio (0.0 to 1.0) over which to start compression */
 	float m_ratio;                    /* Compression ratio (e.g., 4.0 for 4:1) */
 	float m_attack;                   /* Attack time in seconds */
@@ -38,15 +38,15 @@ private:
 public:
 	/**
 	 * Creates a new compressor sound.
-	 * \param sound1 The input sound to be compressed.
-	 * \param sound2 The second sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).
+	 * \param sound The input sound to be compressed.
+	 * \param sidechain The sidechain sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).
 	 * \param threshold The threshold ratio (0.0 to 1.0) over which to start compression.
 	 * \param ratio The compression ratio (e.g., 4.0 for 4:1).
 	 * \param attack The attack time in seconds.
 	 * \param release The release time in seconds.
 	 * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
 	 */
-	Compressor(std::shared_ptr<ISound> sound1, std::shared_ptr<ISound> sound2, float threshold, float ratio, float attack, float release, float makeupGain);
+	Compressor(std::shared_ptr<ISound> sound, std::shared_ptr<ISound> sidechain, float threshold, float ratio, float attack, float release, float makeupGain);
 
 	float getThreshold() const;
 
@@ -58,7 +58,7 @@ public:
 
 	float getMakeupGain() const;
 
-	std::shared_ptr<ISound> getSound2() const;
+	std::shared_ptr<ISound> getSidechain() const;
 
 	virtual std::shared_ptr<IReader> createReader() override;
 };

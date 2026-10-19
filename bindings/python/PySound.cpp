@@ -1744,10 +1744,10 @@ static PyObject* Sound_echo(Sound* self, PyObject* args, PyObject* kwds)
 	return (PyObject*)parent;
 }
 
-PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(sound2, threshold, ratio, attack, release, makeup_gain)\n\n"
+PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(sidechain, threshold, ratio, attack, release, makeup_gain)\n\n"
                                        "   Applies a dynamic range compressor to the sound.\n\n"
-                                       "   :arg sound2: The second sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).\n"
-                                       "   :type sound2: :class:`Sound`\n"
+                                       "   :arg sidechain: The sidechain sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).\n"
+                                       "   :type sidechain: :class:`Sound`\n"
                                        "   :arg threshold: The threshold ratio (0.0 to 1.0) over which to start compression.\n"
                                        "   :type threshold: float\n"
                                        "   :arg ratio: The compression ratio (e.g., 4.0 for 4:1).\n"
@@ -1762,22 +1762,22 @@ PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(sound2, threshold, 
                                        "   :rtype: :class:`Sound`");
 static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 {
-	PyObject* sound2_obj = nullptr;
+	PyObject* sidechain_obj = nullptr;
 	float threshold = 0.063f;
 	float ratio = 4.0f;
 	float attack_sec = 0.01f;
 	float release_sec = 0.1f;
 	float makeup_gain = 1.0f;
 
-	static const char* kwlist[] = {"sound2", "threshold", "ratio", "attack", "release", "makeup_gain", nullptr};
+	static const char* kwlist[] = {"sidechain", "threshold", "ratio", "attack", "release", "makeup_gain", nullptr};
 
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Offfff:compress", const_cast<char**>(kwlist), &sound2_obj, &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain))
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Offfff:compress", const_cast<char**>(kwlist), &sidechain_obj, &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain))
 	{
 		return nullptr;
 	}
 
-	Sound* sound2_sound = checkSound(sound2_obj);
-	if(!sound2_sound)
+	Sound* sidechain_sound = checkSound(sidechain_obj);
+	if(!sidechain_sound)
 	{
 		return nullptr;
 	}
@@ -1789,9 +1789,9 @@ static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 	{
 		try
 		{
-			auto sound1 = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
-			auto sound2 = *reinterpret_cast<std::shared_ptr<ISound>*>(sound2_sound->sound);
-			auto compressor = std::make_shared<Compressor>(sound1, sound2, threshold, ratio, attack_sec, release_sec, makeup_gain);
+			auto sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
+			auto sidechain = *reinterpret_cast<std::shared_ptr<ISound>*>(sidechain_sound->sound);
+			auto compressor = std::make_shared<Compressor>(sound, sidechain, threshold, ratio, attack_sec, release_sec, makeup_gain);
 			parent->sound = new std::shared_ptr<ISound>(compressor);
 		}
 		catch(Exception& e)

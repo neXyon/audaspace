@@ -407,8 +407,8 @@ extern AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float fe
 
     /**
      * Adds Compressor effect to the sound.
-     * \param sound1 The handle of the sound to be compressed.
-     * \param sound2 The second sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).
+     * \param sound The handle of the sound to be compressed.
+     * \param sidechain The sidechain sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).
      * \param threshold The threshold ratio (0.0 to 1.0) over which to start compression.
      * \param ratio The compression ratio (e.g., 4.0 for 4:1).
      * \param attack The attack time in seconds.
@@ -416,7 +416,7 @@ extern AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float fe
      * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
      * \return A handle of the compressed sound.
     */
-extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound1, AUD_Sound* sound2, float threshold, float ratio, float attack, float release, float makeupGain);
+extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, AUD_Sound* sidechain, float threshold, float ratio, float attack, float release, float makeupGain);
 
     /**
      * Calculates the peak amplitude of a sound across all channels for each frame.

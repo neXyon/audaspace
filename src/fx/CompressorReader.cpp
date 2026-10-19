@@ -41,9 +41,9 @@ inline float CompressorReader::dbToLinear(float db)
 	return std::pow(10.0f, db / 20.0f);
 }
 
-CompressorReader::CompressorReader(std::shared_ptr<IReader> reader1, std::shared_ptr<IReader> reader2, float threshold, float ratio, float attack, float release,
+CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> sidechain_reader, float threshold, float ratio, float attack, float release,
                                    float makeupGain) :
-    EffectReader(reader1), m_reader2(reader2), m_makeupGain(makeupGain)
+    EffectReader(reader), m_sidechain_reader(sidechain_reader), m_makeupGain(makeupGain)
 {
 	// Precalculate compression parameters and smoothing factors
 	m_thresholdDb = linearToDb(threshold);
@@ -57,7 +57,7 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader1, std::shared
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	Specs specs = m_reader->getSpecs();
-	Specs specs2 = m_reader2->getSpecs();
+	Specs specs2 = m_sidechain_reader->getSpecs();
 	if(!AUD_COMPARE_SPECS(specs, specs2))
 		AUD_THROW(StateException, "CompressorReader: Both readers must have the same sample rate and channel count.");
 
@@ -74,7 +74,7 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 
 	int len2 = length;
 	bool eos2 = false;
-	m_reader2->read(len2, eos2, buf);
+	m_sidechain_reader->read(len2, eos2, buf);
 
 	if(len2 < length)
 	{
@@ -114,14 +114,14 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 void CompressorReader::seek(int position)
 {
 	m_reader->seek(position);
-	m_reader2->seek(position);
+	m_sidechain_reader->seek(position);
 
 	m_gainReductionDb = 0.0f;
 }
 
 bool CompressorReader::isSeekable() const
 {
-	return m_reader->isSeekable() && m_reader2->isSeekable();
+	return m_reader->isSeekable() && m_sidechain_reader->isSeekable();
 }
 
 AUD_NAMESPACE_END

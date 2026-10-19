@@ -801,13 +801,13 @@ AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float feedback,
 	}
 }
 
-AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound1, AUD_Sound* sound2, float threshold, float ratio, float attack, float release, float makeupGain)
+AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, AUD_Sound* sidechain, float threshold, float ratio, float attack, float release, float makeupGain)
 {
-	assert(sound1);
-	assert(sound2);
+	assert(sound);
+	assert(sidechain);
 	try
 	{
-		return new AUD_Sound(new Compressor(*sound1, *sound2, threshold, ratio, attack, release, makeupGain));
+		return new AUD_Sound(new Compressor(*sound, *sidechain, threshold, ratio, attack, release, makeupGain));
 	}
 	catch(Exception&)
 	{
