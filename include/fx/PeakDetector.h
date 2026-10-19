@@ -27,7 +27,7 @@
 AUD_NAMESPACE_BEGIN
 
 /**
- * Calculates the peak amplitude of an input sound across all channels for each frame.
+ * Calculates the peak amplitude of an input sound across all channels for each frame, outputting a mono sound.
  */
 class AUD_API PeakDetector : public Effect
 {

@@ -57,10 +57,15 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 {
 	Specs specs = m_reader->getSpecs();
-	Specs specs2 = m_sidechain_reader->getSpecs();
-	if(!AUD_COMPARE_SPECS(specs, specs2))
-		AUD_THROW(StateException, "CompressorReader: Both readers must have the same sample rate and channel count.");
-
+	Specs sidechainSpecs = m_sidechain_reader->getSpecs();
+	if(specs.rate != sidechainSpecs.rate)
+	{
+		AUD_THROW(StateException, "The sound and the sidechain must have the same rate.");
+	}
+	if(specs.channels != sidechainSpecs.channels && sidechainSpecs.channels != CHANNELS_MONO)
+	{
+		AUD_THROW(StateException, "The sidechain and the sound must either have the same amount of channels or the sidechain must be mono.");
+	}
 	m_reader->read(length, eos, buffer);
 
 	if(length == 0)
@@ -68,8 +73,8 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 		return;
 	}
 
-	int samplesize = AUD_SAMPLE_SIZE(specs);
-	m_buffer.assureSize(length * samplesize);
+	int sidechainSamplesize = AUD_SAMPLE_SIZE(sidechainSpecs);
+	m_buffer.assureSize(length * sidechainSamplesize);
 	sample_t* buf = m_buffer.getBuffer();
 
 	int len2 = length;
@@ -78,15 +83,15 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 
 	if(len2 < length)
 	{
-		std::memset(buf + len2 * specs.channels, 0, (length - len2) * samplesize);
+		std::memset(buf + len2 * sidechainSpecs.channels, 0, (length - len2) * sidechainSamplesize);
 	}
 
 	const Channels channels = specs.channels;
-	const int totalSamples = length * channels;
+	const Channels sidechainChannels = sidechainSpecs.channels;
 
-	for(int i = 0; i < totalSamples; i += channels)
+	for(int frame = 0; frame < length; frame++)
 	{
-		const float levelDb = linearToDb(buf[i]);
+		const float levelDb = linearToDb(buf[frame * sidechainChannels]);
 
 		// Calculate target gain reduction in decibels
 		const float overshootDb = levelDb - m_thresholdDb;
@@ -106,7 +111,7 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 		const float gain = dbToLinear(-m_gainReductionDb) * m_makeupGain;
 		for(int ch = 0; ch < channels; ch++)
 		{
-			buffer[i + ch] *= gain;
+			buffer[frame * channels + ch] *= gain;
 		}
 	}
 }

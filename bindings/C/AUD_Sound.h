@@ -421,7 +421,7 @@ extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, AUD_Sound* sidech
     /**
      * Calculates the peak amplitude of a sound across all channels for each frame.
      * \param sound The input sound.
-     * \return A handle of the sound with the peak value of each frame duplicated across all channels.
+     * \return A handle of the created mono sound containing the peak amplitude for each frame.
      */
 extern AUD_API AUD_Sound* AUD_Sound_peakDetector(AUD_Sound* sound);
 

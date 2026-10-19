@@ -25,13 +25,17 @@
 #include <memory>
 
 #include "fx/EffectReader.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 /**
- * This reader reads another reader and calculates the peak amplitude across all channels for each frame of sound.
+ * This reader reads another reader and calculates the peak amplitude across all channels for each frame of sound, outputting a mono sound.
  */
 class AUD_API PeakDetectorReader : public EffectReader
 {
+private:
+	Buffer m_buffer;
+
 public:
 	/**
 	 * Creates a new peak detector reader.
@@ -40,6 +44,7 @@ public:
 	PeakDetectorReader(std::shared_ptr<IReader> reader);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
+	virtual Specs getSpecs() const override;
 };
 
 AUD_NAMESPACE_END

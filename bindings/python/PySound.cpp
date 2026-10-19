@@ -1807,7 +1807,7 @@ static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 
 PyDoc_STRVAR(M_aud_Sound_peakDetector_doc, ".. method:: peakDetector()\n\n"
                                            "   Calculates the peak amplitude of the sound across all channels for each frame.\n\n"
-                                           "   :return: The created :class:`Sound` object with the peak value of each frame duplicated across all channels.\n"
+                                           "   :return: The created mono :class:`Sound` object containing the peak amplitude for each frame.\n"
                                            "   :rtype: :class:`Sound`");
 static PyObject* Sound_peakDetector(Sound* self)
 {
