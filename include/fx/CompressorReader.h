@@ -23,6 +23,7 @@
  */
 
 #include <memory>
+#include <vector>
 
 #include "fx/EffectReader.h"
 #include "util/Buffer.h"
@@ -46,7 +47,7 @@ private:
 	float m_alphaRelease;     /* Release smoothing factor: exp(-1 / (rate * release)) */
 	Buffer m_buffer;
 
-	float m_gainReductionDb{0.0f}; /* Smoothed gain reduction state in decibels */
+	std::vector<float> m_gainReductionDb; /* Smoothed gain reduction state in decibels for each channel */
 
 	static inline float linearToDb(float linear);
 	static inline float dbToLinear(float db);

@@ -49,9 +49,13 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_
 	m_thresholdDb = linearToDb(threshold);
 	m_compressionSlope = (ratio > 1.0f) ? (1.0f - 1.0f / ratio) : 0.0f;
 
-	SampleRate sampleRate = m_reader->getSpecs().rate;
+	Specs specs = m_reader->getSpecs();
+	SampleRate sampleRate = specs.rate;
+	Channels channels = specs.channels;
+
 	m_alphaAttack = (sampleRate > 0 && attack > 0) ? std::exp(-1.0f / (sampleRate * attack)) : 0.0f;
 	m_alphaRelease = (sampleRate > 0 && release > 0) ? std::exp(-1.0f / (sampleRate * release)) : 0.0f;
+	m_gainReductionDb.resize(channels, 0.0f);
 }
 
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
@@ -89,29 +93,60 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 	const Channels channels = specs.channels;
 	const Channels sidechainChannels = sidechainSpecs.channels;
 
-	for(int frame = 0; frame < length; frame++)
+	if(sidechainChannels == CHANNELS_MONO)
 	{
-		const float levelDb = linearToDb(buf[frame * sidechainChannels]);
-
-		// Calculate target gain reduction in decibels
-		const float overshootDb = levelDb - m_thresholdDb;
-		const float targetReductionDb = (overshootDb > 0.0f) ? (overshootDb * m_compressionSlope) : 0.0f;
-
-		// Apply attack or release smoothing
-		if(targetReductionDb >= m_gainReductionDb)
+		for(int frame = 0; frame < length; frame++)
 		{
-			m_gainReductionDb = m_alphaAttack * m_gainReductionDb + (1.0f - m_alphaAttack) * targetReductionDb;
+			const float levelDb = linearToDb(buf[frame]);
+
+			// Calculate target gain reduction in decibels
+			const float overshootDb = levelDb - m_thresholdDb;
+			const float targetReductionDb = (overshootDb > 0.0f) ? (overshootDb * m_compressionSlope) : 0.0f;
+
+			// Apply attack or release smoothing
+			if(targetReductionDb >= m_gainReductionDb[0])
+			{
+				m_gainReductionDb[0] = m_alphaAttack * m_gainReductionDb[0] + (1.0f - m_alphaAttack) * targetReductionDb;
+			}
+			else
+			{
+				m_gainReductionDb[0] = m_alphaRelease * m_gainReductionDb[0] + (1.0f - m_alphaRelease) * targetReductionDb;
+			}
+
+			// Calculate final gain and apply to all channels.
+			const float gain = dbToLinear(-m_gainReductionDb[0]) * m_makeupGain;
+			for(int ch = 0; ch < channels; ch++)
+			{
+				buffer[frame * channels + ch] *= gain;
+			}
 		}
-		else
+	}
+	else
+	{
+		for(int frame = 0; frame < length; frame++)
 		{
-			m_gainReductionDb = m_alphaRelease * m_gainReductionDb + (1.0f - m_alphaRelease) * targetReductionDb;
-		}
+			for(int ch = 0; ch < channels; ch++)
+			{
+				const float levelDb = linearToDb(buf[frame * sidechainChannels + ch]);
 
-		// Calculate final gain and apply to all channels.
-		const float gain = dbToLinear(-m_gainReductionDb) * m_makeupGain;
-		for(int ch = 0; ch < channels; ch++)
-		{
-			buffer[frame * channels + ch] *= gain;
+				// Calculate target gain reduction in decibels
+				const float overshootDb = levelDb - m_thresholdDb;
+				const float targetReductionDb = (overshootDb > 0.0f) ? (overshootDb * m_compressionSlope) : 0.0f;
+
+				// Apply attack or release smoothing
+				if(targetReductionDb >= m_gainReductionDb[ch])
+				{
+					m_gainReductionDb[ch] = m_alphaAttack * m_gainReductionDb[ch] + (1.0f - m_alphaAttack) * targetReductionDb;
+				}
+				else
+				{
+					m_gainReductionDb[ch] = m_alphaRelease * m_gainReductionDb[ch] + (1.0f - m_alphaRelease) * targetReductionDb;
+				}
+
+				// Calculate final gain and apply to all channels.
+				const float gain = dbToLinear(-m_gainReductionDb[ch]) * m_makeupGain;
+				buffer[frame * channels + ch] *= gain;
+			}
 		}
 	}
 }
@@ -121,7 +156,7 @@ void CompressorReader::seek(int position)
 	m_reader->seek(position);
 	m_sidechain_reader->seek(position);
 
-	m_gainReductionDb = 0.0f;
+	std::fill(m_gainReductionDb.begin(), m_gainReductionDb.end(), 0.0f);
 }
 
 bool CompressorReader::isSeekable() const
