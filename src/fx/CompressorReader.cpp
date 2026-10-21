@@ -51,11 +51,10 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_
 
 	Specs specs = m_reader->getSpecs();
 	SampleRate sampleRate = specs.rate;
-	Channels channels = specs.channels;
 
 	m_alphaAttack = (sampleRate > 0 && attack > 0) ? std::exp(-1.0f / (sampleRate * attack)) : 0.0f;
 	m_alphaRelease = (sampleRate > 0 && release > 0) ? std::exp(-1.0f / (sampleRate * release)) : 0.0f;
-	m_gainReductionDb.resize(channels, 0.0f);
+	m_gainReductionDb.resize(m_sidechain_reader->getSpecs().channels, 0.0f);
 }
 
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
