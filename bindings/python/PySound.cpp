@@ -62,6 +62,7 @@
 
 #include "fx/Echo.h"
 #include "fx/Compressor.h"
+#include "fx/PeakDetector.h"
 
 #ifdef WITH_CONVOLUTION
 #include "fx/BinauralSound.h"
@@ -1743,8 +1744,10 @@ static PyObject* Sound_echo(Sound* self, PyObject* args, PyObject* kwds)
 	return (PyObject*)parent;
 }
 
-PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(threshold, ratio, attack, release, makeup_gain)\n\n"
+PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(sidechain, threshold, ratio, attack, release, makeup_gain)\n\n"
                                        "   Applies a dynamic range compressor to the sound.\n\n"
+                                       "   :arg sidechain: The sidechain sound whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).\n"
+                                       "   :type sidechain: :class:`Sound`\n"
                                        "   :arg threshold: The threshold ratio (0.0 to 1.0) over which to start compression.\n"
                                        "   :type threshold: float\n"
                                        "   :arg ratio: The compression ratio (e.g., 4.0 for 4:1).\n"
@@ -1759,15 +1762,22 @@ PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(threshold, ratio, a
                                        "   :rtype: :class:`Sound`");
 static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 {
+	PyObject* sidechain_obj = nullptr;
 	float threshold = 0.063f;
 	float ratio = 4.0f;
 	float attack_sec = 0.01f;
 	float release_sec = 0.1f;
 	float makeup_gain = 1.0f;
 
-	static const char* kwlist[] = {"threshold", "ratio", "attack", "release", "makeup_gain", nullptr};
+	static const char* kwlist[] = {"sidechain", "threshold", "ratio", "attack", "release", "makeup_gain", nullptr};
 
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "fffff:compress", const_cast<char**>(kwlist), &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain))
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Offfff:compress", const_cast<char**>(kwlist), &sidechain_obj, &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain))
+	{
+		return nullptr;
+	}
+
+	Sound* sidechain_sound = checkSound(sidechain_obj);
+	if(!sidechain_sound)
 	{
 		return nullptr;
 	}
@@ -1779,8 +1789,9 @@ static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 	{
 		try
 		{
-			auto input = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
-			auto compressor = std::make_shared<Compressor>(input, threshold, ratio, attack_sec, release_sec, makeup_gain);
+			auto sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
+			auto sidechain = *reinterpret_cast<std::shared_ptr<ISound>*>(sidechain_sound->sound);
+			auto compressor = std::make_shared<Compressor>(sound, sidechain, threshold, ratio, attack_sec, release_sec, makeup_gain);
 			parent->sound = new std::shared_ptr<ISound>(compressor);
 		}
 		catch(Exception& e)
@@ -1792,6 +1803,32 @@ static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 	}
 
 	return (PyObject*) parent;
+}
+
+PyDoc_STRVAR(M_aud_Sound_peakDetector_doc, ".. method:: peakDetector()\n\n"
+                                           "   Calculates the peak amplitude of the sound across all channels for each frame.\n\n"
+                                           "   :return: The created mono :class:`Sound` object containing the peak amplitude for each frame.\n"
+                                           "   :rtype: :class:`Sound`");
+static PyObject* Sound_peakDetector(Sound* self)
+{
+	PyTypeObject* type = Py_TYPE(self);
+	Sound* parent = (Sound*)type->tp_alloc(type, 0);
+
+	if(parent != nullptr)
+	{
+		try
+		{
+			parent->sound = new std::shared_ptr<ISound>(new PeakDetector(*reinterpret_cast<std::shared_ptr<ISound>*>(self->sound)));
+		}
+		catch(Exception& e)
+		{
+			Py_DECREF(parent);
+			PyErr_SetString(AUDError, e.what());
+			return nullptr;
+		}
+	}
+
+	return (PyObject*)parent;
 }
 
 #ifdef WITH_CONVOLUTION
@@ -2170,6 +2207,8 @@ static PyMethodDef Sound_methods[] = {
 	M_aud_Sound_echo_doc},
 	{"compress", (PyCFunction)Sound_compress, METH_VARARGS | METH_KEYWORDS,
 	M_aud_Sound_compress_doc},
+	{"peakDetector", (PyCFunction)Sound_peakDetector, METH_NOARGS,
+	M_aud_Sound_peakDetector_doc},
 
 #ifdef WITH_CONVOLUTION
 	{ "convolver", (PyCFunction)Sound_convolver, METH_VARARGS,

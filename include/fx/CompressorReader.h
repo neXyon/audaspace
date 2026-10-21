@@ -23,8 +23,10 @@
  */
 
 #include <memory>
+#include <vector>
 
 #include "fx/EffectReader.h"
+#include "util/Buffer.h"
 
 AUD_NAMESPACE_BEGIN
 
@@ -36,14 +38,16 @@ class AUD_API CompressorReader : public EffectReader
 private:
 	static constexpr float MINIMUM_AMPLITUDE = 1e-6f; /* Minimum amplitude floor to prevent log10(0) */
 
-	float m_makeupGain; /* Output gain ratio to apply after compression (1.0 for no gain) */
+	std::shared_ptr<IReader> m_sidechain_reader; /* The sidechain reader whose amplitude determines the amount of compression (usually the output of a peak or RMS detector) */
+	float m_makeupGain;                          /* Output gain ratio to apply after compression (1.0 for no gain) */
 
 	float m_thresholdDb;      /* Threshold in decibels */
 	float m_compressionSlope; /* Compression slope in dB: 1.0 - 1.0 / ratio */
 	float m_alphaAttack;      /* Attack smoothing factor: exp(-1 / (rate * attack)) */
 	float m_alphaRelease;     /* Release smoothing factor: exp(-1 / (rate * release)) */
+	Buffer m_buffer;
 
-	float m_gainReductionDb{0.0f}; /* Smoothed gain reduction state in decibels */
+	std::vector<float> m_gainReductionDb; /* Smoothed gain reduction state in decibels for each channel */
 
 	static inline float linearToDb(float linear);
 	static inline float dbToLinear(float db);
@@ -51,17 +55,19 @@ private:
 public:
 	/**
 	 * Creates a new compressor reader.
-	 * \param reader The reader to read from.
+	 * \param reader The reader to read from and compress.
+	 * \param sidechain_reader The sidechain reader whose amplitude determines the amount of compression (usually the output of a peak or RMS detector).
 	 * \param threshold The threshold ratio (0.0 to 1.0) over which to start compression.
 	 * \param ratio The compression ratio (e.g., 4.0 for 4:1).
 	 * \param attack The attack time in seconds.
 	 * \param release The release time in seconds.
 	 * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
 	 */
-	CompressorReader(std::shared_ptr<IReader> reader, float threshold, float ratio, float attack, float release, float makeupGain);
+	CompressorReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> sidechain_reader, float threshold, float ratio, float attack, float release, float makeupGain);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 	virtual void seek(int position) override;
+	virtual bool isSeekable() const override;
 };
 
 AUD_NAMESPACE_END
