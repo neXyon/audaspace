@@ -1758,6 +1758,8 @@ PyDoc_STRVAR(M_aud_Sound_compress_doc, ".. method:: compress(sidechain, threshol
                                        "   :type release: float\n"
                                        "   :arg makeup_gain: The output gain ratio to apply after compression (1.0 for no gain).\n"
                                        "   :type makeup_gain: float\n"
+                                       "   :arg knee: The knee ratio (1.0 for hard knee, higher for soft knee).\n"
+                                       "   :type knee: float\n"
                                        "   :return: The created :class:`Sound` object.\n"
                                        "   :rtype: :class:`Sound`");
 static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
@@ -1768,10 +1770,11 @@ static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 	float attack_sec = 0.01f;
 	float release_sec = 0.1f;
 	float makeup_gain = 1.0f;
+	float knee = 1.0f;
 
-	static const char* kwlist[] = {"sidechain", "threshold", "ratio", "attack", "release", "makeup_gain", nullptr};
+	static const char* kwlist[] = {"sidechain", "threshold", "ratio", "attack", "release", "makeup_gain", "knee", nullptr};
 
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Offfff:compress", const_cast<char**>(kwlist), &sidechain_obj, &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain))
+	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Offffff:compress", const_cast<char**>(kwlist), &sidechain_obj, &threshold, &ratio, &attack_sec, &release_sec, &makeup_gain, &knee))
 	{
 		return nullptr;
 	}
@@ -1791,7 +1794,7 @@ static PyObject* Sound_compress(Sound* self, PyObject* args, PyObject* kwds)
 		{
 			auto sound = *reinterpret_cast<std::shared_ptr<ISound>*>(self->sound);
 			auto sidechain = *reinterpret_cast<std::shared_ptr<ISound>*>(sidechain_sound->sound);
-			auto compressor = std::make_shared<Compressor>(sound, sidechain, threshold, ratio, attack_sec, release_sec, makeup_gain);
+			auto compressor = std::make_shared<Compressor>(sound, sidechain, threshold, ratio, attack_sec, release_sec, makeup_gain, knee);
 			parent->sound = new std::shared_ptr<ISound>(compressor);
 		}
 		catch(Exception& e)
