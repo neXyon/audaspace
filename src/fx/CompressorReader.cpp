@@ -56,7 +56,7 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_
 	m_alphaRelease = (sampleRate > 0 && release > 0) ? std::exp(-1.0f / (sampleRate * release)) : 0.0f;
 	m_gainReductionDb.resize(m_sidechain_reader->getSpecs().channels, 0.0f);
 
-	m_kneeWidthDb = (knee > 1.0f) ? 20.0f * std::log10(knee) : 0.0f;
+	m_kneeWidthHalfDb = (knee > 1.0f) ? 10.0f * std::log10(knee) : 0.0f;
 }
 
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
@@ -93,7 +93,6 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 
 	const Channels channels = specs.channels;
 	const Channels sidechainChannels = sidechainSpecs.channels;
-	float kneeHalfDb = m_kneeWidthDb * 0.5f;
 
 	if(sidechainChannels == CHANNELS_MONO)
 	{
@@ -106,13 +105,13 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 			float targetReductionDb = 0.0f;
 
 			// Smooth gain reduction within the knee region
-			if(m_kneeWidthDb > 0.0f && std::fabs(overshootDb) <= kneeHalfDb)
+			if(m_kneeWidthHalfDb > 0.0f && std::fabs(overshootDb) <= m_kneeWidthHalfDb)
 			{
-				const float x = overshootDb + kneeHalfDb;
-				targetReductionDb = (x * x / (2.0f * m_kneeWidthDb)) * m_compressionSlope;
+				const float x = overshootDb + m_kneeWidthHalfDb;
+				targetReductionDb = (x * x / (4.0f * m_kneeWidthHalfDb)) * m_compressionSlope;
 			}
 			// Standard gain reduction above the knee region
-			else if(overshootDb > kneeHalfDb)
+			else if(overshootDb > m_kneeWidthHalfDb)
 			{
 				targetReductionDb = overshootDb * m_compressionSlope;
 			}
@@ -148,13 +147,13 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 				float targetReductionDb = 0.0f;
 
 				// Smooth gain reduction within the knee region
-				if(m_kneeWidthDb > 0.0f && std::fabs(overshootDb) <= kneeHalfDb)
+				if(m_kneeWidthHalfDb > 0.0f && std::fabs(overshootDb) <= m_kneeWidthHalfDb)
 				{
-					const float x = overshootDb + kneeHalfDb;
-					targetReductionDb = (x * x / (2.0f * m_kneeWidthDb)) * m_compressionSlope;
+					const float x = overshootDb + m_kneeWidthHalfDb;
+					targetReductionDb = (x * x / (4.0f * m_kneeWidthHalfDb)) * m_compressionSlope;
 				}
 				// Standard gain reduction above the knee region
-				else if(overshootDb > kneeHalfDb)
+				else if(overshootDb > m_kneeWidthHalfDb)
 				{
 					targetReductionDb = overshootDb * m_compressionSlope;
 				}

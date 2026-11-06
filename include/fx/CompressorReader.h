@@ -45,7 +45,7 @@ private:
 	float m_compressionSlope; /* Compression slope in dB: 1.0 - 1.0 / ratio */
 	float m_alphaAttack;      /* Attack smoothing factor: exp(-1 / (rate * attack)) */
 	float m_alphaRelease;     /* Release smoothing factor: exp(-1 / (rate * release)) */
-	float m_kneeWidthDb;      /* Knee width in decibels for soft knee compression */
+	float m_kneeWidthHalfDb;  /* Half knee width in decibels for soft knee compression */
 	Buffer m_buffer;
 
 	std::vector<float> m_gainReductionDb; /* Smoothed gain reduction state in decibels for each channel */
@@ -65,7 +65,8 @@ public:
 	 * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
 	 * \param knee The knee ratio (1.0 for hard knee, higher for soft knee).
 	 */
-	CompressorReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> sidechain_reader, float threshold, float ratio, float attack, float release, float makeupGain, float knee);
+	CompressorReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> sidechain_reader, float threshold, float ratio, float attack, float release, float makeupGain,
+	                 float knee);
 
 	virtual void read(int& length, bool& eos, sample_t* buffer) override;
 	virtual void seek(int position) override;
