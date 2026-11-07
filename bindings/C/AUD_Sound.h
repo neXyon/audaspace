@@ -414,9 +414,10 @@ extern AUD_API AUD_Sound* AUD_Sound_Echo(AUD_Sound* sound, float delay, float fe
      * \param attack The attack time in seconds.
      * \param release The release time in seconds.
      * \param makeupGain The output gain ratio to apply after compression (1.0 for no gain).
+     * \param knee The knee ratio (1.0 for hard knee, higher for soft knee).
      * \return A handle of the compressed sound.
     */
-extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, AUD_Sound* sidechain, float threshold, float ratio, float attack, float release, float makeupGain);
+extern AUD_API AUD_Sound* AUD_Sound_Compress(AUD_Sound* sound, AUD_Sound* sidechain, float threshold, float ratio, float attack, float release, float makeupGain, float knee);
 
     /**
      * Calculates the peak amplitude of a sound across all channels for each frame.

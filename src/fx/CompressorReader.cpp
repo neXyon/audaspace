@@ -42,7 +42,7 @@ inline float CompressorReader::dbToLinear(float db)
 }
 
 CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_ptr<IReader> sidechain_reader, float threshold, float ratio, float attack, float release,
-                                   float makeupGain) :
+                                   float makeupGain, float knee) :
     EffectReader(reader), m_sidechain_reader(sidechain_reader), m_makeupGain(makeupGain)
 {
 	// Precalculate compression parameters and smoothing factors
@@ -55,6 +55,8 @@ CompressorReader::CompressorReader(std::shared_ptr<IReader> reader, std::shared_
 	m_alphaAttack = (sampleRate > 0 && attack > 0) ? std::exp(-1.0f / (sampleRate * attack)) : 0.0f;
 	m_alphaRelease = (sampleRate > 0 && release > 0) ? std::exp(-1.0f / (sampleRate * release)) : 0.0f;
 	m_gainReductionDb.resize(m_sidechain_reader->getSpecs().channels, 0.0f);
+
+	m_kneeWidthHalfDb = (knee > 1.0f) ? 10.0f * std::log10(knee) : 0.0f;
 }
 
 void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
@@ -100,7 +102,19 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 
 			// Calculate target gain reduction in decibels
 			const float overshootDb = levelDb - m_thresholdDb;
-			const float targetReductionDb = (overshootDb > 0.0f) ? (overshootDb * m_compressionSlope) : 0.0f;
+			float targetReductionDb = 0.0f;
+
+			// Smooth gain reduction within the knee region
+			if(m_kneeWidthHalfDb > 0.0f && std::fabs(overshootDb) <= m_kneeWidthHalfDb)
+			{
+				const float x = overshootDb + m_kneeWidthHalfDb;
+				targetReductionDb = (x * x / (4.0f * m_kneeWidthHalfDb)) * m_compressionSlope;
+			}
+			// Standard gain reduction above the knee region
+			else if(overshootDb > m_kneeWidthHalfDb)
+			{
+				targetReductionDb = overshootDb * m_compressionSlope;
+			}
 
 			// Apply attack or release smoothing
 			if(targetReductionDb >= m_gainReductionDb[0])
@@ -130,7 +144,19 @@ void CompressorReader::read(int& length, bool& eos, sample_t* buffer)
 
 				// Calculate target gain reduction in decibels
 				const float overshootDb = levelDb - m_thresholdDb;
-				const float targetReductionDb = (overshootDb > 0.0f) ? (overshootDb * m_compressionSlope) : 0.0f;
+				float targetReductionDb = 0.0f;
+
+				// Smooth gain reduction within the knee region
+				if(m_kneeWidthHalfDb > 0.0f && std::fabs(overshootDb) <= m_kneeWidthHalfDb)
+				{
+					const float x = overshootDb + m_kneeWidthHalfDb;
+					targetReductionDb = (x * x / (4.0f * m_kneeWidthHalfDb)) * m_compressionSlope;
+				}
+				// Standard gain reduction above the knee region
+				else if(overshootDb > m_kneeWidthHalfDb)
+				{
+					targetReductionDb = overshootDb * m_compressionSlope;
+				}
 
 				// Apply attack or release smoothing
 				if(targetReductionDb >= m_gainReductionDb[ch])
