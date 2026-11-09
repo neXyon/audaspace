@@ -16,6 +16,7 @@
 
 #include "fx/PeakDetectorReader.h"
 
+#include <algorithm>
 #include <cmath>
 
 AUD_NAMESPACE_BEGIN
