@@ -34,15 +34,13 @@ static std::unique_ptr<float[]> allocateFrames(long long frames, int count)
 }
 
 AnimateableProperty::AnimateableProperty(int count) :
-	m_count(count), m_isAnimated(false), m_bufferPosition(0), m_frames(allocateFrames(1, count)), m_blockOffset(0), m_length(1)
+	m_count(count), m_isAnimated(false), m_bufferPosition(0), m_frames(count, 0.0f), m_blockOffset(0), m_length(1)
 {
-	std::memset(m_frames.get(), 0, count * sizeof(float));
 }
 
 AnimateableProperty::AnimateableProperty(int count, float value) :
-	m_count(count), m_isAnimated(false), m_bufferPosition(0), m_frames(allocateFrames(1, count)), m_blockOffset(0), m_length(1)
+	m_count(count), m_isAnimated(false), m_bufferPosition(0), m_frames(count, value), m_blockOffset(0), m_length(1)
 {
-	std::fill(m_frames.get(), m_frames.get() + count, value);
 }
 
 float* AnimateableProperty::getFrames(int position, long long& frames)
@@ -52,7 +50,7 @@ float* AnimateableProperty::getFrames(int position, long long& frames)
 	if(!m_blocks)
 	{
 		frames = m_length - index;
-		return m_frames.get() + index * m_count;
+		return m_frames.data() + index * m_count;
 	}
 
 	index += m_blockOffset;
@@ -74,10 +72,14 @@ void AnimateableProperty::growBuffer(int before, int after)
 	{
 		if(length <= BLOCK_FRAMES)
 		{
-			// a buffer that fits into a block is replaced, which copies less than a block
-			std::unique_ptr<float[]> frames = allocateFrames(length, m_count);
-			std::memcpy(frames.get() + (long long)before * m_count, m_frames.get(), (long long)m_length * m_count * sizeof(float));
-			m_frames = std::move(frames);
+			// a buffer that fits into a block grows within the capacity of a block
+			const size_t size = size_t(length) * m_count;
+
+			if(size > m_frames.capacity())
+				m_frames.reserve(std::min(std::max(size, 2 * m_frames.capacity()), size_t(BLOCK_FRAMES) * m_count));
+
+			m_frames.insert(m_frames.begin(), size_t(before) * m_count, 0.0f);
+			m_frames.resize(size);
 			m_length = int(length);
 			return;
 		}
@@ -85,8 +87,8 @@ void AnimateableProperty::growBuffer(int before, int after)
 		// a longer buffer is stored in blocks, the stored frames are copied into the first
 		m_blocks = std::make_unique<std::deque<std::unique_ptr<float[]>>>();
 		m_blocks->push_back(allocateFrames(BLOCK_FRAMES, m_count));
-		std::memcpy(m_blocks->front().get(), m_frames.get(), (long long)m_length * m_count * sizeof(float));
-		m_frames.reset();
+		std::memcpy(m_blocks->front().get(), m_frames.data(), m_frames.size() * sizeof(float));
+		m_frames = std::vector<float>();
 		m_blockOffset = 0;
 	}
 
@@ -116,11 +118,7 @@ void AnimateableProperty::discardBufferStart(int count)
 	const int length = m_length - count;
 
 	if(!m_blocks)
-	{
-		std::unique_ptr<float[]> frames = allocateFrames(length, m_count);
-		std::memcpy(frames.get(), m_frames.get() + (long long)count * m_count, (long long)length * m_count * sizeof(float));
-		m_frames = std::move(frames);
-	}
+		m_frames.erase(m_frames.begin(), m_frames.begin() + size_t(count) * m_count);
 	else
 	{
 		// the blocks before the first frame are freed
@@ -247,9 +245,8 @@ void AnimateableProperty::reset()
 {
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-	std::unique_ptr<float[]> frames = allocateFrames(1, m_count);
-	std::memcpy(frames.get(), getFrame(m_bufferPosition), m_count * sizeof(float));
-	m_frames = std::move(frames);
+	const float* first = getFrame(m_bufferPosition);
+	m_frames = std::vector<float>(first, first + m_count);
 	m_blocks.reset();
 	m_blockOffset = 0;
 	m_length = 1;

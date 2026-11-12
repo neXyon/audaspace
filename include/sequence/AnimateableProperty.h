@@ -28,6 +28,7 @@
 #include <memory>
 #include <mutex>
 #include <list>
+#include <vector>
 
 AUD_NAMESPACE_BEGIN
 
@@ -66,8 +67,8 @@ private:
 	/// The position of the first frame in the buffer, the frames before it have its value.
 	int m_bufferPosition;
 
-	/// The frames of a buffer that fits into a block, in an allocation of its exact size.
-	std::unique_ptr<float[]> m_frames;
+	/// The frames of a buffer that fits into a block, in an allocation of at most a block.
+	std::vector<float> m_frames;
 
 	/**
 	 * The frames of a longer buffer, in blocks of the same size, so that adding or discarding frames
