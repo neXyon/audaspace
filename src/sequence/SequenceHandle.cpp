@@ -242,36 +242,7 @@ bool SequenceHandle::seek(double position)
 
 	std::lock_guard<ILockable> lock(*m_entry);
 
-	double seek_frame = (position - m_entry->m_begin) * m_entry->m_sequence_data->getFPS();
-
-	if(seek_frame < 0)
-		seek_frame = 0;
-
-	seek_frame += m_entry->m_skip * m_entry->m_sequence_data->getFPS();
-
-	AnimateableProperty* pitch_property = m_entry->getAnimProperty(AP_PITCH);
-
-	double target_frame = 0;
-
-	if(pitch_property != nullptr)
-	{
-		int frame_start = (m_entry->m_begin - m_entry->m_skip) * m_entry->m_sequence_data->getFPS();
-
-		for(int i = 0; seek_frame > 0; i++)
-		{
-			float pitch;
-			pitch_property->read(frame_start + i, &pitch);
-			const double factor = seek_frame > 1.0 ? 1.0 : seek_frame;
-			target_frame += pitch * factor;
-			seek_frame--;
-		}
-	}
-	else
-	{
-		target_frame = seek_frame;
-	}
-
-	double seekpos = target_frame / m_entry->m_sequence_data->getFPS();
+	const double seekpos = m_entry->getSoundPosition(position);
 
 	m_handle->setPitch(1.0f);
 	m_handle->seek(seekpos);
