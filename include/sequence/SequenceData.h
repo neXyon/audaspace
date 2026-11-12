@@ -84,8 +84,11 @@ private:
 	/// The animated listener orientation.
 	AnimateableProperty m_orientation;
 
-	/// The animated properties of references to the scene, see getReferenceAnimProperty().
-	std::map<std::vector<int>, std::map<std::pair<int, AnimateablePropertyType>, std::unique_ptr<AnimateableProperty> > > m_reference_properties;
+	/// The animated properties of a reference to the scene by entry ID, -1 for the scene, and type.
+	typedef std::map<std::pair<int, AnimateablePropertyType>, std::unique_ptr<AnimateableProperty> > ReferenceProperties;
+
+	/// The animated properties of references to the scene by reference, see getReferenceAnimProperty().
+	std::map<std::vector<int>, ReferenceProperties> m_reference_properties;
 
 	/// The mutex for locking.
 	std::recursive_mutex m_mutex;
