@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include "SequenceHandle.h"
+#include "sequence/Sequence.h"
+#include "sequence/SequenceData.h"
 #include "sequence/SequenceEntry.h"
 #include "devices/ReadDevice.h"
 #include "Exception.h"
@@ -42,7 +44,18 @@ void SequenceHandle::start()
 	{
 		try
 		{
-			m_handle = m_device.play(m_entry->m_sound, true);
+			// a sequence reads the animated properties of this entry's reference to it
+			std::shared_ptr<Sequence> sequence = std::dynamic_pointer_cast<Sequence>(m_entry->m_sound);
+
+			if(sequence)
+			{
+				std::vector<int> reference = m_reference;
+				reference.push_back(m_entry->m_id);
+				m_handle = m_device.play(sequence->createReferenceReader(std::move(reference)), true);
+			}
+			else
+				m_handle = m_device.play(m_entry->m_sound, true);
+
 			m_3dhandle = std::dynamic_pointer_cast<I3DHandle>(m_handle);
 		}
 		catch(Exception&)
@@ -109,13 +122,14 @@ bool SequenceHandle::updatePosition(double position)
 	return false;
 }
 
-SequenceHandle::SequenceHandle(std::shared_ptr<SequenceEntry> entry, ReadDevice& device) :
+SequenceHandle::SequenceHandle(std::shared_ptr<SequenceEntry> entry, ReadDevice& device, const std::vector<int>& reference) :
 	m_entry(entry),
 	m_valid(true),
 	m_status(0),
 	m_pos_status(0),
 	m_sound_status(0),
-	m_device(device)
+	m_device(device),
+	m_reference(reference)
 {
 }
 
@@ -206,13 +220,24 @@ void SequenceHandle::update(double position, float frame, float fps)
 		m_status = m_entry->m_status;
 	}
 
+	AnimateableProperty* volume = &m_entry->m_volume;
+	AnimateableProperty* panning = &m_entry->m_panning;
+
+	if(!m_reference.empty())
+	{
+		if(AnimateableProperty* reference_volume = m_entry->m_sequence_data->getReferenceAnimProperty(m_reference, m_entry->m_id, AP_VOLUME))
+			volume = reference_volume;
+		if(AnimateableProperty* reference_panning = m_entry->m_sequence_data->getReferenceAnimProperty(m_reference, m_entry->m_id, AP_PANNING))
+			panning = reference_panning;
+	}
+
 	float value;
 
-	m_entry->m_volume.read(frame, &value);
+	volume->read(frame, &value);
 	m_handle->setVolume(value);
 	m_entry->m_pitch.read(frame, &value);
 	m_handle->setPitch(value);
-	m_entry->m_panning.read(frame, &value);
+	panning->read(frame, &value);
 	SoftwareDevice::setPanning(m_handle.get(), value);
 
 	Vector3 v, v2;
